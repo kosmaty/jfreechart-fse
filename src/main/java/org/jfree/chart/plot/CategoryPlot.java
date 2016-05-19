@@ -223,7 +223,7 @@ import org.jfree.chart.axis.AxisCollection;
 import org.jfree.chart.axis.AxisLocation;
 import org.jfree.chart.axis.AxisSpace;
 import org.jfree.chart.axis.AxisState;
-// import org.jfree.chart.axis.CategoryAnchor;
+import org.jfree.chart.axis.CategoryAnchor;
 import org.jfree.chart.axis.CategoryAxis;
 import org.jfree.chart.axis.TickType;
 import org.jfree.chart.axis.ValueAxis;
@@ -266,8 +266,10 @@ import org.jfree.data.general.DatasetUtilities;
  * renders each data item using a {@link CategoryItemRenderer}.
  */
 public class CategoryPlot extends Plot implements
-		// ValueAxisPlot, Pannable,
-		// Zoomable, AnnotationChangeListener, RendererChangeListener,
+		// ValueAxisPlot,
+		Pannable,
+		// Zoomable, AnnotationChangeListener,
+		RendererChangeListener,
 		// Cloneable,
 		// PublicCloneable,
 		Serializable {
@@ -333,8 +335,8 @@ public class CategoryPlot extends Plot implements
 	/** Storage for the domain axes. */
 	private Map<Integer, CategoryAxis> domainAxes;
 
-	// /** Storage for the domain axis locations. */
-	// private Map<Integer, AxisLocation> domainAxisLocations;
+	/** Storage for the domain axis locations. */
+	private Map<Integer, AxisLocation> domainAxisLocations;
 
 	/**
 	 * A flag that controls whether or not the shared domain axis is drawn (only
@@ -344,9 +346,9 @@ public class CategoryPlot extends Plot implements
 
 	/** Storage for the range axes. */
 	private Map<Integer, ValueAxis> rangeAxes;
-	//
-	// /** Storage for the range axis locations. */
-	// private Map<Integer, AxisLocation> rangeAxisLocations;
+
+	/** Storage for the range axis locations. */
+	private Map<Integer, AxisLocation> rangeAxisLocations;
 
 	/** Storage for the datasets. */
 	private Map<Integer, CategoryDataset> datasets;
@@ -380,9 +382,9 @@ public class CategoryPlot extends Plot implements
 	 * visible.
 	 */
 	private boolean domainGridlinesVisible;
-	//
-	// /** The position of the domain gridlines relative to the category. */
-	// private CategoryAnchor domainGridlinePosition;
+
+	/** The position of the domain gridlines relative to the category. */
+	private CategoryAnchor domainGridlinePosition;
 	//
 	// /** The stroke used to draw the domain grid-lines. */
 	// private transient Stroke domainGridlineStroke;
@@ -540,12 +542,12 @@ public class CategoryPlot extends Plot implements
 
 	/** The fixed space for the range axis. */
 	private AxisSpace fixedRangeAxisSpace;
-	//
-	// /**
-	// * An optional collection of legend items that can be returned by the
-	// * getLegendItems() method.
-	// */
-	// private List<LegendItem> fixedLegendItems;
+
+	/**
+	 * An optional collection of legend items that can be returned by the
+	 * getLegendItems() method.
+	 */
+	private List<LegendItem> fixedLegendItems;
 
 	/**
 	 * A flag that controls whether or not panning is enabled for the range
@@ -570,118 +572,125 @@ public class CategoryPlot extends Plot implements
 	// this(null, null, null, null);
 	// }
 	//
-	// /**
-	// * Creates a new plot.
-	// *
-	// * @param dataset the dataset (<code>null</code> permitted).
-	// * @param domainAxis the domain axis (<code>null</code> permitted).
-	// * @param rangeAxis the range axis (<code>null</code> permitted).
-	// * @param renderer the item renderer (<code>null</code> permitted).
-	// *
-	// */
-	// public CategoryPlot(CategoryDataset dataset, CategoryAxis domainAxis,
-	// ValueAxis rangeAxis, CategoryItemRenderer renderer) {
-	//
-	// super();
-	//
-	// this.orientation = PlotOrientation.VERTICAL;
-	//
-	// // allocate storage for dataset, axes and renderers
-	// this.domainAxes = new HashMap<Integer, CategoryAxis>();
-	// this.domainAxisLocations = new HashMap<Integer, AxisLocation>();
-	// this.rangeAxes = new HashMap<Integer, ValueAxis>();
-	// this.rangeAxisLocations = new HashMap<Integer, AxisLocation>();
-	//
-	// this.datasetToDomainAxesMap = new TreeMap<Integer, List<Integer>>();
-	// this.datasetToRangeAxesMap = new TreeMap<Integer, List<Integer>>();
-	//
-	// this.renderers = new HashMap<Integer, CategoryItemRenderer>();
-	//
-	// this.datasets = new HashMap<Integer, CategoryDataset>();
-	// this.datasets.put(0, dataset);
-	// if (dataset != null) {
-	// dataset.addChangeListener(this);
-	// }
-	//
-	// this.axisOffset = RectangleInsets.ZERO_INSETS;
-	//
-	// this.domainAxisLocations.put(0, AxisLocation.BOTTOM_OR_LEFT);
-	// this.rangeAxisLocations.put(0, AxisLocation.TOP_OR_LEFT);
-	//
-	// this.renderers.put(0, renderer);
-	// if (renderer != null) {
-	// renderer.setPlot(this);
-	// renderer.addChangeListener(this);
-	// }
-	//
-	// this.domainAxes.put(0, domainAxis);
-	// this.mapDatasetToDomainAxis(0, 0);
-	// if (domainAxis != null) {
-	// domainAxis.setPlot(this);
-	// domainAxis.addChangeListener(this);
-	// }
-	// this.drawSharedDomainAxis = false;
-	//
-	// this.rangeAxes.put(0, rangeAxis);
-	// this.mapDatasetToRangeAxis(0, 0);
-	// if (rangeAxis != null) {
-	// rangeAxis.setPlot(this);
-	// rangeAxis.addChangeListener(this);
-	// }
-	//
-	// configureDomainAxes();
-	// configureRangeAxes();
-	//
-	// this.domainGridlinesVisible = DEFAULT_DOMAIN_GRIDLINES_VISIBLE;
-	// this.domainGridlinePosition = CategoryAnchor.MIDDLE;
-	// this.domainGridlineStroke = DEFAULT_GRIDLINE_STROKE;
-	// this.domainGridlinePaint = DEFAULT_GRIDLINE_PAINT;
-	//
-	// this.rangeZeroBaselineVisible = false;
-	// this.rangeZeroBaselinePaint = Color.BLACK;
-	// this.rangeZeroBaselineStroke = new BasicStroke(0.5f);
-	//
-	// this.rangeGridlinesVisible = DEFAULT_RANGE_GRIDLINES_VISIBLE;
-	// this.rangeGridlineStroke = DEFAULT_GRIDLINE_STROKE;
-	// this.rangeGridlinePaint = DEFAULT_GRIDLINE_PAINT;
-	//
-	// this.rangeMinorGridlinesVisible = false;
-	// this.rangeMinorGridlineStroke = DEFAULT_GRIDLINE_STROKE;
-	// this.rangeMinorGridlinePaint = Color.WHITE;
-	//
-	// this.foregroundDomainMarkers = new HashMap<Integer,
-	// Collection<Marker>>();
-	// this.backgroundDomainMarkers = new HashMap<Integer,
-	// Collection<Marker>>();
-	// this.foregroundRangeMarkers = new HashMap<Integer, Collection<Marker>>();
-	// this.backgroundRangeMarkers = new HashMap<Integer, Collection<Marker>>();
-	//
-	// this.anchorValue = 0.0;
-	//
-	// this.domainCrosshairVisible = false;
-	// this.domainCrosshairStroke = DEFAULT_CROSSHAIR_STROKE;
-	// this.domainCrosshairPaint = DEFAULT_CROSSHAIR_PAINT;
-	//
-	// this.rangeCrosshairVisible = DEFAULT_CROSSHAIR_VISIBLE;
-	// this.rangeCrosshairValue = 0.0;
-	// this.rangeCrosshairStroke = DEFAULT_CROSSHAIR_STROKE;
-	// this.rangeCrosshairPaint = DEFAULT_CROSSHAIR_PAINT;
-	//
-	// this.annotations = new java.util.ArrayList<CategoryAnnotation>();
-	//
-	// this.rangePannable = false;
-	// this.shadowGenerator = null;
-	// }
-	//
-	// /**
-	// * Returns a string describing the type of plot.
-	// *
-	// * @return The type.
-	// */
-	// @Override
-	// public String getPlotType() {
-	// return localizationResources.getString("Category_Plot");
-	// }
+	/**
+	 * Creates a new plot.
+	 *
+	 * @param dataset
+	 *            the dataset (<code>null</code> permitted).
+	 * @param domainAxis
+	 *            the domain axis (<code>null</code> permitted).
+	 * @param rangeAxis
+	 *            the range axis (<code>null</code> permitted).
+	 * @param renderer
+	 *            the item renderer (<code>null</code> permitted).
+	 *
+	 */
+	public CategoryPlot(CategoryDataset dataset, CategoryAxis domainAxis,
+			ValueAxis rangeAxis, CategoryItemRenderer renderer) {
+
+		super();
+
+		this.orientation = PlotOrientation.VERTICAL;
+
+		// allocate storage for dataset, axes and renderers
+		this.domainAxes = new HashMap<Integer, CategoryAxis>();
+		this.domainAxisLocations = new HashMap<Integer, AxisLocation>();
+		this.rangeAxes = new HashMap<Integer, ValueAxis>();
+		this.rangeAxisLocations = new HashMap<Integer, AxisLocation>();
+
+		this.datasetToDomainAxesMap = new TreeMap<Integer, List<Integer>>();
+		this.datasetToRangeAxesMap = new TreeMap<Integer, List<Integer>>();
+
+		this.renderers = new HashMap<Integer, CategoryItemRenderer>();
+
+		this.datasets = new HashMap<Integer, CategoryDataset>();
+		this.datasets.put(0, dataset);
+		if (dataset != null) {
+			dataset.addChangeListener(this);
+		}
+
+		this.axisOffset = RectangleInsets.ZERO_INSETS;
+
+		this.domainAxisLocations.put(0, AxisLocation.BOTTOM_OR_LEFT);
+		this.rangeAxisLocations.put(0, AxisLocation.TOP_OR_LEFT);
+
+		this.renderers.put(0, renderer);
+		if (renderer != null) {
+			renderer.setPlot(this);
+			renderer.addChangeListener(this);
+		}
+
+		this.domainAxes.put(0, domainAxis);
+		this.mapDatasetToDomainAxis(0, 0);
+		if (domainAxis != null) {
+			// JAVAFX
+			// domainAxis.setPlot(this);
+			domainAxis.addChangeListener(this);
+		}
+		this.drawSharedDomainAxis = false;
+
+		this.rangeAxes.put(0, rangeAxis);
+		this.mapDatasetToRangeAxis(0, 0);
+		if (rangeAxis != null) {
+			rangeAxis.setPlot(this);
+			rangeAxis.addChangeListener(this);
+		}
+
+		configureDomainAxes();
+		configureRangeAxes();
+		//
+		// this.domainGridlinesVisible = DEFAULT_DOMAIN_GRIDLINES_VISIBLE;
+		// this.domainGridlinePosition = CategoryAnchor.MIDDLE;
+		// this.domainGridlineStroke = DEFAULT_GRIDLINE_STROKE;
+		// this.domainGridlinePaint = DEFAULT_GRIDLINE_PAINT;
+		//
+		// this.rangeZeroBaselineVisible = false;
+		// this.rangeZeroBaselinePaint = Color.BLACK;
+		// this.rangeZeroBaselineStroke = new BasicStroke(0.5f);
+		//
+		// this.rangeGridlinesVisible = DEFAULT_RANGE_GRIDLINES_VISIBLE;
+		// this.rangeGridlineStroke = DEFAULT_GRIDLINE_STROKE;
+		// this.rangeGridlinePaint = DEFAULT_GRIDLINE_PAINT;
+		//
+		// this.rangeMinorGridlinesVisible = false;
+		// this.rangeMinorGridlineStroke = DEFAULT_GRIDLINE_STROKE;
+		// this.rangeMinorGridlinePaint = Color.WHITE;
+		//
+		// this.foregroundDomainMarkers = new HashMap<Integer,
+		// Collection<Marker>>();
+		// this.backgroundDomainMarkers = new HashMap<Integer,
+		// Collection<Marker>>();
+		// this.foregroundRangeMarkers = new HashMap<Integer,
+		// Collection<Marker>>();
+		// this.backgroundRangeMarkers = new HashMap<Integer,
+		// Collection<Marker>>();
+		//
+		// this.anchorValue = 0.0;
+		//
+		// this.domainCrosshairVisible = false;
+		// this.domainCrosshairStroke = DEFAULT_CROSSHAIR_STROKE;
+		// this.domainCrosshairPaint = DEFAULT_CROSSHAIR_PAINT;
+		//
+		// this.rangeCrosshairVisible = DEFAULT_CROSSHAIR_VISIBLE;
+		// this.rangeCrosshairValue = 0.0;
+		// this.rangeCrosshairStroke = DEFAULT_CROSSHAIR_STROKE;
+		// this.rangeCrosshairPaint = DEFAULT_CROSSHAIR_PAINT;
+		//
+		// this.annotations = new java.util.ArrayList<CategoryAnnotation>();
+		//
+		// this.rangePannable = false;
+		// this.shadowGenerator = null;
+	}
+
+	/**
+	 * Returns a string describing the type of plot.
+	 *
+	 * @return The type.
+	 */
+	@Override
+	public String getPlotType() {
+		return localizationResources.getString("Category_Plot");
+	}
 
 	/**
 	 * Returns the orientation of the plot.
@@ -710,306 +719,324 @@ public class CategoryPlot extends Plot implements
 		fireChangeEvent();
 	}
 
-	//
-	// /**
-	// * Returns the axis offset.
-	// *
-	// * @return The axis offset (never <code>null</code>).
-	// *
-	// * @see #setAxisOffset(RectangleInsets)
-	// */
-	// public RectangleInsets getAxisOffset() {
-	// return this.axisOffset;
-	// }
-	//
-	// /**
-	// * Sets the axis offsets (gap between the data area and the axes) and
-	// * sends a {@link PlotChangeEvent} to all registered listeners.
-	// *
-	// * @param offset the offset (<code>null</code> not permitted).
-	// *
-	// * @see #getAxisOffset()
-	// */
-	// public void setAxisOffset(RectangleInsets offset) {
-	// ParamChecks.nullNotPermitted(offset, "offset");
-	// this.axisOffset = offset;
-	// fireChangeEvent();
-	// }
-	//
-	// /**
-	// * Returns the domain axis for the plot. If the domain axis for this plot
-	// * is <code>null</code>, then the method will return the parent plot's
-	// * domain axis (if there is a parent plot).
-	// *
-	// * @return The domain axis (<code>null</code> permitted).
-	// *
-	// * @see #setDomainAxis(CategoryAxis)
-	// */
-	// public CategoryAxis getDomainAxis() {
-	// return getDomainAxis(0);
-	// }
-	//
-	// /**
-	// * Returns a domain axis.
-	// *
-	// * @param index the axis index.
-	// *
-	// * @return The axis (<code>null</code> possible).
-	// *
-	// * @see #setDomainAxis(int, CategoryAxis)
-	// */
-	// public CategoryAxis getDomainAxis(int index) {
-	// CategoryAxis result = this.domainAxes.get(index);
-	// if (result == null) {
-	// Plot parent = getParent();
-	// if (parent instanceof CategoryPlot) {
-	// CategoryPlot cp = (CategoryPlot) parent;
-	// result = cp.getDomainAxis(index);
-	// }
-	// }
-	// return result;
-	// }
-	//
-	// /**
-	// * Sets the domain axis for the plot and sends a {@link PlotChangeEvent}
-	// to
-	// * all registered listeners.
-	// *
-	// * @param axis the axis (<code>null</code> permitted).
-	// *
-	// * @see #getDomainAxis()
-	// */
-	// public void setDomainAxis(CategoryAxis axis) {
-	// setDomainAxis(0, axis);
-	// }
-	//
-	// /**
-	// * Sets a domain axis and sends a {@link PlotChangeEvent} to all
-	// * registered listeners.
-	// *
-	// * @param index the axis index.
-	// * @param axis the axis (<code>null</code> permitted).
-	// *
-	// * @see #getDomainAxis(int)
-	// */
-	// public void setDomainAxis(int index, CategoryAxis axis) {
-	// setDomainAxis(index, axis, true);
-	// }
-	//
-	// /**
-	// * Sets a domain axis and, if requested, sends a {@link PlotChangeEvent}
-	// to
-	// * all registered listeners.
-	// *
-	// * @param index the axis index.
-	// * @param axis the axis (<code>null</code> permitted).
-	// * @param notify notify listeners?
-	// */
-	// public void setDomainAxis(int index, CategoryAxis axis, boolean notify) {
-	// CategoryAxis existing = this.domainAxes.get(index);
-	// if (existing != null) {
-	// existing.removeChangeListener(this);
-	// }
-	// if (axis != null) {
-	// axis.setPlot(this);
-	// }
-	// this.domainAxes.put(index, axis);
-	// if (axis != null) {
-	// axis.configure();
-	// axis.addChangeListener(this);
-	// }
-	// if (notify) {
-	// fireChangeEvent();
-	// }
-	// }
-	//
-	// /**
-	// * Sets the domain axes for this plot and sends a {@link PlotChangeEvent}
-	// * to all registered listeners.
-	// *
-	// * @param axes the axes (<code>null</code> not permitted).
-	// *
-	// * @see #setRangeAxes(ValueAxis[])
-	// */
-	// public void setDomainAxes(CategoryAxis[] axes) {
-	// for (int i = 0; i < axes.length; i++) {
-	// setDomainAxis(i, axes[i], false);
-	// }
-	// fireChangeEvent();
-	// }
-	//
-	// /**
-	// * Returns the index of the specified axis, or <code>-1</code> if the axis
-	// * is not assigned to the plot.
-	// *
-	// * @param axis the axis (<code>null</code> not permitted).
-	// *
-	// * @return The axis index.
-	// *
-	// * @see #getDomainAxis(int)
-	// * @see #getRangeAxisIndex(ValueAxis)
-	// *
-	// * @since 1.0.3
-	// */
-	// public int getDomainAxisIndex(CategoryAxis axis) {
-	// ParamChecks.nullNotPermitted(axis, "axis");
-	// for (Map.Entry<Integer, CategoryAxis> entry : this.domainAxes.entrySet())
-	// {
-	// if (entry.getValue() == axis) {
-	// return entry.getKey();
-	// }
-	// }
-	// return -1;
-	// }
-	//
-	// /**
-	// * Returns the domain axis location for the primary domain axis.
-	// *
-	// * @return The location (never <code>null</code>).
-	// *
-	// * @see #getRangeAxisLocation()
-	// */
-	// public AxisLocation getDomainAxisLocation() {
-	// return getDomainAxisLocation(0);
-	// }
-	//
-	// /**
-	// * Returns the location for a domain axis.
-	// *
-	// * @param index the axis index.
-	// *
-	// * @return The location.
-	// *
-	// * @see #setDomainAxisLocation(int, AxisLocation)
-	// */
-	// public AxisLocation getDomainAxisLocation(int index) {
-	// AxisLocation result = this.domainAxisLocations.get(index);
-	// if (result == null) {
-	// result = AxisLocation.getOpposite(getDomainAxisLocation(0));
-	// }
-	// return result;
-	// }
-	//
-	// /**
-	// * Sets the location of the domain axis and sends a {@link
-	// PlotChangeEvent}
-	// * to all registered listeners.
-	// *
-	// * @param location the axis location (<code>null</code> not permitted).
-	// *
-	// * @see #getDomainAxisLocation()
-	// * @see #setDomainAxisLocation(int, AxisLocation)
-	// */
-	// public void setDomainAxisLocation(AxisLocation location) {
-	// // delegate...
-	// setDomainAxisLocation(0, location, true);
-	// }
-	//
-	// /**
-	// * Sets the location of the domain axis and, if requested, sends a
-	// * {@link PlotChangeEvent} to all registered listeners.
-	// *
-	// * @param location the axis location (<code>null</code> not permitted).
-	// * @param notify a flag that controls whether listeners are notified.
-	// */
-	// public void setDomainAxisLocation(AxisLocation location, boolean notify)
-	// {
-	// // delegate...
-	// setDomainAxisLocation(0, location, notify);
-	// }
-	//
-	// /**
-	// * Sets the location for a domain axis and sends a {@link PlotChangeEvent}
-	// * to all registered listeners.
-	// *
-	// * @param index the axis index.
-	// * @param location the location.
-	// *
-	// * @see #getDomainAxisLocation(int)
-	// * @see #setRangeAxisLocation(int, AxisLocation)
-	// */
-	// public void setDomainAxisLocation(int index, AxisLocation location) {
-	// // delegate...
-	// setDomainAxisLocation(index, location, true);
-	// }
-	//
-	// /**
-	// * Sets the location for a domain axis and sends a {@link PlotChangeEvent}
-	// * to all registered listeners.
-	// *
-	// * @param index the axis index.
-	// * @param location the location.
-	// * @param notify notify listeners?
-	// *
-	// * @since 1.0.5
-	// *
-	// * @see #getDomainAxisLocation(int)
-	// * @see #setRangeAxisLocation(int, AxisLocation, boolean)
-	// */
-	// public void setDomainAxisLocation(int index, AxisLocation location,
-	// boolean notify) {
-	// if (index == 0 && location == null) {
-	// throw new IllegalArgumentException(
-	// "Null 'location' for index 0 not permitted.");
-	// }
-	// this.domainAxisLocations.put(index, location);
-	// if (notify) {
-	// fireChangeEvent();
-	// }
-	// }
-	//
-	// /**
-	// * Returns the domain axis edge. This is derived from the axis location
-	// * and the plot orientation.
-	// *
-	// * @return The edge (never <code>null</code>).
-	// */
-	// public RectangleEdge getDomainAxisEdge() {
-	// return getDomainAxisEdge(0);
-	// }
-	//
-	// /**
-	// * Returns the edge for a domain axis.
-	// *
-	// * @param index the axis index.
-	// *
-	// * @return The edge (never <code>null</code>).
-	// */
-	// public RectangleEdge getDomainAxisEdge(int index) {
-	// RectangleEdge result;
-	// AxisLocation location = getDomainAxisLocation(index);
-	// if (location != null) {
-	// result = Plot.resolveDomainAxisLocation(location, this.orientation);
-	// }
-	// else {
-	// result = RectangleEdge.opposite(getDomainAxisEdge(0));
-	// }
-	// return result;
-	// }
-	//
-	// /**
-	// * Returns the number of domain axes.
-	// *
-	// * @return The axis count.
-	// */
-	// public int getDomainAxisCount() {
-	// return this.domainAxes.size();
-	// }
-	//
-	// /**
-	// * Clears the domain axes from the plot and sends a {@link
-	// PlotChangeEvent}
-	// * to all registered listeners.
-	// */
-	// public void clearDomainAxes() {
-	// for (CategoryAxis axis : this.domainAxes.values()) {
-	// if (axis != null) {
-	// axis.removeChangeListener(this);
-	// }
-	// }
-	// this.domainAxes.clear();
-	// fireChangeEvent();
-	// }
+	/**
+	 * Returns the axis offset.
+	 *
+	 * @return The axis offset (never <code>null</code>).
+	 *
+	 * @see #setAxisOffset(RectangleInsets)
+	 */
+	public RectangleInsets getAxisOffset() {
+		return this.axisOffset;
+	}
+
+	/**
+	 * Sets the axis offsets (gap between the data area and the axes) and sends
+	 * a {@link PlotChangeEvent} to all registered listeners.
+	 *
+	 * @param offset
+	 *            the offset (<code>null</code> not permitted).
+	 *
+	 * @see #getAxisOffset()
+	 */
+	public void setAxisOffset(RectangleInsets offset) {
+		ParamChecks.nullNotPermitted(offset, "offset");
+		this.axisOffset = offset;
+		fireChangeEvent();
+	}
+
+	/**
+	 * Returns the domain axis for the plot. If the domain axis for this plot is
+	 * <code>null</code>, then the method will return the parent plot's domain
+	 * axis (if there is a parent plot).
+	 *
+	 * @return The domain axis (<code>null</code> permitted).
+	 *
+	 * @see #setDomainAxis(CategoryAxis)
+	 */
+	public CategoryAxis getDomainAxis() {
+		return getDomainAxis(0);
+	}
+
+	/**
+	 * Returns a domain axis.
+	 *
+	 * @param index
+	 *            the axis index.
+	 *
+	 * @return The axis (<code>null</code> possible).
+	 *
+	 * @see #setDomainAxis(int, CategoryAxis)
+	 */
+	public CategoryAxis getDomainAxis(int index) {
+		CategoryAxis result = this.domainAxes.get(index);
+		if (result == null) {
+			Plot parent = getParent();
+			if (parent instanceof CategoryPlot) {
+				CategoryPlot cp = (CategoryPlot) parent;
+				result = cp.getDomainAxis(index);
+			}
+		}
+		return result;
+	}
+
+	/**
+	 * Sets the domain axis for the plot and sends a {@link PlotChangeEvent} to
+	 * all registered listeners.
+	 *
+	 * @param axis
+	 *            the axis (<code>null</code> permitted).
+	 *
+	 * @see #getDomainAxis()
+	 */
+	public void setDomainAxis(CategoryAxis axis) {
+		setDomainAxis(0, axis);
+	}
+
+	/**
+	 * Sets a domain axis and sends a {@link PlotChangeEvent} to all registered
+	 * listeners.
+	 *
+	 * @param index
+	 *            the axis index.
+	 * @param axis
+	 *            the axis (<code>null</code> permitted).
+	 *
+	 * @see #getDomainAxis(int)
+	 */
+	public void setDomainAxis(int index, CategoryAxis axis) {
+		setDomainAxis(index, axis, true);
+	}
+
+	/**
+	 * Sets a domain axis and, if requested, sends a {@link PlotChangeEvent} to
+	 * all registered listeners.
+	 *
+	 * @param index
+	 *            the axis index.
+	 * @param axis
+	 *            the axis (<code>null</code> permitted).
+	 * @param notify
+	 *            notify listeners?
+	 */
+	public void setDomainAxis(int index, CategoryAxis axis, boolean notify) {
+		CategoryAxis existing = this.domainAxes.get(index);
+		if (existing != null) {
+			existing.removeChangeListener(this);
+		}
+		if (axis != null) {
+			// JAVAFX
+			// axis.setPlot(this);
+		}
+		this.domainAxes.put(index, axis);
+		if (axis != null) {
+			// JAVAFX
+			// axis.configure();
+			axis.addChangeListener(this);
+		}
+		if (notify) {
+			fireChangeEvent();
+		}
+	}
+
+	/**
+	 * Sets the domain axes for this plot and sends a {@link PlotChangeEvent} to
+	 * all registered listeners.
+	 *
+	 * @param axes
+	 *            the axes (<code>null</code> not permitted).
+	 *
+	 * @see #setRangeAxes(ValueAxis[])
+	 */
+	public void setDomainAxes(CategoryAxis[] axes) {
+		for (int i = 0; i < axes.length; i++) {
+			setDomainAxis(i, axes[i], false);
+		}
+		fireChangeEvent();
+	}
+
+	/**
+	 * Returns the index of the specified axis, or <code>-1</code> if the axis
+	 * is not assigned to the plot.
+	 *
+	 * @param axis
+	 *            the axis (<code>null</code> not permitted).
+	 *
+	 * @return The axis index.
+	 *
+	 * @see #getDomainAxis(int)
+	 * @see #getRangeAxisIndex(ValueAxis)
+	 *
+	 * @since 1.0.3
+	 */
+	public int getDomainAxisIndex(CategoryAxis axis) {
+		ParamChecks.nullNotPermitted(axis, "axis");
+		for (Map.Entry<Integer, CategoryAxis> entry : this.domainAxes.entrySet())
+		{
+			if (entry.getValue() == axis) {
+				return entry.getKey();
+			}
+		}
+		return -1;
+	}
+
+	/**
+	 * Returns the domain axis location for the primary domain axis.
+	 *
+	 * @return The location (never <code>null</code>).
+	 *
+	 * @see #getRangeAxisLocation()
+	 */
+	public AxisLocation getDomainAxisLocation() {
+		return getDomainAxisLocation(0);
+	}
+
+	/**
+	 * Returns the location for a domain axis.
+	 *
+	 * @param index
+	 *            the axis index.
+	 *
+	 * @return The location.
+	 *
+	 * @see #setDomainAxisLocation(int, AxisLocation)
+	 */
+	public AxisLocation getDomainAxisLocation(int index) {
+		AxisLocation result = this.domainAxisLocations.get(index);
+		if (result == null) {
+			result = AxisLocation.getOpposite(getDomainAxisLocation(0));
+		}
+		return result;
+	}
+
+	/**
+	 * Sets the location of the domain axis and sends a {@link PlotChangeEvent}
+	 * to all registered listeners.
+	 *
+	 * @param location
+	 *            the axis location (<code>null</code> not permitted).
+	 *
+	 * @see #getDomainAxisLocation()
+	 * @see #setDomainAxisLocation(int, AxisLocation)
+	 */
+	public void setDomainAxisLocation(AxisLocation location) {
+		// delegate...
+		setDomainAxisLocation(0, location, true);
+	}
+
+	/**
+	 * Sets the location of the domain axis and, if requested, sends a
+	 * {@link PlotChangeEvent} to all registered listeners.
+	 *
+	 * @param location
+	 *            the axis location (<code>null</code> not permitted).
+	 * @param notify
+	 *            a flag that controls whether listeners are notified.
+	 */
+	public void setDomainAxisLocation(AxisLocation location, boolean notify)
+	{
+		// delegate...
+		setDomainAxisLocation(0, location, notify);
+	}
+
+	/**
+	 * Sets the location for a domain axis and sends a {@link PlotChangeEvent}
+	 * to all registered listeners.
+	 *
+	 * @param index
+	 *            the axis index.
+	 * @param location
+	 *            the location.
+	 *
+	 * @see #getDomainAxisLocation(int)
+	 * @see #setRangeAxisLocation(int, AxisLocation)
+	 */
+	public void setDomainAxisLocation(int index, AxisLocation location) {
+		// delegate...
+		setDomainAxisLocation(index, location, true);
+	}
+
+	/**
+	 * Sets the location for a domain axis and sends a {@link PlotChangeEvent}
+	 * to all registered listeners.
+	 *
+	 * @param index
+	 *            the axis index.
+	 * @param location
+	 *            the location.
+	 * @param notify
+	 *            notify listeners?
+	 *
+	 * @since 1.0.5
+	 *
+	 * @see #getDomainAxisLocation(int)
+	 * @see #setRangeAxisLocation(int, AxisLocation, boolean)
+	 */
+	public void setDomainAxisLocation(int index, AxisLocation location,
+			boolean notify) {
+		if (index == 0 && location == null) {
+			throw new IllegalArgumentException(
+					"Null 'location' for index 0 not permitted.");
+		}
+		this.domainAxisLocations.put(index, location);
+		if (notify) {
+			fireChangeEvent();
+		}
+	}
+
+	/**
+	 * Returns the domain axis edge. This is derived from the axis location and
+	 * the plot orientation.
+	 *
+	 * @return The edge (never <code>null</code>).
+	 */
+	public RectangleEdge getDomainAxisEdge() {
+		return getDomainAxisEdge(0);
+	}
+
+	/**
+	 * Returns the edge for a domain axis.
+	 *
+	 * @param index
+	 *            the axis index.
+	 *
+	 * @return The edge (never <code>null</code>).
+	 */
+	public RectangleEdge getDomainAxisEdge(int index) {
+		RectangleEdge result;
+		AxisLocation location = getDomainAxisLocation(index);
+		if (location != null) {
+			result = Plot.resolveDomainAxisLocation(location, this.orientation);
+		}
+		else {
+			result = RectangleEdge.opposite(getDomainAxisEdge(0));
+		}
+		return result;
+	}
+
+	/**
+	 * Returns the number of domain axes.
+	 *
+	 * @return The axis count.
+	 */
+	public int getDomainAxisCount() {
+		return this.domainAxes.size();
+	}
+
+	/**
+	 * Clears the domain axes from the plot and sends a {@link PlotChangeEvent}
+	 * to all registered listeners.
+	 */
+	public void clearDomainAxes() {
+		for (CategoryAxis axis : this.domainAxes.values()) {
+			if (axis != null) {
+				axis.removeChangeListener(this);
+			}
+		}
+		this.domainAxes.clear();
+		fireChangeEvent();
+	}
+
 	//
 	// /**
 	// * Configures the domain axes.
@@ -1158,23 +1185,25 @@ public class CategoryPlot extends Plot implements
 	// public AxisLocation getRangeAxisLocation() {
 	// return getRangeAxisLocation(0);
 	// }
-	//
-	// /**
-	// * Returns the location for a range axis.
-	// *
-	// * @param index the axis index.
-	// *
-	// * @return The location.
-	// *
-	// * @see #setRangeAxisLocation(int, AxisLocation)
-	// */
-	// public AxisLocation getRangeAxisLocation(int index) {
-	// AxisLocation result = this.rangeAxisLocations.get(index);
-	// if (result == null) {
-	// result = AxisLocation.getOpposite(getRangeAxisLocation(0));
-	// }
-	// return result;
-	// }
+
+	/**
+	 * Returns the location for a range axis.
+	 *
+	 * @param index
+	 *            the axis index.
+	 *
+	 * @return The location.
+	 *
+	 * @see #setRangeAxisLocation(int, AxisLocation)
+	 */
+	public AxisLocation getRangeAxisLocation(int index) {
+		AxisLocation result = this.rangeAxisLocations.get(index);
+		if (result == null) {
+			result = AxisLocation.getOpposite(getRangeAxisLocation(0));
+		}
+		return result;
+	}
+
 	//
 	// /**
 	// * Sets the location of the range axis and sends a {@link PlotChangeEvent}
@@ -1240,215 +1269,226 @@ public class CategoryPlot extends Plot implements
 	// }
 	// }
 	//
-	// /**
-	// * Returns the edge where the primary range axis is located.
-	// *
-	// * @return The edge (never <code>null</code>).
-	// */
-	// public RectangleEdge getRangeAxisEdge() {
-	// return getRangeAxisEdge(0);
-	// }
-	//
-	// /**
-	// * Returns the edge for a range axis.
-	// *
-	// * @param index the axis index.
-	// *
-	// * @return The edge.
-	// */
-	// public RectangleEdge getRangeAxisEdge(int index) {
-	// AxisLocation location = getRangeAxisLocation(index);
-	// return Plot.resolveRangeAxisLocation(location, this.orientation);
-	// }
-	//
-	// /**
-	// * Returns the number of range axes.
-	// *
-	// * @return The axis count.
-	// */
-	// public int getRangeAxisCount() {
-	// return this.rangeAxes.size();
-	// }
-	//
-	// /**
-	// * Clears the range axes from the plot and sends a {@link PlotChangeEvent}
-	// * to all registered listeners.
-	// */
-	// public void clearRangeAxes() {
-	// for (ValueAxis axis : this.rangeAxes.values()) {
-	// if (axis != null) {
-	// axis.removeChangeListener(this);
-	// }
-	// }
-	// this.rangeAxes.clear();
-	// fireChangeEvent();
-	// }
-	//
-	// /**
-	// * Configures the range axes.
-	// */
-	// public void configureRangeAxes() {
-	// for (ValueAxis axis : this.rangeAxes.values()) {
-	// if (axis != null) {
-	// axis.configure();
-	// }
-	// }
-	// }
-	//
-	// /**
-	// * Returns the primary dataset for the plot.
-	// *
-	// * @return The primary dataset (possibly <code>null</code>).
-	// *
-	// * @see #setDataset(CategoryDataset)
-	// */
-	// public CategoryDataset getDataset() {
-	// return getDataset(0);
-	// }
-	//
-	// /**
-	// * Returns the dataset with the given index, or {@code null} if there is
-	// * no dataset.
-	// *
-	// * @param index the dataset index (must be &gt;= 0).
-	// *
-	// * @return The dataset (possibly {@code null}).
-	// *
-	// * @see #setDataset(int, CategoryDataset)
-	// */
-	// public CategoryDataset getDataset(int index) {
-	// return this.datasets.get(index);
-	// }
-	//
-	// /**
-	// * Sets the dataset for the plot, replacing the existing dataset, if there
-	// * is one. This method also calls the
-	// * {@link #datasetChanged(DatasetChangeEvent)} method, which adjusts the
-	// * axis ranges if necessary and sends a {@link PlotChangeEvent} to all
-	// * registered listeners.
-	// *
-	// * @param dataset the dataset (<code>null</code> permitted).
-	// *
-	// * @see #getDataset()
-	// */
-	// public void setDataset(CategoryDataset dataset) {
-	// setDataset(0, dataset);
-	// }
-	//
-	// /**
-	// * Sets a dataset for the plot and sends a change notification to all
-	// * registered listeners.
-	// *
-	// * @param index the dataset index (must be &gt;= 0).
-	// * @param dataset the dataset ({@code null} permitted).
-	// *
-	// * @see #getDataset(int)
-	// */
-	// public void setDataset(int index, CategoryDataset dataset) {
-	// CategoryDataset existing = this.datasets.get(index);
-	// if (existing != null) {
-	// existing.removeChangeListener(this);
-	// }
-	// this.datasets.put(index, dataset);
-	// if (dataset != null) {
-	// dataset.addChangeListener(this);
-	// }
-	// // send a dataset change event to self...
-	// DatasetChangeEvent event = new DatasetChangeEvent(this, dataset);
-	// datasetChanged(event);
-	// }
-	//
-	// /**
-	// * Returns the number of datasets.
-	// *
-	// * @return The number of datasets.
-	// *
-	// * @since 1.0.2
-	// */
-	// public int getDatasetCount() {
-	// return this.datasets.size();
-	// }
-	//
-	// /**
-	// * Returns the index of the specified dataset, or <code>-1</code> if the
-	// * dataset does not belong to the plot.
-	// *
-	// * @param dataset the dataset ({@code null} not permitted).
-	// *
-	// * @return The index.
-	// *
-	// * @since 1.0.11
-	// */
-	// public int findDatasetIndex(CategoryDataset dataset) {
-	// for (Map.Entry<Integer, CategoryDataset> entry:
-	// this.datasets.entrySet()) {
-	// if (dataset == entry.getValue()) {
-	// return entry.getKey();
-	// }
-	// }
-	// return -1;
-	// }
-	//
-	// /**
-	// * Maps a dataset to a particular domain axis.
-	// *
-	// * @param index the dataset index (zero-based).
-	// * @param axisIndex the axis index (zero-based).
-	// *
-	// * @see #getDomainAxisForDataset(int)
-	// */
-	// public void mapDatasetToDomainAxis(int index, int axisIndex) {
-	// List<Integer> axisIndices = new java.util.ArrayList<Integer>(1);
-	// axisIndices.add(axisIndex);
-	// mapDatasetToDomainAxes(index, axisIndices);
-	// }
-	//
-	// /**
-	// * Maps the specified dataset to the axes in the list. Note that the
-	// * conversion of data values into Java2D space is always performed using
-	// * the first axis in the list.
-	// *
-	// * @param index the dataset index (zero-based).
-	// * @param axisIndices the axis indices (<code>null</code> permitted).
-	// *
-	// * @since 1.0.12
-	// */
-	// public void mapDatasetToDomainAxes(int index, List<Integer> axisIndices)
-	// {
-	// ParamChecks.requireNonNegative(index, "index");
-	// checkAxisIndices(axisIndices);
-	// this.datasetToDomainAxesMap.put(index, new ArrayList<Integer>(
-	// axisIndices));
-	// // fake a dataset change event to update axes...
-	// datasetChanged(new DatasetChangeEvent(this, getDataset(index)));
-	// }
-	//
-	// /**
-	// * This method is used to perform argument checking on the list of
-	// * axis indices passed to mapDatasetToDomainAxes() and
-	// * mapDatasetToRangeAxes().
-	// *
-	// * @param indices the list of indices (<code>null</code> permitted).
-	// */
-	// private void checkAxisIndices(List<Integer> indices) {
-	// // axisIndices can be:
-	// // 1. null;
-	// // 2. non-empty, containing only Integer objects that are unique.
-	// if (indices == null) {
-	// return; // OK
-	// }
-	// int count = indices.size();
-	// if (count == 0) {
-	// throw new IllegalArgumentException("Empty list not permitted.");
-	// }
-	// HashSet<Integer> set = new HashSet<Integer>();
-	// for (Integer item : indices) {
-	// if (set.contains(item)) {
-	// throw new IllegalArgumentException("Indices must be unique.");
-	// }
-	// set.add(item);
-	// }
-	// }
+	/**
+	 * Returns the edge where the primary range axis is located.
+	 *
+	 * @return The edge (never <code>null</code>).
+	 */
+	public RectangleEdge getRangeAxisEdge() {
+		return getRangeAxisEdge(0);
+	}
+
+	/**
+	 * Returns the edge for a range axis.
+	 *
+	 * @param index
+	 *            the axis index.
+	 *
+	 * @return The edge.
+	 */
+	public RectangleEdge getRangeAxisEdge(int index) {
+		AxisLocation location = getRangeAxisLocation(index);
+		return Plot.resolveRangeAxisLocation(location, this.orientation);
+	}
+
+	/**
+	 * Returns the number of range axes.
+	 *
+	 * @return The axis count.
+	 */
+	public int getRangeAxisCount() {
+		return this.rangeAxes.size();
+	}
+
+	/**
+	 * Clears the range axes from the plot and sends a {@link PlotChangeEvent}
+	 * to all registered listeners.
+	 */
+	public void clearRangeAxes() {
+		for (ValueAxis axis : this.rangeAxes.values()) {
+			if (axis != null) {
+				axis.removeChangeListener(this);
+			}
+		}
+		this.rangeAxes.clear();
+		fireChangeEvent();
+	}
+
+	/**
+	 * Configures the range axes.
+	 */
+	public void configureRangeAxes() {
+		for (ValueAxis axis : this.rangeAxes.values()) {
+			if (axis != null) {
+				// JAVAFX
+				// axis.configure();
+			}
+		}
+	}
+
+	/**
+	 * Returns the primary dataset for the plot.
+	 *
+	 * @return The primary dataset (possibly <code>null</code>).
+	 *
+	 * @see #setDataset(CategoryDataset)
+	 */
+	public CategoryDataset getDataset() {
+		return getDataset(0);
+	}
+
+	/**
+	 * Returns the dataset with the given index, or {@code null} if there is no
+	 * dataset.
+	 *
+	 * @param index
+	 *            the dataset index (must be &gt;= 0).
+	 *
+	 * @return The dataset (possibly {@code null}).
+	 *
+	 * @see #setDataset(int, CategoryDataset)
+	 */
+	public CategoryDataset getDataset(int index) {
+		return this.datasets.get(index);
+	}
+
+	/**
+	 * Sets the dataset for the plot, replacing the existing dataset, if there
+	 * is one. This method also calls the
+	 * {@link #datasetChanged(DatasetChangeEvent)} method, which adjusts the
+	 * axis ranges if necessary and sends a {@link PlotChangeEvent} to all
+	 * registered listeners.
+	 *
+	 * @param dataset
+	 *            the dataset (<code>null</code> permitted).
+	 *
+	 * @see #getDataset()
+	 */
+	public void setDataset(CategoryDataset dataset) {
+		setDataset(0, dataset);
+	}
+
+	/**
+	 * Sets a dataset for the plot and sends a change notification to all
+	 * registered listeners.
+	 *
+	 * @param index
+	 *            the dataset index (must be &gt;= 0).
+	 * @param dataset
+	 *            the dataset ({@code null} permitted).
+	 *
+	 * @see #getDataset(int)
+	 */
+	public void setDataset(int index, CategoryDataset dataset) {
+		CategoryDataset existing = this.datasets.get(index);
+		if (existing != null) {
+			existing.removeChangeListener(this);
+		}
+		this.datasets.put(index, dataset);
+		if (dataset != null) {
+			dataset.addChangeListener(this);
+		}
+		// send a dataset change event to self...
+		DatasetChangeEvent event = new DatasetChangeEvent(this, dataset);
+		datasetChanged(event);
+	}
+
+	/**
+	 * Returns the number of datasets.
+	 *
+	 * @return The number of datasets.
+	 *
+	 * @since 1.0.2
+	 */
+	public int getDatasetCount() {
+		return this.datasets.size();
+	}
+
+	/**
+	 * Returns the index of the specified dataset, or <code>-1</code> if the
+	 * dataset does not belong to the plot.
+	 *
+	 * @param dataset
+	 *            the dataset ({@code null} not permitted).
+	 *
+	 * @return The index.
+	 *
+	 * @since 1.0.11
+	 */
+	public int findDatasetIndex(CategoryDataset dataset) {
+		for (Map.Entry<Integer, CategoryDataset> entry : this.datasets.entrySet()) {
+			if (dataset == entry.getValue()) {
+				return entry.getKey();
+			}
+		}
+		return -1;
+	}
+
+	/**
+	 * Maps a dataset to a particular domain axis.
+	 *
+	 * @param index
+	 *            the dataset index (zero-based).
+	 * @param axisIndex
+	 *            the axis index (zero-based).
+	 *
+	 * @see #getDomainAxisForDataset(int)
+	 */
+	public void mapDatasetToDomainAxis(int index, int axisIndex) {
+		List<Integer> axisIndices = new java.util.ArrayList<Integer>(1);
+		axisIndices.add(axisIndex);
+		mapDatasetToDomainAxes(index, axisIndices);
+	}
+
+	/**
+	 * Maps the specified dataset to the axes in the list. Note that the
+	 * conversion of data values into Java2D space is always performed using the
+	 * first axis in the list.
+	 *
+	 * @param index
+	 *            the dataset index (zero-based).
+	 * @param axisIndices
+	 *            the axis indices (<code>null</code> permitted).
+	 *
+	 * @since 1.0.12
+	 */
+	public void mapDatasetToDomainAxes(int index, List<Integer> axisIndices)
+	{
+		ParamChecks.requireNonNegative(index, "index");
+		checkAxisIndices(axisIndices);
+		this.datasetToDomainAxesMap.put(index, new ArrayList<Integer>(
+				axisIndices));
+		// fake a dataset change event to update axes...
+		datasetChanged(new DatasetChangeEvent(this, getDataset(index)));
+	}
+
+	/**
+	 * This method is used to perform argument checking on the list of axis
+	 * indices passed to mapDatasetToDomainAxes() and mapDatasetToRangeAxes().
+	 *
+	 * @param indices
+	 *            the list of indices (<code>null</code> permitted).
+	 */
+	private void checkAxisIndices(List<Integer> indices) {
+		// axisIndices can be:
+		// 1. null;
+		// 2. non-empty, containing only Integer objects that are unique.
+		if (indices == null) {
+			return; // OK
+		}
+		int count = indices.size();
+		if (count == 0) {
+			throw new IllegalArgumentException("Empty list not permitted.");
+		}
+		HashSet<Integer> set = new HashSet<Integer>();
+		for (Integer item : indices) {
+			if (set.contains(item)) {
+				throw new IllegalArgumentException("Indices must be unique.");
+			}
+			set.add(item);
+		}
+	}
+
 	//
 	// /**
 	// * Returns the domain axis for a dataset. You can change the axis for a
@@ -1477,80 +1517,82 @@ public class CategoryPlot extends Plot implements
 	// }
 	// return axis;
 	// }
-	//
-	// /**
-	// * Maps a dataset to a particular range axis.
-	// *
-	// * @param index the dataset index (zero-based).
-	// * @param axisIndex the axis index (zero-based).
-	// *
-	// * @see #getRangeAxisForDataset(int)
-	// */
-	// public void mapDatasetToRangeAxis(int index, int axisIndex) {
-	// List<Integer> axisIndices = new java.util.ArrayList<Integer>(1);
-	// axisIndices.add(axisIndex);
-	// mapDatasetToRangeAxes(index, axisIndices);
-	// }
-	//
-	// /**
-	// * Maps the specified dataset to the axes in the list. Note that the
-	// * conversion of data values into Java2D space is always performed using
-	// * the first axis in the list.
-	// *
-	// * @param index the dataset index (zero-based).
-	// * @param axisIndices the axis indices (<code>null</code> permitted).
-	// *
-	// * @since 1.0.12
-	// */
-	// public void mapDatasetToRangeAxes(int index, List<Integer> axisIndices) {
-	// if (index < 0) {
-	// throw new IllegalArgumentException("Requires 'index' >= 0.");
-	// }
-	// checkAxisIndices(axisIndices);
-	// Integer key = index;
-	// this.datasetToRangeAxesMap.put(key, new ArrayList<Integer>(axisIndices));
-	// // fake a dataset change event to update axes...
-	// datasetChanged(new DatasetChangeEvent(this, getDataset(index)));
-	// }
-	//
-	// /**
-	// * Returns the range axis for a dataset. You can change the axis for a
-	// * dataset using the {@link #mapDatasetToRangeAxis(int, int)} method.
-	// *
-	// * @param index the dataset index.
-	// *
-	// * @return The range axis.
-	// *
-	// * @see #mapDatasetToRangeAxis(int, int)
-	// */
-	// public ValueAxis getRangeAxisForDataset(int index) {
-	// if (index < 0) {
-	// throw new IllegalArgumentException("Negative 'index'.");
-	// }
-	// ValueAxis axis;
-	// List<Integer> axisIndices = this.datasetToRangeAxesMap.get(
-	// Integer.valueOf(index));
-	// if (axisIndices != null) {
-	// // the first axis in the list is used for data <--> Java2D
-	// Integer axisIndex = axisIndices.get(0);
-	// axis = getRangeAxis(axisIndex);
-	// }
-	// else {
-	// axis = getRangeAxis(0);
-	// }
-	// return axis;
-	// }
-	//
-	// /**
-	// * Returns the number of renderer slots for this plot.
-	// *
-	// * @return The number of renderer slots.
-	// *
-	// * @since 1.0.11
-	// */
-	// public int getRendererCount() {
-	// return this.renderers.size();
-	// }
+	
+	 /**
+	 * Maps a dataset to a particular range axis.
+	 *
+	 * @param index the dataset index (zero-based).
+	 * @param axisIndex the axis index (zero-based).
+	 *
+	 * @see #getRangeAxisForDataset(int)
+	 */
+	 public void mapDatasetToRangeAxis(int index, int axisIndex) {
+	 List<Integer> axisIndices = new java.util.ArrayList<Integer>(1);
+	 axisIndices.add(axisIndex);
+	 mapDatasetToRangeAxes(index, axisIndices);
+	 }
+	
+	 /**
+	 * Maps the specified dataset to the axes in the list. Note that the
+	 * conversion of data values into Java2D space is always performed using
+	 * the first axis in the list.
+	 *
+	 * @param index the dataset index (zero-based).
+	 * @param axisIndices the axis indices (<code>null</code> permitted).
+	 *
+	 * @since 1.0.12
+	 */
+	 public void mapDatasetToRangeAxes(int index, List<Integer> axisIndices) {
+	 if (index < 0) {
+	 throw new IllegalArgumentException("Requires 'index' >= 0.");
+	 }
+	 checkAxisIndices(axisIndices);
+	 Integer key = index;
+	 this.datasetToRangeAxesMap.put(key, new ArrayList<Integer>(axisIndices));
+	 // fake a dataset change event to update axes...
+	 datasetChanged(new DatasetChangeEvent(this, getDataset(index)));
+	 }
+
+	/**
+	 * Returns the range axis for a dataset. You can change the axis for a
+	 * dataset using the {@link #mapDatasetToRangeAxis(int, int)} method.
+	 *
+	 * @param index
+	 *            the dataset index.
+	 *
+	 * @return The range axis.
+	 *
+	 * @see #mapDatasetToRangeAxis(int, int)
+	 */
+	public ValueAxis getRangeAxisForDataset(int index) {
+		if (index < 0) {
+			throw new IllegalArgumentException("Negative 'index'.");
+		}
+		ValueAxis axis;
+		List<Integer> axisIndices = this.datasetToRangeAxesMap.get(
+				Integer.valueOf(index));
+		if (axisIndices != null) {
+			// the first axis in the list is used for data <--> Java2D
+			Integer axisIndex = axisIndices.get(0);
+			axis = getRangeAxis(axisIndex);
+		}
+		else {
+			axis = getRangeAxis(0);
+		}
+		return axis;
+	}
+
+	/**
+	 * Returns the number of renderer slots for this plot.
+	 *
+	 * @return The number of renderer slots.
+	 *
+	 * @since 1.0.11
+	 */
+	public int getRendererCount() {
+		return this.renderers.size();
+	}
+
 	//
 	/**
 	 * Returns a reference to the renderer for the plot.
@@ -1795,61 +1837,63 @@ public class CategoryPlot extends Plot implements
 	// this.rowRenderingOrder = order;
 	// fireChangeEvent();
 	// }
-	//
-	// /**
-	// * Returns the flag that controls whether the domain grid-lines are
-	// visible.
-	// *
-	// * @return The <code>true</code> or <code>false</code>.
-	// *
-	// * @see #setDomainGridlinesVisible(boolean)
-	// */
-	// public boolean isDomainGridlinesVisible() {
-	// return this.domainGridlinesVisible;
-	// }
-	//
-	// /**
-	// * Sets the flag that controls whether or not grid-lines are drawn against
-	// * the domain axis.
-	// * <p>
-	// * If the flag value changes, a {@link PlotChangeEvent} is sent to all
-	// * registered listeners.
-	// *
-	// * @param visible the new value of the flag.
-	// *
-	// * @see #isDomainGridlinesVisible()
-	// */
-	// public void setDomainGridlinesVisible(boolean visible) {
-	// if (this.domainGridlinesVisible != visible) {
-	// this.domainGridlinesVisible = visible;
-	// fireChangeEvent();
-	// }
-	// }
-	//
-	// /**
-	// * Returns the position used for the domain gridlines.
-	// *
-	// * @return The gridline position (never <code>null</code>).
-	// *
-	// * @see #setDomainGridlinePosition(CategoryAnchor)
-	// */
-	// public CategoryAnchor getDomainGridlinePosition() {
-	// return this.domainGridlinePosition;
-	// }
-	//
-	// /**
-	// * Sets the position used for the domain gridlines and sends a
-	// * {@link PlotChangeEvent} to all registered listeners.
-	// *
-	// * @param position the position (<code>null</code> not permitted).
-	// *
-	// * @see #getDomainGridlinePosition()
-	// */
-	// public void setDomainGridlinePosition(CategoryAnchor position) {
-	// ParamChecks.nullNotPermitted(position, "position");
-	// this.domainGridlinePosition = position;
-	// fireChangeEvent();
-	// }
+
+	/**
+	 * Returns the flag that controls whether the domain grid-lines are visible.
+	 *
+	 * @return The <code>true</code> or <code>false</code>.
+	 *
+	 * @see #setDomainGridlinesVisible(boolean)
+	 */
+	public boolean isDomainGridlinesVisible() {
+		return this.domainGridlinesVisible;
+	}
+
+	/**
+	 * Sets the flag that controls whether or not grid-lines are drawn against
+	 * the domain axis.
+	 * <p>
+	 * If the flag value changes, a {@link PlotChangeEvent} is sent to all
+	 * registered listeners.
+	 *
+	 * @param visible
+	 *            the new value of the flag.
+	 *
+	 * @see #isDomainGridlinesVisible()
+	 */
+	public void setDomainGridlinesVisible(boolean visible) {
+		if (this.domainGridlinesVisible != visible) {
+			this.domainGridlinesVisible = visible;
+			fireChangeEvent();
+		}
+	}
+
+	/**
+	 * Returns the position used for the domain gridlines.
+	 *
+	 * @return The gridline position (never <code>null</code>).
+	 *
+	 * @see #setDomainGridlinePosition(CategoryAnchor)
+	 */
+	public CategoryAnchor getDomainGridlinePosition() {
+		return this.domainGridlinePosition;
+	}
+
+	/**
+	 * Sets the position used for the domain gridlines and sends a
+	 * {@link PlotChangeEvent} to all registered listeners.
+	 *
+	 * @param position
+	 *            the position (<code>null</code> not permitted).
+	 *
+	 * @see #getDomainGridlinePosition()
+	 */
+	public void setDomainGridlinePosition(CategoryAnchor position) {
+		ParamChecks.nullNotPermitted(position, "position");
+		this.domainGridlinePosition = position;
+		fireChangeEvent();
+	}
+
 	//
 	// /**
 	// * Returns the stroke used to draw grid-lines against the domain axis.
@@ -1900,36 +1944,38 @@ public class CategoryPlot extends Plot implements
 	// this.domainGridlinePaint = paint;
 	// fireChangeEvent();
 	// }
-	//
-	// /**
-	// * Returns a flag that controls whether or not a zero baseline is
-	// * displayed for the range axis.
-	// *
-	// * @return A boolean.
-	// *
-	// * @see #setRangeZeroBaselineVisible(boolean)
-	// *
-	// * @since 1.0.13
-	// */
-	// public boolean isRangeZeroBaselineVisible() {
-	// return this.rangeZeroBaselineVisible;
-	// }
-	//
-	// /**
-	// * Sets the flag that controls whether or not the zero baseline is
-	// * displayed for the range axis, and sends a {@link PlotChangeEvent} to
-	// * all registered listeners.
-	// *
-	// * @param visible the flag.
-	// *
-	// * @see #isRangeZeroBaselineVisible()
-	// *
-	// * @since 1.0.13
-	// */
-	// public void setRangeZeroBaselineVisible(boolean visible) {
-	// this.rangeZeroBaselineVisible = visible;
-	// fireChangeEvent();
-	// }
+
+	/**
+	 * Returns a flag that controls whether or not a zero baseline is displayed
+	 * for the range axis.
+	 *
+	 * @return A boolean.
+	 *
+	 * @see #setRangeZeroBaselineVisible(boolean)
+	 *
+	 * @since 1.0.13
+	 */
+	public boolean isRangeZeroBaselineVisible() {
+		return this.rangeZeroBaselineVisible;
+	}
+
+	/**
+	 * Sets the flag that controls whether or not the zero baseline is displayed
+	 * for the range axis, and sends a {@link PlotChangeEvent} to all registered
+	 * listeners.
+	 *
+	 * @param visible
+	 *            the flag.
+	 *
+	 * @see #isRangeZeroBaselineVisible()
+	 *
+	 * @since 1.0.13
+	 */
+	public void setRangeZeroBaselineVisible(boolean visible) {
+		this.rangeZeroBaselineVisible = visible;
+		fireChangeEvent();
+	}
+
 	//
 	// /**
 	// * Returns the stroke used for the zero baseline against the range axis.
@@ -1990,33 +2036,34 @@ public class CategoryPlot extends Plot implements
 	// fireChangeEvent();
 	// }
 	//
-	// /**
-	// * Returns the flag that controls whether the range grid-lines are
-	// visible.
-	// *
-	// * @return The flag.
-	// *
-	// * @see #setRangeGridlinesVisible(boolean)
-	// */
-	// public boolean isRangeGridlinesVisible() {
-	// return this.rangeGridlinesVisible;
-	// }
-	//
-	// /**
-	// * Sets the flag that controls whether or not grid-lines are drawn against
-	// * the range axis. If the flag changes value, a {@link PlotChangeEvent} is
-	// * sent to all registered listeners.
-	// *
-	// * @param visible the new value of the flag.
-	// *
-	// * @see #isRangeGridlinesVisible()
-	// */
-	// public void setRangeGridlinesVisible(boolean visible) {
-	// if (this.rangeGridlinesVisible != visible) {
-	// this.rangeGridlinesVisible = visible;
-	// fireChangeEvent();
-	// }
-	// }
+	/**
+	 * Returns the flag that controls whether the range grid-lines are visible.
+	 *
+	 * @return The flag.
+	 *
+	 * @see #setRangeGridlinesVisible(boolean)
+	 */
+	public boolean isRangeGridlinesVisible() {
+		return this.rangeGridlinesVisible;
+	}
+
+	/**
+	 * Sets the flag that controls whether or not grid-lines are drawn against
+	 * the range axis. If the flag changes value, a {@link PlotChangeEvent} is
+	 * sent to all registered listeners.
+	 *
+	 * @param visible
+	 *            the new value of the flag.
+	 *
+	 * @see #isRangeGridlinesVisible()
+	 */
+	public void setRangeGridlinesVisible(boolean visible) {
+		if (this.rangeGridlinesVisible != visible) {
+			this.rangeGridlinesVisible = visible;
+			fireChangeEvent();
+		}
+	}
+
 	//
 	// /**
 	// * Returns the stroke used to draw the grid-lines against the range axis.
@@ -2067,40 +2114,42 @@ public class CategoryPlot extends Plot implements
 	// this.rangeGridlinePaint = paint;
 	// fireChangeEvent();
 	// }
-	//
-	// /**
-	// * Returns <code>true</code> if the range axis minor grid is visible, and
-	// * <code>false</code> otherwise.
-	// *
-	// * @return A boolean.
-	// *
-	// * @see #setRangeMinorGridlinesVisible(boolean)
-	// *
-	// * @since 1.0.13
-	// */
-	// public boolean isRangeMinorGridlinesVisible() {
-	// return this.rangeMinorGridlinesVisible;
-	// }
-	//
-	// /**
-	// * Sets the flag that controls whether or not the range axis minor grid
-	// * lines are visible.
-	// * <p>
-	// * If the flag value is changed, a {@link PlotChangeEvent} is sent to all
-	// * registered listeners.
-	// *
-	// * @param visible the new value of the flag.
-	// *
-	// * @see #isRangeMinorGridlinesVisible()
-	// *
-	// * @since 1.0.13
-	// */
-	// public void setRangeMinorGridlinesVisible(boolean visible) {
-	// if (this.rangeMinorGridlinesVisible != visible) {
-	// this.rangeMinorGridlinesVisible = visible;
-	// fireChangeEvent();
-	// }
-	// }
+
+	/**
+	 * Returns <code>true</code> if the range axis minor grid is visible, and
+	 * <code>false</code> otherwise.
+	 *
+	 * @return A boolean.
+	 *
+	 * @see #setRangeMinorGridlinesVisible(boolean)
+	 *
+	 * @since 1.0.13
+	 */
+	public boolean isRangeMinorGridlinesVisible() {
+		return this.rangeMinorGridlinesVisible;
+	}
+
+	/**
+	 * Sets the flag that controls whether or not the range axis minor grid
+	 * lines are visible.
+	 * <p>
+	 * If the flag value is changed, a {@link PlotChangeEvent} is sent to all
+	 * registered listeners.
+	 *
+	 * @param visible
+	 *            the new value of the flag.
+	 *
+	 * @see #isRangeMinorGridlinesVisible()
+	 *
+	 * @since 1.0.13
+	 */
+	public void setRangeMinorGridlinesVisible(boolean visible) {
+		if (this.rangeMinorGridlinesVisible != visible) {
+			this.rangeMinorGridlinesVisible = visible;
+			fireChangeEvent();
+		}
+	}
+
 	//
 	// /**
 	// * Returns the stroke for the minor grid lines (if any) plotted against
@@ -2189,32 +2238,33 @@ public class CategoryPlot extends Plot implements
 	// fireChangeEvent();
 	// }
 	//
-	// /**
-	// * Returns the legend items for the plot. By default, this method creates
-	// * a legend item for each series in each of the datasets. You can change
-	// * this behaviour by overriding this method.
-	// *
-	// * @return The legend items.
-	// */
-	// @Override
-	// public List<LegendItem> getLegendItems() {
-	// if (this.fixedLegendItems != null) {
-	// return this.fixedLegendItems;
-	// }
-	// List<LegendItem> result = new ArrayList<LegendItem>();
-	// // get the legend items for the datasets...
-	// for (CategoryDataset dataset: this.datasets.values()) {
-	// if (dataset == null) {
-	// continue;
-	// }
-	// int datasetIndex = findDatasetIndex(dataset);
-	// CategoryItemRenderer renderer = getRenderer(datasetIndex);
-	// if (renderer != null) {
-	// result.addAll(renderer.getLegendItems());
-	// }
-	// }
-	// return result;
-	// }
+	/**
+	 * Returns the legend items for the plot. By default, this method creates a
+	 * legend item for each series in each of the datasets. You can change this
+	 * behaviour by overriding this method.
+	 *
+	 * @return The legend items.
+	 */
+	@Override
+	public List<LegendItem> getLegendItems() {
+		if (this.fixedLegendItems != null) {
+			return this.fixedLegendItems;
+		}
+		List<LegendItem> result = new ArrayList<LegendItem>();
+		// get the legend items for the datasets...
+		for (CategoryDataset dataset : this.datasets.values()) {
+			if (dataset == null) {
+				continue;
+			}
+			int datasetIndex = findDatasetIndex(dataset);
+			CategoryItemRenderer renderer = getRenderer(datasetIndex);
+			if (renderer != null) {
+				result.addAll(renderer.getLegendItems());
+			}
+		}
+		return result;
+	}
+
 	//
 	// /**
 	// * Handles a 'click' on the plot by updating the anchor value.
@@ -2311,32 +2361,34 @@ public class CategoryPlot extends Plot implements
 	// }
 	// }
 	//
-	// /**
-	// * Receives notification of a renderer change event.
-	// *
-	// * @param event the event.
-	// */
-	// @Override
-	// public void rendererChanged(RendererChangeEvent event) {
-	// Plot parent = getParent();
-	// if (parent != null) {
-	// if (parent instanceof RendererChangeListener) {
-	// RendererChangeListener rcl = (RendererChangeListener) parent;
-	// rcl.rendererChanged(event);
-	// }
-	// else {
-	// // this should never happen with the existing code, but throw
-	// // an exception in case future changes make it possible...
-	// throw new RuntimeException(
-	// "The renderer has changed and I don't know what to do!");
-	// }
-	// }
-	// else {
-	// configureRangeAxes();
-	// PlotChangeEvent e = new PlotChangeEvent(this);
-	// notifyListeners(e);
-	// }
-	// }
+	/**
+	 * Receives notification of a renderer change event.
+	 *
+	 * @param event
+	 *            the event.
+	 */
+	@Override
+	public void rendererChanged(RendererChangeEvent event) {
+		Plot parent = getParent();
+		if (parent != null) {
+			if (parent instanceof RendererChangeListener) {
+				RendererChangeListener rcl = (RendererChangeListener) parent;
+				rcl.rendererChanged(event);
+			}
+			else {
+				// this should never happen with the existing code, but throw
+				// an exception in case future changes make it possible...
+				throw new RuntimeException(
+						"The renderer has changed and I don't know what to do!");
+			}
+		}
+		else {
+			configureRangeAxes();
+			PlotChangeEvent e = new PlotChangeEvent(this);
+			notifyListeners(e);
+		}
+	}
+
 	//
 	// /**
 	// * Adds a marker for display (in the foreground) against the domain axis
@@ -2915,123 +2967,133 @@ public class CategoryPlot extends Plot implements
 	// fireChangeEvent();
 	// }
 	// }
-	//
-	// /**
-	// * Returns the row key for the domain crosshair.
-	// *
-	// * @return The row key.
-	// *
-	// * @since 1.0.11
-	// */
-	// public Comparable getDomainCrosshairRowKey() {
-	// return this.domainCrosshairRowKey;
-	// }
-	//
-	// /**
-	// * Sets the row key for the domain crosshair and sends a
-	// * {PlotChangeEvent} to all registered listeners.
-	// *
-	// * @param key the key.
-	// *
-	// * @since 1.0.11
-	// */
-	// public void setDomainCrosshairRowKey(Comparable key) {
-	// setDomainCrosshairRowKey(key, true);
-	// }
-	//
-	// /**
-	// * Sets the row key for the domain crosshair and, if requested, sends a
-	// * {PlotChangeEvent} to all registered listeners.
-	// *
-	// * @param key the key.
-	// * @param notify notify listeners?
-	// *
-	// * @since 1.0.11
-	// */
-	// public void setDomainCrosshairRowKey(Comparable key, boolean notify) {
-	// this.domainCrosshairRowKey = key;
-	// if (notify) {
-	// fireChangeEvent();
-	// }
-	// }
-	//
-	// /**
-	// * Returns the column key for the domain crosshair.
-	// *
-	// * @return The column key.
-	// *
-	// * @since 1.0.11
-	// */
-	// public Comparable getDomainCrosshairColumnKey() {
-	// return this.domainCrosshairColumnKey;
-	// }
-	//
-	// /**
-	// * Sets the column key for the domain crosshair and sends
-	// * a {@link PlotChangeEvent} to all registered listeners.
-	// *
-	// * @param key the key.
-	// *
-	// * @since 1.0.11
-	// */
-	// public void setDomainCrosshairColumnKey(Comparable key) {
-	// setDomainCrosshairColumnKey(key, true);
-	// }
-	//
-	// /**
-	// * Sets the column key for the domain crosshair and, if requested, sends
-	// * a {@link PlotChangeEvent} to all registered listeners.
-	// *
-	// * @param key the key.
-	// * @param notify notify listeners?
-	// *
-	// * @since 1.0.11
-	// */
-	// public void setDomainCrosshairColumnKey(Comparable key, boolean notify) {
-	// this.domainCrosshairColumnKey = key;
-	// if (notify) {
-	// fireChangeEvent();
-	// }
-	// }
-	//
-	// /**
-	// * Returns the dataset index for the crosshair.
-	// *
-	// * @return The dataset index.
-	// *
-	// * @since 1.0.11
-	// */
-	// public int getCrosshairDatasetIndex() {
-	// return this.crosshairDatasetIndex;
-	// }
-	//
-	// /**
-	// * Sets the dataset index for the crosshair and sends a
-	// * {@link PlotChangeEvent} to all registered listeners.
-	// *
-	// * @param index the index.
-	// *
-	// * @since 1.0.11
-	// */
-	// public void setCrosshairDatasetIndex(int index) {
-	// setCrosshairDatasetIndex(index, true);
-	// }
-	//
-	// /**
-	// * Sets the dataset index for the crosshair and, if requested, sends a
-	// * {@link PlotChangeEvent} to all registered listeners.
-	// *
-	// * @param index the index.
-	// * @param notify notify listeners?
-	// *
-	// * @since 1.0.11
-	// */
-	// public void setCrosshairDatasetIndex(int index, boolean notify) {
-	// this.crosshairDatasetIndex = index;
-	// if (notify) {
-	// fireChangeEvent();
-	// }
-	// }
+
+	/**
+	 * Returns the row key for the domain crosshair.
+	 *
+	 * @return The row key.
+	 *
+	 * @since 1.0.11
+	 */
+	public Comparable getDomainCrosshairRowKey() {
+		return this.domainCrosshairRowKey;
+	}
+
+	/**
+	 * Sets the row key for the domain crosshair and sends a {PlotChangeEvent}
+	 * to all registered listeners.
+	 *
+	 * @param key
+	 *            the key.
+	 *
+	 * @since 1.0.11
+	 */
+	public void setDomainCrosshairRowKey(Comparable key) {
+		setDomainCrosshairRowKey(key, true);
+	}
+
+	/**
+	 * Sets the row key for the domain crosshair and, if requested, sends a
+	 * {PlotChangeEvent} to all registered listeners.
+	 *
+	 * @param key
+	 *            the key.
+	 * @param notify
+	 *            notify listeners?
+	 *
+	 * @since 1.0.11
+	 */
+	public void setDomainCrosshairRowKey(Comparable key, boolean notify) {
+		this.domainCrosshairRowKey = key;
+		if (notify) {
+			fireChangeEvent();
+		}
+	}
+
+	/**
+	 * Returns the column key for the domain crosshair.
+	 *
+	 * @return The column key.
+	 *
+	 * @since 1.0.11
+	 */
+	public Comparable getDomainCrosshairColumnKey() {
+		return this.domainCrosshairColumnKey;
+	}
+
+	/**
+	 * Sets the column key for the domain crosshair and sends a
+	 * {@link PlotChangeEvent} to all registered listeners.
+	 *
+	 * @param key
+	 *            the key.
+	 *
+	 * @since 1.0.11
+	 */
+	public void setDomainCrosshairColumnKey(Comparable key) {
+		setDomainCrosshairColumnKey(key, true);
+	}
+
+	/**
+	 * Sets the column key for the domain crosshair and, if requested, sends a
+	 * {@link PlotChangeEvent} to all registered listeners.
+	 *
+	 * @param key
+	 *            the key.
+	 * @param notify
+	 *            notify listeners?
+	 *
+	 * @since 1.0.11
+	 */
+	public void setDomainCrosshairColumnKey(Comparable key, boolean notify) {
+		this.domainCrosshairColumnKey = key;
+		if (notify) {
+			fireChangeEvent();
+		}
+	}
+
+	/**
+	 * Returns the dataset index for the crosshair.
+	 *
+	 * @return The dataset index.
+	 *
+	 * @since 1.0.11
+	 */
+	public int getCrosshairDatasetIndex() {
+		return this.crosshairDatasetIndex;
+	}
+
+	/**
+	 * Sets the dataset index for the crosshair and sends a
+	 * {@link PlotChangeEvent} to all registered listeners.
+	 *
+	 * @param index
+	 *            the index.
+	 *
+	 * @since 1.0.11
+	 */
+	public void setCrosshairDatasetIndex(int index) {
+		setCrosshairDatasetIndex(index, true);
+	}
+
+	/**
+	 * Sets the dataset index for the crosshair and, if requested, sends a
+	 * {@link PlotChangeEvent} to all registered listeners.
+	 *
+	 * @param index
+	 *            the index.
+	 * @param notify
+	 *            notify listeners?
+	 *
+	 * @since 1.0.11
+	 */
+	public void setCrosshairDatasetIndex(int index, boolean notify) {
+		this.crosshairDatasetIndex = index;
+		if (notify) {
+			fireChangeEvent();
+		}
+	}
+
 	//
 	// /**
 	// * Returns the paint used to draw the domain crosshair.
@@ -3090,101 +3152,105 @@ public class CategoryPlot extends Plot implements
 	// ParamChecks.nullNotPermitted(stroke, "stroke");
 	// this.domainCrosshairStroke = stroke;
 	// }
-	//
-	// /**
-	// * Returns a flag indicating whether or not the range crosshair is
-	// visible.
-	// *
-	// * @return The flag.
-	// *
-	// * @see #setRangeCrosshairVisible(boolean)
-	// */
-	// public boolean isRangeCrosshairVisible() {
-	// return this.rangeCrosshairVisible;
-	// }
-	//
-	// /**
-	// * Sets the flag indicating whether or not the range crosshair is visible.
-	// *
-	// * @param flag the new value of the flag.
-	// *
-	// * @see #isRangeCrosshairVisible()
-	// */
-	// public void setRangeCrosshairVisible(boolean flag) {
-	// if (this.rangeCrosshairVisible != flag) {
-	// this.rangeCrosshairVisible = flag;
-	// fireChangeEvent();
-	// }
-	// }
-	//
-	// /**
-	// * Returns a flag indicating whether or not the crosshair should "lock-on"
-	// * to actual data values.
-	// *
-	// * @return The flag.
-	// *
-	// * @see #setRangeCrosshairLockedOnData(boolean)
-	// */
-	// public boolean isRangeCrosshairLockedOnData() {
-	// return this.rangeCrosshairLockedOnData;
-	// }
-	//
-	// /**
-	// * Sets the flag indicating whether or not the range crosshair should
-	// * "lock-on" to actual data values, and sends a {@link PlotChangeEvent}
-	// * to all registered listeners.
-	// *
-	// * @param flag the flag.
-	// *
-	// * @see #isRangeCrosshairLockedOnData()
-	// */
-	// public void setRangeCrosshairLockedOnData(boolean flag) {
-	// if (this.rangeCrosshairLockedOnData != flag) {
-	// this.rangeCrosshairLockedOnData = flag;
-	// fireChangeEvent();
-	// }
-	// }
-	//
-	// /**
-	// * Returns the range crosshair value.
-	// *
-	// * @return The value.
-	// *
-	// * @see #setRangeCrosshairValue(double)
-	// */
-	// public double getRangeCrosshairValue() {
-	// return this.rangeCrosshairValue;
-	// }
-	//
-	// /**
-	// * Sets the range crosshair value and, if the crosshair is visible, sends
-	// * a {@link PlotChangeEvent} to all registered listeners.
-	// *
-	// * @param value the new value.
-	// *
-	// * @see #getRangeCrosshairValue()
-	// */
-	// public void setRangeCrosshairValue(double value) {
-	// setRangeCrosshairValue(value, true);
-	// }
-	//
-	// /**
-	// * Sets the range crosshair value and, if requested, sends a
-	// * {@link PlotChangeEvent} to all registered listeners (but only if the
-	// * crosshair is visible).
-	// *
-	// * @param value the new value.
-	// * @param notify a flag that controls whether or not listeners are
-	// * notified.
-	// *
-	// * @see #getRangeCrosshairValue()
-	// */
-	// public void setRangeCrosshairValue(double value, boolean notify) {
-	// this.rangeCrosshairValue = value;
-	// if (isRangeCrosshairVisible() && notify) {
-	// fireChangeEvent();
-	// }
-	// }
+
+	/**
+	 * Returns a flag indicating whether or not the range crosshair is visible.
+	 *
+	 * @return The flag.
+	 *
+	 * @see #setRangeCrosshairVisible(boolean)
+	 */
+	public boolean isRangeCrosshairVisible() {
+		return this.rangeCrosshairVisible;
+	}
+
+	/**
+	 * Sets the flag indicating whether or not the range crosshair is visible.
+	 *
+	 * @param flag
+	 *            the new value of the flag.
+	 *
+	 * @see #isRangeCrosshairVisible()
+	 */
+	public void setRangeCrosshairVisible(boolean flag) {
+		if (this.rangeCrosshairVisible != flag) {
+			this.rangeCrosshairVisible = flag;
+			fireChangeEvent();
+		}
+	}
+
+	/**
+	 * Returns a flag indicating whether or not the crosshair should "lock-on"
+	 * to actual data values.
+	 *
+	 * @return The flag.
+	 *
+	 * @see #setRangeCrosshairLockedOnData(boolean)
+	 */
+	public boolean isRangeCrosshairLockedOnData() {
+		return this.rangeCrosshairLockedOnData;
+	}
+
+	/**
+	 * Sets the flag indicating whether or not the range crosshair should
+	 * "lock-on" to actual data values, and sends a {@link PlotChangeEvent} to
+	 * all registered listeners.
+	 *
+	 * @param flag
+	 *            the flag.
+	 *
+	 * @see #isRangeCrosshairLockedOnData()
+	 */
+	public void setRangeCrosshairLockedOnData(boolean flag) {
+		if (this.rangeCrosshairLockedOnData != flag) {
+			this.rangeCrosshairLockedOnData = flag;
+			fireChangeEvent();
+		}
+	}
+
+	/**
+	 * Returns the range crosshair value.
+	 *
+	 * @return The value.
+	 *
+	 * @see #setRangeCrosshairValue(double)
+	 */
+	public double getRangeCrosshairValue() {
+		return this.rangeCrosshairValue;
+	}
+
+	/**
+	 * Sets the range crosshair value and, if the crosshair is visible, sends a
+	 * {@link PlotChangeEvent} to all registered listeners.
+	 *
+	 * @param value
+	 *            the new value.
+	 *
+	 * @see #getRangeCrosshairValue()
+	 */
+	public void setRangeCrosshairValue(double value) {
+		setRangeCrosshairValue(value, true);
+	}
+
+	/**
+	 * Sets the range crosshair value and, if requested, sends a
+	 * {@link PlotChangeEvent} to all registered listeners (but only if the
+	 * crosshair is visible).
+	 *
+	 * @param value
+	 *            the new value.
+	 * @param notify
+	 *            a flag that controls whether or not listeners are notified.
+	 *
+	 * @see #getRangeCrosshairValue()
+	 */
+	public void setRangeCrosshairValue(double value, boolean notify) {
+		this.rangeCrosshairValue = value;
+		if (isRangeCrosshairVisible() && notify) {
+			fireChangeEvent();
+		}
+	}
+
 	//
 	// /**
 	// * Returns the pen-style (<code>Stroke</code>) used to draw the crosshair
@@ -3720,10 +3786,11 @@ public class CategoryPlot extends Plot implements
 		setRangeCrosshairValue(crosshairState.getCrosshairY(), false);
 		if (isRangeCrosshairVisible()) {
 			double y = getRangeCrosshairValue();
-			Paint paint = getRangeCrosshairPaint();
-			Stroke stroke = getRangeCrosshairStroke();
-			drawRangeCrosshair(g2, dataArea, getOrientation(), y, yAxis,
-					stroke, paint);
+			// JAVAFX paint, stroke
+			// Paint paint = getRangeCrosshairPaint();
+			// Stroke stroke = getRangeCrosshairStroke();
+			// drawRangeCrosshair(g2, dataArea, getOrientation(), y, yAxis,
+			// stroke, paint);
 		}
 
 		// draw the border around the chart
@@ -3887,6 +3954,7 @@ public class CategoryPlot extends Plot implements
 		return axisStateMap;
 
 	}
+
 	//
 	// /**
 	// * Draws a representation of a dataset within the dataArea region using
@@ -3964,125 +4032,143 @@ public class CategoryPlot extends Plot implements
 	// return foundData;
 	//
 	// }
+
+	/**
+	 * Draws the domain gridlines for the plot, if they are visible.
+	 *
+	 * @param g2
+	 *            the graphics device.
+	 * @param dataArea
+	 *            the area inside the axes.
+	 *
+	 * @see #drawRangeGridlines(Graphics2D, Rectangle2D, List)
+	 */
+	protected void drawDomainGridlines(GraphicsContext g2, Rectangle2D dataArea) {
+
+		if (!isDomainGridlinesVisible()) {
+			return;
+		}
+		CategoryAnchor anchor = getDomainGridlinePosition();
+		RectangleEdge domainAxisEdge = getDomainAxisEdge();
+		CategoryDataset dataset = getDataset();
+		if (dataset == null) {
+			return;
+		}
+		CategoryAxis axis = getDomainAxis();
+		if (axis != null) {
+			int columnCount = dataset.getColumnCount();
+			for (int c = 0; c < columnCount; c++) {
+				double xx = axis.getCategoryJava2DCoordinate(anchor, c,
+						columnCount, dataArea, domainAxisEdge);
+				CategoryItemRenderer renderer1 = getRenderer();
+				if (renderer1 != null) {
+					renderer1.drawDomainGridline(g2, this, dataArea, xx);
+				}
+			}
+		}
+	}
+
+	/**
+	 * Draws the range gridlines for the plot, if they are visible.
+	 *
+	 * @param g2
+	 *            the graphics device.
+	 * @param dataArea
+	 *            the area inside the axes.
+	 * @param ticks
+	 *            the ticks.
+	 *
+	 * @see #drawDomainGridlines(Graphics2D, Rectangle2D)
+	 */
+	protected void drawRangeGridlines(GraphicsContext g2, Rectangle2D dataArea,
+			List<ValueTick> ticks) {
+		// draw the range grid lines, if any...
+		if (!isRangeGridlinesVisible() && !isRangeMinorGridlinesVisible()) {
+			return;
+		}
+		// no axis, no gridlines...
+		ValueAxis axis = getRangeAxis();
+		if (axis == null) {
+			return;
+		}
+		// no renderer, no gridlines...
+		CategoryItemRenderer r = getRenderer();
+		if (r == null) {
+			return;
+		}
+
+		// JAVAFX stroke
+		// Stroke gridStroke = null;
+		// JAVAFX paint
+		// Paint gridPaint = null;
+		boolean paintLine;
+		for (ValueTick tick : ticks) {
+			paintLine = false;
+			if ((tick.getTickType() == TickType.MINOR)
+					&& isRangeMinorGridlinesVisible()) {
+				// JAVAFX stroke
+				// gridStroke = getRangeMinorGridlineStroke();
+				// JAVAFX paint
+				// gridPaint = getRangeMinorGridlinePaint();
+				paintLine = true;
+			} else if ((tick.getTickType() == TickType.MAJOR)
+					&& isRangeGridlinesVisible()) {
+				// JAVAFX stroke
+				// gridStroke = getRangeGridlineStroke();
+				// JAVAFX paint
+				// gridPaint = getRangeGridlinePaint();
+				paintLine = true;
+			}
+			if (((tick.getValue() != 0.0)
+					|| !isRangeZeroBaselineVisible()) && paintLine) {
+				// the method we want isn't in the CategoryItemRenderer
+				// interface...
+
+				// JAVAFX
+				// if (r instanceof AbstractCategoryItemRenderer) {
+				// AbstractCategoryItemRenderer aci =
+				// (AbstractCategoryItemRenderer) r;
+				// aci.drawRangeGridline(g2, this, axis, dataArea,
+				// tick.getValue(), gridPaint, gridStroke);
+				// } else {
+				// we'll have to use the method in the interface, but
+				// this doesn't have the paint and stroke settings...
+				r.drawRangeGridline(g2, this, axis, dataArea,
+						tick.getValue());
+				// }
+			}
+		}
+	}
+
 	//
-	// /**
-	// * Draws the domain gridlines for the plot, if they are visible.
-	// *
-	// * @param g2 the graphics device.
-	// * @param dataArea the area inside the axes.
-	// *
-	// * @see #drawRangeGridlines(Graphics2D, Rectangle2D, List)
-	// */
-	// protected void drawDomainGridlines(Graphics2D g2, Rectangle2D dataArea) {
-	//
-	// if (!isDomainGridlinesVisible()) {
-	// return;
-	// }
-	// CategoryAnchor anchor = getDomainGridlinePosition();
-	// RectangleEdge domainAxisEdge = getDomainAxisEdge();
-	// CategoryDataset dataset = getDataset();
-	// if (dataset == null) {
-	// return;
-	// }
-	// CategoryAxis axis = getDomainAxis();
-	// if (axis != null) {
-	// int columnCount = dataset.getColumnCount();
-	// for (int c = 0; c < columnCount; c++) {
-	// double xx = axis.getCategoryJava2DCoordinate(anchor, c,
-	// columnCount, dataArea, domainAxisEdge);
-	// CategoryItemRenderer renderer1 = getRenderer();
-	// if (renderer1 != null) {
-	// renderer1.drawDomainGridline(g2, this, dataArea, xx);
-	// }
-	// }
-	// }
-	// }
-	//
-	// /**
-	// * Draws the range gridlines for the plot, if they are visible.
-	// *
-	// * @param g2 the graphics device.
-	// * @param dataArea the area inside the axes.
-	// * @param ticks the ticks.
-	// *
-	// * @see #drawDomainGridlines(Graphics2D, Rectangle2D)
-	// */
-	// protected void drawRangeGridlines(Graphics2D g2, Rectangle2D dataArea,
-	// List<ValueTick> ticks) {
-	// // draw the range grid lines, if any...
-	// if (!isRangeGridlinesVisible() && !isRangeMinorGridlinesVisible()) {
-	// return;
-	// }
-	// // no axis, no gridlines...
-	// ValueAxis axis = getRangeAxis();
-	// if (axis == null) {
-	// return;
-	// }
-	// // no renderer, no gridlines...
-	// CategoryItemRenderer r = getRenderer();
-	// if (r == null) {
-	// return;
-	// }
-	//
-	// Stroke gridStroke = null;
-	// Paint gridPaint = null;
-	// boolean paintLine;
-	// for (ValueTick tick : ticks) {
-	// paintLine = false;
-	// if ((tick.getTickType() == TickType.MINOR)
-	// && isRangeMinorGridlinesVisible()) {
-	// gridStroke = getRangeMinorGridlineStroke();
-	// gridPaint = getRangeMinorGridlinePaint();
-	// paintLine = true;
-	// } else if ((tick.getTickType() == TickType.MAJOR)
-	// && isRangeGridlinesVisible()) {
-	// gridStroke = getRangeGridlineStroke();
-	// gridPaint = getRangeGridlinePaint();
-	// paintLine = true;
-	// }
-	// if (((tick.getValue() != 0.0)
-	// || !isRangeZeroBaselineVisible()) && paintLine) {
-	// // the method we want isn't in the CategoryItemRenderer
-	// // interface...
-	// if (r instanceof AbstractCategoryItemRenderer) {
-	// AbstractCategoryItemRenderer aci
-	// = (AbstractCategoryItemRenderer) r;
-	// aci.drawRangeGridline(g2, this, axis, dataArea,
-	// tick.getValue(), gridPaint, gridStroke);
-	// } else {
-	// // we'll have to use the method in the interface, but
-	// // this doesn't have the paint and stroke settings...
-	// r.drawRangeGridline(g2, this, axis, dataArea,
-	// tick.getValue());
-	// }
-	// }
-	// }
-	// }
-	//
-	// /**
-	// * Draws a base line across the chart at value zero on the range axis.
-	// *
-	// * @param g2 the graphics device.
-	// * @param area the data area.
-	// *
-	// * @see #setRangeZeroBaselineVisible(boolean)
-	// *
-	// * @since 1.0.13
-	// */
-	// protected void drawZeroRangeBaseline(Graphics2D g2, Rectangle2D area) {
-	// if (!isRangeZeroBaselineVisible()) {
-	// return;
-	// }
-	// CategoryItemRenderer r = getRenderer();
-	// if (r instanceof AbstractCategoryItemRenderer) {
-	// AbstractCategoryItemRenderer aci = (AbstractCategoryItemRenderer) r;
-	// aci.drawRangeGridline(g2, this, getRangeAxis(), area, 0.0,
-	// this.rangeZeroBaselinePaint, this.rangeZeroBaselineStroke);
-	// }
-	// else {
-	// r.drawRangeGridline(g2, this, getRangeAxis(), area, 0.0);
-	// }
-	// }
+	/**
+	 * Draws a base line across the chart at value zero on the range axis.
+	 *
+	 * @param g2
+	 *            the graphics device.
+	 * @param area
+	 *            the data area.
+	 *
+	 * @see #setRangeZeroBaselineVisible(boolean)
+	 *
+	 * @since 1.0.13
+	 */
+	protected void drawZeroRangeBaseline(GraphicsContext g2, Rectangle2D area) {
+		if (!isRangeZeroBaselineVisible()) {
+			return;
+		}
+		CategoryItemRenderer r = getRenderer();
+		// JAVAFX
+		// if (r instanceof AbstractCategoryItemRenderer) {
+		// AbstractCategoryItemRenderer aci = (AbstractCategoryItemRenderer) r;
+		// aci.drawRangeGridline(g2, this, getRangeAxis(), area, 0.0,
+		// this.rangeZeroBaselinePaint, this.rangeZeroBaselineStroke);
+		// }
+		// else {
+		r.drawRangeGridline(g2, this, getRangeAxis(), area, 0.0);
+		// }
+	}
+
 	//
 	// /**
 	// * Draws the annotations.
@@ -4538,97 +4624,103 @@ public class CategoryPlot extends Plot implements
 	// this.drawSharedDomainAxis = draw;
 	// fireChangeEvent();
 	// }
-	//
-	// /**
-	// * Returns <code>false</code> always, because the plot cannot be panned
-	// * along the domain axis/axes.
-	// *
-	// * @return A boolean.
-	// *
-	// * @see #isRangePannable()
-	// *
-	// * @since 1.0.13
-	// */
-	// @Override
-	// public boolean isDomainPannable() {
-	// return false;
-	// }
-	//
-	// /**
-	// * Returns <code>true</code> if panning is enabled for the range axes,
-	// * and <code>false</code> otherwise.
-	// *
-	// * @return A boolean.
-	// *
-	// * @see #setRangePannable(boolean)
-	// * @see #isDomainPannable()
-	// *
-	// * @since 1.0.13
-	// */
-	// @Override
-	// public boolean isRangePannable() {
-	// return this.rangePannable;
-	// }
-	//
-	// /**
-	// * Sets the flag that enables or disables panning of the plot along
-	// * the range axes.
-	// *
-	// * @param pannable the new flag value.
-	// *
-	// * @see #isRangePannable()
-	// *
-	// * @since 1.0.13
-	// */
-	// public void setRangePannable(boolean pannable) {
-	// this.rangePannable = pannable;
-	// }
-	//
-	// /**
-	// * Pans the domain axes by the specified percentage.
-	// *
-	// * @param percent the distance to pan (as a percentage of the axis
-	// length).
-	// * @param info the plot info
-	// * @param source the source point where the pan action started.
-	// *
-	// * @since 1.0.13
-	// */
-	// @Override
-	// public void panDomainAxes(double percent, PlotRenderingInfo info,
-	// Point2D source) {
-	// // do nothing, because the plot is not pannable along the domain axes
-	// }
-	//
-	// /**
-	// * Pans the range axes by the specified percentage.
-	// *
-	// * @param percent the distance to pan (as a percentage of the axis
-	// length).
-	// * @param info the plot info
-	// * @param source the source point where the pan action started.
-	// *
-	// * @since 1.0.13
-	// */
-	// @Override
-	// public void panRangeAxes(double percent, PlotRenderingInfo info,
-	// Point2D source) {
-	// if (!isRangePannable()) {
-	// return;
-	// }
-	// for (ValueAxis axis : this.rangeAxes.values()) {
-	// if (axis == null) {
-	// continue;
-	// }
-	// double length = axis.getRange().getLength();
-	// double adj = percent * length;
-	// if (axis.isInverted()) {
-	// adj = -adj;
-	// }
-	// axis.setRange(axis.getLowerBound() + adj,
-	// axis.getUpperBound() + adj);
-	// }
-	// }
+
+	/**
+	 * Returns <code>false</code> always, because the plot cannot be panned
+	 * along the domain axis/axes.
+	 *
+	 * @return A boolean.
+	 *
+	 * @see #isRangePannable()
+	 *
+	 * @since 1.0.13
+	 */
+	@Override
+	public boolean isDomainPannable() {
+		return false;
+	}
+
+	/**
+	 * Returns <code>true</code> if panning is enabled for the range axes, and
+	 * <code>false</code> otherwise.
+	 *
+	 * @return A boolean.
+	 *
+	 * @see #setRangePannable(boolean)
+	 * @see #isDomainPannable()
+	 *
+	 * @since 1.0.13
+	 */
+	@Override
+	public boolean isRangePannable() {
+		return this.rangePannable;
+	}
+
+	/**
+	 * Sets the flag that enables or disables panning of the plot along the
+	 * range axes.
+	 *
+	 * @param pannable
+	 *            the new flag value.
+	 *
+	 * @see #isRangePannable()
+	 *
+	 * @since 1.0.13
+	 */
+	public void setRangePannable(boolean pannable) {
+		this.rangePannable = pannable;
+	}
+
+	/**
+	 * Pans the domain axes by the specified percentage.
+	 *
+	 * @param percent
+	 *            the distance to pan (as a percentage of the axis length).
+	 * @param info
+	 *            the plot info
+	 * @param source
+	 *            the source point where the pan action started.
+	 *
+	 * @since 1.0.13
+	 */
+	@Override
+	public void panDomainAxes(double percent, PlotRenderingInfo info,
+			Point2D source) {
+		// do nothing, because the plot is not pannable along the domain axes
+	}
+
+	/**
+	 * Pans the range axes by the specified percentage.
+	 *
+	 * @param percent
+	 *            the distance to pan (as a percentage of the axis length).
+	 * @param info
+	 *            the plot info
+	 * @param source
+	 *            the source point where the pan action started.
+	 *
+	 * @since 1.0.13
+	 */
+	@Override
+	public void panRangeAxes(double percent, PlotRenderingInfo info,
+			Point2D source) {
+		if (!isRangePannable()) {
+			return;
+		}
+		for (ValueAxis axis : this.rangeAxes.values()) {
+			if (axis == null) {
+				continue;
+			}
+			// JAVAFX
+			// double length = axis.getRange().getLength();
+			// double adj = percent * length;
+			// if (axis.isInverted()) {
+			// adj = -adj;
+			// }
+			// axis.setRange(axis.getLowerBound() + adj,
+			// axis.getUpperBound() + adj);
+		}
+	}
 	//
 	// /**
 	// * Returns <code>false</code> to indicate that the domain axes are not

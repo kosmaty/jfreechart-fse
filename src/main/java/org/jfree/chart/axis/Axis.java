@@ -107,8 +107,8 @@ import java.io.Serializable;
 // import org.jfree.chart.util.PaintUtils;
 // import org.jfree.chart.entity.AxisEntity;
 // import org.jfree.chart.entity.EntityCollection;
-// import org.jfree.chart.event.AxisChangeEvent;
-// import org.jfree.chart.event.AxisChangeListener;
+import org.jfree.chart.event.AxisChangeEvent;
+import org.jfree.chart.event.AxisChangeListener;
 // import org.jfree.chart.plot.Plot;
 // import org.jfree.chart.plot.PlotRenderingInfo;
 // import org.jfree.chart.text.TextUtilities;
@@ -1136,27 +1136,31 @@ public abstract class Axis implements Cloneable, Serializable {
 	// }
 	// }
 	//
-	// /**
-	// * Registers an object for notification of changes to the axis.
-	// *
-	// * @param listener the object that is being registered.
-	// *
-	// * @see #removeChangeListener(AxisChangeListener)
-	// */
-	// public void addChangeListener(AxisChangeListener listener) {
-	// this.listenerList.add(AxisChangeListener.class, listener);
-	// }
-	//
-	// /**
-	// * Deregisters an object for notification of changes to the axis.
-	// *
-	// * @param listener the object to deregister.
-	// *
-	// * @see #addChangeListener(AxisChangeListener)
-	// */
-	// public void removeChangeListener(AxisChangeListener listener) {
-	// this.listenerList.remove(AxisChangeListener.class, listener);
-	// }
+	/**
+	 * Registers an object for notification of changes to the axis.
+	 *
+	 * @param listener
+	 *            the object that is being registered.
+	 *
+	 * @see #removeChangeListener(AxisChangeListener)
+	 */
+	public void addChangeListener(AxisChangeListener listener) {
+		// JAVAFX
+		// this.listenerList.add(AxisChangeListener.class, listener);
+	}
+
+	/**
+	 * Deregisters an object for notification of changes to the axis.
+	 *
+	 * @param listener
+	 *            the object to deregister.
+	 *
+	 * @see #addChangeListener(AxisChangeListener)
+	 */
+	public void removeChangeListener(AxisChangeListener listener) {
+		// JAVAFX
+		// this.listenerList.remove(AxisChangeListener.class, listener);
+	}
 	//
 	// /**
 	// * Returns <code>true</code> if the specified object is registered with

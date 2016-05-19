@@ -144,10 +144,10 @@ import java.io.Serializable;
  * class.
  */
 public class CategoryAxis extends Axis implements Cloneable, Serializable {
-	//
-	// /** For serialization. */
-	// private static final long serialVersionUID = 5886554608114265863L;
-	//
+
+	/** For serialization. */
+	private static final long serialVersionUID = 5886554608114265863L;
+
 	// /**
 	// * The default margin for the axis (used for both lower and upper
 	// margins).

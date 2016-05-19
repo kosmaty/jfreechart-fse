@@ -211,8 +211,8 @@ import static org.jfree.chart.util.ShapeUtils.asShape;
  */
 public abstract class Plot implements
 		// JAVAFX
-		// AxisChangeListener,
-		// DatasetChangeListener, SelectionChangeListener, LabelChangeListener,
+		AxisChangeListener, DatasetChangeListener,
+		// SelectionChangeListener, LabelChangeListener,
 		// AnnotationChangeListener, MarkerChangeListener,
 		LegendItemSource,
 		PublicCloneable, Cloneable, Serializable {
@@ -414,18 +414,18 @@ public abstract class Plot implements
 	// this.noDataMessagePaint = paint;
 	// fireChangeEvent();
 	// }
-	//
-	// /**
-	// * Returns a short string describing the plot type.
-	// * <P>
-	// * Note: this gets used in the chart property editing user interface,
-	// * but there needs to be a better mechanism for identifying the plot type.
-	// *
-	// * @return A short string describing the plot type (never
-	// * <code>null</code>).
-	// */
-	// public abstract String getPlotType();
-	//
+
+	/**
+	 * Returns a short string describing the plot type.
+	 * <P>
+	 * Note: this gets used in the chart property editing user interface, but
+	 * there needs to be a better mechanism for identifying the plot type.
+	 *
+	 * @return A short string describing the plot type (never <code>null</code>
+	 *         ).
+	 */
+	public abstract String getPlotType();
+
 	/**
 	 * Returns the parent plot (or <code>null</code> if this plot is not part of
 	 * a combined plot).
@@ -951,22 +951,24 @@ public abstract class Plot implements
 	}
 
 	//
-	// /**
-	// * Draws the plot outline. This method will be called during the chart
-	// * drawing process and is declared public so that it can be accessed by
-	// the
-	// * renderers used by certain subclasses. You shouldn't need to call this
-	// * method directly.
-	// *
-	// * @param g2 the graphics device.
-	// * @param area the area within which the plot should be drawn.
-	// */
-	// public void drawOutline(Graphics2D g2, Rectangle2D area) { // FIXME :
-	// rename this drawBorder
-	// if (this.borderPainter != null) {
-	// this.borderPainter.draw(g2, area);
-	// }
-	// }
+	/**
+	 * Draws the plot outline. This method will be called during the chart
+	 * drawing process and is declared public so that it can be accessed by the
+	 * renderers used by certain subclasses. You shouldn't need to call this
+	 * method directly.
+	 *
+	 * @param g2
+	 *            the graphics device.
+	 * @param area
+	 *            the area within which the plot should be drawn.
+	 */
+	public void drawOutline(GraphicsContext g2, Rectangle2D area) {
+		// FIXME :rename this drawBorder
+		if (this.borderPainter != null) {
+			this.borderPainter.draw(g2, area);
+		}
+	}
+
 	//
 	// /**
 	// * Draws a message to state that there is no data to plot.
@@ -1056,31 +1058,34 @@ public abstract class Plot implements
 	// public void annotationChanged(AnnotationChangeEvent event) {
 	// fireChangeEvent();
 	// }
-	//
-	// /**
-	// * Receives notification of a change to one of the plot's axes.
-	// *
-	// * @param event information about the event (not used here).
-	// */
-	// @Override
-	// public void axisChanged(AxisChangeEvent event) {
-	// fireChangeEvent();
-	// }
-	//
-	// /**
-	// * Receives notification of a change to the plot's dataset.
-	// * <P>
-	// * The plot reacts by passing on a plot change event to all registered
-	// * listeners.
-	// *
-	// * @param event information about the event (not used here).
-	// */
-	// @Override
-	// public void datasetChanged(DatasetChangeEvent event) {
-	// PlotChangeEvent newEvent = new PlotChangeEvent(this);
-	// newEvent.setType(ChartChangeEventType.DATASET_UPDATED);
-	// notifyListeners(newEvent);
-	// }
+
+	/**
+	 * Receives notification of a change to one of the plot's axes.
+	 *
+	 * @param event
+	 *            information about the event (not used here).
+	 */
+	@Override
+	public void axisChanged(AxisChangeEvent event) {
+		fireChangeEvent();
+	}
+
+	/**
+	 * Receives notification of a change to the plot's dataset.
+	 * <P>
+	 * The plot reacts by passing on a plot change event to all registered
+	 * listeners.
+	 *
+	 * @param event
+	 *            information about the event (not used here).
+	 */
+	@Override
+	public void datasetChanged(DatasetChangeEvent event) {
+		PlotChangeEvent newEvent = new PlotChangeEvent(this);
+		newEvent.setType(ChartChangeEventType.DATASET_UPDATED);
+		notifyListeners(newEvent);
+	}
+
 	//
 	// /**
 	// * Receives notification of a change to the selection state of the plot's
@@ -1256,6 +1261,7 @@ public abstract class Plot implements
 		// clone.listenerList = new EventListenerList();
 		return clone;
 	}
+
 	//
 	// /**
 	// * Provides serialization support.
@@ -1290,116 +1296,120 @@ public abstract class Plot implements
 	// this.listenerList = new EventListenerList();
 	// }
 	//
-	// /**
-	// * Resolves a domain axis location for a given plot orientation.
-	// *
-	// * @param location the location (<code>null</code> not permitted).
-	// * @param orientation the orientation (<code>null</code> not permitted).
-	// *
-	// * @return The edge (never <code>null</code>).
-	// */
-	// public static RectangleEdge resolveDomainAxisLocation(
-	// AxisLocation location, PlotOrientation orientation) {
-	//
-	// ParamChecks.nullNotPermitted(location, "location");
-	// ParamChecks.nullNotPermitted(orientation, "orientation");
-	//
-	// RectangleEdge result = null;
-	//
-	// if (location == AxisLocation.TOP_OR_RIGHT) {
-	// if (orientation == PlotOrientation.HORIZONTAL) {
-	// result = RectangleEdge.RIGHT;
-	// }
-	// else if (orientation == PlotOrientation.VERTICAL) {
-	// result = RectangleEdge.TOP;
-	// }
-	// }
-	// else if (location == AxisLocation.TOP_OR_LEFT) {
-	// if (orientation == PlotOrientation.HORIZONTAL) {
-	// result = RectangleEdge.LEFT;
-	// }
-	// else if (orientation == PlotOrientation.VERTICAL) {
-	// result = RectangleEdge.TOP;
-	// }
-	// }
-	// else if (location == AxisLocation.BOTTOM_OR_RIGHT) {
-	// if (orientation == PlotOrientation.HORIZONTAL) {
-	// result = RectangleEdge.RIGHT;
-	// }
-	// else if (orientation == PlotOrientation.VERTICAL) {
-	// result = RectangleEdge.BOTTOM;
-	// }
-	// }
-	// else if (location == AxisLocation.BOTTOM_OR_LEFT) {
-	// if (orientation == PlotOrientation.HORIZONTAL) {
-	// result = RectangleEdge.LEFT;
-	// }
-	// else if (orientation == PlotOrientation.VERTICAL) {
-	// result = RectangleEdge.BOTTOM;
-	// }
-	// }
-	// // the above should cover all the options...
-	// if (result == null) {
-	// throw new IllegalStateException("resolveDomainAxisLocation()");
-	// }
-	// return result;
-	//
-	// }
-	//
-	// /**
-	// * Resolves a range axis location for a given plot orientation.
-	// *
-	// * @param location the location (<code>null</code> not permitted).
-	// * @param orientation the orientation (<code>null</code> not permitted).
-	// *
-	// * @return The edge (never <code>null</code>).
-	// */
-	// public static RectangleEdge resolveRangeAxisLocation(
-	// AxisLocation location, PlotOrientation orientation) {
-	//
-	// ParamChecks.nullNotPermitted(location, "location");
-	// ParamChecks.nullNotPermitted(orientation, "orientation");
-	//
-	// RectangleEdge result = null;
-	// if (location == AxisLocation.TOP_OR_RIGHT) {
-	// if (orientation == PlotOrientation.HORIZONTAL) {
-	// result = RectangleEdge.TOP;
-	// }
-	// else if (orientation == PlotOrientation.VERTICAL) {
-	// result = RectangleEdge.RIGHT;
-	// }
-	// }
-	// else if (location == AxisLocation.TOP_OR_LEFT) {
-	// if (orientation == PlotOrientation.HORIZONTAL) {
-	// result = RectangleEdge.TOP;
-	// }
-	// else if (orientation == PlotOrientation.VERTICAL) {
-	// result = RectangleEdge.LEFT;
-	// }
-	// }
-	// else if (location == AxisLocation.BOTTOM_OR_RIGHT) {
-	// if (orientation == PlotOrientation.HORIZONTAL) {
-	// result = RectangleEdge.BOTTOM;
-	// }
-	// else if (orientation == PlotOrientation.VERTICAL) {
-	// result = RectangleEdge.RIGHT;
-	// }
-	// }
-	// else if (location == AxisLocation.BOTTOM_OR_LEFT) {
-	// if (orientation == PlotOrientation.HORIZONTAL) {
-	// result = RectangleEdge.BOTTOM;
-	// }
-	// else if (orientation == PlotOrientation.VERTICAL) {
-	// result = RectangleEdge.LEFT;
-	// }
-	// }
-	//
-	// // the above should cover all the options...
-	// if (result == null) {
-	// throw new IllegalStateException("resolveRangeAxisLocation()");
-	// }
-	// return result;
-	//
-	// }
-	//
+	/**
+	 * Resolves a domain axis location for a given plot orientation.
+	 *
+	 * @param location
+	 *            the location (<code>null</code> not permitted).
+	 * @param orientation
+	 *            the orientation (<code>null</code> not permitted).
+	 *
+	 * @return The edge (never <code>null</code>).
+	 */
+	public static RectangleEdge resolveDomainAxisLocation(
+			AxisLocation location, PlotOrientation orientation) {
+
+		ParamChecks.nullNotPermitted(location, "location");
+		ParamChecks.nullNotPermitted(orientation, "orientation");
+
+		RectangleEdge result = null;
+
+		if (location == AxisLocation.TOP_OR_RIGHT) {
+			if (orientation == PlotOrientation.HORIZONTAL) {
+				result = RectangleEdge.RIGHT;
+			}
+			else if (orientation == PlotOrientation.VERTICAL) {
+				result = RectangleEdge.TOP;
+			}
+		}
+		else if (location == AxisLocation.TOP_OR_LEFT) {
+			if (orientation == PlotOrientation.HORIZONTAL) {
+				result = RectangleEdge.LEFT;
+			}
+			else if (orientation == PlotOrientation.VERTICAL) {
+				result = RectangleEdge.TOP;
+			}
+		}
+		else if (location == AxisLocation.BOTTOM_OR_RIGHT) {
+			if (orientation == PlotOrientation.HORIZONTAL) {
+				result = RectangleEdge.RIGHT;
+			}
+			else if (orientation == PlotOrientation.VERTICAL) {
+				result = RectangleEdge.BOTTOM;
+			}
+		}
+		else if (location == AxisLocation.BOTTOM_OR_LEFT) {
+			if (orientation == PlotOrientation.HORIZONTAL) {
+				result = RectangleEdge.LEFT;
+			}
+			else if (orientation == PlotOrientation.VERTICAL) {
+				result = RectangleEdge.BOTTOM;
+			}
+		}
+		// the above should cover all the options...
+		if (result == null) {
+			throw new IllegalStateException("resolveDomainAxisLocation()");
+		}
+		return result;
+
+	}
+
+	/**
+	 * Resolves a range axis location for a given plot orientation.
+	 *
+	 * @param location
+	 *            the location (<code>null</code> not permitted).
+	 * @param orientation
+	 *            the orientation (<code>null</code> not permitted).
+	 *
+	 * @return The edge (never <code>null</code>).
+	 */
+	public static RectangleEdge resolveRangeAxisLocation(
+			AxisLocation location, PlotOrientation orientation) {
+
+		ParamChecks.nullNotPermitted(location, "location");
+		ParamChecks.nullNotPermitted(orientation, "orientation");
+
+		RectangleEdge result = null;
+		if (location == AxisLocation.TOP_OR_RIGHT) {
+			if (orientation == PlotOrientation.HORIZONTAL) {
+				result = RectangleEdge.TOP;
+			}
+			else if (orientation == PlotOrientation.VERTICAL) {
+				result = RectangleEdge.RIGHT;
+			}
+		}
+		else if (location == AxisLocation.TOP_OR_LEFT) {
+			if (orientation == PlotOrientation.HORIZONTAL) {
+				result = RectangleEdge.TOP;
+			}
+			else if (orientation == PlotOrientation.VERTICAL) {
+				result = RectangleEdge.LEFT;
+			}
+		}
+		else if (location == AxisLocation.BOTTOM_OR_RIGHT) {
+			if (orientation == PlotOrientation.HORIZONTAL) {
+				result = RectangleEdge.BOTTOM;
+			}
+			else if (orientation == PlotOrientation.VERTICAL) {
+				result = RectangleEdge.RIGHT;
+			}
+		}
+		else if (location == AxisLocation.BOTTOM_OR_LEFT) {
+			if (orientation == PlotOrientation.HORIZONTAL) {
+				result = RectangleEdge.BOTTOM;
+			}
+			else if (orientation == PlotOrientation.VERTICAL) {
+				result = RectangleEdge.LEFT;
+			}
+		}
+
+		// the above should cover all the options...
+		if (result == null) {
+			throw new IllegalStateException("resolveRangeAxisLocation()");
+		}
+		return result;
+
+	}
+
 }

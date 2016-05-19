@@ -46,8 +46,9 @@ package org.jfree.chart.renderer;
 // import java.awt.Stroke;
 import org.jfree.chart.LegendItem;
 import org.jfree.chart.LegendItemSource;
-//import org.jfree.chart.event.RendererChangeEvent;
-//import org.jfree.chart.event.RendererChangeListener;
+import org.jfree.chart.event.RendererChangeEvent;
+import org.jfree.chart.event.RendererChangeListener;
+
 //import org.jfree.chart.labels.ItemLabelPosition;
 
 /**
@@ -66,23 +67,25 @@ public interface Renderer extends LegendItemSource {
 	// */
 	// public int getPassCount();
 	//
-	// /**
-	// * Add a renderer change listener.
-	// *
-	// * @param listener the listener.
-	// *
-	// * @see #removeChangeListener(RendererChangeListener)
-	// */
-	// public void addChangeListener(RendererChangeListener listener);
-	//
-	// /**
-	// * Removes a change listener.
-	// *
-	// * @param listener the listener.
-	// *
-	// * @see #addChangeListener(RendererChangeListener)
-	// */
-	// public void removeChangeListener(RendererChangeListener listener);
+	/**
+	 * Add a renderer change listener.
+	 *
+	 * @param listener
+	 *            the listener.
+	 *
+	 * @see #removeChangeListener(RendererChangeListener)
+	 */
+	public void addChangeListener(RendererChangeListener listener);
+
+	/**
+	 * Removes a change listener.
+	 *
+	 * @param listener
+	 *            the listener.
+	 *
+	 * @see #addChangeListener(RendererChangeListener)
+	 */
+	public void removeChangeListener(RendererChangeListener listener);
 	//
 	// //// VISIBLE
 	// //////////////////////////////////////////////////////////////
