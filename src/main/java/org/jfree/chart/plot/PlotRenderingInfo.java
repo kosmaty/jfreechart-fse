@@ -47,8 +47,6 @@
 
 package org.jfree.chart.plot;
 
-import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -58,6 +56,9 @@ import java.util.List;
 import org.jfree.chart.ChartRenderingInfo;
 import org.jfree.chart.util.ObjectUtils;
 import org.jfree.chart.util.SerialUtils;
+
+import javafx.geometry.Point2D;
+import javafx.geometry.Rectangle2D;
 
 /**
  * Stores information about the dimensions of a plot and its subplots.
@@ -89,7 +90,7 @@ public class PlotRenderingInfo implements Cloneable, Serializable {
 	 */
 	public PlotRenderingInfo(ChartRenderingInfo owner) {
 		this.owner = owner;
-		this.dataArea = new Rectangle2D.Double();
+		this.dataArea = new Rectangle2D(0, 0, 0, 0);
 		this.subplotInfo = new java.util.ArrayList<PlotRenderingInfo>();
 	}
 
@@ -254,10 +255,10 @@ public class PlotRenderingInfo implements Cloneable, Serializable {
 	public Object clone() throws CloneNotSupportedException {
 		PlotRenderingInfo clone = (PlotRenderingInfo) super.clone();
 		if (this.plotArea != null) {
-			clone.plotArea = (Rectangle2D) this.plotArea.clone();
+			clone.plotArea = this.plotArea;
 		}
 		if (this.dataArea != null) {
-			clone.dataArea = (Rectangle2D) this.dataArea.clone();
+			clone.dataArea = this.dataArea;
 		}
 		clone.subplotInfo = new java.util.ArrayList<PlotRenderingInfo>(this.subplotInfo.size());
 		for (int i = 0; i < this.subplotInfo.size(); i++) {
@@ -278,8 +279,9 @@ public class PlotRenderingInfo implements Cloneable, Serializable {
 	 */
 	private void writeObject(ObjectOutputStream stream) throws IOException {
 		stream.defaultWriteObject();
-		SerialUtils.writeShape(this.dataArea, stream);
-		SerialUtils.writeShape(this.plotArea, stream);
+		// JAVAFX serialization
+		// SerialUtils.writeShape(this.dataArea, stream);
+		// SerialUtils.writeShape(this.plotArea, stream);
 	}
 
 	/**
@@ -296,8 +298,9 @@ public class PlotRenderingInfo implements Cloneable, Serializable {
 	private void readObject(ObjectInputStream stream)
 			throws IOException, ClassNotFoundException {
 		stream.defaultReadObject();
-		this.dataArea = (Rectangle2D) SerialUtils.readShape(stream);
-		this.plotArea = (Rectangle2D) SerialUtils.readShape(stream);
+		// JAVAFX serialization
+		// this.dataArea = (Rectangle2D) SerialUtils.readShape(stream);
+		// this.plotArea = (Rectangle2D) SerialUtils.readShape(stream);
 	}
 
 }

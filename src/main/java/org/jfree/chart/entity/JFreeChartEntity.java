@@ -208,8 +208,9 @@ public class JFreeChartEntity extends ChartEntity {
 	 *             if there is an I/O error.
 	 */
 	private void writeObject(ObjectOutputStream stream) throws IOException {
-		stream.defaultWriteObject();
-		SerialUtils.writeShape(getArea(), stream);
+		// JAVAFX serialization
+		// stream.defaultWriteObject();
+		// SerialUtils.writeShape(getArea(), stream);
 	}
 
 	/**
@@ -225,8 +226,9 @@ public class JFreeChartEntity extends ChartEntity {
 	 */
 	private void readObject(ObjectInputStream stream)
 			throws IOException, ClassNotFoundException {
-		stream.defaultReadObject();
-		setArea(SerialUtils.readShape(stream));
+		// JAVAFX serialization
+		// stream.defaultReadObject();
+		// setArea(SerialUtils.readShape(stream));
 	}
 
 }

@@ -161,9 +161,9 @@ package org.jfree.chart;
 // import java.awt.Graphics2D;
 // import java.awt.Image;
 // import java.awt.RenderingHints;
-import java.awt.Shape;
+//import java.awt.Shape;
 // import java.awt.geom.AffineTransform;
-import java.awt.geom.Point2D;
+//import java.awt.geom.Point2D;
 //import java.awt.geom.Rectangle2D;
 // import java.awt.image.BufferedImage;
 // import java.io.IOException;
@@ -183,8 +183,10 @@ import java.io.Serializable;
 import org.jfree.chart.drawable.Drawable;
 import org.jfree.graphics.JFreeCanvas;
 
+import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.shape.Rectangle;
 
 // import org.jfree.chart.ui.HorizontalAlignment;
 // import org.jfree.chart.ui.RectangleEdge;
@@ -202,8 +204,8 @@ import org.jfree.chart.entity.JFreeChartEntity;
 // import org.jfree.chart.event.PlotChangeListener;
 // import org.jfree.chart.event.TitleChangeEvent;
 // import org.jfree.chart.event.TitleChangeListener;
-// import org.jfree.chart.plot.Plot;
-// import org.jfree.chart.plot.PlotRenderingInfo;
+import org.jfree.chart.plot.Plot;
+import org.jfree.chart.plot.PlotRenderingInfo;
 // import org.jfree.chart.renderer.category.StandardBarPainter;
 // import org.jfree.chart.title.LegendTitle;
 // import org.jfree.chart.title.TextTitle;
@@ -300,11 +302,12 @@ public class JFreeChart implements Drawable,
 	// */
 	// private List<Title> subtitles;
 	//
-	// /**
-	// * Draws the visual representation of the data (cannot be null, it is
-	// * required in the constructor).
-	// */
-	// private Plot plot;
+	/**
+	 * Draws the visual representation of the data (cannot be null, it is
+	 * required in the constructor).
+	 */
+	private Plot plot;
+
 	//
 	// /** An optional background image for the chart. */
 	// private transient Image backgroundImage; // todo: not serialized yet
@@ -1016,37 +1019,40 @@ public class JFreeChart implements Drawable,
 	 */
 	@Override
 	public void draw(GraphicsContext graphicsContext, Rectangle2D area) {
-		draw(canvas, area, null, null);
+		draw(graphicsContext, area, null, null);
 	}
 
-	//
-	// /**
-	// * Draws the chart on a Java 2D graphics device (such as the screen or a
-	// * printer). This method is the focal point of the entire JFreeChart
-	// * library.
-	// *
-	// * @param g2 the graphics device.
-	// * @param area the area within which the chart should be drawn.
-	// * @param info records info about the drawing (null means collect no
-	// info).
-	// */
-	// public void draw(Graphics2D g2, Rectangle2D area, ChartRenderingInfo
-	// info) {
-	// draw(g2, area, null, info);
-	// }
-	//
-	// /**
-	// * Draws the chart on a Java 2D graphics device (such as the screen or a
-	// * printer). This method is the focal point of the entire JFreeChart
-	// * library.
-	// *
-	// * @param g2 the graphics device.
-	// * @param chartArea the area within which the chart should be drawn.
-	// * @param anchor the anchor point (in Java2D space) for the chart
-	// * (<code>null</code> permitted).
-	// * @param info records info about the drawing (null means collect no
-	// info).
-	// */
+	/**
+	 * Draws the chart on a Java 2D graphics device (such as the screen or a
+	 * printer). This method is the focal point of the entire JFreeChart
+	 * library.
+	 *
+	 * @param g2
+	 *            the graphics device.
+	 * @param area
+	 *            the area within which the chart should be drawn.
+	 * @param info
+	 *            records info about the drawing (null means collect no info).
+	 */
+	public void draw(GraphicsContext g2, Rectangle2D area, ChartRenderingInfo info) {
+		draw(g2, area, null, info);
+	}
+
+	/**
+	 * Draws the chart on a Java 2D graphics device (such as the screen or a
+	 * printer). This method is the focal point of the entire JFreeChart
+	 * library.
+	 *
+	 * @param g2
+	 *            the graphics device.
+	 * @param chartArea
+	 *            the area within which the chart should be drawn.
+	 * @param anchor
+	 *            the anchor point (in Java2D space) for the chart (
+	 *            <code>null</code> permitted).
+	 * @param info
+	 *            records info about the drawing (null means collect no info).
+	 */
 	public void draw(GraphicsContext graphicsContext, Rectangle2D chartArea, Point2D anchor,
 			ChartRenderingInfo info) {
 		//
@@ -1062,17 +1068,18 @@ public class JFreeChart implements Drawable,
 		}
 		if (entities != null) {
 			entities.add(new JFreeChartEntity(
-					chartArea,
+					new Rectangle(chartArea.getWidth(), chartArea.getHeight()),
 					this));
 		}
-		//
+
+		// JAVAFX
 		// ensure no drawing occurs outside chart area...
-		Shape savedClip = g2.getClip();
-		g2.clip(chartArea);
+		// Shape savedClip = g2.getClip();
+		// g2.clip(chartArea);
 		//
 		// g2.addRenderingHints(this.renderingHints);
 		//
-		// // draw the chart background...
+		// //draw the chart background...
 		// if (this.backgroundPainter != null) {
 		// this.backgroundPainter.draw(g2, chartArea);
 		// }
@@ -1096,8 +1103,7 @@ public class JFreeChart implements Drawable,
 		// }
 		//
 		// // draw the title and subtitles...
-		// Rectangle2D nonTitleArea = new Rectangle2D.Double();
-		// nonTitleArea.setRect(chartArea);
+		Rectangle2D nonTitleArea = chartArea;
 		// this.padding.trim(nonTitleArea);
 		//
 		// if (this.title != null && this.title.isVisible()) {
@@ -1122,14 +1128,14 @@ public class JFreeChart implements Drawable,
 		// }
 		// }
 		//
-		// Rectangle2D plotArea = nonTitleArea;
+		Rectangle2D plotArea = nonTitleArea;
 		//
 		// // draw the plot (axes and data visualisation)
-		// PlotRenderingInfo plotInfo = null;
+		PlotRenderingInfo plotInfo = null;
 		// if (info != null) {
 		// plotInfo = info.getPlotInfo();
 		// }
-		// this.plot.draw(g2, plotArea, anchor, null, plotInfo);
+		this.plot.draw(graphicsContext, plotArea, anchor, null, plotInfo);
 		//
 		// g2.setClip(savedClip);
 		//

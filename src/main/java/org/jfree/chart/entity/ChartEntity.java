@@ -287,29 +287,31 @@ public class ChartEntity implements Cloneable, PublicCloneable, Serializable {
 	 * @return The coordinates for a given shape as string.
 	 */
 	private String getPolyCoords(Shape shape) {
-		if (shape == null) {
-			throw new IllegalArgumentException("Null 'shape' argument.");
-		}
-		StringBuilder result = new StringBuilder();
-		boolean first = true;
-		float[] coords = new float[6];
-		PathIterator pi = shape.getPathIterator(null, 1.0);
-		while (!pi.isDone()) {
-			pi.currentSegment(coords);
-			if (first) {
-				first = false;
-				result.append((int) coords[0]);
-				result.append(",").append((int) coords[1]);
-			}
-			else {
-				result.append(",");
-				result.append((int) coords[0]);
-				result.append(",");
-				result.append((int) coords[1]);
-			}
-			pi.next();
-		}
-		return result.toString();
+		throw new UnsupportedOperationException("JAVAFX not supported");
+		// JAVAFX
+		// if (shape == null) {
+		// throw new IllegalArgumentException("Null 'shape' argument.");
+		// }
+		// StringBuilder result = new StringBuilder();
+		// boolean first = true;
+		// float[] coords = new float[6];
+		// PathIterator pi = shape.getPathIterator(null, 1.0);
+		// while (!pi.isDone()) {
+		// pi.currentSegment(coords);
+		// if (first) {
+		// first = false;
+		// result.append((int) coords[0]);
+		// result.append(",").append((int) coords[1]);
+		// }
+		// else {
+		// result.append(",");
+		// result.append((int) coords[0]);
+		// result.append(",");
+		// result.append((int) coords[1]);
+		// }
+		// pi.next();
+		// }
+		// return result.toString();
 	}
 
 	/**
@@ -439,8 +441,9 @@ public class ChartEntity implements Cloneable, PublicCloneable, Serializable {
 	 *             if there is an I/O error.
 	 */
 	private void writeObject(ObjectOutputStream stream) throws IOException {
-		stream.defaultWriteObject();
-		SerialUtils.writeShape(this.area, stream);
+		// JAVAFX
+		// stream.defaultWriteObject();
+		// SerialUtils.writeShape(this.area, stream);
 	}
 
 	/**
@@ -456,8 +459,9 @@ public class ChartEntity implements Cloneable, PublicCloneable, Serializable {
 	 */
 	private void readObject(ObjectInputStream stream)
 			throws IOException, ClassNotFoundException {
-		stream.defaultReadObject();
-		this.area = SerialUtils.readShape(stream);
+		// JAVAFX
+		// stream.defaultReadObject();
+		// this.area = SerialUtils.readShape(stream);
 	}
 
 }
