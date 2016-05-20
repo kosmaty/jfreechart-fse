@@ -178,7 +178,7 @@ import org.jfree.chart.event.MarkerChangeListener;
 import org.jfree.chart.event.PlotChangeEvent;
 import org.jfree.chart.event.PlotChangeListener;
 // import org.jfree.chart.text.G2TextMeasurer;
-// import org.jfree.chart.text.TextBlock;
+import org.jfree.chart.text.TextBlock;
 // import org.jfree.chart.text.TextBlockAnchor;
 // import org.jfree.chart.text.TextUtilities;
 // import org.jfree.chart.ui.Align;
@@ -213,7 +213,8 @@ public abstract class Plot implements
 		// JAVAFX
 		AxisChangeListener, DatasetChangeListener,
 		// SelectionChangeListener, LabelChangeListener,
-		// AnnotationChangeListener, MarkerChangeListener,
+		// AnnotationChangeListener,
+		MarkerChangeListener,
 		LegendItemSource,
 		PublicCloneable, Cloneable, Serializable {
 
@@ -969,29 +970,33 @@ public abstract class Plot implements
 		}
 	}
 
-	//
-	// /**
-	// * Draws a message to state that there is no data to plot.
-	// *
-	// * @param g2 the graphics device.
-	// * @param area the area within which the plot should be drawn.
-	// */
-	// protected void drawNoDataMessage(Graphics2D g2, Rectangle2D area) {
-	// Shape savedClip = g2.getClip();
-	// g2.clip(area);
-	// String message = this.noDataMessage;
-	// if (message != null) {
-	// g2.setFont(this.noDataMessageFont);
-	// g2.setPaint(this.noDataMessagePaint);
-	// TextBlock block = TextUtilities.createTextBlock(
-	// this.noDataMessage, this.noDataMessageFont,
-	// this.noDataMessagePaint, 0.9f * (float) area.getWidth(),
-	// new G2TextMeasurer(g2));
-	// block.draw(g2, (float) area.getCenterX(),
-	// (float) area.getCenterY(), TextBlockAnchor.CENTER);
-	// }
-	// g2.setClip(savedClip);
-	// }
+	/**
+	 * Draws a message to state that there is no data to plot.
+	 *
+	 * @param g2
+	 *            the graphics device.
+	 * @param area
+	 *            the area within which the plot should be drawn.
+	 */
+	protected void drawNoDataMessage(GraphicsContext g2, Rectangle2D area) {
+		// JAVAFX clip
+		// Shape savedClip = g2.getClip();
+		// g2.clip(area);
+		String message = this.noDataMessage;
+		if (message != null) {
+			// JAVAFX
+			// g2.setFont(this.noDataMessageFont);
+			// g2.setPaint(this.noDataMessagePaint);
+			// TextBlock block = TextUtilities.createTextBlock(
+			// this.noDataMessage, this.noDataMessageFont,
+			// this.noDataMessagePaint, 0.9f * (float) area.getWidth(),
+			// new G2TextMeasurer(g2));
+			// block.draw(g2, (float) area.getCenterX(),
+			// (float) area.getCenterY(), TextBlockAnchor.CENTER);
+		}
+		// JAVAFX clip
+		// g2.setClip(savedClip);
+	}
 
 	/**
 	 * Creates a plot entity that contains a reference to the plot and the data
@@ -1123,18 +1128,20 @@ public abstract class Plot implements
 	// notifyListeners(newEvent);
 	// }
 	//
-	// /**
-	// * Receives notification of a change to a marker that is assigned to the
-	// * plot.
-	// *
-	// * @param event the event.
-	// *
-	// * @since 1.0.3
-	// */
-	// @Override
-	// public void markerChanged(MarkerChangeEvent event) {
-	// fireChangeEvent();
-	// }
+	/**
+	 * Receives notification of a change to a marker that is assigned to the
+	 * plot.
+	 *
+	 * @param event
+	 *            the event.
+	 *
+	 * @since 1.0.3
+	 */
+	@Override
+	public void markerChanged(MarkerChangeEvent event) {
+		fireChangeEvent();
+	}
+
 	//
 	// /**
 	// * Adjusts the supplied x-value.

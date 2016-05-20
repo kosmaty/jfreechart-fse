@@ -217,7 +217,7 @@ import java.util.TreeMap;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.LegendItem;
 import org.jfree.chart.annotations.Annotation;
-// import org.jfree.chart.annotations.CategoryAnnotation;
+import org.jfree.chart.annotations.CategoryAnnotation;
 import org.jfree.chart.axis.Axis;
 import org.jfree.chart.axis.AxisCollection;
 import org.jfree.chart.axis.AxisLocation;
@@ -523,14 +523,13 @@ public class CategoryPlot extends Plot implements
 
 	/** A map containing lists of markers for the range axes. */
 	private Map<Integer, Collection<Marker>> backgroundRangeMarkers;
-	//
-	// /**
-	// * A (possibly empty) list of annotations for the plot. The list should
-	// * be initialised in the constructor and never allowed to be
-	// * <code>null</code>.
-	// */
-	// private List<CategoryAnnotation> annotations;
-	//
+
+	/**
+	 * A (possibly empty) list of annotations for the plot. The list should be
+	 * initialised in the constructor and never allowed to be <code>null</code>.
+	 */
+	private List<CategoryAnnotation> annotations;
+
 	/**
 	 * The weight for the plot (only relevant when the plot is used as a subplot
 	 * within a combined plot).
@@ -632,53 +631,62 @@ public class CategoryPlot extends Plot implements
 		this.rangeAxes.put(0, rangeAxis);
 		this.mapDatasetToRangeAxis(0, 0);
 		if (rangeAxis != null) {
-			rangeAxis.setPlot(this);
+			// JAVAFX
+			// rangeAxis.setPlot(this);
 			rangeAxis.addChangeListener(this);
 		}
 
 		configureDomainAxes();
 		configureRangeAxes();
-		//
-		// this.domainGridlinesVisible = DEFAULT_DOMAIN_GRIDLINES_VISIBLE;
-		// this.domainGridlinePosition = CategoryAnchor.MIDDLE;
+
+		this.domainGridlinesVisible = DEFAULT_DOMAIN_GRIDLINES_VISIBLE;
+		this.domainGridlinePosition = CategoryAnchor.MIDDLE;
+		// JAVAFX paint, stroke
 		// this.domainGridlineStroke = DEFAULT_GRIDLINE_STROKE;
 		// this.domainGridlinePaint = DEFAULT_GRIDLINE_PAINT;
-		//
-		// this.rangeZeroBaselineVisible = false;
+
+		this.rangeZeroBaselineVisible = false;
+		// JAVAFX paint, stroke
 		// this.rangeZeroBaselinePaint = Color.BLACK;
 		// this.rangeZeroBaselineStroke = new BasicStroke(0.5f);
-		//
-		// this.rangeGridlinesVisible = DEFAULT_RANGE_GRIDLINES_VISIBLE;
+
+		this.rangeGridlinesVisible = DEFAULT_RANGE_GRIDLINES_VISIBLE;
+		// JAVAFX paint, stroke
 		// this.rangeGridlineStroke = DEFAULT_GRIDLINE_STROKE;
 		// this.rangeGridlinePaint = DEFAULT_GRIDLINE_PAINT;
-		//
-		// this.rangeMinorGridlinesVisible = false;
+
+		this.rangeMinorGridlinesVisible = false;
+		// JAVAFX paint, stroke
 		// this.rangeMinorGridlineStroke = DEFAULT_GRIDLINE_STROKE;
 		// this.rangeMinorGridlinePaint = Color.WHITE;
-		//
-		// this.foregroundDomainMarkers = new HashMap<Integer,
-		// Collection<Marker>>();
-		// this.backgroundDomainMarkers = new HashMap<Integer,
-		// Collection<Marker>>();
-		// this.foregroundRangeMarkers = new HashMap<Integer,
-		// Collection<Marker>>();
-		// this.backgroundRangeMarkers = new HashMap<Integer,
-		// Collection<Marker>>();
-		//
-		// this.anchorValue = 0.0;
-		//
-		// this.domainCrosshairVisible = false;
+
+		this.foregroundDomainMarkers = new HashMap<Integer,
+				Collection<Marker>>();
+		this.backgroundDomainMarkers = new HashMap<Integer,
+				Collection<Marker>>();
+		this.foregroundRangeMarkers = new HashMap<Integer,
+				Collection<Marker>>();
+		this.backgroundRangeMarkers = new HashMap<Integer,
+				Collection<Marker>>();
+
+		this.anchorValue = 0.0;
+
+		this.domainCrosshairVisible = false;
+		// JAVAFX paint, stroke
 		// this.domainCrosshairStroke = DEFAULT_CROSSHAIR_STROKE;
 		// this.domainCrosshairPaint = DEFAULT_CROSSHAIR_PAINT;
-		//
-		// this.rangeCrosshairVisible = DEFAULT_CROSSHAIR_VISIBLE;
-		// this.rangeCrosshairValue = 0.0;
+
+		this.rangeCrosshairVisible = DEFAULT_CROSSHAIR_VISIBLE;
+		this.rangeCrosshairValue = 0.0;
+		// JAVAFX paint, stroke
 		// this.rangeCrosshairStroke = DEFAULT_CROSSHAIR_STROKE;
 		// this.rangeCrosshairPaint = DEFAULT_CROSSHAIR_PAINT;
-		//
+
+		// JAVAFX
 		// this.annotations = new java.util.ArrayList<CategoryAnnotation>();
-		//
-		// this.rangePannable = false;
+
+		this.rangePannable = false;
+		// JAVAFX
 		// this.shadowGenerator = null;
 	}
 
@@ -1037,18 +1045,18 @@ public class CategoryPlot extends Plot implements
 		fireChangeEvent();
 	}
 
-	//
-	// /**
-	// * Configures the domain axes.
-	// */
-	// public void configureDomainAxes() {
-	// for (CategoryAxis axis : this.domainAxes.values()) {
-	// if (axis != null) {
-	// axis.configure();
-	// }
-	// }
-	// }
-	//
+	/**
+	 * Configures the domain axes.
+	 */
+	public void configureDomainAxes() {
+		for (CategoryAxis axis : this.domainAxes.values()) {
+			if (axis != null) {
+				// JAVAFX
+				// axis.configure();
+			}
+		}
+	}
+
 	/**
 	 * Returns the range axis for the plot. If the range axis for this plot is
 	 * null, then the method will return the parent plot's range axis (if there
@@ -1080,111 +1088,121 @@ public class CategoryPlot extends Plot implements
 		return result;
 	}
 
-	//
-	// /**
-	// * Sets the range axis for the plot and sends a {@link PlotChangeEvent} to
-	// * all registered listeners.
-	// *
-	// * @param axis the axis (<code>null</code> permitted).
-	// */
-	// public void setRangeAxis(ValueAxis axis) {
-	// setRangeAxis(0, axis);
-	// }
-	//
-	// /**
-	// * Sets a range axis and sends a {@link PlotChangeEvent} to all registered
-	// * listeners.
-	// *
-	// * @param index the axis index.
-	// * @param axis the axis.
-	// */
-	// public void setRangeAxis(int index, ValueAxis axis) {
-	// setRangeAxis(index, axis, true);
-	// }
-	//
-	// /**
-	// * Sets a range axis and, if requested, sends a {@link PlotChangeEvent} to
-	// * all registered listeners.
-	// *
-	// * @param index the axis index.
-	// * @param axis the axis.
-	// * @param notify notify listeners?
-	// */
-	// public void setRangeAxis(int index, ValueAxis axis, boolean notify) {
-	// ValueAxis existing = this.rangeAxes.get(index);
-	// if (existing != null) {
-	// existing.removeChangeListener(this);
-	// }
-	// if (axis != null) {
-	// axis.setPlot(this);
-	// }
-	// this.rangeAxes.put(index, axis);
-	// if (axis != null) {
-	// axis.configure();
-	// axis.addChangeListener(this);
-	// }
-	// if (notify) {
-	// fireChangeEvent();
-	// }
-	// }
-	//
-	// /**
-	// * Sets the range axes for this plot and sends a {@link PlotChangeEvent}
-	// * to all registered listeners.
-	// *
-	// * @param axes the axes (<code>null</code> not permitted).
-	// *
-	// * @see #setDomainAxes(CategoryAxis[])
-	// */
-	// public void setRangeAxes(ValueAxis[] axes) {
-	// for (int i = 0; i < axes.length; i++) {
-	// setRangeAxis(i, axes[i], false);
-	// }
-	// fireChangeEvent();
-	// }
-	//
-	// /**
-	// * Returns the index of the specified axis, or <code>-1</code> if the axis
-	// * is not assigned to the plot.
-	// *
-	// * @param axis the axis (<code>null</code> not permitted).
-	// *
-	// * @return The axis index.
-	// *
-	// * @see #getRangeAxis(int)
-	// * @see #getDomainAxisIndex(CategoryAxis)
-	// *
-	// * @since 1.0.7
-	// */
-	// public int getRangeAxisIndex(ValueAxis axis) {
-	// ParamChecks.nullNotPermitted(axis, "axis");
-	// int result = findRangeAxisIndex(axis);
-	// if (result < 0) { // try the parent plot
-	// Plot parent = getParent();
-	// if (parent instanceof CategoryPlot) {
-	// CategoryPlot p = (CategoryPlot) parent;
-	// result = p.getRangeAxisIndex(axis);
-	// }
-	// }
-	// return result;
-	// }
-	//
-	// private int findRangeAxisIndex(ValueAxis axis) {
-	// for (Map.Entry<Integer, ValueAxis> entry : this.rangeAxes.entrySet()) {
-	// if (entry.getValue() == axis) {
-	// return entry.getKey();
-	// }
-	// }
-	// return -1;
-	// }
-	// /**
-	// * Returns the range axis location.
-	// *
-	// * @return The location (never <code>null</code>).
-	// */
-	// public AxisLocation getRangeAxisLocation() {
-	// return getRangeAxisLocation(0);
-	// }
+	/**
+	 * Sets the range axis for the plot and sends a {@link PlotChangeEvent} to
+	 * all registered listeners.
+	 *
+	 * @param axis
+	 *            the axis (<code>null</code> permitted).
+	 */
+	public void setRangeAxis(ValueAxis axis) {
+		setRangeAxis(0, axis);
+	}
+
+	/**
+	 * Sets a range axis and sends a {@link PlotChangeEvent} to all registered
+	 * listeners.
+	 *
+	 * @param index
+	 *            the axis index.
+	 * @param axis
+	 *            the axis.
+	 */
+	public void setRangeAxis(int index, ValueAxis axis) {
+		setRangeAxis(index, axis, true);
+	}
+
+	/**
+	 * Sets a range axis and, if requested, sends a {@link PlotChangeEvent} to
+	 * all registered listeners.
+	 *
+	 * @param index
+	 *            the axis index.
+	 * @param axis
+	 *            the axis.
+	 * @param notify
+	 *            notify listeners?
+	 */
+	public void setRangeAxis(int index, ValueAxis axis, boolean notify) {
+		ValueAxis existing = this.rangeAxes.get(index);
+		if (existing != null) {
+			existing.removeChangeListener(this);
+		}
+		if (axis != null) {
+			// JAVAFX axis
+			// axis.setPlot(this);
+		}
+		this.rangeAxes.put(index, axis);
+		if (axis != null) {
+			// JAVAFX axis
+			// axis.configure();
+			axis.addChangeListener(this);
+		}
+		if (notify) {
+			fireChangeEvent();
+		}
+	}
+
+	/**
+	 * Sets the range axes for this plot and sends a {@link PlotChangeEvent} to
+	 * all registered listeners.
+	 *
+	 * @param axes
+	 *            the axes (<code>null</code> not permitted).
+	 *
+	 * @see #setDomainAxes(CategoryAxis[])
+	 */
+	public void setRangeAxes(ValueAxis[] axes) {
+		for (int i = 0; i < axes.length; i++) {
+			setRangeAxis(i, axes[i], false);
+		}
+		fireChangeEvent();
+	}
+
+	/**
+	 * Returns the index of the specified axis, or <code>-1</code> if the axis
+	 * is not assigned to the plot.
+	 *
+	 * @param axis
+	 *            the axis (<code>null</code> not permitted).
+	 *
+	 * @return The axis index.
+	 *
+	 * @see #getRangeAxis(int)
+	 * @see #getDomainAxisIndex(CategoryAxis)
+	 *
+	 * @since 1.0.7
+	 */
+	public int getRangeAxisIndex(ValueAxis axis) {
+		ParamChecks.nullNotPermitted(axis, "axis");
+		int result = findRangeAxisIndex(axis);
+		if (result < 0) { // try the parent plot
+			Plot parent = getParent();
+			if (parent instanceof CategoryPlot) {
+				CategoryPlot p = (CategoryPlot) parent;
+				result = p.getRangeAxisIndex(axis);
+			}
+		}
+		return result;
+	}
+
+	private int findRangeAxisIndex(ValueAxis axis) {
+		for (Map.Entry<Integer, ValueAxis> entry : this.rangeAxes.entrySet()) {
+			if (entry.getValue() == axis) {
+				return entry.getKey();
+			}
+		}
+		return -1;
+	}
+
+	/**
+	 * Returns the range axis location.
+	 *
+	 * @return The location (never <code>null</code>).
+	 */
+	public AxisLocation getRangeAxisLocation() {
+		return getRangeAxisLocation(0);
+	}
 
 	/**
 	 * Returns the location for a range axis.
@@ -1204,71 +1222,78 @@ public class CategoryPlot extends Plot implements
 		return result;
 	}
 
-	//
-	// /**
-	// * Sets the location of the range axis and sends a {@link PlotChangeEvent}
-	// * to all registered listeners.
-	// *
-	// * @param location the location (<code>null</code> not permitted).
-	// *
-	// * @see #setRangeAxisLocation(AxisLocation, boolean)
-	// * @see #setDomainAxisLocation(AxisLocation)
-	// */
-	// public void setRangeAxisLocation(AxisLocation location) {
-	// // defer argument checking...
-	// setRangeAxisLocation(location, true);
-	// }
-	//
-	// /**
-	// * Sets the location of the range axis and, if requested, sends a
-	// * {@link PlotChangeEvent} to all registered listeners.
-	// *
-	// * @param location the location (<code>null</code> not permitted).
-	// * @param notify notify listeners?
-	// *
-	// * @see #setDomainAxisLocation(AxisLocation, boolean)
-	// */
-	// public void setRangeAxisLocation(AxisLocation location, boolean notify) {
-	// setRangeAxisLocation(0, location, notify);
-	// }
-	//
-	// /**
-	// * Sets the location for a range axis and sends a {@link PlotChangeEvent}
-	// * to all registered listeners.
-	// *
-	// * @param index the axis index.
-	// * @param location the location.
-	// *
-	// * @see #getRangeAxisLocation(int)
-	// * @see #setRangeAxisLocation(int, AxisLocation, boolean)
-	// */
-	// public void setRangeAxisLocation(int index, AxisLocation location) {
-	// setRangeAxisLocation(index, location, true);
-	// }
-	//
-	// /**
-	// * Sets the location for a range axis and sends a {@link PlotChangeEvent}
-	// * to all registered listeners.
-	// *
-	// * @param index the axis index.
-	// * @param location the location.
-	// * @param notify notify listeners?
-	// *
-	// * @see #getRangeAxisLocation(int)
-	// * @see #setDomainAxisLocation(int, AxisLocation, boolean)
-	// */
-	// public void setRangeAxisLocation(int index, AxisLocation location,
-	// boolean notify) {
-	// if (index == 0 && location == null) {
-	// throw new IllegalArgumentException(
-	// "Null 'location' for index 0 not permitted.");
-	// }
-	// this.rangeAxisLocations.put(index, location);
-	// if (notify) {
-	// fireChangeEvent();
-	// }
-	// }
-	//
+	/**
+	 * Sets the location of the range axis and sends a {@link PlotChangeEvent}
+	 * to all registered listeners.
+	 *
+	 * @param location
+	 *            the location (<code>null</code> not permitted).
+	 *
+	 * @see #setRangeAxisLocation(AxisLocation, boolean)
+	 * @see #setDomainAxisLocation(AxisLocation)
+	 */
+	public void setRangeAxisLocation(AxisLocation location) {
+		// defer argument checking...
+		setRangeAxisLocation(location, true);
+	}
+
+	/**
+	 * Sets the location of the range axis and, if requested, sends a
+	 * {@link PlotChangeEvent} to all registered listeners.
+	 *
+	 * @param location
+	 *            the location (<code>null</code> not permitted).
+	 * @param notify
+	 *            notify listeners?
+	 *
+	 * @see #setDomainAxisLocation(AxisLocation, boolean)
+	 */
+	public void setRangeAxisLocation(AxisLocation location, boolean notify) {
+		setRangeAxisLocation(0, location, notify);
+	}
+
+	/**
+	 * Sets the location for a range axis and sends a {@link PlotChangeEvent} to
+	 * all registered listeners.
+	 *
+	 * @param index
+	 *            the axis index.
+	 * @param location
+	 *            the location.
+	 *
+	 * @see #getRangeAxisLocation(int)
+	 * @see #setRangeAxisLocation(int, AxisLocation, boolean)
+	 */
+	public void setRangeAxisLocation(int index, AxisLocation location) {
+		setRangeAxisLocation(index, location, true);
+	}
+
+	/**
+	 * Sets the location for a range axis and sends a {@link PlotChangeEvent} to
+	 * all registered listeners.
+	 *
+	 * @param index
+	 *            the axis index.
+	 * @param location
+	 *            the location.
+	 * @param notify
+	 *            notify listeners?
+	 *
+	 * @see #getRangeAxisLocation(int)
+	 * @see #setDomainAxisLocation(int, AxisLocation, boolean)
+	 */
+	public void setRangeAxisLocation(int index, AxisLocation location,
+			boolean notify) {
+		if (index == 0 && location == null) {
+			throw new IllegalArgumentException(
+					"Null 'location' for index 0 not permitted.");
+		}
+		this.rangeAxisLocations.put(index, location);
+		if (notify) {
+			fireChangeEvent();
+		}
+	}
+
 	/**
 	 * Returns the edge where the primary range axis is located.
 	 *
@@ -1320,7 +1345,7 @@ public class CategoryPlot extends Plot implements
 	public void configureRangeAxes() {
 		for (ValueAxis axis : this.rangeAxes.values()) {
 			if (axis != null) {
-				// JAVAFX
+				// JAVAFX axis
 				// axis.configure();
 			}
 		}
@@ -1490,68 +1515,73 @@ public class CategoryPlot extends Plot implements
 	}
 
 	//
-	// /**
-	// * Returns the domain axis for a dataset. You can change the axis for a
-	// * dataset using the {@link #mapDatasetToDomainAxis(int, int)} method.
-	// *
-	// * @param index the dataset index.
-	// *
-	// * @return The domain axis.
-	// *
-	// * @see #mapDatasetToDomainAxis(int, int)
-	// */
-	// public CategoryAxis getDomainAxisForDataset(int index) {
-	// if (index < 0) {
-	// throw new IllegalArgumentException("Negative 'index'.");
-	// }
-	// CategoryAxis axis;
-	// List<Integer> axisIndices = this.datasetToDomainAxesMap.get(
-	// Integer.valueOf(index));
-	// if (axisIndices != null) {
-	// // the first axis in the list is used for data <--> Java2D
-	// Integer axisIndex = axisIndices.get(0);
-	// axis = getDomainAxis(axisIndex);
-	// }
-	// else {
-	// axis = getDomainAxis(0);
-	// }
-	// return axis;
-	// }
-	
-	 /**
+	/**
+	 * Returns the domain axis for a dataset. You can change the axis for a
+	 * dataset using the {@link #mapDatasetToDomainAxis(int, int)} method.
+	 *
+	 * @param index
+	 *            the dataset index.
+	 *
+	 * @return The domain axis.
+	 *
+	 * @see #mapDatasetToDomainAxis(int, int)
+	 */
+	public CategoryAxis getDomainAxisForDataset(int index) {
+		if (index < 0) {
+			throw new IllegalArgumentException("Negative 'index'.");
+		}
+		CategoryAxis axis;
+		List<Integer> axisIndices = this.datasetToDomainAxesMap.get(
+				Integer.valueOf(index));
+		if (axisIndices != null) {
+			// the first axis in the list is used for data <--> Java2D
+			Integer axisIndex = axisIndices.get(0);
+			axis = getDomainAxis(axisIndex);
+		}
+		else {
+			axis = getDomainAxis(0);
+		}
+		return axis;
+	}
+
+	/**
 	 * Maps a dataset to a particular range axis.
 	 *
-	 * @param index the dataset index (zero-based).
-	 * @param axisIndex the axis index (zero-based).
+	 * @param index
+	 *            the dataset index (zero-based).
+	 * @param axisIndex
+	 *            the axis index (zero-based).
 	 *
 	 * @see #getRangeAxisForDataset(int)
 	 */
-	 public void mapDatasetToRangeAxis(int index, int axisIndex) {
-	 List<Integer> axisIndices = new java.util.ArrayList<Integer>(1);
-	 axisIndices.add(axisIndex);
-	 mapDatasetToRangeAxes(index, axisIndices);
-	 }
-	
-	 /**
+	public void mapDatasetToRangeAxis(int index, int axisIndex) {
+		List<Integer> axisIndices = new java.util.ArrayList<Integer>(1);
+		axisIndices.add(axisIndex);
+		mapDatasetToRangeAxes(index, axisIndices);
+	}
+
+	/**
 	 * Maps the specified dataset to the axes in the list. Note that the
-	 * conversion of data values into Java2D space is always performed using
-	 * the first axis in the list.
+	 * conversion of data values into Java2D space is always performed using the
+	 * first axis in the list.
 	 *
-	 * @param index the dataset index (zero-based).
-	 * @param axisIndices the axis indices (<code>null</code> permitted).
+	 * @param index
+	 *            the dataset index (zero-based).
+	 * @param axisIndices
+	 *            the axis indices (<code>null</code> permitted).
 	 *
 	 * @since 1.0.12
 	 */
-	 public void mapDatasetToRangeAxes(int index, List<Integer> axisIndices) {
-	 if (index < 0) {
-	 throw new IllegalArgumentException("Requires 'index' >= 0.");
-	 }
-	 checkAxisIndices(axisIndices);
-	 Integer key = index;
-	 this.datasetToRangeAxesMap.put(key, new ArrayList<Integer>(axisIndices));
-	 // fake a dataset change event to update axes...
-	 datasetChanged(new DatasetChangeEvent(this, getDataset(index)));
-	 }
+	public void mapDatasetToRangeAxes(int index, List<Integer> axisIndices) {
+		if (index < 0) {
+			throw new IllegalArgumentException("Requires 'index' >= 0.");
+		}
+		checkAxisIndices(axisIndices);
+		Integer key = index;
+		this.datasetToRangeAxesMap.put(key, new ArrayList<Integer>(axisIndices));
+		// fake a dataset change event to update axes...
+		datasetChanged(new DatasetChangeEvent(this, getDataset(index)));
+	}
 
 	/**
 	 * Returns the range axis for a dataset. You can change the axis for a
@@ -1619,224 +1649,236 @@ public class CategoryPlot extends Plot implements
 		return this.renderers.get(index);
 	}
 
-	//
-	// /**
-	// * Sets the renderer at index 0 (sometimes referred to as the "primary"
-	// * renderer) and sends a change event to all registered listeners.
-	// *
-	// * @param renderer the renderer (<code>null</code> permitted.
-	// *
-	// * @see #getRenderer()
-	// */
-	// public void setRenderer(CategoryItemRenderer renderer) {
-	// setRenderer(0, renderer, true);
-	// }
-	//
-	// /**
-	// * Sets the renderer at index 0 (sometimes referred to as the "primary"
-	// * renderer) and, if requested, sends a change event to all registered
-	// * listeners.
-	// * <p>
-	// * You can set the renderer to <code>null</code>, but this is not
-	// * recommended because:
-	// * <ul>
-	// * <li>no data will be displayed;</li>
-	// * <li>the plot background will not be painted;</li>
-	// * </ul>
-	// *
-	// * @param renderer the renderer (<code>null</code> permitted).
-	// * @param notify notify listeners?
-	// *
-	// * @see #getRenderer()
-	// */
-	// public void setRenderer(CategoryItemRenderer renderer, boolean notify) {
-	// setRenderer(0, renderer, notify);
-	// }
-	//
-	// /**
-	// * Sets the renderer to use for the dataset with the specified index and
-	// * sends a change event to all registered listeners. Note that each
-	// * dataset should have its own renderer, you should not use one renderer
-	// * for multiple datasets.
-	// *
-	// * @param index the index.
-	// * @param renderer the renderer (<code>null</code> permitted).
-	// *
-	// * @see #getRenderer(int)
-	// * @see #setRenderer(int, CategoryItemRenderer, boolean)
-	// */
-	// public void setRenderer(int index, CategoryItemRenderer renderer) {
-	// setRenderer(index, renderer, true);
-	// }
-	//
-	// /**
-	// * Sets the renderer to use for the dataset with the specified index and,
-	// * if requested, sends a change event to all registered listeners. Note
-	// * that each dataset should have its own renderer, you should not use one
-	// * renderer for multiple datasets.
-	// *
-	// * @param index the index.
-	// * @param renderer the renderer (<code>null</code> permitted).
-	// * @param notify notify listeners?
-	// *
-	// * @see #getRenderer(int)
-	// */
-	// public void setRenderer(int index, CategoryItemRenderer renderer,
-	// boolean notify) {
-	// CategoryItemRenderer existing = this.renderers.get(index);
-	// if (existing != null) {
-	// existing.removeChangeListener(this);
-	// }
-	// this.renderers.put(index, renderer);
-	// if (renderer != null) {
-	// renderer.setPlot(this);
-	// renderer.addChangeListener(this);
-	// }
-	//
-	// configureDomainAxes();
-	// configureRangeAxes();
-	//
-	// if (notify) {
-	// fireChangeEvent();
-	// }
-	// }
-	//
-	// /**
-	// * Sets the renderers for this plot and sends a {@link PlotChangeEvent}
-	// * to all registered listeners.
-	// *
-	// * @param renderers the renderers.
-	// */
-	// public void setRenderers(CategoryItemRenderer[] renderers) {
-	// for (int i = 0; i < renderers.length; i++) {
-	// setRenderer(i, renderers[i], false);
-	// }
-	// fireChangeEvent();
-	// }
-	//
-	// /**
-	// * Returns the renderer for the specified dataset. If the dataset doesn't
-	// * belong to the plot, this method will return {@code null}.
-	// *
-	// * @param dataset the dataset ({@code null} permitted).
-	// *
-	// * @return The renderer (possibly {@code null}).
-	// */
-	// public CategoryItemRenderer getRendererForDataset(CategoryDataset
-	// dataset) {
-	// int datasetIndex = findDatasetIndex(dataset);
-	// if (datasetIndex < 0) {
-	// return null;
-	// }
-	// CategoryItemRenderer renderer = this.renderers.get(datasetIndex);
-	// if (renderer == null) {
-	// return getRenderer();
-	// }
-	// return renderer;
-	// }
-	//
-	// /**
-	// * Returns the index of the specified renderer, or <code>-1</code> if the
-	// * renderer is not assigned to this plot.
-	// *
-	// * @param renderer the renderer (<code>null</code> permitted).
-	// *
-	// * @return The renderer index.
-	// */
-	// public int findRendererIndex(CategoryItemRenderer renderer) {
-	// for (Map.Entry<Integer, CategoryItemRenderer> entry
-	// : this.renderers.entrySet()) {
-	// if (entry.getValue() == renderer) {
-	// return entry.getKey();
-	// }
-	// }
-	// return -1;
-	// }
-	//
-	// /**
-	// * Returns the dataset rendering order.
-	// *
-	// * @return The order (never <code>null</code>).
-	// *
-	// * @see #setDatasetRenderingOrder(DatasetRenderingOrder)
-	// */
-	// public DatasetRenderingOrder getDatasetRenderingOrder() {
-	// return this.renderingOrder;
-	// }
-	//
-	// /**
-	// * Sets the rendering order and sends a {@link PlotChangeEvent} to all
-	// * registered listeners. By default, the plot renders the primary dataset
-	// * last (so that the primary dataset overlays the secondary datasets). You
-	// * can reverse this if you want to.
-	// *
-	// * @param order the rendering order (<code>null</code> not permitted).
-	// *
-	// * @see #getDatasetRenderingOrder()
-	// */
-	// public void setDatasetRenderingOrder(DatasetRenderingOrder order) {
-	// ParamChecks.nullNotPermitted(order, "order");
-	// this.renderingOrder = order;
-	// fireChangeEvent();
-	// }
-	//
-	// /**
-	// * Returns the order in which the columns are rendered. The default value
-	// * is <code>SortOrder.ASCENDING</code>.
-	// *
-	// * @return The column rendering order (never <code>null</code>).
-	// *
-	// * @see #setColumnRenderingOrder(SortOrder)
-	// */
-	// public SortOrder getColumnRenderingOrder() {
-	// return this.columnRenderingOrder;
-	// }
-	//
-	// /**
-	// * Sets the column order in which the items in each dataset should be
-	// * rendered and sends a {@link PlotChangeEvent} to all registered
-	// * listeners. Note that this affects the order in which items are drawn,
-	// * NOT their position in the chart.
-	// *
-	// * @param order the order (<code>null</code> not permitted).
-	// *
-	// * @see #getColumnRenderingOrder()
-	// * @see #setRowRenderingOrder(SortOrder)
-	// */
-	// public void setColumnRenderingOrder(SortOrder order) {
-	// ParamChecks.nullNotPermitted(order, "order");
-	// this.columnRenderingOrder = order;
-	// fireChangeEvent();
-	// }
-	//
-	// /**
-	// * Returns the order in which the rows should be rendered. The default
-	// * value is <code>SortOrder.ASCENDING</code>.
-	// *
-	// * @return The order (never <code>null</code>).
-	// *
-	// * @see #setRowRenderingOrder(SortOrder)
-	// */
-	// public SortOrder getRowRenderingOrder() {
-	// return this.rowRenderingOrder;
-	// }
-	//
-	// /**
-	// * Sets the row order in which the items in each dataset should be
-	// * rendered and sends a {@link PlotChangeEvent} to all registered
-	// * listeners. Note that this affects the order in which items are drawn,
-	// * NOT their position in the chart.
-	// *
-	// * @param order the order (<code>null</code> not permitted).
-	// *
-	// * @see #getRowRenderingOrder()
-	// * @see #setColumnRenderingOrder(SortOrder)
-	// */
-	// public void setRowRenderingOrder(SortOrder order) {
-	// ParamChecks.nullNotPermitted(order, "order");
-	// this.rowRenderingOrder = order;
-	// fireChangeEvent();
-	// }
+	/**
+	 * Sets the renderer at index 0 (sometimes referred to as the "primary"
+	 * renderer) and sends a change event to all registered listeners.
+	 *
+	 * @param renderer
+	 *            the renderer (<code>null</code> permitted.
+	 *
+	 * @see #getRenderer()
+	 */
+	public void setRenderer(CategoryItemRenderer renderer) {
+		setRenderer(0, renderer, true);
+	}
+
+	/**
+	 * Sets the renderer at index 0 (sometimes referred to as the "primary"
+	 * renderer) and, if requested, sends a change event to all registered
+	 * listeners.
+	 * <p>
+	 * You can set the renderer to <code>null</code>, but this is not
+	 * recommended because:
+	 * <ul>
+	 * <li>no data will be displayed;</li>
+	 * <li>the plot background will not be painted;</li>
+	 * </ul>
+	 *
+	 * @param renderer
+	 *            the renderer (<code>null</code> permitted).
+	 * @param notify
+	 *            notify listeners?
+	 *
+	 * @see #getRenderer()
+	 */
+	public void setRenderer(CategoryItemRenderer renderer, boolean notify) {
+		setRenderer(0, renderer, notify);
+	}
+
+	/**
+	 * Sets the renderer to use for the dataset with the specified index and
+	 * sends a change event to all registered listeners. Note that each dataset
+	 * should have its own renderer, you should not use one renderer for
+	 * multiple datasets.
+	 *
+	 * @param index
+	 *            the index.
+	 * @param renderer
+	 *            the renderer (<code>null</code> permitted).
+	 *
+	 * @see #getRenderer(int)
+	 * @see #setRenderer(int, CategoryItemRenderer, boolean)
+	 */
+	public void setRenderer(int index, CategoryItemRenderer renderer) {
+		setRenderer(index, renderer, true);
+	}
+
+	/**
+	 * Sets the renderer to use for the dataset with the specified index and, if
+	 * requested, sends a change event to all registered listeners. Note that
+	 * each dataset should have its own renderer, you should not use one
+	 * renderer for multiple datasets.
+	 *
+	 * @param index
+	 *            the index.
+	 * @param renderer
+	 *            the renderer (<code>null</code> permitted).
+	 * @param notify
+	 *            notify listeners?
+	 *
+	 * @see #getRenderer(int)
+	 */
+	public void setRenderer(int index, CategoryItemRenderer renderer,
+			boolean notify) {
+		CategoryItemRenderer existing = this.renderers.get(index);
+		if (existing != null) {
+			existing.removeChangeListener(this);
+		}
+		this.renderers.put(index, renderer);
+		if (renderer != null) {
+			renderer.setPlot(this);
+			renderer.addChangeListener(this);
+		}
+
+		configureDomainAxes();
+		configureRangeAxes();
+
+		if (notify) {
+			fireChangeEvent();
+		}
+	}
+
+	/**
+	 * Sets the renderers for this plot and sends a {@link PlotChangeEvent} to
+	 * all registered listeners.
+	 *
+	 * @param renderers
+	 *            the renderers.
+	 */
+	public void setRenderers(CategoryItemRenderer[] renderers) {
+		for (int i = 0; i < renderers.length; i++) {
+			setRenderer(i, renderers[i], false);
+		}
+		fireChangeEvent();
+	}
+
+	/**
+	 * Returns the renderer for the specified dataset. If the dataset doesn't
+	 * belong to the plot, this method will return {@code null}.
+	 *
+	 * @param dataset
+	 *            the dataset ({@code null} permitted).
+	 *
+	 * @return The renderer (possibly {@code null}).
+	 */
+	public CategoryItemRenderer getRendererForDataset(CategoryDataset
+			dataset) {
+		int datasetIndex = findDatasetIndex(dataset);
+		if (datasetIndex < 0) {
+			return null;
+		}
+		CategoryItemRenderer renderer = this.renderers.get(datasetIndex);
+		if (renderer == null) {
+			return getRenderer();
+		}
+		return renderer;
+	}
+
+	/**
+	 * Returns the index of the specified renderer, or <code>-1</code> if the
+	 * renderer is not assigned to this plot.
+	 *
+	 * @param renderer
+	 *            the renderer (<code>null</code> permitted).
+	 *
+	 * @return The renderer index.
+	 */
+	public int findRendererIndex(CategoryItemRenderer renderer) {
+		for (Map.Entry<Integer, CategoryItemRenderer> entry : this.renderers.entrySet()) {
+			if (entry.getValue() == renderer) {
+				return entry.getKey();
+			}
+		}
+		return -1;
+	}
+
+	/**
+	 * Returns the dataset rendering order.
+	 *
+	 * @return The order (never <code>null</code>).
+	 *
+	 * @see #setDatasetRenderingOrder(DatasetRenderingOrder)
+	 */
+	public DatasetRenderingOrder getDatasetRenderingOrder() {
+		return this.renderingOrder;
+	}
+
+	/**
+	 * Sets the rendering order and sends a {@link PlotChangeEvent} to all
+	 * registered listeners. By default, the plot renders the primary dataset
+	 * last (so that the primary dataset overlays the secondary datasets). You
+	 * can reverse this if you want to.
+	 *
+	 * @param order
+	 *            the rendering order (<code>null</code> not permitted).
+	 *
+	 * @see #getDatasetRenderingOrder()
+	 */
+	public void setDatasetRenderingOrder(DatasetRenderingOrder order) {
+		ParamChecks.nullNotPermitted(order, "order");
+		this.renderingOrder = order;
+		fireChangeEvent();
+	}
+
+	/**
+	 * Returns the order in which the columns are rendered. The default value is
+	 * <code>SortOrder.ASCENDING</code>.
+	 *
+	 * @return The column rendering order (never <code>null</code>).
+	 *
+	 * @see #setColumnRenderingOrder(SortOrder)
+	 */
+	public SortOrder getColumnRenderingOrder() {
+		return this.columnRenderingOrder;
+	}
+
+	/**
+	 * Sets the column order in which the items in each dataset should be
+	 * rendered and sends a {@link PlotChangeEvent} to all registered listeners.
+	 * Note that this affects the order in which items are drawn, NOT their
+	 * position in the chart.
+	 *
+	 * @param order
+	 *            the order (<code>null</code> not permitted).
+	 *
+	 * @see #getColumnRenderingOrder()
+	 * @see #setRowRenderingOrder(SortOrder)
+	 */
+	public void setColumnRenderingOrder(SortOrder order) {
+		ParamChecks.nullNotPermitted(order, "order");
+		this.columnRenderingOrder = order;
+		fireChangeEvent();
+	}
+
+	/**
+	 * Returns the order in which the rows should be rendered. The default value
+	 * is <code>SortOrder.ASCENDING</code>.
+	 *
+	 * @return The order (never <code>null</code>).
+	 *
+	 * @see #setRowRenderingOrder(SortOrder)
+	 */
+	public SortOrder getRowRenderingOrder() {
+		return this.rowRenderingOrder;
+	}
+
+	/**
+	 * Sets the row order in which the items in each dataset should be rendered
+	 * and sends a {@link PlotChangeEvent} to all registered listeners. Note
+	 * that this affects the order in which items are drawn, NOT their position
+	 * in the chart.
+	 *
+	 * @param order
+	 *            the order (<code>null</code> not permitted).
+	 *
+	 * @see #getRowRenderingOrder()
+	 * @see #setColumnRenderingOrder(SortOrder)
+	 */
+	public void setRowRenderingOrder(SortOrder order) {
+		ParamChecks.nullNotPermitted(order, "order");
+		this.rowRenderingOrder = order;
+		fireChangeEvent();
+	}
 
 	/**
 	 * Returns the flag that controls whether the domain grid-lines are visible.
@@ -1894,6 +1936,7 @@ public class CategoryPlot extends Plot implements
 		fireChangeEvent();
 	}
 
+	// JAVAFX stroke, paint
 	//
 	// /**
 	// * Returns the stroke used to draw grid-lines against the domain axis.
@@ -1976,6 +2019,7 @@ public class CategoryPlot extends Plot implements
 		fireChangeEvent();
 	}
 
+	// JAVAFX stroke, paint
 	//
 	// /**
 	// * Returns the stroke used for the zero baseline against the range axis.
@@ -2064,6 +2108,7 @@ public class CategoryPlot extends Plot implements
 		}
 	}
 
+	// JAVAFX stroke, paint
 	//
 	// /**
 	// * Returns the stroke used to draw the grid-lines against the range axis.
@@ -2150,6 +2195,7 @@ public class CategoryPlot extends Plot implements
 		}
 	}
 
+	// JAVAFX stroke, paint
 	//
 	// /**
 	// * Returns the stroke for the minor grid lines (if any) plotted against
@@ -2213,31 +2259,32 @@ public class CategoryPlot extends Plot implements
 	// fireChangeEvent();
 	// }
 	//
-	// /**
-	// * Returns the fixed legend items, if any.
-	// *
-	// * @return The legend items (possibly {@code null}).
-	// *
-	// * @see #setFixedLegendItems(java.util.List)
-	// */
-	// public List<LegendItem> getFixedLegendItems() {
-	// return this.fixedLegendItems;
-	// }
-	//
-	// /**
-	// * Sets the fixed legend items for the plot. Leave this set to
-	// * <code>null</code> if you prefer the legend items to be created
-	// * automatically.
-	// *
-	// * @param items the legend items (<code>null</code> permitted).
-	// *
-	// * @see #getFixedLegendItems()
-	// */
-	// public void setFixedLegendItems(List<LegendItem> items) {
-	// this.fixedLegendItems = items;
-	// fireChangeEvent();
-	// }
-	//
+	/**
+	 * Returns the fixed legend items, if any.
+	 *
+	 * @return The legend items (possibly {@code null}).
+	 *
+	 * @see #setFixedLegendItems(java.util.List)
+	 */
+	public List<LegendItem> getFixedLegendItems() {
+		return this.fixedLegendItems;
+	}
+
+	/**
+	 * Sets the fixed legend items for the plot. Leave this set to
+	 * <code>null</code> if you prefer the legend items to be created
+	 * automatically.
+	 *
+	 * @param items
+	 *            the legend items (<code>null</code> permitted).
+	 *
+	 * @see #getFixedLegendItems()
+	 */
+	public void setFixedLegendItems(List<LegendItem> items) {
+		this.fixedLegendItems = items;
+		fireChangeEvent();
+	}
+
 	/**
 	 * Returns the legend items for the plot. By default, this method creates a
 	 * legend item for each series in each of the datasets. You can change this
@@ -2512,69 +2559,73 @@ public class CategoryPlot extends Plot implements
 	// fireChangeEvent();
 	// }
 	//
-	// /**
-	// * Returns the list of domain markers (read only) for the specified layer.
-	// *
-	// * @param layer the layer (foreground or background).
-	// *
-	// * @return The list of domain markers.
-	// */
-	// public Collection<Marker> getDomainMarkers(Layer layer) {
-	// return getDomainMarkers(0, layer);
-	// }
-	//
-	// /**
-	// * Returns a collection of domain markers for a particular renderer and
-	// * layer.
-	// *
-	// * @param index the renderer index.
-	// * @param layer the layer.
-	// *
-	// * @return A collection of markers (possibly <code>null</code>).
-	// */
-	// public Collection<Marker> getDomainMarkers(int index, Layer layer) {
-	// Collection<Marker> result = null;
-	// if (layer == Layer.FOREGROUND) {
-	// result = this.foregroundDomainMarkers.get(index);
-	// }
-	// else if (layer == Layer.BACKGROUND) {
-	// result = this.backgroundDomainMarkers.get(index);
-	// }
-	// if (result != null) {
-	// result = Collections.unmodifiableCollection(result);
-	// }
-	// return result;
-	// }
-	//
-	// /**
-	// * Clears all the domain markers for the specified renderer.
-	// *
-	// * @param index the renderer index.
-	// *
-	// * @see #clearRangeMarkers(int)
-	// */
-	// public void clearDomainMarkers(int index) {
-	// if (this.backgroundDomainMarkers != null) {
-	// Collection<Marker> markers
-	// = this.backgroundDomainMarkers.get(index);
-	// if (markers != null) {
-	// for (Marker m : markers) {
-	// m.removeChangeListener(this);
-	// }
-	// markers.clear();
-	// }
-	// }
-	// if (this.foregroundDomainMarkers != null) {
-	// Collection<Marker> markers = this.foregroundDomainMarkers.get(index);
-	// if (markers != null) {
-	// for (Marker m : markers) {
-	// m.removeChangeListener(this);
-	// }
-	// markers.clear();
-	// }
-	// }
-	// fireChangeEvent();
-	// }
+	/**
+	 * Returns the list of domain markers (read only) for the specified layer.
+	 *
+	 * @param layer
+	 *            the layer (foreground or background).
+	 *
+	 * @return The list of domain markers.
+	 */
+	public Collection<Marker> getDomainMarkers(Layer layer) {
+		return getDomainMarkers(0, layer);
+	}
+
+	/**
+	 * Returns a collection of domain markers for a particular renderer and
+	 * layer.
+	 *
+	 * @param index
+	 *            the renderer index.
+	 * @param layer
+	 *            the layer.
+	 *
+	 * @return A collection of markers (possibly <code>null</code>).
+	 */
+	public Collection<Marker> getDomainMarkers(int index, Layer layer) {
+		Collection<Marker> result = null;
+		if (layer == Layer.FOREGROUND) {
+			result = this.foregroundDomainMarkers.get(index);
+		}
+		else if (layer == Layer.BACKGROUND) {
+			result = this.backgroundDomainMarkers.get(index);
+		}
+		if (result != null) {
+			result = Collections.unmodifiableCollection(result);
+		}
+		return result;
+	}
+
+	/**
+	 * Clears all the domain markers for the specified renderer.
+	 *
+	 * @param index
+	 *            the renderer index.
+	 *
+	 * @see #clearRangeMarkers(int)
+	 */
+	public void clearDomainMarkers(int index) {
+		if (this.backgroundDomainMarkers != null) {
+			Collection<Marker> markers = this.backgroundDomainMarkers.get(index);
+			if (markers != null) {
+				for (Marker m : markers) {
+					m.removeChangeListener(this);
+				}
+				markers.clear();
+			}
+		}
+		if (this.foregroundDomainMarkers != null) {
+			Collection<Marker> markers = this.foregroundDomainMarkers.get(index);
+			if (markers != null) {
+				for (Marker m : markers) {
+					m.removeChangeListener(this);
+				}
+				markers.clear();
+			}
+		}
+		fireChangeEvent();
+	}
+
 	//
 	// /**
 	// * Removes a marker for the domain axis and sends a {@link
@@ -2778,195 +2829,210 @@ public class CategoryPlot extends Plot implements
 	// fireChangeEvent();
 	// }
 	//
-	// /**
-	// * Returns the list of range markers (read only) for the specified layer.
-	// *
-	// * @param layer the layer (foreground or background).
-	// *
-	// * @return The list of range markers.
-	// *
-	// * @see #getRangeMarkers(int, Layer)
-	// */
-	// public Collection<Marker> getRangeMarkers(Layer layer) {
-	// return getRangeMarkers(0, layer);
-	// }
-	//
-	// /**
-	// * Returns a collection of range markers for a particular renderer and
-	// * layer.
-	// *
-	// * @param index the renderer index.
-	// * @param layer the layer.
-	// *
-	// * @return A collection of markers (possibly <code>null</code>).
-	// */
-	// public Collection<Marker> getRangeMarkers(int index, Layer layer) {
-	// Collection<Marker> result = null;
-	// Integer key = index;
-	// if (layer == Layer.FOREGROUND) {
-	// result = this.foregroundRangeMarkers.get(key);
-	// }
-	// else if (layer == Layer.BACKGROUND) {
-	// result = this.backgroundRangeMarkers.get(key);
-	// }
-	// if (result != null) {
-	// result = Collections.unmodifiableCollection(result);
-	// }
-	// return result;
-	// }
-	//
-	// /**
-	// * Clears all the range markers for the specified renderer.
-	// *
-	// * @param index the renderer index.
-	// *
-	// * @see #clearDomainMarkers(int)
-	// */
-	// public void clearRangeMarkers(int index) {
-	// Integer key = index;
-	// if (this.backgroundRangeMarkers != null) {
-	// Collection<Marker> markers = this.backgroundRangeMarkers.get(key);
-	// if (markers != null) {
-	// for (Marker m : markers) {
-	// m.removeChangeListener(this);
-	// }
-	// markers.clear();
-	// }
-	// }
-	// if (this.foregroundRangeMarkers != null) {
-	// Collection<Marker> markers = this.foregroundRangeMarkers.get(key);
-	// if (markers != null) {
-	// for (Marker m : markers) {
-	// m.removeChangeListener(this);
-	// }
-	// markers.clear();
-	// }
-	// }
-	// fireChangeEvent();
-	// }
-	//
-	// /**
-	// * Removes a marker for the range axis and sends a {@link PlotChangeEvent}
-	// * to all registered listeners.
-	// *
-	// * @param marker the marker.
-	// *
-	// * @return A boolean indicating whether or not the marker was actually
-	// * removed.
-	// *
-	// * @since 1.0.7
-	// *
-	// * @see #addRangeMarker(Marker)
-	// */
-	// public boolean removeRangeMarker(Marker marker) {
-	// return removeRangeMarker(marker, Layer.FOREGROUND);
-	// }
-	//
-	// /**
-	// * Removes a marker for the range axis in the specified layer and sends a
-	// * {@link PlotChangeEvent} to all registered listeners.
-	// *
-	// * @param marker the marker (<code>null</code> not permitted).
-	// * @param layer the layer (foreground or background).
-	// *
-	// * @return A boolean indicating whether or not the marker was actually
-	// * removed.
-	// *
-	// * @since 1.0.7
-	// *
-	// * @see #addRangeMarker(Marker, Layer)
-	// */
-	// public boolean removeRangeMarker(Marker marker, Layer layer) {
-	// return removeRangeMarker(0, marker, layer);
-	// }
-	//
-	// /**
-	// * Removes a marker for a specific dataset/renderer and sends a
-	// * {@link PlotChangeEvent} to all registered listeners.
-	// *
-	// * @param index the dataset/renderer index.
-	// * @param marker the marker.
-	// * @param layer the layer (foreground or background).
-	// *
-	// * @return A boolean indicating whether or not the marker was actually
-	// * removed.
-	// *
-	// * @since 1.0.7
-	// *
-	// * @see #addRangeMarker(int, Marker, Layer)
-	// */
-	// public boolean removeRangeMarker(int index, Marker marker, Layer layer) {
-	// return removeRangeMarker(index, marker, layer, true);
-	// }
-	//
-	// /**
-	// * Removes a marker for a specific dataset/renderer and sends a
-	// * {@link PlotChangeEvent} to all registered listeners.
-	// *
-	// * @param index the dataset/renderer index.
-	// * @param marker the marker.
-	// * @param layer the layer (foreground or background).
-	// * @param notify notify listeners.
-	// *
-	// * @return A boolean indicating whether or not the marker was actually
-	// * removed.
-	// *
-	// * @since 1.0.10
-	// *
-	// * @see #addRangeMarker(int, Marker, Layer, boolean)
-	// */
-	// public boolean removeRangeMarker(int index, Marker marker, Layer layer,
-	// boolean notify) {
-	// ParamChecks.nullNotPermitted(marker, "marker");
-	// Collection<Marker> markers;
-	// if (layer == Layer.FOREGROUND) {
-	// markers = this.foregroundRangeMarkers.get(index);
-	// }
-	// else {
-	// markers = this.backgroundRangeMarkers.get(index);
-	// }
-	// if (markers == null) {
-	// return false;
-	// }
-	// boolean removed = markers.remove(marker);
-	// if (removed && notify) {
-	// fireChangeEvent();
-	// }
-	// return removed;
-	// }
-	//
-	// /**
-	// * Returns the flag that controls whether or not the domain crosshair is
-	// * displayed by the plot.
-	// *
-	// * @return A boolean.
-	// *
-	// * @since 1.0.11
-	// *
-	// * @see #setDomainCrosshairVisible(boolean)
-	// */
-	// public boolean isDomainCrosshairVisible() {
-	// return this.domainCrosshairVisible;
-	// }
-	//
-	// /**
-	// * Sets the flag that controls whether or not the domain crosshair is
-	// * displayed by the plot, and sends a {@link PlotChangeEvent} to all
-	// * registered listeners.
-	// *
-	// * @param flag the new flag value.
-	// *
-	// * @since 1.0.11
-	// *
-	// * @see #isDomainCrosshairVisible()
-	// * @see #setRangeCrosshairVisible(boolean)
-	// */
-	// public void setDomainCrosshairVisible(boolean flag) {
-	// if (this.domainCrosshairVisible != flag) {
-	// this.domainCrosshairVisible = flag;
-	// fireChangeEvent();
-	// }
-	// }
+	/**
+	 * Returns the list of range markers (read only) for the specified layer.
+	 *
+	 * @param layer
+	 *            the layer (foreground or background).
+	 *
+	 * @return The list of range markers.
+	 *
+	 * @see #getRangeMarkers(int, Layer)
+	 */
+	public Collection<Marker> getRangeMarkers(Layer layer) {
+		return getRangeMarkers(0, layer);
+	}
+
+	/**
+	 * Returns a collection of range markers for a particular renderer and
+	 * layer.
+	 *
+	 * @param index
+	 *            the renderer index.
+	 * @param layer
+	 *            the layer.
+	 *
+	 * @return A collection of markers (possibly <code>null</code>).
+	 */
+	public Collection<Marker> getRangeMarkers(int index, Layer layer) {
+		Collection<Marker> result = null;
+		Integer key = index;
+		if (layer == Layer.FOREGROUND) {
+			result = this.foregroundRangeMarkers.get(key);
+		}
+		else if (layer == Layer.BACKGROUND) {
+			result = this.backgroundRangeMarkers.get(key);
+		}
+		if (result != null) {
+			result = Collections.unmodifiableCollection(result);
+		}
+		return result;
+	}
+
+	/**
+	 * Clears all the range markers for the specified renderer.
+	 *
+	 * @param index
+	 *            the renderer index.
+	 *
+	 * @see #clearDomainMarkers(int)
+	 */
+	public void clearRangeMarkers(int index) {
+		Integer key = index;
+		if (this.backgroundRangeMarkers != null) {
+			Collection<Marker> markers = this.backgroundRangeMarkers.get(key);
+			if (markers != null) {
+				for (Marker m : markers) {
+					m.removeChangeListener(this);
+				}
+				markers.clear();
+			}
+		}
+		if (this.foregroundRangeMarkers != null) {
+			Collection<Marker> markers = this.foregroundRangeMarkers.get(key);
+			if (markers != null) {
+				for (Marker m : markers) {
+					m.removeChangeListener(this);
+				}
+				markers.clear();
+			}
+		}
+		fireChangeEvent();
+	}
+
+	/**
+	 * Removes a marker for the range axis and sends a {@link PlotChangeEvent}
+	 * to all registered listeners.
+	 *
+	 * @param marker
+	 *            the marker.
+	 *
+	 * @return A boolean indicating whether or not the marker was actually
+	 *         removed.
+	 *
+	 * @since 1.0.7
+	 *
+	 * @see #addRangeMarker(Marker)
+	 */
+	public boolean removeRangeMarker(Marker marker) {
+		return removeRangeMarker(marker, Layer.FOREGROUND);
+	}
+
+	/**
+	 * Removes a marker for the range axis in the specified layer and sends a
+	 * {@link PlotChangeEvent} to all registered listeners.
+	 *
+	 * @param marker
+	 *            the marker (<code>null</code> not permitted).
+	 * @param layer
+	 *            the layer (foreground or background).
+	 *
+	 * @return A boolean indicating whether or not the marker was actually
+	 *         removed.
+	 *
+	 * @since 1.0.7
+	 *
+	 * @see #addRangeMarker(Marker, Layer)
+	 */
+	public boolean removeRangeMarker(Marker marker, Layer layer) {
+		return removeRangeMarker(0, marker, layer);
+	}
+
+	/**
+	 * Removes a marker for a specific dataset/renderer and sends a
+	 * {@link PlotChangeEvent} to all registered listeners.
+	 *
+	 * @param index
+	 *            the dataset/renderer index.
+	 * @param marker
+	 *            the marker.
+	 * @param layer
+	 *            the layer (foreground or background).
+	 *
+	 * @return A boolean indicating whether or not the marker was actually
+	 *         removed.
+	 *
+	 * @since 1.0.7
+	 *
+	 * @see #addRangeMarker(int, Marker, Layer)
+	 */
+	public boolean removeRangeMarker(int index, Marker marker, Layer layer) {
+		return removeRangeMarker(index, marker, layer, true);
+	}
+
+	/**
+	 * Removes a marker for a specific dataset/renderer and sends a
+	 * {@link PlotChangeEvent} to all registered listeners.
+	 *
+	 * @param index
+	 *            the dataset/renderer index.
+	 * @param marker
+	 *            the marker.
+	 * @param layer
+	 *            the layer (foreground or background).
+	 * @param notify
+	 *            notify listeners.
+	 *
+	 * @return A boolean indicating whether or not the marker was actually
+	 *         removed.
+	 *
+	 * @since 1.0.10
+	 *
+	 * @see #addRangeMarker(int, Marker, Layer, boolean)
+	 */
+	public boolean removeRangeMarker(int index, Marker marker, Layer layer,
+			boolean notify) {
+		ParamChecks.nullNotPermitted(marker, "marker");
+		Collection<Marker> markers;
+		if (layer == Layer.FOREGROUND) {
+			markers = this.foregroundRangeMarkers.get(index);
+		}
+		else {
+			markers = this.backgroundRangeMarkers.get(index);
+		}
+		if (markers == null) {
+			return false;
+		}
+		boolean removed = markers.remove(marker);
+		if (removed && notify) {
+			fireChangeEvent();
+		}
+		return removed;
+	}
+
+	/**
+	 * Returns the flag that controls whether or not the domain crosshair is
+	 * displayed by the plot.
+	 *
+	 * @return A boolean.
+	 *
+	 * @since 1.0.11
+	 *
+	 * @see #setDomainCrosshairVisible(boolean)
+	 */
+	public boolean isDomainCrosshairVisible() {
+		return this.domainCrosshairVisible;
+	}
+
+	/**
+	 * Sets the flag that controls whether or not the domain crosshair is
+	 * displayed by the plot, and sends a {@link PlotChangeEvent} to all
+	 * registered listeners.
+	 *
+	 * @param flag
+	 *            the new flag value.
+	 *
+	 * @since 1.0.11
+	 *
+	 * @see #isDomainCrosshairVisible()
+	 * @see #setRangeCrosshairVisible(boolean)
+	 */
+	public void setDomainCrosshairVisible(boolean flag) {
+		if (this.domainCrosshairVisible != flag) {
+			this.domainCrosshairVisible = flag;
+			fireChangeEvent();
+		}
+	}
 
 	/**
 	 * Returns the row key for the domain crosshair.
@@ -3309,17 +3375,18 @@ public class CategoryPlot extends Plot implements
 	// fireChangeEvent();
 	// }
 	//
-	// /**
-	// * Returns the list of annotations.
-	// *
-	// * @return The list of annotations (never <code>null</code>).
-	// *
-	// * @see #addAnnotation(CategoryAnnotation)
-	// * @see #clearAnnotations()
-	// */
-	// public List<CategoryAnnotation> getAnnotations() {
-	// return this.annotations;
-	// }
+	/**
+	 * Returns the list of annotations.
+	 *
+	 * @return The list of annotations (never <code>null</code>).
+	 *
+	 * @see #addAnnotation(CategoryAnnotation)
+	 * @see #clearAnnotations()
+	 */
+	public List<CategoryAnnotation> getAnnotations() {
+		return this.annotations;
+	}
+
 	//
 	// /**
 	// * Adds an annotation to the plot and sends a {@link PlotChangeEvent} to
@@ -3654,16 +3721,17 @@ public class CategoryPlot extends Plot implements
 		if (anchor != null) {
 			ValueAxis rangeAxis = getRangeAxis();
 			if (rangeAxis != null) {
-				double y;
-				if (getOrientation() == PlotOrientation.VERTICAL) {
-					y = rangeAxis.java2DToValue(anchor.getY(), dataArea,
-							getRangeAxisEdge());
-				}
-				else {
-					y = rangeAxis.java2DToValue(anchor.getX(), dataArea,
-							getRangeAxisEdge());
-				}
-				crosshairState.setAnchorY(y);
+				// JAVAFX
+				// double y;
+				// if (getOrientation() == PlotOrientation.VERTICAL) {
+				// y = rangeAxis.java2DToValue(anchor.getY(), dataArea,
+				// getRangeAxisEdge());
+				// }
+				// else {
+				// y = rangeAxis.java2DToValue(anchor.getX(), dataArea,
+				// getRangeAxisEdge());
+				// }
+				// crosshairState.setAnchorY(y);
 			}
 		}
 		crosshairState.setRowKey(getDomainCrosshairRowKey());
@@ -3671,8 +3739,9 @@ public class CategoryPlot extends Plot implements
 		crosshairState.setCrosshairY(getRangeCrosshairValue());
 
 		// don't let anyone draw outside the data area
-		Shape savedClip = g2.getClip();
-		g2.clip(dataArea);
+		// JAVAFX clip
+		// Shape savedClip = g2.getClip();
+		// g2.clip(dataArea);
 
 		drawDomainGridlines(g2, dataArea);
 
@@ -3688,17 +3757,18 @@ public class CategoryPlot extends Plot implements
 			drawZeroRangeBaseline(g2, dataArea);
 		}
 
-		Graphics2D savedG2 = g2;
-		BufferedImage dataImage = null;
-		boolean suppressShadow = Boolean.TRUE.equals(g2.getRenderingHint(
-				JFreeChart.KEY_SUPPRESS_SHADOW_GENERATION));
-		if (this.shadowGenerator != null && !suppressShadow) {
-			dataImage = new BufferedImage((int) dataArea.getWidth(),
-					(int) dataArea.getHeight(), BufferedImage.TYPE_INT_ARGB);
-			g2 = dataImage.createGraphics();
-			g2.translate(-dataArea.getX(), -dataArea.getY());
-			g2.setRenderingHints(savedG2.getRenderingHints());
-		}
+		// JAVAFX
+		// Graphics2D savedG2 = g2;
+		// BufferedImage dataImage = null;
+		// boolean suppressShadow = Boolean.TRUE.equals(g2.getRenderingHint(
+		// JFreeChart.KEY_SUPPRESS_SHADOW_GENERATION));
+		// if (this.shadowGenerator != null && !suppressShadow) {
+		// dataImage = new BufferedImage((int) dataArea.getWidth(),
+		// (int) dataArea.getHeight(), BufferedImage.TYPE_INT_ARGB);
+		// g2 = dataImage.createGraphics();
+		// g2.translate(-dataArea.getX(), -dataArea.getY());
+		// g2.setRenderingHints(savedG2.getRenderingHints());
+		// }
 
 		// draw the markers...
 		for (CategoryItemRenderer renderer : this.renderers.values()) {
@@ -3714,9 +3784,10 @@ public class CategoryPlot extends Plot implements
 		boolean foundData = false;
 
 		// set up the alpha-transparency...
-		Composite originalComposite = g2.getComposite();
-		g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER,
-				getForegroundAlpha()));
+		// JAVAFX
+		// Composite originalComposite = g2.getComposite();
+		// g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER,
+		// getForegroundAlpha()));
 
 		DatasetRenderingOrder order = getDatasetRenderingOrder();
 		List<Integer> indices = this.getDatasetIndices(order);
@@ -3737,19 +3808,20 @@ public class CategoryPlot extends Plot implements
 		// draw the annotations (if any)...
 		drawAnnotations(g2, dataArea);
 
-		if (this.shadowGenerator != null && !suppressShadow) {
-			BufferedImage shadowImage = this.shadowGenerator.createDropShadow(
-					dataImage);
-			g2 = savedG2;
-			g2.drawImage(shadowImage, (int) dataArea.getX()
-					+ this.shadowGenerator.calculateOffsetX(),
-					(int) dataArea.getY()
-							+ this.shadowGenerator.calculateOffsetY(), null);
-			g2.drawImage(dataImage, (int) dataArea.getX(),
-					(int) dataArea.getY(), null);
-		}
-		g2.setClip(savedClip);
-		g2.setComposite(originalComposite);
+		// JAVAFX
+		// if (this.shadowGenerator != null && !suppressShadow) {
+		// BufferedImage shadowImage = this.shadowGenerator.createDropShadow(
+		// dataImage);
+		// g2 = savedG2;
+		// g2.drawImage(shadowImage, (int) dataArea.getX()
+		// + this.shadowGenerator.calculateOffsetX(),
+		// (int) dataArea.getY()
+		// + this.shadowGenerator.calculateOffsetY(), null);
+		// g2.drawImage(dataImage, (int) dataArea.getX(),
+		// (int) dataArea.getY(), null);
+		// }
+		// g2.setClip(savedClip);
+		// g2.setComposite(originalComposite);
 
 		if (!foundData) {
 			drawNoDataMessage(g2, dataArea);
@@ -3764,24 +3836,26 @@ public class CategoryPlot extends Plot implements
 		setDomainCrosshairRowKey(rowKey, false);
 		setDomainCrosshairColumnKey(columnKey, false);
 		if (isDomainCrosshairVisible() && columnKey != null) {
-			Paint paint = getDomainCrosshairPaint();
-			Stroke stroke = getDomainCrosshairStroke();
-			drawDomainCrosshair(g2, dataArea, this.orientation,
-					datasetIndex, rowKey, columnKey, stroke, paint);
+			// JAVAFX stroke, paint
+			// Paint paint = getDomainCrosshairPaint();
+			// Stroke stroke = getDomainCrosshairStroke();
+			// drawDomainCrosshair(g2, dataArea, this.orientation,
+			// datasetIndex, rowKey, columnKey, stroke, paint);
 		}
 
 		// draw range crosshair if required...
 		ValueAxis yAxis = getRangeAxisForDataset(datasetIndex);
 		RectangleEdge yAxisEdge = getRangeAxisEdge();
 		if (!this.rangeCrosshairLockedOnData && anchor != null) {
-			double yy;
-			if (getOrientation() == PlotOrientation.VERTICAL) {
-				yy = yAxis.java2DToValue(anchor.getY(), dataArea, yAxisEdge);
-			}
-			else {
-				yy = yAxis.java2DToValue(anchor.getX(), dataArea, yAxisEdge);
-			}
-			crosshairState.setCrosshairY(yy);
+			// JAVAFX
+			// double yy;
+			// if (getOrientation() == PlotOrientation.VERTICAL) {
+			// yy = yAxis.java2DToValue(anchor.getY(), dataArea, yAxisEdge);
+			// }
+			// else {
+			// yy = yAxis.java2DToValue(anchor.getX(), dataArea, yAxisEdge);
+			// }
+			// crosshairState.setCrosshairY(yy);
 		}
 		setRangeCrosshairValue(crosshairState.getCrosshairY(), false);
 		if (isRangeCrosshairVisible()) {
@@ -3798,51 +3872,50 @@ public class CategoryPlot extends Plot implements
 
 	}
 
-	//
-	// /**
-	// * Returns the indices of the non-null datasets in the specified order.
-	// *
-	// * @param order the order ({@code null} not permitted).
-	// *
-	// * @return The list of indices.
-	// */
-	// private List<Integer> getDatasetIndices(DatasetRenderingOrder order) {
-	// List<Integer> result = new ArrayList<Integer>();
-	// for (Map.Entry<Integer, CategoryDataset> entry :
-	// this.datasets.entrySet()) {
-	// if (entry.getValue() != null) {
-	// result.add(entry.getKey());
-	// }
-	// }
-	// Collections.sort(result);
-	// if (order == DatasetRenderingOrder.REVERSE) {
-	// Collections.reverse(result);
-	// }
-	// return result;
-	// }
-	//
-	// /**
-	// * Returns the indices of the non-null renderers for the plot, in the
-	// * specified order.
-	// *
-	// * @param order the rendering order {@code null} not permitted).
-	// *
-	// * @return A list of indices.
-	// */
-	// private List<Integer> getRendererIndices(DatasetRenderingOrder order) {
-	// List<Integer> result = new ArrayList<Integer>();
-	// for (Map.Entry<Integer, CategoryItemRenderer> entry:
-	// this.renderers.entrySet()) {
-	// if (entry.getValue() != null) {
-	// result.add(entry.getKey());
-	// }
-	// }
-	// Collections.sort(result);
-	// if (order == DatasetRenderingOrder.REVERSE) {
-	// Collections.reverse(result);
-	// }
-	// return result;
-	// }
+	/**
+	 * Returns the indices of the non-null datasets in the specified order.
+	 *
+	 * @param order
+	 *            the order ({@code null} not permitted).
+	 *
+	 * @return The list of indices.
+	 */
+	private List<Integer> getDatasetIndices(DatasetRenderingOrder order) {
+		List<Integer> result = new ArrayList<Integer>();
+		for (Map.Entry<Integer, CategoryDataset> entry : this.datasets.entrySet()) {
+			if (entry.getValue() != null) {
+				result.add(entry.getKey());
+			}
+		}
+		Collections.sort(result);
+		if (order == DatasetRenderingOrder.REVERSE) {
+			Collections.reverse(result);
+		}
+		return result;
+	}
+
+	/**
+	 * Returns the indices of the non-null renderers for the plot, in the
+	 * specified order.
+	 *
+	 * @param order
+	 *            the rendering order {@code null} not permitted).
+	 *
+	 * @return A list of indices.
+	 */
+	private List<Integer> getRendererIndices(DatasetRenderingOrder order) {
+		List<Integer> result = new ArrayList<Integer>();
+		for (Map.Entry<Integer, CategoryItemRenderer> entry : this.renderers.entrySet()) {
+			if (entry.getValue() != null) {
+				result.add(entry.getKey());
+			}
+		}
+		Collections.sort(result);
+		if (order == DatasetRenderingOrder.REVERSE) {
+			Collections.reverse(result);
+		}
+		return result;
+	}
 
 	/**
 	 * Draws the plot background (the background color and/or image).
@@ -3908,10 +3981,12 @@ public class CategoryPlot extends Plot implements
 				dataArea.getHeight());
 		for (Axis axis : axisCollection.getAxesAtTop()) {
 			if (axis != null) {
-				AxisState axisState = axis.draw(g2, cursor, plotArea, dataArea,
-						RectangleEdge.TOP, plotState);
-				cursor = axisState.getCursor();
-				axisStateMap.put(axis, axisState);
+				// JAVAFX axis
+				// AxisState axisState = axis.draw(g2, cursor, plotArea,
+				// dataArea,
+				// RectangleEdge.TOP, plotState);
+				// cursor = axisState.getCursor();
+				// axisStateMap.put(axis, axisState);
 			}
 		}
 
@@ -3920,10 +3995,12 @@ public class CategoryPlot extends Plot implements
 				+ this.axisOffset.calculateBottomOutset(dataArea.getHeight());
 		for (Axis axis : axisCollection.getAxesAtBottom()) {
 			if (axis != null) {
-				AxisState axisState = axis.draw(g2, cursor, plotArea, dataArea,
-						RectangleEdge.BOTTOM, plotState);
-				cursor = axisState.getCursor();
-				axisStateMap.put(axis, axisState);
+				// JAVAFX axis
+				// AxisState axisState = axis.draw(g2, cursor, plotArea,
+				// dataArea,
+				// RectangleEdge.BOTTOM, plotState);
+				// cursor = axisState.getCursor();
+				// axisStateMap.put(axis, axisState);
 			}
 		}
 
@@ -3932,10 +4009,12 @@ public class CategoryPlot extends Plot implements
 				- this.axisOffset.calculateLeftOutset(dataArea.getWidth());
 		for (Axis axis : axisCollection.getAxesAtLeft()) {
 			if (axis != null) {
-				AxisState axisState = axis.draw(g2, cursor, plotArea, dataArea,
-						RectangleEdge.LEFT, plotState);
-				cursor = axisState.getCursor();
-				axisStateMap.put(axis, axisState);
+				// JAVAFX axis
+				// AxisState axisState = axis.draw(g2, cursor, plotArea,
+				// dataArea,
+				// RectangleEdge.LEFT, plotState);
+				// cursor = axisState.getCursor();
+				// axisStateMap.put(axis, axisState);
 			}
 		}
 
@@ -3944,10 +4023,12 @@ public class CategoryPlot extends Plot implements
 				+ this.axisOffset.calculateRightOutset(dataArea.getWidth());
 		for (Axis axis : axisCollection.getAxesAtRight()) {
 			if (axis != null) {
-				AxisState axisState = axis.draw(g2, cursor, plotArea, dataArea,
-						RectangleEdge.RIGHT, plotState);
-				cursor = axisState.getCursor();
-				axisStateMap.put(axis, axisState);
+				// JAVAFX axis
+				// AxisState axisState = axis.draw(g2, cursor, plotArea,
+				// dataArea,
+				// RectangleEdge.RIGHT, plotState);
+				// cursor = axisState.getCursor();
+				// axisStateMap.put(axis, axisState);
 			}
 		}
 
@@ -3955,83 +4036,86 @@ public class CategoryPlot extends Plot implements
 
 	}
 
-	//
-	// /**
-	// * Draws a representation of a dataset within the dataArea region using
-	// the
-	// * appropriate renderer.
-	// *
-	// * @param g2 the graphics device.
-	// * @param dataArea the region in which the data is to be drawn.
-	// * @param index the dataset and renderer index.
-	// * @param info an optional object for collection dimension information.
-	// * @param crosshairState a state object for tracking crosshair info
-	// * (<code>null</code> permitted).
-	// *
-	// * @return A boolean that indicates whether or not real data was found.
-	// *
-	// * @since 1.0.11
-	// */
-	// public boolean render(Graphics2D g2, Rectangle2D dataArea, int index,
-	// PlotRenderingInfo info, CategoryCrosshairState crosshairState) {
-	//
-	// boolean foundData = false;
-	// CategoryDataset currentDataset = getDataset(index);
-	// CategoryItemRenderer renderer = getRenderer(index);
-	// CategoryAxis domainAxis = getDomainAxisForDataset(index);
-	// ValueAxis rangeAxis = getRangeAxisForDataset(index);
-	// boolean hasData = !DatasetUtilities.isEmptyOrNull(currentDataset);
-	// if (hasData && renderer != null) {
-	//
-	// foundData = true;
-	// CategoryItemRendererState state = renderer.initialise(g2, dataArea,
-	// this, index, info);
-	// state.setCrosshairState(crosshairState);
-	// int columnCount = currentDataset.getColumnCount();
-	// int rowCount = currentDataset.getRowCount();
-	// int passCount = renderer.getPassCount();
-	// for (int pass = 0; pass < passCount; pass++) {
-	// if (this.columnRenderingOrder == SortOrder.ASCENDING) {
-	// for (int column = 0; column < columnCount; column++) {
-	// if (this.rowRenderingOrder == SortOrder.ASCENDING) {
-	// for (int row = 0; row < rowCount; row++) {
-	// renderer.drawItem(g2, state, dataArea, this,
-	// domainAxis, rangeAxis, currentDataset,
-	// row, column, pass);
-	// }
-	// }
-	// else {
-	// for (int row = rowCount - 1; row >= 0; row--) {
-	// renderer.drawItem(g2, state, dataArea, this,
-	// domainAxis, rangeAxis, currentDataset,
-	// row, column, pass);
-	// }
-	// }
-	// }
-	// }
-	// else {
-	// for (int column = columnCount - 1; column >= 0; column--) {
-	// if (this.rowRenderingOrder == SortOrder.ASCENDING) {
-	// for (int row = 0; row < rowCount; row++) {
-	// renderer.drawItem(g2, state, dataArea, this,
-	// domainAxis, rangeAxis, currentDataset,
-	// row, column, pass);
-	// }
-	// }
-	// else {
-	// for (int row = rowCount - 1; row >= 0; row--) {
-	// renderer.drawItem(g2, state, dataArea, this,
-	// domainAxis, rangeAxis, currentDataset,
-	// row, column, pass);
-	// }
-	// }
-	// }
-	// }
-	// }
-	// }
-	// return foundData;
-	//
-	// }
+	/**
+	 * Draws a representation of a dataset within the dataArea region using the
+	 * appropriate renderer.
+	 *
+	 * @param g2
+	 *            the graphics device.
+	 * @param dataArea
+	 *            the region in which the data is to be drawn.
+	 * @param index
+	 *            the dataset and renderer index.
+	 * @param info
+	 *            an optional object for collection dimension information.
+	 * @param crosshairState
+	 *            a state object for tracking crosshair info (<code>null</code>
+	 *            permitted).
+	 *
+	 * @return A boolean that indicates whether or not real data was found.
+	 *
+	 * @since 1.0.11
+	 */
+	public boolean render(GraphicsContext g2, Rectangle2D dataArea, int index,
+			PlotRenderingInfo info, CategoryCrosshairState crosshairState) {
+
+		boolean foundData = false;
+		CategoryDataset currentDataset = getDataset(index);
+		CategoryItemRenderer renderer = getRenderer(index);
+		CategoryAxis domainAxis = getDomainAxisForDataset(index);
+		ValueAxis rangeAxis = getRangeAxisForDataset(index);
+		boolean hasData = !DatasetUtilities.isEmptyOrNull(currentDataset);
+		if (hasData && renderer != null) {
+
+			foundData = true;
+			CategoryItemRendererState state = renderer.initialise(g2, dataArea,
+					this, index, info);
+			state.setCrosshairState(crosshairState);
+			int columnCount = currentDataset.getColumnCount();
+			int rowCount = currentDataset.getRowCount();
+			int passCount = renderer.getPassCount();
+			for (int pass = 0; pass < passCount; pass++) {
+				if (this.columnRenderingOrder == SortOrder.ASCENDING) {
+					for (int column = 0; column < columnCount; column++) {
+						if (this.rowRenderingOrder == SortOrder.ASCENDING) {
+							for (int row = 0; row < rowCount; row++) {
+								renderer.drawItem(g2, state, dataArea, this,
+										domainAxis, rangeAxis, currentDataset,
+										row, column, pass);
+							}
+						}
+						else {
+							for (int row = rowCount - 1; row >= 0; row--) {
+								renderer.drawItem(g2, state, dataArea, this,
+										domainAxis, rangeAxis, currentDataset,
+										row, column, pass);
+							}
+						}
+					}
+				}
+				else {
+					for (int column = columnCount - 1; column >= 0; column--) {
+						if (this.rowRenderingOrder == SortOrder.ASCENDING) {
+							for (int row = 0; row < rowCount; row++) {
+								renderer.drawItem(g2, state, dataArea, this,
+										domainAxis, rangeAxis, currentDataset,
+										row, column, pass);
+							}
+						}
+						else {
+							for (int row = rowCount - 1; row >= 0; row--) {
+								renderer.drawItem(g2, state, dataArea, this,
+										domainAxis, rangeAxis, currentDataset,
+										row, column, pass);
+							}
+						}
+					}
+				}
+			}
+		}
+		return foundData;
+
+	}
 
 	/**
 	 * Draws the domain gridlines for the plot, if they are visible.
@@ -4058,12 +4142,13 @@ public class CategoryPlot extends Plot implements
 		if (axis != null) {
 			int columnCount = dataset.getColumnCount();
 			for (int c = 0; c < columnCount; c++) {
-				double xx = axis.getCategoryJava2DCoordinate(anchor, c,
-						columnCount, dataArea, domainAxisEdge);
-				CategoryItemRenderer renderer1 = getRenderer();
-				if (renderer1 != null) {
-					renderer1.drawDomainGridline(g2, this, dataArea, xx);
-				}
+				// JAVAFX
+				// double xx = axis.getCategoryJava2DCoordinate(anchor, c,
+				// columnCount, dataArea, domainAxisEdge);
+				// CategoryItemRenderer renderer1 = getRenderer();
+				// if (renderer1 != null) {
+				// renderer1.drawDomainGridline(g2, this, dataArea, xx);
+				// }
 			}
 		}
 	}
@@ -4169,82 +4254,93 @@ public class CategoryPlot extends Plot implements
 		// }
 	}
 
+	/**
+	 * Draws the annotations.
+	 *
+	 * @param g2
+	 *            the graphics device.
+	 * @param dataArea
+	 *            the data area.
+	 */
+	protected void drawAnnotations(GraphicsContext g2, Rectangle2D dataArea) {
+
+		if (getAnnotations() != null) {
+			for (CategoryAnnotation annotation : getAnnotations()) {
+				annotation.draw(g2, this, dataArea, getDomainAxis(),
+						getRangeAxis());
+			}
+		}
+
+	}
+
+	/**
+	 * Draws the domain markers (if any) for an axis and layer. This method is
+	 * typically called from within the draw() method.
+	 *
+	 * @param g2
+	 *            the graphics device.
+	 * @param dataArea
+	 *            the data area.
+	 * @param index
+	 *            the renderer index.
+	 * @param layer
+	 *            the layer (foreground or background).
+	 *
+	 * @see #drawRangeMarkers(Graphics2D, Rectangle2D, int, Layer)
+	 */
+	protected void drawDomainMarkers(GraphicsContext g2, Rectangle2D dataArea,
+			int index, Layer layer) {
+
+		CategoryItemRenderer r = getRenderer(index);
+		if (r == null) {
+			return;
+		}
+
+		Collection<Marker> markers = getDomainMarkers(index, layer);
+		CategoryAxis axis = getDomainAxisForDataset(index);
+		if (markers != null && axis != null) {
+			for (Marker marker1 : markers) {
+				CategoryMarker marker = (CategoryMarker) marker1;
+				r.drawDomainMarker(g2, this, axis, marker, dataArea);
+			}
+		}
+
+	}
+
 	//
-	// /**
-	// * Draws the annotations.
-	// *
-	// * @param g2 the graphics device.
-	// * @param dataArea the data area.
-	// */
-	// protected void drawAnnotations(Graphics2D g2, Rectangle2D dataArea) {
-	//
-	// if (getAnnotations() != null) {
-	// for (CategoryAnnotation annotation : getAnnotations()) {
-	// annotation.draw(g2, this, dataArea, getDomainAxis(),
-	// getRangeAxis());
-	// }
-	// }
-	//
-	// }
-	//
-	// /**
-	// * Draws the domain markers (if any) for an axis and layer. This method is
-	// * typically called from within the draw() method.
-	// *
-	// * @param g2 the graphics device.
-	// * @param dataArea the data area.
-	// * @param index the renderer index.
-	// * @param layer the layer (foreground or background).
-	// *
-	// * @see #drawRangeMarkers(Graphics2D, Rectangle2D, int, Layer)
-	// */
-	// protected void drawDomainMarkers(Graphics2D g2, Rectangle2D dataArea,
-	// int index, Layer layer) {
-	//
-	// CategoryItemRenderer r = getRenderer(index);
-	// if (r == null) {
-	// return;
-	// }
-	//
-	// Collection<Marker> markers = getDomainMarkers(index, layer);
-	// CategoryAxis axis = getDomainAxisForDataset(index);
-	// if (markers != null && axis != null) {
-	// for (Marker marker1 : markers) {
-	// CategoryMarker marker = (CategoryMarker) marker1;
-	// r.drawDomainMarker(g2, this, axis, marker, dataArea);
-	// }
-	// }
-	//
-	// }
-	//
-	// /**
-	// * Draws the range markers (if any) for an axis and layer. This method is
-	// * typically called from within the draw() method.
-	// *
-	// * @param g2 the graphics device.
-	// * @param dataArea the data area.
-	// * @param index the renderer index.
-	// * @param layer the layer (foreground or background).
-	// *
-	// * @see #drawDomainMarkers(Graphics2D, Rectangle2D, int, Layer)
-	// */
-	// protected void drawRangeMarkers(Graphics2D g2, Rectangle2D dataArea,
-	// int index, Layer layer) {
-	//
-	// CategoryItemRenderer r = getRenderer(index);
-	// if (r == null) {
-	// return;
-	// }
-	//
-	// Collection<Marker> markers = getRangeMarkers(index, layer);
-	// ValueAxis axis = getRangeAxisForDataset(index);
-	// if (markers != null && axis != null) {
-	// for (Marker marker : markers) {
-	// r.drawRangeMarker(g2, this, axis, marker, dataArea);
-	// }
-	// }
-	//
-	// }
+	/**
+	 * Draws the range markers (if any) for an axis and layer. This method is
+	 * typically called from within the draw() method.
+	 *
+	 * @param g2
+	 *            the graphics device.
+	 * @param dataArea
+	 *            the data area.
+	 * @param index
+	 *            the renderer index.
+	 * @param layer
+	 *            the layer (foreground or background).
+	 *
+	 * @see #drawDomainMarkers(Graphics2D, Rectangle2D, int, Layer)
+	 */
+	protected void drawRangeMarkers(GraphicsContext g2, Rectangle2D dataArea,
+			int index, Layer layer) {
+
+		CategoryItemRenderer r = getRenderer(index);
+		if (r == null) {
+			return;
+		}
+
+		Collection<Marker> markers = getRangeMarkers(index, layer);
+		ValueAxis axis = getRangeAxisForDataset(index);
+		if (markers != null && axis != null) {
+			for (Marker marker : markers) {
+				r.drawRangeMarker(g2, this, axis, marker, dataArea);
+			}
+		}
+
+	}
+
 	//
 	// /**
 	// * Utility method for drawing a line perpendicular to the range axis (used

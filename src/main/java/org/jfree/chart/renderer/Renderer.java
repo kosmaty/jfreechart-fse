@@ -55,18 +55,17 @@ import org.jfree.chart.event.RendererChangeListener;
  * A base interface for renderers.
  */
 public interface Renderer extends LegendItemSource {
-	// JAVAFX
-	//
-	// /**
-	// * Returns the number of passes through the dataset required by the
-	// * renderer. Usually this will be one, but some renderers may use
-	// * a second or third pass to overlay items on top of things that were
-	// * drawn in an earlier pass.
-	// *
-	// * @return The pass count.
-	// */
-	// public int getPassCount();
-	//
+
+	/**
+	 * Returns the number of passes through the dataset required by the
+	 * renderer. Usually this will be one, but some renderers may use a second
+	 * or third pass to overlay items on top of things that were drawn in an
+	 * earlier pass.
+	 *
+	 * @return The pass count.
+	 */
+	public int getPassCount();
+
 	/**
 	 * Add a renderer change listener.
 	 *
@@ -86,10 +85,11 @@ public interface Renderer extends LegendItemSource {
 	 * @see #addChangeListener(RendererChangeListener)
 	 */
 	public void removeChangeListener(RendererChangeListener listener);
-	//
-	// //// VISIBLE
-	// //////////////////////////////////////////////////////////////
-	//
+
+	// // VISIBLE
+	// ////////////////////////////////////////////////////////////
+
+	// JAVAFX
 	// /**
 	// * Returns a boolean that indicates whether or not the specified item
 	// * should be drawn.

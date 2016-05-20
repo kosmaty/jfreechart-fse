@@ -136,7 +136,7 @@ package org.jfree.chart;
 // 
 import org.jfree.chart.axis.CategoryAxis;
 // import org.jfree.chart.axis.DateAxis;
-// import org.jfree.chart.axis.NumberAxis;
+import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.axis.ValueAxis;
 // import org.jfree.chart.ui.Layer;
 // import org.jfree.chart.ui.RectangleEdge;

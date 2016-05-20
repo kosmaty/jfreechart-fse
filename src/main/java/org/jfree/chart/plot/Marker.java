@@ -533,31 +533,35 @@ public abstract class Marker implements Cloneable, Serializable {
 	// notifyListeners(new MarkerChangeEvent(this));
 	// }
 	//
-	// /**
-	// * Registers an object for notification of changes to the marker.
-	// *
-	// * @param listener the object to be registered.
-	// *
-	// * @see #removeChangeListener(MarkerChangeListener)
-	// *
-	// * @since 1.0.3
-	// */
-	// public void addChangeListener(MarkerChangeListener listener) {
-	// this.listenerList.add(MarkerChangeListener.class, listener);
-	// }
-	//
-	// /**
-	// * Unregisters an object for notification of changes to the marker.
-	// *
-	// * @param listener the object to be unregistered.
-	// *
-	// * @see #addChangeListener(MarkerChangeListener)
-	// *
-	// * @since 1.0.3
-	// */
-	// public void removeChangeListener(MarkerChangeListener listener) {
-	// this.listenerList.remove(MarkerChangeListener.class, listener);
-	// }
+	/**
+	 * Registers an object for notification of changes to the marker.
+	 *
+	 * @param listener
+	 *            the object to be registered.
+	 *
+	 * @see #removeChangeListener(MarkerChangeListener)
+	 *
+	 * @since 1.0.3
+	 */
+	public void addChangeListener(MarkerChangeListener listener) {
+		// JAVAFX events
+		// this.listenerList.add(MarkerChangeListener.class, listener);
+	}
+
+	/**
+	 * Unregisters an object for notification of changes to the marker.
+	 *
+	 * @param listener
+	 *            the object to be unregistered.
+	 *
+	 * @see #addChangeListener(MarkerChangeListener)
+	 *
+	 * @since 1.0.3
+	 */
+	public void removeChangeListener(MarkerChangeListener listener) {
+		// JAVAFX events
+		// this.listenerList.remove(MarkerChangeListener.class, listener);
+	}
 
 	/**
 	 * Notifies all registered listeners that the marker has been modified.

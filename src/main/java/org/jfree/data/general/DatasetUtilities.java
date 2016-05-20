@@ -406,6 +406,7 @@ public final class DatasetUtilities {
 		return result;
 
 	}
+
 	//
 	// /**
 	// * Creates a {@link CategoryDataset} that contains a copy of the data in
@@ -541,65 +542,67 @@ public final class DatasetUtilities {
 	// return series;
 	// }
 	//
-	// /**
-	// * Returns {@code true} if the dataset is empty (or {@code null}),
-	// * and {@code false} otherwise.
-	// *
-	// * @param dataset the dataset ({@code null} permitted).
-	// *
-	// * @return A boolean.
-	// */
-	// public static boolean isEmptyOrNull(PieDataset dataset) {
-	//
-	// if (dataset == null) {
-	// return true;
-	// }
-	//
-	// int itemCount = dataset.getItemCount();
-	// if (itemCount == 0) {
-	// return true;
-	// }
-	//
-	// for (int item = 0; item < itemCount; item++) {
-	// Number y = dataset.getValue(item);
-	// if (y != null) {
-	// double yy = y.doubleValue();
-	// if (yy > 0.0) {
-	// return false;
-	// }
-	// }
-	// }
-	// return true;
-	// }
-	//
-	// /**
-	// * Returns {@code true} if the dataset is empty (or {@code null}),
-	// * and {@code false} otherwise.
-	// *
-	// * @param dataset the dataset ({@code null} permitted).
-	// *
-	// * @return A boolean.
-	// */
-	// public static boolean isEmptyOrNull(CategoryDataset dataset) {
-	// if (dataset == null) {
-	// return true;
-	// }
-	// int rowCount = dataset.getRowCount();
-	// int columnCount = dataset.getColumnCount();
-	// if (rowCount == 0 || columnCount == 0) {
-	// return true;
-	// }
-	//
-	// for (int r = 0; r < rowCount; r++) {
-	// for (int c = 0; c < columnCount; c++) {
-	// if (dataset.getValue(r, c) != null) {
-	// return false;
-	// }
-	//
-	// }
-	// }
-	// return true;
-	// }
+	/**
+	 * Returns {@code true} if the dataset is empty (or {@code null}), and
+	 * {@code false} otherwise.
+	 *
+	 * @param dataset
+	 *            the dataset ({@code null} permitted).
+	 *
+	 * @return A boolean.
+	 */
+	public static boolean isEmptyOrNull(PieDataset dataset) {
+
+		if (dataset == null) {
+			return true;
+		}
+
+		int itemCount = dataset.getItemCount();
+		if (itemCount == 0) {
+			return true;
+		}
+
+		for (int item = 0; item < itemCount; item++) {
+			Number y = dataset.getValue(item);
+			if (y != null) {
+				double yy = y.doubleValue();
+				if (yy > 0.0) {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+
+	/**
+	 * Returns {@code true} if the dataset is empty (or {@code null}), and
+	 * {@code false} otherwise.
+	 *
+	 * @param dataset
+	 *            the dataset ({@code null} permitted).
+	 *
+	 * @return A boolean.
+	 */
+	public static boolean isEmptyOrNull(CategoryDataset dataset) {
+		if (dataset == null) {
+			return true;
+		}
+		int rowCount = dataset.getRowCount();
+		int columnCount = dataset.getColumnCount();
+		if (rowCount == 0 || columnCount == 0) {
+			return true;
+		}
+
+		for (int r = 0; r < rowCount; r++) {
+			for (int c = 0; c < columnCount; c++) {
+				if (dataset.getValue(r, c) != null) {
+					return false;
+				}
+
+			}
+		}
+		return true;
+	}
 	//
 	// /**
 	// * Returns {@code true} if the dataset is empty (or {@code null}),
