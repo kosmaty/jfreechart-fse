@@ -129,38 +129,38 @@ package org.jfree.chart;
 // 
 // import java.awt.Color;
 // import java.awt.Font;
-// import java.text.DateFormat;
-// import java.text.NumberFormat;
-// import java.util.List;
-// import java.util.Locale;
+import java.text.DateFormat;
+import java.text.NumberFormat;
+import java.util.List;
+import java.util.Locale;
 // 
 import org.jfree.chart.axis.CategoryAxis;
 // import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.axis.ValueAxis;
-// import org.jfree.chart.ui.Layer;
-// import org.jfree.chart.ui.RectangleEdge;
-// import org.jfree.chart.ui.RectangleInsets;
-// import org.jfree.chart.ui.TextAnchor;
+import org.jfree.chart.ui.Layer;
+import org.jfree.chart.ui.RectangleEdge;
+import org.jfree.chart.ui.RectangleInsets;
+import org.jfree.chart.ui.TextAnchor;
 // import org.jfree.chart.util.TableOrder;
 // import org.jfree.chart.labels.BoxAndWhiskerToolTipGenerator;
 // import org.jfree.chart.labels.HighLowItemLabelGenerator;
 // import org.jfree.chart.labels.IntervalCategoryToolTipGenerator;
-// import org.jfree.chart.labels.ItemLabelAnchor;
-// import org.jfree.chart.labels.ItemLabelPosition;
+import org.jfree.chart.labels.ItemLabelAnchor;
+import org.jfree.chart.labels.ItemLabelPosition;
 // import org.jfree.chart.labels.PieToolTipGenerator;
-// import org.jfree.chart.labels.StandardCategoryToolTipGenerator;
+import org.jfree.chart.labels.StandardCategoryToolTipGenerator;
 // import org.jfree.chart.labels.StandardPieSectionLabelGenerator;
 // import org.jfree.chart.labels.StandardPieToolTipGenerator;
 // import org.jfree.chart.labels.StandardXYToolTipGenerator;
 // import org.jfree.chart.labels.StandardXYZToolTipGenerator;
 // import org.jfree.chart.labels.XYToolTipGenerator;
 import org.jfree.chart.plot.CategoryPlot;
-// import org.jfree.chart.plot.Marker;
+import org.jfree.chart.plot.Marker;
 // import org.jfree.chart.plot.MultiplePiePlot;
 // import org.jfree.chart.plot.PiePlot;
 // import org.jfree.chart.plot.PiePlot3D;
-// import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.chart.plot.PlotOrientation;
 // import org.jfree.chart.plot.PolarPlot;
 // import org.jfree.chart.plot.RingPlot;
 // import org.jfree.chart.plot.ValueMarker;
@@ -171,7 +171,7 @@ import org.jfree.chart.plot.CategoryPlot;
 // import org.jfree.chart.renderer.category.AreaRenderer;
 // import org.jfree.chart.renderer.category.BarRenderer;
 // import org.jfree.chart.renderer.category.BoxAndWhiskerRenderer;
-// import org.jfree.chart.renderer.category.CategoryItemRenderer;
+import org.jfree.chart.renderer.category.CategoryItemRenderer;
 // import org.jfree.chart.renderer.category.GanttRenderer;
 // import org.jfree.chart.renderer.category.GradientBarPainter;
 import org.jfree.chart.renderer.category.LineAndShapeRenderer;
@@ -195,20 +195,21 @@ import org.jfree.chart.renderer.category.LineAndShapeRenderer;
 // import org.jfree.chart.renderer.xy.XYStepAreaRenderer;
 // import org.jfree.chart.renderer.xy.XYStepRenderer;
 // import org.jfree.chart.title.TextTitle;
-// import org.jfree.chart.util.ParamChecks;
+import org.jfree.chart.util.ParamChecks;
 import org.jfree.data.category.CategoryDataset;
-// import org.jfree.data.category.IntervalCategoryDataset;
-// import org.jfree.data.general.DefaultPieDataset;
-// import org.jfree.data.general.PieDataset;
-// import org.jfree.data.general.WaferMapDataset;
-// import org.jfree.data.statistics.BoxAndWhiskerCategoryDataset;
-// import org.jfree.data.statistics.BoxAndWhiskerXYDataset;
-// import org.jfree.data.xy.IntervalXYDataset;
-// import org.jfree.data.xy.OHLCDataset;
-// import org.jfree.data.xy.TableXYDataset;
-// import org.jfree.data.xy.WindDataset;
-// import org.jfree.data.xy.XYDataset;
-// import org.jfree.data.xy.XYZDataset;
+import org.jfree.data.category.IntervalCategoryDataset;
+import org.jfree.data.general.DefaultPieDataset;
+import org.jfree.data.general.PieDataset;
+import org.jfree.data.general.WaferMapDataset;
+import org.jfree.data.statistics.BoxAndWhiskerCategoryDataset;
+import org.jfree.data.statistics.BoxAndWhiskerXYDataset;
+import org.jfree.data.xy.IntervalXYDataset;
+import org.jfree.data.xy.OHLCDataset;
+import org.jfree.data.xy.TableXYDataset;
+import org.jfree.data.xy.WindDataset;
+import org.jfree.data.xy.XYDataset;
+import org.jfree.data.xy.XYZDataset;
+
 // 
 
 /**
@@ -216,10 +217,10 @@ import org.jfree.data.category.CategoryDataset;
  * JFreeChart.
  */
 public abstract class ChartFactory {
-	//
-	// /** The chart theme. */
-	// private static ChartTheme currentTheme = new StandardChartTheme("JFree");
-	//
+
+	/** The chart theme. */
+	private static ChartTheme currentTheme = new StandardChartTheme("JFree");
+
 	// /**
 	// * Returns the current chart theme used by the factory.
 	// *

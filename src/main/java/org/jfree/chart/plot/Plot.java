@@ -817,17 +817,20 @@ public abstract class Plot implements
 	// notifyListeners(new PlotChangeEvent(this));
 	// }
 	// }
-	//
-	// /**
-	// * Registers an object for notification of changes to the plot.
-	// *
-	// * @param listener the object to be registered.
-	// *
-	// * @see #removeChangeListener(PlotChangeListener)
-	// */
-	// public void addChangeListener(PlotChangeListener listener) {
-	// this.listenerList.add(PlotChangeListener.class, listener);
-	// }
+
+	/**
+	 * Registers an object for notification of changes to the plot.
+	 *
+	 * @param listener
+	 *            the object to be registered.
+	 *
+	 * @see #removeChangeListener(PlotChangeListener)
+	 */
+	public void addChangeListener(PlotChangeListener listener) {
+		// JAVAFX events
+		// this.listenerList.add(PlotChangeListener.class, listener);
+	}
+
 	//
 	// /**
 	// * Unregisters an object for notification of changes to the plot.

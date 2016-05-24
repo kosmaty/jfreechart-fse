@@ -166,11 +166,11 @@ package org.jfree.chart;
 //import java.awt.geom.Point2D;
 //import java.awt.geom.Rectangle2D;
 // import java.awt.image.BufferedImage;
-// import java.io.IOException;
-// import java.io.ObjectInputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.Serializable;
-// import java.util.ArrayList;
-// import java.util.List;
+import java.util.ArrayList;
+import java.util.List;
 // import javax.swing.event.EventListenerList;
 // 
 // import org.jfree.chart.block.BlockParams;
@@ -181,27 +181,26 @@ import java.io.Serializable;
 // import org.jfree.chart.ui.Align;
 // import org.jfree.chart.drawable.ColorPainter;
 import org.jfree.chart.drawable.Drawable;
-import org.jfree.graphics.JFreeCanvas;
 
 import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.shape.Rectangle;
 
-// import org.jfree.chart.ui.HorizontalAlignment;
-// import org.jfree.chart.ui.RectangleEdge;
-// import org.jfree.chart.ui.RectangleInsets;
-// import org.jfree.chart.ui.Size2D;
-// import org.jfree.chart.ui.VerticalAlignment;
+import org.jfree.chart.ui.HorizontalAlignment;
+import org.jfree.chart.ui.RectangleEdge;
+import org.jfree.chart.ui.RectangleInsets;
+import org.jfree.chart.ui.Size2D;
+import org.jfree.chart.ui.VerticalAlignment;
 import org.jfree.chart.util.ObjectUtils;
 import org.jfree.chart.entity.EntityCollection;
 import org.jfree.chart.entity.JFreeChartEntity;
-// import org.jfree.chart.event.ChartChangeEvent;
-// import org.jfree.chart.event.ChartChangeListener;
-// import org.jfree.chart.event.ChartProgressEvent;
-// import org.jfree.chart.event.ChartProgressListener;
-// import org.jfree.chart.event.PlotChangeEvent;
-// import org.jfree.chart.event.PlotChangeListener;
+import org.jfree.chart.event.ChartChangeEvent;
+import org.jfree.chart.event.ChartChangeListener;
+import org.jfree.chart.event.ChartProgressEvent;
+import org.jfree.chart.event.ChartProgressListener;
+import org.jfree.chart.event.PlotChangeEvent;
+import org.jfree.chart.event.PlotChangeListener;
 // import org.jfree.chart.event.TitleChangeEvent;
 // import org.jfree.chart.event.TitleChangeListener;
 import org.jfree.chart.plot.Plot;
@@ -210,8 +209,8 @@ import org.jfree.chart.plot.PlotRenderingInfo;
 // import org.jfree.chart.title.LegendTitle;
 // import org.jfree.chart.title.TextTitle;
 // import org.jfree.chart.title.Title;
-// import org.jfree.chart.util.ParamChecks;
-// import org.jfree.data.Range;
+import org.jfree.chart.util.ParamChecks;
+import org.jfree.data.Range;
 
 /**
  * A chart class implemented using the Java 2D APIs. The current version
@@ -236,12 +235,12 @@ import org.jfree.chart.plot.PlotRenderingInfo;
  */
 public class JFreeChart implements Drawable,
 		// TitleChangeListener,
-		// PlotChangeListener,
+		PlotChangeListener,
 		Serializable, Cloneable
 {
-	//
-	// /** For serialization. */
-	// private static final long serialVersionUID = -3470703747817429120L;
+
+	/** For serialization. */
+	private static final long serialVersionUID = -3470703747817429120L;
 	//
 	// /** The default font for titles. */
 	// public static final Font DEFAULT_TITLE_FONT
@@ -256,9 +255,9 @@ public class JFreeChart implements Drawable,
 	//
 	// /** The default background image alignment. */
 	// public static final int DEFAULT_BACKGROUND_IMAGE_ALIGNMENT = Align.FIT;
-	//
-	// /** The default background image alpha. */
-	// public static final float DEFAULT_BACKGROUND_IMAGE_ALPHA = 0.5f;
+
+	/** The default background image alpha. */
+	public static final float DEFAULT_BACKGROUND_IMAGE_ALPHA = 0.5f;
 	//
 	// /**
 	// * The key for a rendering hint that can suppress the generation of a
@@ -280,18 +279,17 @@ public class JFreeChart implements Drawable,
 	// * be <code>null</code>.
 	// */
 	// private transient RenderingHints renderingHints;
-	//
-	// /** The border painter (if <code>null</code> no border will be drawn). */
-	// private Drawable borderPainter;
-	//
-	// /**
-	// * The background painter (if <code>null</code> no background will be
-	// * drawn.
-	// */
-	// private Drawable backgroundPainter;
-	//
-	// /** The padding between the chart border and the chart drawing area. */
-	// private RectangleInsets padding;
+
+	/** The border painter (if <code>null</code> no border will be drawn). */
+	private Drawable borderPainter;
+
+	/**
+	 * The background painter (if <code>null</code> no background will be drawn.
+	 */
+	private Drawable backgroundPainter;
+
+	/** The padding between the chart border and the chart drawing area. */
+	private RectangleInsets padding;
 	//
 	// /** The chart title (optional). */
 	// private TextTitle title;
@@ -324,11 +322,12 @@ public class JFreeChart implements Drawable,
 	// /** Storage for registered progress listeners. */
 	// private transient EventListenerList progressListeners;
 	//
-	// /**
-	// * A flag that can be used to enable/disable notification of chart change
-	// * events.
-	// */
-	// private boolean notify;
+	/**
+	 * A flag that can be used to enable/disable notification of chart change
+	 * events.
+	 */
+	private boolean notify;
+
 	//
 	// /**
 	// * Creates a new chart based on the supplied plot. The chart will have
@@ -345,90 +344,101 @@ public class JFreeChart implements Drawable,
 	// this(null, null, plot, true);
 	// }
 	//
-	// /**
-	// * Creates a new chart with the given title and plot. A default font
-	// * ({@link #DEFAULT_TITLE_FONT}) is used for the title, and the chart will
-	// * have a legend added automatically.
-	// * <br><br>
-	// * Note that the {@link ChartFactory} class contains a range
-	// * of static methods that will return ready-made charts, and often this
-	// * is a more convenient way to create charts than using this constructor.
-	// *
-	// * @param title the chart title (<code>null</code> permitted).
-	// * @param plot the plot (<code>null</code> not permitted).
-	// */
-	// public JFreeChart(String title, Plot plot) {
-	// this(title, JFreeChart.DEFAULT_TITLE_FONT, plot, true);
-	// }
-	//
-	// /**
-	// * Creates a new chart with the given title and plot. The
-	// * <code>createLegend</code> argument specifies whether or not a legend
-	// * should be added to the chart.
-	// * <br><br>
-	// * Note that the {@link ChartFactory} class contains a range
-	// * of static methods that will return ready-made charts, and often this
-	// * is a more convenient way to create charts than using this constructor.
-	// *
-	// * @param title the chart title (<code>null</code> permitted).
-	// * @param titleFont the font for displaying the chart title
-	// * (<code>null</code> permitted).
-	// * @param plot controller of the visual representation of the data
-	// * (<code>null</code> not permitted).
-	// * @param createLegend a flag indicating whether or not a legend should
-	// * be created for the chart.
-	// */
-	// public JFreeChart(String title, Font titleFont, Plot plot,
-	// boolean createLegend) {
-	//
-	// ParamChecks.nullNotPermitted(plot, "plot");
-	//
-	// // create storage for listeners...
-	// this.progressListeners = new EventListenerList();
-	// this.changeListeners = new EventListenerList();
-	// this.notify = true; // default is to notify listeners when the
-	// // chart changes
-	//
-	// this.renderingHints = new RenderingHints(
-	// RenderingHints.KEY_ANTIALIASING,
-	// RenderingHints.VALUE_ANTIALIAS_ON);
-	// // added the following hint because of
-	// // http://stackoverflow.com/questions/7785082/
-	// this.renderingHints.put(RenderingHints.KEY_STROKE_CONTROL,
-	// RenderingHints.VALUE_STROKE_PURE);
-	//
-	// this.borderPainter = null;
-	// this.backgroundPainter = new ColorPainter();
-	// this.padding = new RectangleInsets(4, 4, 4, 4);
-	// this.plot = plot;
-	// plot.addChangeListener(this);
-	//
-	// this.subtitles = new ArrayList<Title>();
-	//
-	// // create a legend, if requested...
-	// if (createLegend) {
-	// LegendTitle legend = new LegendTitle(this.plot);
-	// legend.setMargin(new RectangleInsets(1.0, 1.0, 1.0, 1.0));
-	// legend.setHorizontalAlignment(HorizontalAlignment.RIGHT);
-	// legend.setBackgroundPaint(Color.WHITE);
-	// legend.setPosition(RectangleEdge.BOTTOM);
-	// this.subtitles.add(legend);
-	// legend.addChangeListener(this);
-	// }
-	//
-	// // add the chart title, if one has been specified...
-	// if (title != null) {
-	// if (titleFont == null) {
-	// titleFont = DEFAULT_TITLE_FONT;
-	// }
-	// this.title = new TextTitle(title, titleFont);
-	// this.title.addChangeListener(this);
-	// }
-	//
-	// this.backgroundImage = DEFAULT_BACKGROUND_IMAGE;
-	// this.backgroundImageAlignment = DEFAULT_BACKGROUND_IMAGE_ALIGNMENT;
-	// this.backgroundImageAlpha = DEFAULT_BACKGROUND_IMAGE_ALPHA;
-	// }
+	/**
+	 * Creates a new chart with the given title and plot. A default font (
+	 * {@link #DEFAULT_TITLE_FONT}) is used for the title, and the chart will
+	 * have a legend added automatically. <br>
+	 * <br>
+	 * Note that the {@link ChartFactory} class contains a range of static
+	 * methods that will return ready-made charts, and often this is a more
+	 * convenient way to create charts than using this constructor.
+	 *
+	 * @param title
+	 *            the chart title (<code>null</code> permitted).
+	 * @param plot
+	 *            the plot (<code>null</code> not permitted).
+	 */
+	public JFreeChart(String title, Plot plot) {
+		this(title, /* JAVAFX JFreeChart.DEFAULT_TITLE_FONT, */plot, true);
+	}
+
+	/**
+	 * Creates a new chart with the given title and plot. The
+	 * <code>createLegend</code> argument specifies whether or not a legend
+	 * should be added to the chart. <br>
+	 * <br>
+	 * Note that the {@link ChartFactory} class contains a range of static
+	 * methods that will return ready-made charts, and often this is a more
+	 * convenient way to create charts than using this constructor.
+	 *
+	 * @param title
+	 *            the chart title (<code>null</code> permitted).
+	 * @param titleFont
+	 *            the font for displaying the chart title (<code>null</code>
+	 *            permitted).
+	 * @param plot
+	 *            controller of the visual representation of the data (
+	 *            <code>null</code> not permitted).
+	 * @param createLegend
+	 *            a flag indicating whether or not a legend should be created
+	 *            for the chart.
+	 */
+	public JFreeChart(String title, /* JAVAFX Font titleFont, */Plot plot,
+			boolean createLegend) {
+
+		ParamChecks.nullNotPermitted(plot, "plot");
+
+		// create storage for listeners...
+		// JAVAFX events
+		// this.progressListeners = new EventListenerList();
+		// this.changeListeners = new EventListenerList();
+		this.notify = true; // default is to notify listeners when the
+		// chart changes
+
+		// JAVAFX rendering hints
+		// this.renderingHints = new RenderingHints(
+		// RenderingHints.KEY_ANTIALIASING,
+		// RenderingHints.VALUE_ANTIALIAS_ON);
+		// // added the following hint because of
+		// // http://stackoverflow.com/questions/7785082/
+		// this.renderingHints.put(RenderingHints.KEY_STROKE_CONTROL,
+		// RenderingHints.VALUE_STROKE_PURE);
+
+		this.borderPainter = null;
+		// JAVAFX
+		// this.backgroundPainter = new ColorPainter();
+		this.padding = new RectangleInsets(4, 4, 4, 4);
+		this.plot = plot;
+		plot.addChangeListener(this);
+
+		// JAVAFX
+		// this.subtitles = new ArrayList<Title>();
+		//
+		// // create a legend, if requested...
+		// if (createLegend) {
+		// LegendTitle legend = new LegendTitle(this.plot);
+		// legend.setMargin(new RectangleInsets(1.0, 1.0, 1.0, 1.0));
+		// legend.setHorizontalAlignment(HorizontalAlignment.RIGHT);
+		// legend.setBackgroundPaint(Color.WHITE);
+		// legend.setPosition(RectangleEdge.BOTTOM);
+		// this.subtitles.add(legend);
+		// legend.addChangeListener(this);
+		// }
+		//
+		// // add the chart title, if one has been specified...
+		// if (title != null) {
+		// if (titleFont == null) {
+		// titleFont = DEFAULT_TITLE_FONT;
+		// }
+		// this.title = new TextTitle(title, titleFont);
+		// this.title.addChangeListener(this);
+		// }
+		//
+		// this.backgroundImage = DEFAULT_BACKGROUND_IMAGE;
+		// this.backgroundImageAlignment = DEFAULT_BACKGROUND_IMAGE_ALIGNMENT;
+		// this.backgroundImageAlpha = DEFAULT_BACKGROUND_IMAGE_ALPHA;
+	}
+
 	//
 	// /**
 	// * Returns the collection of rendering hints for the chart.
@@ -790,18 +800,19 @@ public class JFreeChart implements Drawable,
 	// fireChartChanged();
 	// }
 	//
-	// /**
-	// * Returns the plot for the chart. The plot is a class responsible for
-	// * coordinating the visual representation of the data, including the axes
-	// * (if any). If you know the specific subclass of plot that you are
-	// * using (e.g. PiePlot, CategoryPlot, XYPlot etc.) then you can cast this
-	// * reference.
-	// *
-	// * @return The plot.
-	// */
-	// public Plot getPlot() {
-	// return this.plot;
-	// }
+	/**
+	 * Returns the plot for the chart. The plot is a class responsible for
+	 * coordinating the visual representation of the data, including the axes
+	 * (if any). If you know the specific subclass of plot that you are using
+	 * (e.g. PiePlot, CategoryPlot, XYPlot etc.) then you can cast this
+	 * reference.
+	 *
+	 * @return The plot.
+	 */
+	public Plot getPlot() {
+		return this.plot;
+	}
+
 	//
 	// /**
 	// * Returns a flag that indicates whether or not anti-aliasing is used when
@@ -1142,6 +1153,7 @@ public class JFreeChart implements Drawable,
 		// notifyListeners(new ChartProgressEvent(this, this,
 		// ChartProgressEvent.DRAWING_FINISHED, 100));
 	}
+
 	//
 	// /**
 	// * Creates a rectangle that is aligned to the frame.
@@ -1369,17 +1381,20 @@ public class JFreeChart implements Drawable,
 	//
 	// }
 	//
-	// /**
-	// * Registers an object for notification of changes to the chart.
-	// *
-	// * @param listener the listener (<code>null</code> not permitted).
-	// *
-	// * @see #removeChangeListener(ChartChangeListener)
-	// */
-	// public void addChangeListener(ChartChangeListener listener) {
-	// ParamChecks.nullNotPermitted(listener, "listener");
-	// this.changeListeners.add(ChartChangeListener.class, listener);
-	// }
+	/**
+	 * Registers an object for notification of changes to the chart.
+	 *
+	 * @param listener
+	 *            the listener (<code>null</code> not permitted).
+	 *
+	 * @see #removeChangeListener(ChartChangeListener)
+	 */
+	public void addChangeListener(ChartChangeListener listener) {
+		ParamChecks.nullNotPermitted(listener, "listener");
+		// JAVAFX events
+		// this.changeListeners.add(ChartChangeListener.class, listener);
+	}
+
 	//
 	// /**
 	// * Deregisters an object for notification of changes to the chart.
@@ -1402,24 +1417,26 @@ public class JFreeChart implements Drawable,
 	// ChartChangeEvent event = new ChartChangeEvent(this);
 	// notifyListeners(event);
 	// }
-	//
-	// /**
-	// * Sends a {@link ChartChangeEvent} to all registered listeners.
-	// *
-	// * @param event information about the event that triggered the
-	// * notification.
-	// */
-	// protected void notifyListeners(ChartChangeEvent event) {
-	// if (this.notify) {
-	// Object[] listeners = this.changeListeners.getListenerList();
-	// for (int i = listeners.length - 2; i >= 0; i -= 2) {
-	// if (listeners[i] == ChartChangeListener.class) {
-	// ((ChartChangeListener) listeners[i + 1]).chartChanged(
-	// event);
-	// }
-	// }
-	// }
-	// }
+
+	/**
+	 * Sends a {@link ChartChangeEvent} to all registered listeners.
+	 *
+	 * @param event
+	 *            information about the event that triggered the notification.
+	 */
+	protected void notifyListeners(ChartChangeEvent event) {
+		if (this.notify) {
+			// JAVAFX events
+			// Object[] listeners = this.changeListeners.getListenerList();
+			// for (int i = listeners.length - 2; i >= 0; i -= 2) {
+			// if (listeners[i] == ChartChangeListener.class) {
+			// ((ChartChangeListener) listeners[i + 1]).chartChanged(
+			// event);
+			// }
+			// }
+		}
+	}
+
 	//
 	// /**
 	// * Registers an object for notification of progress events relating to the
@@ -1472,18 +1489,19 @@ public class JFreeChart implements Drawable,
 	// event.setChart(this);
 	// notifyListeners(event);
 	// }
-	//
-	// /**
-	// * Receives notification that the plot has changed, and passes this on to
-	// * registered listeners.
-	// *
-	// * @param event information about the plot change.
-	// */
-	// @Override
-	// public void plotChanged(PlotChangeEvent event) {
-	// event.setChart(this);
-	// notifyListeners(event);
-	// }
+
+	/**
+	 * Receives notification that the plot has changed, and passes this on to
+	 * registered listeners.
+	 *
+	 * @param event
+	 *            information about the plot change.
+	 */
+	@Override
+	public void plotChanged(PlotChangeEvent event) {
+		event.setChart(this);
+		notifyListeners(event);
+	}
 	//
 	// /**
 	// * Tests this chart for equality with another object.

@@ -79,18 +79,17 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.text.AttributedString;
 import java.text.CharacterIterator;
-// 
+
 // import org.jfree.chart.ui.GradientPaintTransformer;
 // import org.jfree.chart.ui.StandardGradientPaintTransformer;
 // import org.jfree.chart.util.AttributedStringUtils;
-// import org.jfree.chart.util.ObjectUtils;
+import org.jfree.chart.util.ObjectUtils;
 // import org.jfree.chart.util.PaintUtils;
-// import org.jfree.chart.util.ParamChecks;
-// import org.jfree.chart.util.PublicCloneable;
-// import org.jfree.chart.util.ShapeUtils;
-// import org.jfree.chart.util.SerialUtils;
-// import org.jfree.data.general.Dataset;
-// 
+import org.jfree.chart.util.ParamChecks;
+import org.jfree.chart.util.PublicCloneable;
+import org.jfree.chart.util.ShapeUtils;
+import org.jfree.chart.util.SerialUtils;
+import org.jfree.data.general.Dataset;
 
 /**
  * A temporary storage object for recording the properties of a legend item,
@@ -100,30 +99,30 @@ public class LegendItem implements Cloneable, Serializable {
 
 	/** For serialization. */
 	private static final long serialVersionUID = -797214582948827144L;
-	//
-	// /**
-	// * The dataset.
-	// *
-	// * @since 1.0.6
-	// */
-	// private Dataset dataset;
-	//
-	// /**
-	// * The series key.
-	// *
-	// * @since 1.0.6
-	// */
-	// private Comparable seriesKey;
-	//
-	// /** The dataset index. */
-	// private int datasetIndex;
-	//
-	// /** The series index. */
-	// private int series;
-	//
-	// /** The label. */
-	// private String label;
-	//
+
+	/**
+	 * The dataset.
+	 *
+	 * @since 1.0.6
+	 */
+	private Dataset dataset;
+
+	/**
+	 * The series key.
+	 *
+	 * @since 1.0.6
+	 */
+	private Comparable seriesKey;
+
+	/** The dataset index. */
+	private int datasetIndex;
+
+	/** The series index. */
+	private int series;
+
+	/** The label. */
+	private String label;
+
 	// /**
 	// * The label font ({@code null} is permitted).
 	// *
@@ -140,28 +139,27 @@ public class LegendItem implements Cloneable, Serializable {
 	//
 	// /** The attributed label (if null, fall back to the regular label). */
 	// private transient AttributedString attributedLabel;
-	//
-	// /**
-	// * The description (not currently used - could be displayed as a tool
-	// tip).
-	// */
-	// private String description;
-	//
-	// /** The tool tip text. */
-	// private String toolTipText;
-	//
-	// /** The url text. */
-	// private String urlText;
-	//
-	// /** A flag that controls whether or not the shape is visible. */
-	// private boolean shapeVisible;
+
+	/**
+	 * The description (not currently used - could be displayed as a tool tip).
+	 */
+	private String description;
+
+	/** The tool tip text. */
+	private String toolTipText;
+
+	/** The url text. */
+	private String urlText;
+
+	/** A flag that controls whether or not the shape is visible. */
+	private boolean shapeVisible;
 	//
 	// /** The shape. */
 	// private transient Shape shape;
-	//
-	// /** A flag that controls whether or not the shape is filled. */
-	// private boolean shapeFilled;
-	//
+
+	/** A flag that controls whether or not the shape is filled. */
+	private boolean shapeFilled;
+
 	// /** The paint. */
 	// private transient Paint fillPaint;
 	//
@@ -171,19 +169,19 @@ public class LegendItem implements Cloneable, Serializable {
 	// * @since 1.0.4
 	// */
 	// private GradientPaintTransformer fillPaintTransformer;
-	//
-	// /** A flag that controls whether or not the shape outline is visible. */
-	// private boolean shapeOutlineVisible;
-	//
+
+	/** A flag that controls whether or not the shape outline is visible. */
+	private boolean shapeOutlineVisible;
+
 	// /** The outline paint. */
 	// private transient Paint outlinePaint;
 	//
 	// /** The outline stroke. */
 	// private transient Stroke outlineStroke;
-	//
-	// /** A flag that controls whether or not the line is visible. */
-	// private boolean lineVisible;
-	//
+
+	/** A flag that controls whether or not the line is visible. */
+	private boolean lineVisible;
+
 	// /** The line. */
 	// private transient Shape line;
 	//

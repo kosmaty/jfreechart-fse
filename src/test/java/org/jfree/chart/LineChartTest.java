@@ -41,20 +41,25 @@
 package org.jfree.chart;
 
 // 
-// import org.jfree.chart.axis.ValueAxis;
-// import org.jfree.chart.event.ChartChangeEvent;
-// import org.jfree.chart.event.ChartChangeListener;
-// import org.jfree.chart.labels.CategoryToolTipGenerator;
-// import org.jfree.chart.labels.StandardCategoryToolTipGenerator;
-// import org.jfree.chart.plot.CategoryPlot;
-// import org.jfree.chart.renderer.category.CategoryItemRenderer;
-// import org.jfree.chart.urls.CategoryURLGenerator;
-// import org.jfree.chart.urls.StandardCategoryURLGenerator;
-// import org.jfree.data.Range;
+import org.jfree.chart.axis.ValueAxis;
+import org.jfree.chart.event.ChartChangeEvent;
+import org.jfree.chart.event.ChartChangeListener;
+import org.jfree.chart.labels.CategoryToolTipGenerator;
+import org.jfree.chart.labels.StandardCategoryToolTipGenerator;
+import org.jfree.chart.plot.CategoryPlot;
+import org.jfree.chart.renderer.category.CategoryItemRenderer;
+import org.jfree.chart.urls.CategoryURLGenerator;
+import org.jfree.chart.urls.StandardCategoryURLGenerator;
+import org.jfree.data.Range;
 import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.general.DatasetUtilities;
 import org.junit.Before;
 import org.junit.Test;
+
+import javafx.geometry.Rectangle2D;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
+
 // 
 // import java.awt.Graphics2D;
 // import java.awt.geom.Rectangle2D;
@@ -80,51 +85,48 @@ public class LineChartTest {
 		this.chart = createLineChart();
 	}
 
-	//
-	// /**
-	// * Draws the chart with a null info object to make sure that no exceptions
-	// * are thrown (a problem that was occurring at one point).
-	// */
-	// @Test
-	// public void testDrawWithNullInfo() {
-	// BufferedImage image = new BufferedImage(200 , 100,
-	// BufferedImage.TYPE_INT_RGB);
-	// Graphics2D g2 = image.createGraphics();
-	// this.chart.draw(g2, new Rectangle2D.Double(0, 0, 200, 100), null,
-	// null);
-	// g2.dispose();
-	// //FIXME we should really assert a value here
-	// }
-	//
-	// /**
-	// * Replaces the chart's dataset and then checks that the new dataset is
-	// OK.
-	// */
-	// @Test
-	// public void testReplaceDataset() {
-	//
-	// // create a dataset...
-	// Number[][] data = new Integer[][]
-	// {{-30, -20},
-	// {-10, 10},
-	// {20, 30}};
-	//
-	// CategoryDataset newData = DatasetUtilities.createCategoryDataset("S",
-	// "C", data);
-	//
-	// LocalListener l = new LocalListener();
-	// this.chart.addChangeListener(l);
-	// CategoryPlot plot = (CategoryPlot) this.chart.getPlot();
-	// plot.setDataset(newData);
-	// assertEquals(true, l.flag);
-	// ValueAxis axis = plot.getRangeAxis();
-	// Range range = axis.getRange();
-	// assertTrue("Expecting the lower bound of the range to be around -30: "
-	// + range.getLowerBound(), range.getLowerBound() <= -30);
-	// assertTrue("Expecting the upper bound of the range to be around 30: "
-	// + range.getUpperBound(), range.getUpperBound() >= 30);
-	//
-	// }
+	/**
+	 * Draws the chart with a null info object to make sure that no exceptions
+	 * are thrown (a problem that was occurring at one point).
+	 */
+	@Test
+	public void testDrawWithNullInfo() {
+		Canvas canvas = new Canvas(200, 100);
+		GraphicsContext g2 = canvas.getGraphicsContext2D();
+		this.chart.draw(g2, new Rectangle2D(0, 0, 200, 100), null,
+				null);
+		// FIXME we should really assert a value here
+	}
+
+	/**
+	 * Replaces the chart's dataset and then checks that the new dataset is OK.
+	 */
+	@Test
+	public void testReplaceDataset() {
+
+		// create a dataset...
+		Number[][] data = new Integer[][]
+		{ { -30, -20 },
+				{ -10, 10 },
+				{ 20, 30 } };
+
+		CategoryDataset newData = DatasetUtilities.createCategoryDataset("S",
+				"C", data);
+
+		LocalListener l = new LocalListener();
+		this.chart.addChangeListener(l);
+		CategoryPlot plot = (CategoryPlot) this.chart.getPlot();
+		plot.setDataset(newData);
+		assertEquals("Expecting listener to be notified. ", true, l.flag);
+		ValueAxis axis = plot.getRangeAxis();
+		Range range = axis.getRange();
+		assertTrue("Expecting the lower bound of the range to be around -30: "
+				+ range.getLowerBound(), range.getLowerBound() <= -30);
+		assertTrue("Expecting the upper bound of the range to be around 30: "
+				+ range.getUpperBound(), range.getUpperBound() >= 30);
+
+	}
+
 	//
 	// /**
 	// * Check that setting a tool tip generator for a series does override the
@@ -175,26 +177,27 @@ public class LineChartTest {
 				dataset);
 
 	}
-	//
-	// /**
-	// * A chart change listener.
-	// *
-	// */
-	// static class LocalListener implements ChartChangeListener {
-	//
-	// /** A flag. */
-	// private boolean flag;
-	//
-	// /**
-	// * Event handler.
-	// *
-	// * @param event the event.
-	// */
-	// @Override
-	// public void chartChanged(ChartChangeEvent event) {
-	// this.flag = true;
-	// }
-	//
-	// }
-	//
+
+	/**
+	 * A chart change listener.
+	 *
+	 */
+	static class LocalListener implements ChartChangeListener {
+
+		/** A flag. */
+		private boolean flag;
+
+		/**
+		 * Event handler.
+		 *
+		 * @param event
+		 *            the event.
+		 */
+		@Override
+		public void chartChanged(ChartChangeEvent event) {
+			this.flag = true;
+		}
+
+	}
+
 }

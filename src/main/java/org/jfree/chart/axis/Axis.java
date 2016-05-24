@@ -89,33 +89,34 @@
 package org.jfree.chart.axis;
 
 // 
-// import java.io.IOException;
-// import java.io.ObjectInputStream;
-// import java.io.ObjectOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
-// import java.text.AttributedString;
-// import java.util.Arrays;
-// import java.util.EventListener;
-// import java.util.List;
+import java.text.AttributedString;
+import java.util.Arrays;
+import java.util.EventListener;
+import java.util.List;
 // 
 // import javax.swing.event.EventListenerList;
 // 
-// import org.jfree.chart.ui.RectangleEdge;
-// import org.jfree.chart.ui.RectangleInsets;
-// import org.jfree.chart.ui.TextAnchor;
-// import org.jfree.chart.util.ObjectUtils;
+import org.jfree.chart.ui.RectangleEdge;
+import org.jfree.chart.ui.RectangleInsets;
+import org.jfree.chart.ui.TextAnchor;
+import org.jfree.chart.util.ObjectUtils;
 // import org.jfree.chart.util.PaintUtils;
 // import org.jfree.chart.entity.AxisEntity;
-// import org.jfree.chart.entity.EntityCollection;
+import org.jfree.chart.entity.EntityCollection;
 import org.jfree.chart.event.AxisChangeEvent;
 import org.jfree.chart.event.AxisChangeListener;
-// import org.jfree.chart.plot.Plot;
-// import org.jfree.chart.plot.PlotRenderingInfo;
-// import org.jfree.chart.text.TextUtilities;
-// import org.jfree.chart.util.AttributedStringUtils;
-// import org.jfree.chart.util.ParamChecks;
-// import org.jfree.chart.util.SerialUtils;
-// 
+import org.jfree.chart.plot.Plot;
+import org.jfree.chart.plot.PlotRenderingInfo;
+import org.jfree.chart.text.TextUtilities;
+import org.jfree.chart.util.AttributedStringUtils;
+import org.jfree.chart.util.ParamChecks;
+import org.jfree.chart.util.SerialUtils;
+
+import javafx.scene.text.Font;
 
 /**
  * The base class for all axes in JFreeChart. Subclasses are divided into those
@@ -123,12 +124,13 @@ import org.jfree.chart.event.AxisChangeListener;
  * {@link CategoryAxis}).
  */
 public abstract class Axis implements Cloneable, Serializable {
-	//
-	// /** For serialization. */
-	// private static final long serialVersionUID = 7719289504573298271L;
-	//
-	// /** The default axis visibility. */
-	// public static final boolean DEFAULT_AXIS_VISIBLE = true;
+
+	/** For serialization. */
+	private static final long serialVersionUID = 7719289504573298271L;
+
+	/** The default axis visibility. */
+	public static final boolean DEFAULT_AXIS_VISIBLE = true;
+	// JAVAFX
 	//
 	// /** The default axis label font. */
 	// public static final Font DEFAULT_AXIS_LABEL_FONT = new Font(
@@ -136,10 +138,9 @@ public abstract class Axis implements Cloneable, Serializable {
 	//
 	// /** The default axis label paint. */
 	// public static final Paint DEFAULT_AXIS_LABEL_PAINT = Color.BLACK;
-	//
-	// /** The default axis label insets. */
-	// public static final RectangleInsets DEFAULT_AXIS_LABEL_INSETS
-	// = new RectangleInsets(3.0, 3.0, 3.0, 3.0);
+
+	/** The default axis label insets. */
+	public static final RectangleInsets DEFAULT_AXIS_LABEL_INSETS = new RectangleInsets(3.0, 3.0, 3.0, 3.0);
 	//
 	// /** The default axis line paint. */
 	// public static final Paint DEFAULT_AXIS_LINE_PAINT = Color.GRAY;
@@ -147,9 +148,10 @@ public abstract class Axis implements Cloneable, Serializable {
 	// /** The default axis line stroke. */
 	// public static final Stroke DEFAULT_AXIS_LINE_STROKE = new
 	// BasicStroke(1.0f);
-	//
-	// /** The default tick labels visibility. */
-	// public static final boolean DEFAULT_TICK_LABELS_VISIBLE = true;
+
+	/** The default tick labels visibility. */
+	public static final boolean DEFAULT_TICK_LABELS_VISIBLE = true;
+
 	//
 	// /** The default tick label font. */
 	// public static final Font DEFAULT_TICK_LABEL_FONT = new Font("SansSerif",
@@ -157,237 +159,239 @@ public abstract class Axis implements Cloneable, Serializable {
 	//
 	// /** The default tick label paint. */
 	// public static final Paint DEFAULT_TICK_LABEL_PAINT = Color.BLACK;
-	//
-	// /** The default tick label insets. */
-	// public static final RectangleInsets DEFAULT_TICK_LABEL_INSETS
-	// = new RectangleInsets(2.0, 4.0, 2.0, 4.0);
-	//
-	// /** The default tick marks visible. */
-	// public static final boolean DEFAULT_TICK_MARKS_VISIBLE = true;
+
+	/** The default tick label insets. */
+	public static final RectangleInsets DEFAULT_TICK_LABEL_INSETS = new RectangleInsets(2.0, 4.0, 2.0, 4.0);
+
+	/** The default tick marks visible. */
+	public static final boolean DEFAULT_TICK_MARKS_VISIBLE = true;
 	//
 	// /** The default tick stroke. */
 	// public static final Stroke DEFAULT_TICK_MARK_STROKE = new BasicStroke(1);
 	//
 	// /** The default tick paint. */
 	// public static final Paint DEFAULT_TICK_MARK_PAINT = Color.GRAY;
-	//
-	// /** The default tick mark inside length. */
-	// public static final float DEFAULT_TICK_MARK_INSIDE_LENGTH = 0.0f;
-	//
-	// /** The default tick mark outside length. */
-	// public static final float DEFAULT_TICK_MARK_OUTSIDE_LENGTH = 2.0f;
-	//
-	// /** A flag indicating whether or not the axis is visible. */
-	// private boolean visible;
-	//
-	// /** The label for the axis. */
-	// private transient AttributedString label;
-	//
-	// /** The font for displaying the axis label. */
-	// private Font labelFont;
-	//
+
+	/** The default tick mark inside length. */
+	public static final float DEFAULT_TICK_MARK_INSIDE_LENGTH = 0.0f;
+
+	/** The default tick mark outside length. */
+	public static final float DEFAULT_TICK_MARK_OUTSIDE_LENGTH = 2.0f;
+
+	/** A flag indicating whether or not the axis is visible. */
+	private boolean visible;
+
+	/** The label for the axis. */
+	private transient AttributedString label;
+
+	/** The font for displaying the axis label. */
+	private Font labelFont;
+
+	// JAVAFX paint
 	// /** The paint for drawing the axis label. */
 	// private transient Paint labelPaint;
-	//
-	// /** The insets for the axis label. */
-	// private RectangleInsets labelInsets;
-	//
-	// /** The label angle. */
-	// private double labelAngle;
+
+	/** The insets for the axis label. */
+	private RectangleInsets labelInsets;
+
+	/** The label angle. */
+	private double labelAngle;
 	//
 	// /** The axis label location. */
 	// private AxisLabelLocation labelLocation;
-	//
-	// /** A flag that controls whether or not the axis line is visible. */
-	// private boolean axisLineVisible;
+
+	/** A flag that controls whether or not the axis line is visible. */
+	private boolean axisLineVisible;
+	// JAVAFX paint, stroke
 	//
 	// /** The stroke used for the axis line. */
 	// private transient Stroke axisLineStroke;
 	//
 	// /** The paint used for the axis line. */
 	// private transient Paint axisLinePaint;
-	//
-	// /**
-	// * A flag that indicates whether or not tick labels are visible for the
-	// * axis.
-	// */
-	// private boolean tickLabelsVisible;
-	//
-	// /** The font used to display the tick labels. */
-	// private Font tickLabelFont;
+
+	/**
+	 * A flag that indicates whether or not tick labels are visible for the
+	 * axis.
+	 */
+	private boolean tickLabelsVisible;
+
+	/** The font used to display the tick labels. */
+	private Font tickLabelFont;
+	// JAVAFX paint
 	//
 	// /** The color used to display the tick labels. */
 	// private transient Paint tickLabelPaint;
-	//
-	// /** The blank space around each tick label. */
-	// private RectangleInsets tickLabelInsets;
-	//
-	// /**
-	// * A flag that indicates whether or not major tick marks are visible for
-	// * the axis.
-	// */
-	// private boolean tickMarksVisible;
-	//
-	// /**
-	// * The length of the major tick mark inside the data area (zero
-	// * permitted).
-	// */
-	// private float tickMarkInsideLength;
-	//
-	// /**
-	// * The length of the major tick mark outside the data area (zero
-	// * permitted).
-	// */
-	// private float tickMarkOutsideLength;
-	//
-	// /**
-	// * A flag that indicates whether or not minor tick marks are visible for
-	// the
-	// * axis.
-	// *
-	// * @since 1.0.12
-	// */
-	// private boolean minorTickMarksVisible;
-	//
-	// /**
-	// * The length of the minor tick mark inside the data area (zero
-	// permitted).
-	// *
-	// * @since 1.0.12
-	// */
-	// private float minorTickMarkInsideLength;
-	//
-	// /**
-	// * The length of the minor tick mark outside the data area (zero
-	// permitted).
-	// *
-	// * @since 1.0.12
-	// */
-	// private float minorTickMarkOutsideLength;
-	//
+
+	/** The blank space around each tick label. */
+	private RectangleInsets tickLabelInsets;
+
+	/**
+	 * A flag that indicates whether or not major tick marks are visible for the
+	 * axis.
+	 */
+	private boolean tickMarksVisible;
+
+	/**
+	 * The length of the major tick mark inside the data area (zero permitted).
+	 */
+	private float tickMarkInsideLength;
+
+	/**
+	 * The length of the major tick mark outside the data area (zero permitted).
+	 */
+	private float tickMarkOutsideLength;
+
+	/**
+	 * A flag that indicates whether or not minor tick marks are visible for the
+	 * axis.
+	 *
+	 * @since 1.0.12
+	 */
+	private boolean minorTickMarksVisible;
+
+	/**
+	 * The length of the minor tick mark inside the data area (zero permitted).
+	 *
+	 * @since 1.0.12
+	 */
+	private float minorTickMarkInsideLength;
+
+	/**
+	 * The length of the minor tick mark outside the data area (zero permitted).
+	 *
+	 * @since 1.0.12
+	 */
+	private float minorTickMarkOutsideLength;
+
 	// /** The stroke used to draw tick marks. */
 	// private transient Stroke tickMarkStroke;
 	//
 	// /** The paint used to draw tick marks. */
 	// private transient Paint tickMarkPaint;
-	//
-	// /** The fixed (horizontal or vertical) dimension for the axis. */
-	// private double fixedDimension;
-	//
-	// /**
-	// * A reference back to the plot that the axis is assigned to (can be
-	// * {@code null}).
-	// */
-	// private transient Plot plot;
-	//
+
+	/** The fixed (horizontal or vertical) dimension for the axis. */
+	private double fixedDimension;
+
+	/**
+	 * A reference back to the plot that the axis is assigned to (can be
+	 * {@code null}).
+	 */
+	private transient Plot plot;
+
 	// /** Storage for registered listeners. */
 	// private transient EventListenerList listenerList;
-	//
-	// /**
-	// * Constructs an axis, using default values where necessary.
-	// *
-	// * @param label the axis label ({@code null} permitted).
-	// */
-	// protected Axis(String label) {
-	// this.visible = DEFAULT_AXIS_VISIBLE;
-	// this.labelFont = DEFAULT_AXIS_LABEL_FONT;
-	// this.labelPaint = DEFAULT_AXIS_LABEL_PAINT;
-	// if (label != null) {
-	// AttributedString s = new AttributedString(label);
-	// s.addAttributes(this.labelFont.getAttributes(), 0, label.length());
-	// this.label = s;
-	// }
-	// this.labelInsets = DEFAULT_AXIS_LABEL_INSETS;
-	// this.labelAngle = 0.0;
-	// this.labelLocation = AxisLabelLocation.MIDDLE;
-	//
-	// this.axisLineVisible = true;
-	// this.axisLinePaint = DEFAULT_AXIS_LINE_PAINT;
-	// this.axisLineStroke = DEFAULT_AXIS_LINE_STROKE;
-	//
-	// this.tickLabelsVisible = DEFAULT_TICK_LABELS_VISIBLE;
-	// this.tickLabelFont = DEFAULT_TICK_LABEL_FONT;
-	// this.tickLabelPaint = DEFAULT_TICK_LABEL_PAINT;
-	// this.tickLabelInsets = DEFAULT_TICK_LABEL_INSETS;
-	//
-	// this.tickMarksVisible = DEFAULT_TICK_MARKS_VISIBLE;
-	// this.tickMarkStroke = DEFAULT_TICK_MARK_STROKE;
-	// this.tickMarkPaint = DEFAULT_TICK_MARK_PAINT;
-	// this.tickMarkInsideLength = DEFAULT_TICK_MARK_INSIDE_LENGTH;
-	// this.tickMarkOutsideLength = DEFAULT_TICK_MARK_OUTSIDE_LENGTH;
-	//
-	// this.minorTickMarksVisible = false;
-	// this.minorTickMarkInsideLength = 0.0f;
-	// this.minorTickMarkOutsideLength = 2.0f;
-	//
-	// this.plot = null;
-	//
-	// this.listenerList = new EventListenerList();
-	// }
-	//
-	// /**
-	// * Returns <code>true</code> if the axis is visible, and
-	// * <code>false</code> otherwise.
-	// *
-	// * @return A boolean.
-	// *
-	// * @see #setVisible(boolean)
-	// */
-	// public boolean isVisible() {
-	// return this.visible;
-	// }
-	//
-	// /**
-	// * Sets a flag that controls whether or not the axis is visible and sends
-	// * an {@link AxisChangeEvent} to all registered listeners.
-	// *
-	// * @param flag the flag.
-	// *
-	// * @see #isVisible()
-	// */
-	// public void setVisible(boolean flag) {
-	// if (flag != this.visible) {
-	// this.visible = flag;
-	// fireChangeEvent();
-	// }
-	// }
-	//
-	// /**
-	// * Returns the label for the axis (the returned value is a copy, so
-	// * modifying it will not impact the state of the axis).
-	// *
-	// * @return The label for the axis ({@code null} possible).
-	// *
-	// * @see #getLabelFont()
-	// * @see #getLabelPaint()
-	// * @see #setLabel(String)
-	// */
-	// public AttributedString getLabel() {
-	// if (this.label != null) {
-	// return new AttributedString(this.label.getIterator());
-	// } else {
-	// return null;
-	// }
-	// }
-	//
-	// /**
-	// * Sets the label for the axis and sends an {@link AxisChangeEvent} to all
-	// * registered listeners.
-	// *
-	// * @param label the new label ({@code null} permitted).
-	// *
-	// * @see #getLabel()
-	// * @see #setLabelFont(Font)
-	// * @see #setLabelPaint(Paint)
-	// */
-	// public void setLabel(AttributedString label) {
-	// if (label != null) {
-	// this.label = new AttributedString(label.getIterator());
-	// } else {
-	// this.label = null;
-	// }
-	// fireChangeEvent();
-	// }
+
+	/**
+	 * Constructs an axis, using default values where necessary.
+	 *
+	 * @param label
+	 *            the axis label ({@code null} permitted).
+	 */
+	protected Axis(String label) {
+		this.visible = DEFAULT_AXIS_VISIBLE;
+		// this.labelFont = DEFAULT_AXIS_LABEL_FONT;
+		// this.labelPaint = DEFAULT_AXIS_LABEL_PAINT;
+		if (label != null) {
+			AttributedString s = new AttributedString(label);
+			// s.addAttributes(this.labelFont.getAttributes(), 0,
+			// label.length());
+			this.label = s;
+		}
+		this.labelInsets = DEFAULT_AXIS_LABEL_INSETS;
+		this.labelAngle = 0.0;
+		// this.labelLocation = AxisLabelLocation.MIDDLE;
+
+		this.axisLineVisible = true;
+		// this.axisLinePaint = DEFAULT_AXIS_LINE_PAINT;
+		// this.axisLineStroke = DEFAULT_AXIS_LINE_STROKE;
+
+		this.tickLabelsVisible = DEFAULT_TICK_LABELS_VISIBLE;
+		// this.tickLabelFont = DEFAULT_TICK_LABEL_FONT;
+		// this.tickLabelPaint = DEFAULT_TICK_LABEL_PAINT;
+		this.tickLabelInsets = DEFAULT_TICK_LABEL_INSETS;
+
+		this.tickMarksVisible = DEFAULT_TICK_MARKS_VISIBLE;
+		// this.tickMarkStroke = DEFAULT_TICK_MARK_STROKE;
+		// this.tickMarkPaint = DEFAULT_TICK_MARK_PAINT;
+		this.tickMarkInsideLength = DEFAULT_TICK_MARK_INSIDE_LENGTH;
+		this.tickMarkOutsideLength = DEFAULT_TICK_MARK_OUTSIDE_LENGTH;
+
+		this.minorTickMarksVisible = false;
+		this.minorTickMarkInsideLength = 0.0f;
+		this.minorTickMarkOutsideLength = 2.0f;
+
+		this.plot = null;
+
+		// this.listenerList = new EventListenerList();
+	}
+
+	/**
+	 * Returns <code>true</code> if the axis is visible, and <code>false</code>
+	 * otherwise.
+	 *
+	 * @return A boolean.
+	 *
+	 * @see #setVisible(boolean)
+	 */
+	public boolean isVisible() {
+		return this.visible;
+	}
+
+	/**
+	 * Sets a flag that controls whether or not the axis is visible and sends an
+	 * {@link AxisChangeEvent} to all registered listeners.
+	 *
+	 * @param flag
+	 *            the flag.
+	 *
+	 * @see #isVisible()
+	 */
+	public void setVisible(boolean flag) {
+		if (flag != this.visible) {
+			this.visible = flag;
+			fireChangeEvent();
+		}
+	}
+
+	/**
+	 * Returns the label for the axis (the returned value is a copy, so
+	 * modifying it will not impact the state of the axis).
+	 *
+	 * @return The label for the axis ({@code null} possible).
+	 *
+	 * @see #getLabelFont()
+	 * @see #getLabelPaint()
+	 * @see #setLabel(String)
+	 */
+	public AttributedString getLabel() {
+		if (this.label != null) {
+			return new AttributedString(this.label.getIterator());
+		} else {
+			return null;
+		}
+	}
+
+	/**
+	 * Sets the label for the axis and sends an {@link AxisChangeEvent} to all
+	 * registered listeners.
+	 *
+	 * @param label
+	 *            the new label ({@code null} permitted).
+	 *
+	 * @see #getLabel()
+	 * @see #setLabelFont(Font)
+	 * @see #setLabelPaint(Paint)
+	 */
+	public void setLabel(AttributedString label) {
+		if (label != null) {
+			this.label = new AttributedString(label.getIterator());
+		} else {
+			this.label = null;
+		}
+		fireChangeEvent();
+	}
+
 	//
 	// /**
 	// * Sets the label for the axis and sends an {@link AxisChangeEvent} to
@@ -649,96 +653,98 @@ public abstract class Axis implements Cloneable, Serializable {
 	// fireChangeEvent();
 	// }
 	//
-	// /**
-	// * Returns a flag indicating whether or not the tick labels are visible.
-	// *
-	// * @return The flag.
-	// *
-	// * @see #getTickLabelFont()
-	// * @see #getTickLabelPaint()
-	// * @see #setTickLabelsVisible(boolean)
-	// */
-	// public boolean isTickLabelsVisible() {
-	// return this.tickLabelsVisible;
-	// }
-	//
-	// /**
-	// * Sets the flag that determines whether or not the tick labels are
-	// * visible and sends an {@link AxisChangeEvent} to all registered
-	// * listeners.
-	// *
-	// * @param flag the flag.
-	// *
-	// * @see #isTickLabelsVisible()
-	// * @see #setTickLabelFont(Font)
-	// * @see #setTickLabelPaint(Paint)
-	// */
-	// public void setTickLabelsVisible(boolean flag) {
-	// if (flag != this.tickLabelsVisible) {
-	// this.tickLabelsVisible = flag;
-	// fireChangeEvent();
-	// }
-	// }
-	//
-	// /**
-	// * Returns the flag that indicates whether or not the minor tick marks are
-	// * showing.
-	// *
-	// * @return The flag that indicates whether or not the minor tick marks are
-	// * showing.
-	// *
-	// * @see #setMinorTickMarksVisible(boolean)
-	// *
-	// * @since 1.0.12
-	// */
-	// public boolean isMinorTickMarksVisible() {
-	// return this.minorTickMarksVisible;
-	// }
-	//
-	// /**
-	// * Sets the flag that indicates whether or not the minor tick marks are
-	// * showing and sends an {@link AxisChangeEvent} to all registered
-	// * listeners.
-	// *
-	// * @param flag the flag.
-	// *
-	// * @see #isMinorTickMarksVisible()
-	// *
-	// * @since 1.0.12
-	// */
-	// public void setMinorTickMarksVisible(boolean flag) {
-	// if (flag != this.minorTickMarksVisible) {
-	// this.minorTickMarksVisible = flag;
-	// fireChangeEvent();
-	// }
-	// }
-	//
-	// /**
-	// * Returns the font used for the tick labels (if showing).
-	// *
-	// * @return The font (never {@code null}).
-	// *
-	// * @see #setTickLabelFont(Font)
-	// */
-	// public Font getTickLabelFont() {
-	// return this.tickLabelFont;
-	// }
-	//
-	// /**
-	// * Sets the font for the tick labels and sends an {@link AxisChangeEvent}
-	// * to all registered listeners.
-	// *
-	// * @param font the font ({@code null} not allowed).
-	// *
-	// * @see #getTickLabelFont()
-	// */
-	// public void setTickLabelFont(Font font) {
-	// ParamChecks.nullNotPermitted(font, "font");
-	// if (!this.tickLabelFont.equals(font)) {
-	// this.tickLabelFont = font;
-	// fireChangeEvent();
-	// }
-	// }
+	/**
+	 * Returns a flag indicating whether or not the tick labels are visible.
+	 *
+	 * @return The flag.
+	 *
+	 * @see #getTickLabelFont()
+	 * @see #getTickLabelPaint()
+	 * @see #setTickLabelsVisible(boolean)
+	 */
+	public boolean isTickLabelsVisible() {
+		return this.tickLabelsVisible;
+	}
+
+	/**
+	 * Sets the flag that determines whether or not the tick labels are visible
+	 * and sends an {@link AxisChangeEvent} to all registered listeners.
+	 *
+	 * @param flag
+	 *            the flag.
+	 *
+	 * @see #isTickLabelsVisible()
+	 * @see #setTickLabelFont(Font)
+	 * @see #setTickLabelPaint(Paint)
+	 */
+	public void setTickLabelsVisible(boolean flag) {
+		if (flag != this.tickLabelsVisible) {
+			this.tickLabelsVisible = flag;
+			fireChangeEvent();
+		}
+	}
+
+	/**
+	 * Returns the flag that indicates whether or not the minor tick marks are
+	 * showing.
+	 *
+	 * @return The flag that indicates whether or not the minor tick marks are
+	 *         showing.
+	 *
+	 * @see #setMinorTickMarksVisible(boolean)
+	 *
+	 * @since 1.0.12
+	 */
+	public boolean isMinorTickMarksVisible() {
+		return this.minorTickMarksVisible;
+	}
+
+	/**
+	 * Sets the flag that indicates whether or not the minor tick marks are
+	 * showing and sends an {@link AxisChangeEvent} to all registered listeners.
+	 *
+	 * @param flag
+	 *            the flag.
+	 *
+	 * @see #isMinorTickMarksVisible()
+	 *
+	 * @since 1.0.12
+	 */
+	public void setMinorTickMarksVisible(boolean flag) {
+		if (flag != this.minorTickMarksVisible) {
+			this.minorTickMarksVisible = flag;
+			fireChangeEvent();
+		}
+	}
+
+	/**
+	 * Returns the font used for the tick labels (if showing).
+	 *
+	 * @return The font (never {@code null}).
+	 *
+	 * @see #setTickLabelFont(Font)
+	 */
+	public Font getTickLabelFont() {
+		return this.tickLabelFont;
+	}
+
+	/**
+	 * Sets the font for the tick labels and sends an {@link AxisChangeEvent} to
+	 * all registered listeners.
+	 *
+	 * @param font
+	 *            the font ({@code null} not allowed).
+	 *
+	 * @see #getTickLabelFont()
+	 */
+	public void setTickLabelFont(Font font) {
+		ParamChecks.nullNotPermitted(font, "font");
+		if (!this.tickLabelFont.equals(font)) {
+			this.tickLabelFont = font;
+			fireChangeEvent();
+		}
+	}
+
 	//
 	// /**
 	// * Returns the color/shade used for the tick labels.
@@ -764,112 +770,116 @@ public abstract class Axis implements Cloneable, Serializable {
 	// this.tickLabelPaint = paint;
 	// fireChangeEvent();
 	// }
-	//
-	// /**
-	// * Returns the insets for the tick labels.
-	// *
-	// * @return The insets (never {@code null}).
-	// *
-	// * @see #setTickLabelInsets(RectangleInsets)
-	// */
-	// public RectangleInsets getTickLabelInsets() {
-	// return this.tickLabelInsets;
-	// }
-	//
-	// /**
-	// * Sets the insets for the tick labels and sends an {@link
-	// AxisChangeEvent}
-	// * to all registered listeners.
-	// *
-	// * @param insets the insets ({@code null} not permitted).
-	// *
-	// * @see #getTickLabelInsets()
-	// */
-	// public void setTickLabelInsets(RectangleInsets insets) {
-	// ParamChecks.nullNotPermitted(insets, "insets");
-	// if (!this.tickLabelInsets.equals(insets)) {
-	// this.tickLabelInsets = insets;
-	// fireChangeEvent();
-	// }
-	// }
-	//
-	// /**
-	// * Returns the flag that indicates whether or not the tick marks are
-	// * showing.
-	// *
-	// * @return The flag that indicates whether or not the tick marks are
-	// * showing.
-	// *
-	// * @see #setTickMarksVisible(boolean)
-	// */
-	// public boolean isTickMarksVisible() {
-	// return this.tickMarksVisible;
-	// }
-	//
-	// /**
-	// * Sets the flag that indicates whether or not the tick marks are showing
-	// * and sends an {@link AxisChangeEvent} to all registered listeners.
-	// *
-	// * @param flag the flag.
-	// *
-	// * @see #isTickMarksVisible()
-	// */
-	// public void setTickMarksVisible(boolean flag) {
-	// if (flag != this.tickMarksVisible) {
-	// this.tickMarksVisible = flag;
-	// fireChangeEvent();
-	// }
-	// }
-	//
-	// /**
-	// * Returns the inside length of the tick marks.
-	// *
-	// * @return The length.
-	// *
-	// * @see #getTickMarkOutsideLength()
-	// * @see #setTickMarkInsideLength(float)
-	// */
-	// public float getTickMarkInsideLength() {
-	// return this.tickMarkInsideLength;
-	// }
-	//
-	// /**
-	// * Sets the inside length of the tick marks and sends
-	// * an {@link AxisChangeEvent} to all registered listeners.
-	// *
-	// * @param length the new length.
-	// *
-	// * @see #getTickMarkInsideLength()
-	// */
-	// public void setTickMarkInsideLength(float length) {
-	// this.tickMarkInsideLength = length;
-	// fireChangeEvent();
-	// }
-	//
-	// /**
-	// * Returns the outside length of the tick marks.
-	// *
-	// * @return The length.
-	// *
-	// * @see #getTickMarkInsideLength()
-	// * @see #setTickMarkOutsideLength(float)
-	// */
-	// public float getTickMarkOutsideLength() {
-	// return this.tickMarkOutsideLength;
-	// }
-	//
-	// /**
-	// * Sets the outside length of the tick marks and sends
-	// * an {@link AxisChangeEvent} to all registered listeners.
-	// *
-	// * @param length the new length.
-	// *
-	// * @see #getTickMarkInsideLength()
-	// */
-	// public void setTickMarkOutsideLength(float length) {
-	// this.tickMarkOutsideLength = length;
-	// fireChangeEvent();
-	// }
+
+	/**
+	 * Returns the insets for the tick labels.
+	 *
+	 * @return The insets (never {@code null}).
+	 *
+	 * @see #setTickLabelInsets(RectangleInsets)
+	 */
+	public RectangleInsets getTickLabelInsets() {
+		return this.tickLabelInsets;
+	}
+
+	/**
+	 * Sets the insets for the tick labels and sends an {@link AxisChangeEvent}
+	 * to all registered listeners.
+	 *
+	 * @param insets
+	 *            the insets ({@code null} not permitted).
+	 *
+	 * @see #getTickLabelInsets()
+	 */
+	public void setTickLabelInsets(RectangleInsets insets) {
+		ParamChecks.nullNotPermitted(insets, "insets");
+		if (!this.tickLabelInsets.equals(insets)) {
+			this.tickLabelInsets = insets;
+			fireChangeEvent();
+		}
+	}
+
+	/**
+	 * Returns the flag that indicates whether or not the tick marks are
+	 * showing.
+	 *
+	 * @return The flag that indicates whether or not the tick marks are
+	 *         showing.
+	 *
+	 * @see #setTickMarksVisible(boolean)
+	 */
+	public boolean isTickMarksVisible() {
+		return this.tickMarksVisible;
+	}
+
+	/**
+	 * Sets the flag that indicates whether or not the tick marks are showing
+	 * and sends an {@link AxisChangeEvent} to all registered listeners.
+	 *
+	 * @param flag
+	 *            the flag.
+	 *
+	 * @see #isTickMarksVisible()
+	 */
+	public void setTickMarksVisible(boolean flag) {
+		if (flag != this.tickMarksVisible) {
+			this.tickMarksVisible = flag;
+			fireChangeEvent();
+		}
+	}
+
+	/**
+	 * Returns the inside length of the tick marks.
+	 *
+	 * @return The length.
+	 *
+	 * @see #getTickMarkOutsideLength()
+	 * @see #setTickMarkInsideLength(float)
+	 */
+	public float getTickMarkInsideLength() {
+		return this.tickMarkInsideLength;
+	}
+
+	/**
+	 * Sets the inside length of the tick marks and sends an
+	 * {@link AxisChangeEvent} to all registered listeners.
+	 *
+	 * @param length
+	 *            the new length.
+	 *
+	 * @see #getTickMarkInsideLength()
+	 */
+	public void setTickMarkInsideLength(float length) {
+		this.tickMarkInsideLength = length;
+		fireChangeEvent();
+	}
+
+	/**
+	 * Returns the outside length of the tick marks.
+	 *
+	 * @return The length.
+	 *
+	 * @see #getTickMarkInsideLength()
+	 * @see #setTickMarkOutsideLength(float)
+	 */
+	public float getTickMarkOutsideLength() {
+		return this.tickMarkOutsideLength;
+	}
+
+	/**
+	 * Sets the outside length of the tick marks and sends an
+	 * {@link AxisChangeEvent} to all registered listeners.
+	 *
+	 * @param length
+	 *            the new length.
+	 *
+	 * @see #getTickMarkInsideLength()
+	 */
+	public void setTickMarkOutsideLength(float length) {
+		this.tickMarkOutsideLength = length;
+		fireChangeEvent();
+	}
+
 	//
 	// /**
 	// * Returns the stroke used to draw tick marks.
@@ -923,124 +933,128 @@ public abstract class Axis implements Cloneable, Serializable {
 	// fireChangeEvent();
 	// }
 	//
-	// /**
-	// * Returns the inside length of the minor tick marks.
-	// *
-	// * @return The length.
-	// *
-	// * @see #getMinorTickMarkOutsideLength()
-	// * @see #setMinorTickMarkInsideLength(float)
-	// *
-	// * @since 1.0.12
-	// */
-	// public float getMinorTickMarkInsideLength() {
-	// return this.minorTickMarkInsideLength;
-	// }
-	//
-	// /**
-	// * Sets the inside length of the minor tick marks and sends
-	// * an {@link AxisChangeEvent} to all registered listeners.
-	// *
-	// * @param length the new length.
-	// *
-	// * @see #getMinorTickMarkInsideLength()
-	// *
-	// * @since 1.0.12
-	// */
-	// public void setMinorTickMarkInsideLength(float length) {
-	// this.minorTickMarkInsideLength = length;
-	// fireChangeEvent();
-	// }
-	//
-	// /**
-	// * Returns the outside length of the minor tick marks.
-	// *
-	// * @return The length.
-	// *
-	// * @see #getMinorTickMarkInsideLength()
-	// * @see #setMinorTickMarkOutsideLength(float)
-	// *
-	// * @since 1.0.12
-	// */
-	// public float getMinorTickMarkOutsideLength() {
-	// return this.minorTickMarkOutsideLength;
-	// }
-	//
-	// /**
-	// * Sets the outside length of the minor tick marks and sends
-	// * an {@link AxisChangeEvent} to all registered listeners.
-	// *
-	// * @param length the new length.
-	// *
-	// * @see #getMinorTickMarkInsideLength()
-	// *
-	// * @since 1.0.12
-	// */
-	// public void setMinorTickMarkOutsideLength(float length) {
-	// this.minorTickMarkOutsideLength = length;
-	// fireChangeEvent();
-	// }
-	//
-	// /**
-	// * Returns the plot that the axis is assigned to. This method will return
-	// * {@code null} if the axis is not currently assigned to a plot.
-	// *
-	// * @return The plot that the axis is assigned to (possibly {@code null}).
-	// *
-	// * @see #setPlot(Plot)
-	// */
-	// public Plot getPlot() {
-	// return this.plot;
-	// }
-	//
-	// /**
-	// * Sets a reference to the plot that the axis is assigned to.
-	// * <P>
-	// * This method is used internally, you shouldn't need to call it yourself.
-	// *
-	// * @param plot the plot.
-	// *
-	// * @see #getPlot()
-	// */
-	// public void setPlot(Plot plot) {
-	// this.plot = plot;
-	// configure();
-	// }
-	//
-	// /**
-	// * Returns the fixed dimension for the axis.
-	// *
-	// * @return The fixed dimension.
-	// *
-	// * @see #setFixedDimension(double)
-	// */
-	// public double getFixedDimension() {
-	// return this.fixedDimension;
-	// }
-	//
-	// /**
-	// * Sets the fixed dimension for the axis.
-	// * <P>
-	// * This is used when combining more than one plot on a chart. In this
-	// case,
-	// * there may be several axes that need to have the same height or width so
-	// * that they are aligned. This method is used to fix a dimension for the
-	// * axis (the context determines whether the dimension is horizontal or
-	// * vertical).
-	// *
-	// * @param dimension the fixed dimension.
-	// *
-	// * @see #getFixedDimension()
-	// */
-	// public void setFixedDimension(double dimension) {
-	// this.fixedDimension = dimension;
-	// }
-	//
-	// /**
-	// * Configures the axis to work with the current plot. Override this method
-	// * to perform any special processing (such as auto-rescaling).
-	// */
-	// public abstract void configure();
+	/**
+	 * Returns the inside length of the minor tick marks.
+	 *
+	 * @return The length.
+	 *
+	 * @see #getMinorTickMarkOutsideLength()
+	 * @see #setMinorTickMarkInsideLength(float)
+	 *
+	 * @since 1.0.12
+	 */
+	public float getMinorTickMarkInsideLength() {
+		return this.minorTickMarkInsideLength;
+	}
+
+	/**
+	 * Sets the inside length of the minor tick marks and sends an
+	 * {@link AxisChangeEvent} to all registered listeners.
+	 *
+	 * @param length
+	 *            the new length.
+	 *
+	 * @see #getMinorTickMarkInsideLength()
+	 *
+	 * @since 1.0.12
+	 */
+	public void setMinorTickMarkInsideLength(float length) {
+		this.minorTickMarkInsideLength = length;
+		fireChangeEvent();
+	}
+
+	/**
+	 * Returns the outside length of the minor tick marks.
+	 *
+	 * @return The length.
+	 *
+	 * @see #getMinorTickMarkInsideLength()
+	 * @see #setMinorTickMarkOutsideLength(float)
+	 *
+	 * @since 1.0.12
+	 */
+	public float getMinorTickMarkOutsideLength() {
+		return this.minorTickMarkOutsideLength;
+	}
+
+	/**
+	 * Sets the outside length of the minor tick marks and sends an
+	 * {@link AxisChangeEvent} to all registered listeners.
+	 *
+	 * @param length
+	 *            the new length.
+	 *
+	 * @see #getMinorTickMarkInsideLength()
+	 *
+	 * @since 1.0.12
+	 */
+	public void setMinorTickMarkOutsideLength(float length) {
+		this.minorTickMarkOutsideLength = length;
+		fireChangeEvent();
+	}
+
+	/**
+	 * Returns the plot that the axis is assigned to. This method will return
+	 * {@code null} if the axis is not currently assigned to a plot.
+	 *
+	 * @return The plot that the axis is assigned to (possibly {@code null}).
+	 *
+	 * @see #setPlot(Plot)
+	 */
+	public Plot getPlot() {
+		return this.plot;
+	}
+
+	/**
+	 * Sets a reference to the plot that the axis is assigned to.
+	 * <P>
+	 * This method is used internally, you shouldn't need to call it yourself.
+	 *
+	 * @param plot
+	 *            the plot.
+	 *
+	 * @see #getPlot()
+	 */
+	public void setPlot(Plot plot) {
+		this.plot = plot;
+		configure();
+	}
+
+	/**
+	 * Returns the fixed dimension for the axis.
+	 *
+	 * @return The fixed dimension.
+	 *
+	 * @see #setFixedDimension(double)
+	 */
+	public double getFixedDimension() {
+		return this.fixedDimension;
+	}
+
+	/**
+	 * Sets the fixed dimension for the axis.
+	 * <P>
+	 * This is used when combining more than one plot on a chart. In this case,
+	 * there may be several axes that need to have the same height or width so
+	 * that they are aligned. This method is used to fix a dimension for the
+	 * axis (the context determines whether the dimension is horizontal or
+	 * vertical).
+	 *
+	 * @param dimension
+	 *            the fixed dimension.
+	 *
+	 * @see #getFixedDimension()
+	 */
+	public void setFixedDimension(double dimension) {
+		this.fixedDimension = dimension;
+	}
+
+	/**
+	 * Configures the axis to work with the current plot. Override this method
+	 * to perform any special processing (such as auto-rescaling).
+	 */
+	public abstract void configure();
+
 	//
 	// /**
 	// * Estimates the space (height or width) required to draw the axis.
@@ -1161,6 +1175,7 @@ public abstract class Axis implements Cloneable, Serializable {
 		// JAVAFX
 		// this.listenerList.remove(AxisChangeListener.class, listener);
 	}
+
 	//
 	// /**
 	// * Returns <code>true</code> if the specified object is registered with
@@ -1176,29 +1191,32 @@ public abstract class Axis implements Cloneable, Serializable {
 	// return list.contains(listener);
 	// }
 	//
-	// /**
-	// * Notifies all registered listeners that the axis has changed.
-	// * The AxisChangeEvent provides information about the change.
-	// *
-	// * @param event information about the change to the axis.
-	// */
-	// protected void notifyListeners(AxisChangeEvent event) {
-	// Object[] listeners = this.listenerList.getListenerList();
-	// for (int i = listeners.length - 2; i >= 0; i -= 2) {
-	// if (listeners[i] == AxisChangeListener.class) {
-	// ((AxisChangeListener) listeners[i + 1]).axisChanged(event);
-	// }
-	// }
-	// }
-	//
-	// /**
-	// * Sends an {@link AxisChangeEvent} to all registered listeners.
-	// *
-	// * @since 1.0.12
-	// */
-	// protected void fireChangeEvent() {
-	// notifyListeners(new AxisChangeEvent(this));
-	// }
+	/**
+	 * Notifies all registered listeners that the axis has changed. The
+	 * AxisChangeEvent provides information about the change.
+	 *
+	 * @param event
+	 *            information about the change to the axis.
+	 */
+	protected void notifyListeners(AxisChangeEvent event) {
+		// JAVAFX events
+		// Object[] listeners = this.listenerList.getListenerList();
+		// for (int i = listeners.length - 2; i >= 0; i -= 2) {
+		// if (listeners[i] == AxisChangeListener.class) {
+		// ((AxisChangeListener) listeners[i + 1]).axisChanged(event);
+		// }
+		// }
+	}
+
+	/**
+	 * Sends an {@link AxisChangeEvent} to all registered listeners.
+	 *
+	 * @since 1.0.12
+	 */
+	protected void fireChangeEvent() {
+		notifyListeners(new AxisChangeEvent(this));
+	}
+
 	//
 	// /**
 	// * Returns a rectangle that encloses the axis label. This is typically
@@ -1365,166 +1383,180 @@ public abstract class Axis implements Cloneable, Serializable {
 	// g2.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, saved);
 	// }
 	//
-	// /**
-	// * Returns a clone of the axis.
-	// *
-	// * @return A clone.
-	// *
-	// * @throws CloneNotSupportedException if some component of the axis does
-	// * not support cloning.
-	// */
-	// @Override
-	// public Object clone() throws CloneNotSupportedException {
-	// Axis clone = (Axis) super.clone();
-	// // It's up to the plot which clones up to restore the correct references
-	// clone.plot = null;
-	// clone.listenerList = new EventListenerList();
-	// return clone;
-	// }
-	//
-	// /**
-	// * Tests this axis for equality with another object.
-	// *
-	// * @param obj the object ({@code null} permitted).
-	// *
-	// * @return <code>true</code> or <code>false</code>.
-	// */
-	// @Override
-	// public boolean equals(Object obj) {
-	// if (obj == this) {
-	// return true;
-	// }
-	// if (!(obj instanceof Axis)) {
-	// return false;
-	// }
-	// Axis that = (Axis) obj;
-	// if (this.visible != that.visible) {
-	// return false;
-	// }
-	// if (!AttributedStringUtils.equal(this.label, that.label)) {
-	// return false;
-	// }
-	// if (!ObjectUtils.equal(this.labelFont, that.labelFont)) {
-	// return false;
-	// }
-	// if (!PaintUtils.equal(this.labelPaint, that.labelPaint)) {
-	// return false;
-	// }
-	// if (!ObjectUtils.equal(this.labelInsets, that.labelInsets)) {
-	// return false;
-	// }
-	// if (this.labelAngle != that.labelAngle) {
-	// return false;
-	// }
-	// if (!this.labelLocation.equals(that.labelLocation)) {
-	// return false;
-	// }
-	// if (this.axisLineVisible != that.axisLineVisible) {
-	// return false;
-	// }
-	// if (!ObjectUtils.equal(this.axisLineStroke, that.axisLineStroke)) {
-	// return false;
-	// }
-	// if (!PaintUtils.equal(this.axisLinePaint, that.axisLinePaint)) {
-	// return false;
-	// }
-	// if (this.tickLabelsVisible != that.tickLabelsVisible) {
-	// return false;
-	// }
-	// if (!ObjectUtils.equal(this.tickLabelFont, that.tickLabelFont)) {
-	// return false;
-	// }
-	// if (!PaintUtils.equal(this.tickLabelPaint, that.tickLabelPaint)) {
-	// return false;
-	// }
-	// if (!ObjectUtils.equal(
-	// this.tickLabelInsets, that.tickLabelInsets
-	// )) {
-	// return false;
-	// }
-	// if (this.tickMarksVisible != that.tickMarksVisible) {
-	// return false;
-	// }
-	// if (this.tickMarkInsideLength != that.tickMarkInsideLength) {
-	// return false;
-	// }
-	// if (this.tickMarkOutsideLength != that.tickMarkOutsideLength) {
-	// return false;
-	// }
-	// if (!PaintUtils.equal(this.tickMarkPaint, that.tickMarkPaint)) {
-	// return false;
-	// }
-	// if (!ObjectUtils.equal(this.tickMarkStroke, that.tickMarkStroke)) {
-	// return false;
-	// }
-	// if (this.minorTickMarksVisible != that.minorTickMarksVisible) {
-	// return false;
-	// }
-	// if (this.minorTickMarkInsideLength != that.minorTickMarkInsideLength) {
-	// return false;
-	// }
-	// if (this.minorTickMarkOutsideLength
-	// != that.minorTickMarkOutsideLength) {
-	// return false;
-	// }
-	// if (this.fixedDimension != that.fixedDimension) {
-	// return false;
-	// }
-	// return true;
-	// }
-	//
-	// /**
-	// * Returns a hash code for this object.
-	// *
-	// * @return A hash code.
-	// */
-	// @Override
-	// public int hashCode() {
-	// if (getLabel() != null) {
-	// String s = AttributedStringUtils.toString(
-	// getLabel().getIterator());
-	// return s.hashCode();
-	// }
-	// return 0;
-	// }
-	//
-	// /**
-	// * Provides serialization support.
-	// *
-	// * @param stream the output stream.
-	// *
-	// * @throws IOException if there is an I/O error.
-	// */
-	// private void writeObject(ObjectOutputStream stream) throws IOException {
-	// stream.defaultWriteObject();
-	// SerialUtils.writeAttributedString(this.label, stream);
-	// SerialUtils.writePaint(this.labelPaint, stream);
-	// SerialUtils.writePaint(this.tickLabelPaint, stream);
-	// SerialUtils.writeStroke(this.axisLineStroke, stream);
-	// SerialUtils.writePaint(this.axisLinePaint, stream);
-	// SerialUtils.writeStroke(this.tickMarkStroke, stream);
-	// SerialUtils.writePaint(this.tickMarkPaint, stream);
-	// }
-	//
-	// /**
-	// * Provides serialization support.
-	// *
-	// * @param stream the input stream.
-	// *
-	// * @throws IOException if there is an I/O error.
-	// * @throws ClassNotFoundException if there is a classpath problem.
-	// */
-	// private void readObject(ObjectInputStream stream)
-	// throws IOException, ClassNotFoundException {
-	// stream.defaultReadObject();
-	// this.label = SerialUtils.readAttributedString(stream);
-	// this.labelPaint = SerialUtils.readPaint(stream);
-	// this.tickLabelPaint = SerialUtils.readPaint(stream);
-	// this.axisLineStroke = SerialUtils.readStroke(stream);
-	// this.axisLinePaint = SerialUtils.readPaint(stream);
-	// this.tickMarkStroke = SerialUtils.readStroke(stream);
-	// this.tickMarkPaint = SerialUtils.readPaint(stream);
-	// this.listenerList = new EventListenerList();
-	// }
-	//
+	/**
+	 * Returns a clone of the axis.
+	 *
+	 * @return A clone.
+	 *
+	 * @throws CloneNotSupportedException
+	 *             if some component of the axis does not support cloning.
+	 */
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+		Axis clone = (Axis) super.clone();
+		// It's up to the plot which clones up to restore the correct references
+		clone.plot = null;
+		// JAVAFX enents
+		// clone.listenerList = new EventListenerList();
+		return clone;
+	}
+
+	/**
+	 * Tests this axis for equality with another object.
+	 *
+	 * @param obj
+	 *            the object ({@code null} permitted).
+	 *
+	 * @return <code>true</code> or <code>false</code>.
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == this) {
+			return true;
+		}
+		if (!(obj instanceof Axis)) {
+			return false;
+		}
+		Axis that = (Axis) obj;
+		if (this.visible != that.visible) {
+			return false;
+		}
+		if (!AttributedStringUtils.equal(this.label, that.label)) {
+			return false;
+		}
+		if (!ObjectUtils.equal(this.labelFont, that.labelFont)) {
+			return false;
+		}
+		// JAVAFX paint
+		// if (!PaintUtils.equal(this.labelPaint, that.labelPaint)) {
+		// return false;
+		// }
+		if (!ObjectUtils.equal(this.labelInsets, that.labelInsets)) {
+			return false;
+		}
+		if (this.labelAngle != that.labelAngle) {
+			return false;
+		}
+		// JAVAFX
+		// if (!this.labelLocation.equals(that.labelLocation)) {
+		// return false;
+		// }
+		if (this.axisLineVisible != that.axisLineVisible) {
+			return false;
+		}
+		// JAVAFX stroke, paint
+		// if (!ObjectUtils.equal(this.axisLineStroke, that.axisLineStroke)) {
+		// return false;
+		// }
+		// if (!PaintUtils.equal(this.axisLinePaint, that.axisLinePaint)) {
+		// return false;
+		// }
+		if (this.tickLabelsVisible != that.tickLabelsVisible) {
+			return false;
+		}
+		if (!ObjectUtils.equal(this.tickLabelFont, that.tickLabelFont)) {
+			return false;
+		}
+		// JAVAFX paint
+		// if (!PaintUtils.equal(this.tickLabelPaint, that.tickLabelPaint)) {
+		// return false;
+		// }
+		if (!ObjectUtils.equal(
+				this.tickLabelInsets, that.tickLabelInsets
+				)) {
+			return false;
+		}
+		if (this.tickMarksVisible != that.tickMarksVisible) {
+			return false;
+		}
+		if (this.tickMarkInsideLength != that.tickMarkInsideLength) {
+			return false;
+		}
+		if (this.tickMarkOutsideLength != that.tickMarkOutsideLength) {
+			return false;
+		}
+		// JAVAFX paint, stroke
+		// if (!PaintUtils.equal(this.tickMarkPaint, that.tickMarkPaint)) {
+		// return false;
+		// }
+		// if (!ObjectUtils.equal(this.tickMarkStroke, that.tickMarkStroke)) {
+		// return false;
+		// }
+		if (this.minorTickMarksVisible != that.minorTickMarksVisible) {
+			return false;
+		}
+		if (this.minorTickMarkInsideLength != that.minorTickMarkInsideLength) {
+			return false;
+		}
+		if (this.minorTickMarkOutsideLength
+				!= that.minorTickMarkOutsideLength) {
+			return false;
+		}
+		if (this.fixedDimension != that.fixedDimension) {
+			return false;
+		}
+		return true;
+	}
+
+	/**
+	 * Returns a hash code for this object.
+	 *
+	 * @return A hash code.
+	 */
+	@Override
+	public int hashCode() {
+		if (getLabel() != null) {
+			String s = AttributedStringUtils.toString(
+					getLabel().getIterator());
+			return s.hashCode();
+		}
+		return 0;
+	}
+
+	/**
+	 * Provides serialization support.
+	 *
+	 * @param stream
+	 *            the output stream.
+	 *
+	 * @throws IOException
+	 *             if there is an I/O error.
+	 */
+	private void writeObject(ObjectOutputStream stream) throws IOException {
+		stream.defaultWriteObject();
+		SerialUtils.writeAttributedString(this.label, stream);
+		// JAVAFX serialization
+		// SerialUtils.writePaint(this.labelPaint, stream);
+		// SerialUtils.writePaint(this.tickLabelPaint, stream);
+		// SerialUtils.writeStroke(this.axisLineStroke, stream);
+		// SerialUtils.writePaint(this.axisLinePaint, stream);
+		// SerialUtils.writeStroke(this.tickMarkStroke, stream);
+		// SerialUtils.writePaint(this.tickMarkPaint, stream);
+	}
+
+	/**
+	 * Provides serialization support.
+	 *
+	 * @param stream
+	 *            the input stream.
+	 *
+	 * @throws IOException
+	 *             if there is an I/O error.
+	 * @throws ClassNotFoundException
+	 *             if there is a classpath problem.
+	 */
+	private void readObject(ObjectInputStream stream)
+			throws IOException, ClassNotFoundException {
+		stream.defaultReadObject();
+		this.label = SerialUtils.readAttributedString(stream);
+		// JAVAFX serialization
+		// this.labelPaint = SerialUtils.readPaint(stream);
+		// this.tickLabelPaint = SerialUtils.readPaint(stream);
+		// this.axisLineStroke = SerialUtils.readStroke(stream);
+		// this.axisLinePaint = SerialUtils.readPaint(stream);
+		// this.tickMarkStroke = SerialUtils.readStroke(stream);
+		// this.tickMarkPaint = SerialUtils.readPaint(stream);
+		// this.listenerList = new EventListenerList();
+	}
+
 }

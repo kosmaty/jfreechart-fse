@@ -114,17 +114,19 @@ import java.text.NumberFormat;
 import java.util.List;
 import java.util.Locale;
 // 
-// import org.jfree.chart.ui.RectangleEdge;
-// import org.jfree.chart.ui.RectangleInsets;
-// import org.jfree.chart.ui.TextAnchor;
-// import org.jfree.chart.util.ObjectUtils;
-// import org.jfree.chart.event.AxisChangeEvent;
-// import org.jfree.chart.plot.Plot;
-// import org.jfree.chart.plot.PlotRenderingInfo;
-// import org.jfree.chart.plot.ValueAxisPlot;
-// import org.jfree.chart.util.ParamChecks;
-// import org.jfree.data.Range;
-// import org.jfree.data.RangeType;
+import org.jfree.chart.ui.RectangleEdge;
+import org.jfree.chart.ui.RectangleInsets;
+import org.jfree.chart.ui.TextAnchor;
+import org.jfree.chart.util.ObjectUtils;
+import org.jfree.chart.event.AxisChangeEvent;
+import org.jfree.chart.plot.Plot;
+import org.jfree.chart.plot.PlotRenderingInfo;
+import org.jfree.chart.plot.ValueAxisPlot;
+import org.jfree.chart.util.ParamChecks;
+import org.jfree.data.Range;
+import org.jfree.data.RangeType;
+
+import javafx.geometry.Rectangle2D;
 
 /**
  * An axis for displaying numerical data.
@@ -137,248 +139,255 @@ import java.util.Locale;
  * tick unit that is appropriate for the current axis range.
  */
 public class NumberAxis extends ValueAxis implements Cloneable, Serializable {
-	//
-	// /** For serialization. */
-	// private static final long serialVersionUID = 2805933088476185789L;
-	//
-	// /** The default value for the autoRangeIncludesZero flag. */
-	// public static final boolean DEFAULT_AUTO_RANGE_INCLUDES_ZERO = true;
-	//
-	// /** The default value for the autoRangeStickyZero flag. */
-	// public static final boolean DEFAULT_AUTO_RANGE_STICKY_ZERO = true;
-	//
-	// /** The default tick unit. */
-	// public static final NumberTickUnit DEFAULT_TICK_UNIT = new
-	// NumberTickUnit(
-	// 1.0, new DecimalFormat("0"));
-	//
-	// /** The default setting for the vertical tick labels flag. */
-	// public static final boolean DEFAULT_VERTICAL_TICK_LABELS = false;
-	//
-	// /**
-	// * The range type (can be used to force the axis to display only positive
-	// * values or only negative values).
-	// */
-	// private RangeType rangeType;
-	//
-	// /**
-	// * A flag that affects the axis range when the range is determined
-	// * automatically. If the auto range does NOT include zero and this flag
-	// * is TRUE, then the range is changed to include zero.
-	// */
-	// private boolean autoRangeIncludesZero;
-	//
-	// /**
-	// * A flag that affects the size of the margins added to the axis range
-	// when
-	// * the range is determined automatically. If the value 0 falls within the
-	// * margin and this flag is TRUE, then the margin is truncated at zero.
-	// */
-	// private boolean autoRangeStickyZero;
-	//
-	// /** The tick unit for the axis. */
-	// private NumberTickUnit tickUnit;
-	//
-	// /** The override number format. */
-	// private NumberFormat numberFormatOverride;
-	//
+
+	/** For serialization. */
+	private static final long serialVersionUID = 2805933088476185789L;
+
+	/** The default value for the autoRangeIncludesZero flag. */
+	public static final boolean DEFAULT_AUTO_RANGE_INCLUDES_ZERO = true;
+
+	/** The default value for the autoRangeStickyZero flag. */
+	public static final boolean DEFAULT_AUTO_RANGE_STICKY_ZERO = true;
+
+	/** The default tick unit. */
+	public static final NumberTickUnit DEFAULT_TICK_UNIT = new
+			NumberTickUnit(
+					1.0, new DecimalFormat("0"));
+
+	/** The default setting for the vertical tick labels flag. */
+	public static final boolean DEFAULT_VERTICAL_TICK_LABELS = false;
+
+	/**
+	 * The range type (can be used to force the axis to display only positive
+	 * values or only negative values).
+	 */
+	private RangeType rangeType;
+
+	/**
+	 * A flag that affects the axis range when the range is determined
+	 * automatically. If the auto range does NOT include zero and this flag is
+	 * TRUE, then the range is changed to include zero.
+	 */
+	private boolean autoRangeIncludesZero;
+
+	/**
+	 * A flag that affects the size of the margins added to the axis range when
+	 * the range is determined automatically. If the value 0 falls within the
+	 * margin and this flag is TRUE, then the margin is truncated at zero.
+	 */
+	private boolean autoRangeStickyZero;
+
+	/** The tick unit for the axis. */
+	private NumberTickUnit tickUnit;
+
+	/** The override number format. */
+	private NumberFormat numberFormatOverride;
+
 	// /** An optional band for marking regions on the axis. */
 	// private MarkerAxisBand markerBand;
-	//
-	// /**
-	// * Default constructor.
-	// */
-	// public NumberAxis() {
-	// this(null);
-	// }
-	//
-	// /**
-	// * Constructs a number axis, using default values where necessary.
-	// *
-	// * @param label the axis label ({@code null} permitted).
-	// */
-	// public NumberAxis(String label) {
-	// super(label, NumberAxis.createStandardTickUnits());
-	// this.rangeType = RangeType.FULL;
-	// this.autoRangeIncludesZero = DEFAULT_AUTO_RANGE_INCLUDES_ZERO;
-	// this.autoRangeStickyZero = DEFAULT_AUTO_RANGE_STICKY_ZERO;
-	// this.tickUnit = DEFAULT_TICK_UNIT;
-	// this.numberFormatOverride = null;
-	// this.markerBand = null;
-	// }
-	//
-	// /**
-	// * Returns the axis range type.
-	// *
-	// * @return The axis range type (never {@code null}).
-	// *
-	// * @see #setRangeType(RangeType)
-	// */
-	// public RangeType getRangeType() {
-	// return this.rangeType;
-	// }
-	//
-	// /**
-	// * Sets the axis range type.
-	// *
-	// * @param rangeType the range type ({@code null} not permitted).
-	// *
-	// * @see #getRangeType()
-	// */
-	// public void setRangeType(RangeType rangeType) {
-	// ParamChecks.nullNotPermitted(rangeType, "rangeType");
-	// this.rangeType = rangeType;
-	// notifyListeners(new AxisChangeEvent(this));
-	// }
-	//
-	// /**
-	// * Returns the flag that indicates whether or not the automatic axis range
-	// * (if indeed it is determined automatically) is forced to include zero.
-	// *
-	// * @return The flag.
-	// */
-	// public boolean getAutoRangeIncludesZero() {
-	// return this.autoRangeIncludesZero;
-	// }
-	//
-	// /**
-	// * Sets the flag that indicates whether or not the axis range, if
-	// * automatically calculated, is forced to include zero.
-	// * <p>
-	// * If the flag is changed to {@code true}, the axis range is
-	// * recalculated.
-	// * <p>
-	// * Any change to the flag will trigger an {@link AxisChangeEvent}.
-	// *
-	// * @param flag the new value of the flag.
-	// *
-	// * @see #getAutoRangeIncludesZero()
-	// */
-	// public void setAutoRangeIncludesZero(boolean flag) {
-	// if (this.autoRangeIncludesZero != flag) {
-	// this.autoRangeIncludesZero = flag;
-	// if (isAutoRange()) {
-	// autoAdjustRange();
-	// }
-	// notifyListeners(new AxisChangeEvent(this));
-	// }
-	// }
-	//
-	// /**
-	// * Returns a flag that affects the auto-range when zero falls outside the
-	// * data range but inside the margins defined for the axis.
-	// *
-	// * @return The flag.
-	// *
-	// * @see #setAutoRangeStickyZero(boolean)
-	// */
-	// public boolean getAutoRangeStickyZero() {
-	// return this.autoRangeStickyZero;
-	// }
-	//
-	// /**
-	// * Sets a flag that affects the auto-range when zero falls outside the
-	// data
-	// * range but inside the margins defined for the axis.
-	// *
-	// * @param flag the new flag.
-	// *
-	// * @see #getAutoRangeStickyZero()
-	// */
-	// public void setAutoRangeStickyZero(boolean flag) {
-	// if (this.autoRangeStickyZero != flag) {
-	// this.autoRangeStickyZero = flag;
-	// if (isAutoRange()) {
-	// autoAdjustRange();
-	// }
-	// notifyListeners(new AxisChangeEvent(this));
-	// }
-	// }
-	//
-	// /**
-	// * Returns the tick unit for the axis.
-	// * <p>
-	// * Note: if the {@code autoTickUnitSelection} flag is
-	// * {@code true} the tick unit may be changed while the axis is being
-	// * drawn, so in that case the return value from this method may be
-	// * irrelevant if the method is called before the axis has been drawn.
-	// *
-	// * @return The tick unit for the axis.
-	// *
-	// * @see #setTickUnit(NumberTickUnit)
-	// * @see ValueAxis#isAutoTickUnitSelection()
-	// */
-	// public NumberTickUnit getTickUnit() {
-	// return this.tickUnit;
-	// }
-	//
-	// /**
-	// * Sets the tick unit for the axis and sends an {@link AxisChangeEvent} to
-	// * all registered listeners. A side effect of calling this method is that
-	// * the "auto-select" feature for tick units is switched off (you can
-	// * restore it using the {@link
-	// ValueAxis#setAutoTickUnitSelection(boolean)}
-	// * method).
-	// *
-	// * @param unit the new tick unit ({@code null} not permitted).
-	// *
-	// * @see #getTickUnit()
-	// * @see #setTickUnit(NumberTickUnit, boolean, boolean)
-	// */
-	// public void setTickUnit(NumberTickUnit unit) {
-	// // defer argument checking...
-	// setTickUnit(unit, true, true);
-	// }
-	//
-	// /**
-	// * Sets the tick unit for the axis and, if requested, sends an
-	// * {@link AxisChangeEvent} to all registered listeners. In addition, an
-	// * option is provided to turn off the "auto-select" feature for tick units
-	// * (you can restore it using the
-	// * {@link ValueAxis#setAutoTickUnitSelection(boolean)} method).
-	// *
-	// * @param unit the new tick unit ({@code null} not permitted).
-	// * @param notify notify listeners?
-	// * @param turnOffAutoSelect turn off the auto-tick selection?
-	// */
-	// public void setTickUnit(NumberTickUnit unit, boolean notify,
-	// boolean turnOffAutoSelect) {
-	//
-	// ParamChecks.nullNotPermitted(unit, "unit");
-	// this.tickUnit = unit;
-	// if (turnOffAutoSelect) {
-	// setAutoTickUnitSelection(false, false);
-	// }
-	// if (notify) {
-	// notifyListeners(new AxisChangeEvent(this));
-	// }
-	//
-	// }
-	//
-	// /**
-	// * Returns the number format override. If this is non-null, then it will
-	// * be used to format the numbers on the axis.
-	// *
-	// * @return The number formatter (possibly {@code null}).
-	// *
-	// * @see #setNumberFormatOverride(NumberFormat)
-	// */
-	// public NumberFormat getNumberFormatOverride() {
-	// return this.numberFormatOverride;
-	// }
-	//
-	// /**
-	// * Sets the number format override. If this is non-null, then it will be
-	// * used to format the numbers on the axis.
-	// *
-	// * @param formatter the number formatter ({@code null} permitted).
-	// *
-	// * @see #getNumberFormatOverride()
-	// */
-	// public void setNumberFormatOverride(NumberFormat formatter) {
-	// this.numberFormatOverride = formatter;
-	// notifyListeners(new AxisChangeEvent(this));
-	// }
+
+	/**
+	 * Default constructor.
+	 */
+	public NumberAxis() {
+		this(null);
+	}
+
+	/**
+	 * Constructs a number axis, using default values where necessary.
+	 *
+	 * @param label
+	 *            the axis label ({@code null} permitted).
+	 */
+	public NumberAxis(String label) {
+		super(label, NumberAxis.createStandardTickUnits());
+		this.rangeType = RangeType.FULL;
+		this.autoRangeIncludesZero = DEFAULT_AUTO_RANGE_INCLUDES_ZERO;
+		this.autoRangeStickyZero = DEFAULT_AUTO_RANGE_STICKY_ZERO;
+		this.tickUnit = DEFAULT_TICK_UNIT;
+		this.numberFormatOverride = null;
+		// JAVAFX
+		// this.markerBand = null;
+	}
+
+	/**
+	 * Returns the axis range type.
+	 *
+	 * @return The axis range type (never {@code null}).
+	 *
+	 * @see #setRangeType(RangeType)
+	 */
+	public RangeType getRangeType() {
+		return this.rangeType;
+	}
+
+	/**
+	 * Sets the axis range type.
+	 *
+	 * @param rangeType
+	 *            the range type ({@code null} not permitted).
+	 *
+	 * @see #getRangeType()
+	 */
+	public void setRangeType(RangeType rangeType) {
+		ParamChecks.nullNotPermitted(rangeType, "rangeType");
+		this.rangeType = rangeType;
+		notifyListeners(new AxisChangeEvent(this));
+	}
+
+	/**
+	 * Returns the flag that indicates whether or not the automatic axis range
+	 * (if indeed it is determined automatically) is forced to include zero.
+	 *
+	 * @return The flag.
+	 */
+	public boolean getAutoRangeIncludesZero() {
+		return this.autoRangeIncludesZero;
+	}
+
+	/**
+	 * Sets the flag that indicates whether or not the axis range, if
+	 * automatically calculated, is forced to include zero.
+	 * <p>
+	 * If the flag is changed to {@code true}, the axis range is recalculated.
+	 * <p>
+	 * Any change to the flag will trigger an {@link AxisChangeEvent}.
+	 *
+	 * @param flag
+	 *            the new value of the flag.
+	 *
+	 * @see #getAutoRangeIncludesZero()
+	 */
+	public void setAutoRangeIncludesZero(boolean flag) {
+		if (this.autoRangeIncludesZero != flag) {
+			this.autoRangeIncludesZero = flag;
+			if (isAutoRange()) {
+				autoAdjustRange();
+			}
+			notifyListeners(new AxisChangeEvent(this));
+		}
+	}
+
+	/**
+	 * Returns a flag that affects the auto-range when zero falls outside the
+	 * data range but inside the margins defined for the axis.
+	 *
+	 * @return The flag.
+	 *
+	 * @see #setAutoRangeStickyZero(boolean)
+	 */
+	public boolean getAutoRangeStickyZero() {
+		return this.autoRangeStickyZero;
+	}
+
+	/**
+	 * Sets a flag that affects the auto-range when zero falls outside the data
+	 * range but inside the margins defined for the axis.
+	 *
+	 * @param flag
+	 *            the new flag.
+	 *
+	 * @see #getAutoRangeStickyZero()
+	 */
+	public void setAutoRangeStickyZero(boolean flag) {
+		if (this.autoRangeStickyZero != flag) {
+			this.autoRangeStickyZero = flag;
+			if (isAutoRange()) {
+				autoAdjustRange();
+			}
+			notifyListeners(new AxisChangeEvent(this));
+		}
+	}
+
+	/**
+	 * Returns the tick unit for the axis.
+	 * <p>
+	 * Note: if the {@code autoTickUnitSelection} flag is {@code true} the tick
+	 * unit may be changed while the axis is being drawn, so in that case the
+	 * return value from this method may be irrelevant if the method is called
+	 * before the axis has been drawn.
+	 *
+	 * @return The tick unit for the axis.
+	 *
+	 * @see #setTickUnit(NumberTickUnit)
+	 * @see ValueAxis#isAutoTickUnitSelection()
+	 */
+	public NumberTickUnit getTickUnit() {
+		return this.tickUnit;
+	}
+
+	/**
+	 * Sets the tick unit for the axis and sends an {@link AxisChangeEvent} to
+	 * all registered listeners. A side effect of calling this method is that
+	 * the "auto-select" feature for tick units is switched off (you can restore
+	 * it using the {@link ValueAxis#setAutoTickUnitSelection(boolean)} method).
+	 *
+	 * @param unit
+	 *            the new tick unit ({@code null} not permitted).
+	 *
+	 * @see #getTickUnit()
+	 * @see #setTickUnit(NumberTickUnit, boolean, boolean)
+	 */
+	public void setTickUnit(NumberTickUnit unit) {
+		// defer argument checking...
+		setTickUnit(unit, true, true);
+	}
+
+	/**
+	 * Sets the tick unit for the axis and, if requested, sends an
+	 * {@link AxisChangeEvent} to all registered listeners. In addition, an
+	 * option is provided to turn off the "auto-select" feature for tick units
+	 * (you can restore it using the
+	 * {@link ValueAxis#setAutoTickUnitSelection(boolean)} method).
+	 *
+	 * @param unit
+	 *            the new tick unit ({@code null} not permitted).
+	 * @param notify
+	 *            notify listeners?
+	 * @param turnOffAutoSelect
+	 *            turn off the auto-tick selection?
+	 */
+	public void setTickUnit(NumberTickUnit unit, boolean notify,
+			boolean turnOffAutoSelect) {
+
+		ParamChecks.nullNotPermitted(unit, "unit");
+		this.tickUnit = unit;
+		if (turnOffAutoSelect) {
+			setAutoTickUnitSelection(false, false);
+		}
+		if (notify) {
+			notifyListeners(new AxisChangeEvent(this));
+		}
+
+	}
+
+	/**
+	 * Returns the number format override. If this is non-null, then it will be
+	 * used to format the numbers on the axis.
+	 *
+	 * @return The number formatter (possibly {@code null}).
+	 *
+	 * @see #setNumberFormatOverride(NumberFormat)
+	 */
+	public NumberFormat getNumberFormatOverride() {
+		return this.numberFormatOverride;
+	}
+
+	/**
+	 * Sets the number format override. If this is non-null, then it will be
+	 * used to format the numbers on the axis.
+	 *
+	 * @param formatter
+	 *            the number formatter ({@code null} permitted).
+	 *
+	 * @see #getNumberFormatOverride()
+	 */
+	public void setNumberFormatOverride(NumberFormat formatter) {
+		this.numberFormatOverride = formatter;
+		notifyListeners(new AxisChangeEvent(this));
+	}
+
+	// JAVAFX
 	//
 	// /**
 	// * Returns the (optional) marker band for the axis.
@@ -406,221 +415,226 @@ public class NumberAxis extends ValueAxis implements Cloneable, Serializable {
 	// notifyListeners(new AxisChangeEvent(this));
 	// }
 	//
-	// /**
-	// * Configures the axis to work with the specified plot. If the axis has
-	// * auto-scaling, then sets the maximum and minimum values.
-	// */
-	// @Override
-	// public void configure() {
-	// if (isAutoRange()) {
-	// autoAdjustRange();
-	// }
-	// }
-	//
-	// /**
-	// * Rescales the axis to ensure that all data is visible.
-	// */
-	// @Override
-	// protected void autoAdjustRange() {
-	//
-	// Plot plot = getPlot();
-	// if (plot == null) {
-	// return; // no plot, no data
-	// }
-	//
-	// if (plot instanceof ValueAxisPlot) {
-	// ValueAxisPlot vap = (ValueAxisPlot) plot;
-	//
-	// Range r = vap.getDataRange(this);
-	// if (r == null) {
-	// r = getDefaultAutoRange();
-	// }
-	//
-	// double upper = r.getUpperBound();
-	// double lower = r.getLowerBound();
-	// if (this.rangeType == RangeType.POSITIVE) {
-	// lower = Math.max(0.0, lower);
-	// upper = Math.max(0.0, upper);
-	// } else if (this.rangeType == RangeType.NEGATIVE) {
-	// lower = Math.min(0.0, lower);
-	// upper = Math.min(0.0, upper);
-	// }
-	//
-	// if (getAutoRangeIncludesZero()) {
-	// lower = Math.min(lower, 0.0);
-	// upper = Math.max(upper, 0.0);
-	// }
-	// double range = upper - lower;
-	//
-	// // if fixed auto range, then derive lower bound...
-	// double fixedAutoRange = getFixedAutoRange();
-	// if (fixedAutoRange > 0.0) {
-	// lower = upper - fixedAutoRange;
-	// } else {
-	// // ensure the autorange is at least <minRange> in size...
-	// double minRange = getAutoRangeMinimumSize();
-	// if (range < minRange) {
-	// double expand = (minRange - range) / 2;
-	// upper = upper + expand;
-	// lower = lower - expand;
-	// if (lower == upper) { // see bug report 1549218
-	// double adjust = Math.abs(lower) / 10.0;
-	// lower = lower - adjust;
-	// upper = upper + adjust;
-	// }
-	// if (this.rangeType == RangeType.POSITIVE) {
-	// if (lower < 0.0) {
-	// upper = upper - lower;
-	// lower = 0.0;
-	// }
-	// } else if (this.rangeType == RangeType.NEGATIVE) {
-	// if (upper > 0.0) {
-	// lower = lower - upper;
-	// upper = 0.0;
-	// }
-	// }
-	// }
-	//
-	// if (getAutoRangeStickyZero()) {
-	// if (upper <= 0.0) {
-	// upper = Math.min(0.0, upper + getUpperMargin() * range);
-	// } else {
-	// upper = upper + getUpperMargin() * range;
-	// }
-	// if (lower >= 0.0) {
-	// lower = Math.max(0.0, lower - getLowerMargin() * range);
-	// } else {
-	// lower = lower - getLowerMargin() * range;
-	// }
-	// } else {
-	// upper = upper + getUpperMargin() * range;
-	// lower = lower - getLowerMargin() * range;
-	// }
-	// }
-	//
-	// setRange(new Range(lower, upper), false, false);
-	// }
-	//
-	// }
-	//
-	// /**
-	// * Converts a data value to a coordinate in Java2D space, assuming that
-	// the
-	// * axis runs along one edge of the specified dataArea.
-	// * <p>
-	// * Note that it is possible for the coordinate to fall outside the
-	// plotArea.
-	// *
-	// * @param value the data value.
-	// * @param area the area for plotting the data.
-	// * @param edge the axis location.
-	// *
-	// * @return The Java2D coordinate.
-	// *
-	// * @see #java2DToValue(double, Rectangle2D, RectangleEdge)
-	// */
-	// @Override
-	// public double valueToJava2D(double value, Rectangle2D area,
-	// RectangleEdge edge) {
-	// Range range = getRange();
-	// double axisMin = range.getLowerBound();
-	// double axisMax = range.getUpperBound();
-	//
-	// double min = 0.0;
-	// double max = 0.0;
-	// if (RectangleEdge.isTopOrBottom(edge)) {
-	// min = area.getX();
-	// max = area.getMaxX();
-	// }
-	// else if (RectangleEdge.isLeftOrRight(edge)) {
-	// max = area.getMinY();
-	// min = area.getMaxY();
-	// }
-	// if (isInverted()) {
-	// return max
-	// - ((value - axisMin) / (axisMax - axisMin)) * (max - min);
-	// } else {
-	// return min
-	// + ((value - axisMin) / (axisMax - axisMin)) * (max - min);
-	// }
-	//
-	// }
-	//
-	// /**
-	// * Converts a coordinate in Java2D space to the corresponding data value,
-	// * assuming that the axis runs along one edge of the specified dataArea.
-	// *
-	// * @param java2DValue the coordinate in Java2D space.
-	// * @param area the area in which the data is plotted.
-	// * @param edge the location.
-	// *
-	// * @return The data value.
-	// *
-	// * @see #valueToJava2D(double, Rectangle2D, RectangleEdge)
-	// */
-	// @Override
-	// public double java2DToValue(double java2DValue, Rectangle2D area,
-	// RectangleEdge edge) {
-	// Range range = getRange();
-	// double axisMin = range.getLowerBound();
-	// double axisMax = range.getUpperBound();
-	//
-	// double min = 0.0;
-	// double max = 0.0;
-	// if (RectangleEdge.isTopOrBottom(edge)) {
-	// min = area.getX();
-	// max = area.getMaxX();
-	// } else if (RectangleEdge.isLeftOrRight(edge)) {
-	// min = area.getMaxY();
-	// max = area.getY();
-	// }
-	// if (isInverted()) {
-	// return axisMax
-	// - (java2DValue - min) / (max - min) * (axisMax - axisMin);
-	// } else {
-	// return axisMin
-	// + (java2DValue - min) / (max - min) * (axisMax - axisMin);
-	// }
-	//
-	// }
-	//
-	// /**
-	// * Calculates the value of the lowest visible tick on the axis.
-	// *
-	// * @return The value of the lowest visible tick on the axis.
-	// *
-	// * @see #calculateHighestVisibleTickValue()
-	// */
-	// protected double calculateLowestVisibleTickValue() {
-	// double unit = getTickUnit().getSize();
-	// double index = Math.ceil(getRange().getLowerBound() / unit);
-	// return index * unit;
-	// }
-	//
-	// /**
-	// * Calculates the value of the highest visible tick on the axis.
-	// *
-	// * @return The value of the highest visible tick on the axis.
-	// *
-	// * @see #calculateLowestVisibleTickValue()
-	// */
-	// protected double calculateHighestVisibleTickValue() {
-	// double unit = getTickUnit().getSize();
-	// double index = Math.floor(getRange().getUpperBound() / unit);
-	// return index * unit;
-	// }
-	//
-	// /**
-	// * Calculates the number of visible ticks.
-	// *
-	// * @return The number of visible ticks on the axis.
-	// */
-	// protected int calculateVisibleTickCount() {
-	// double unit = getTickUnit().getSize();
-	// Range range = getRange();
-	// return (int) (Math.floor(range.getUpperBound() / unit)
-	// - Math.ceil(range.getLowerBound() / unit) + 1);
-	// }
+	/**
+	 * Configures the axis to work with the specified plot. If the axis has
+	 * auto-scaling, then sets the maximum and minimum values.
+	 */
+	@Override
+	public void configure() {
+		if (isAutoRange()) {
+			autoAdjustRange();
+		}
+	}
+
+	/**
+	 * Rescales the axis to ensure that all data is visible.
+	 */
+	@Override
+	protected void autoAdjustRange() {
+
+		Plot plot = getPlot();
+		if (plot == null) {
+			return; // no plot, no data
+		}
+
+		if (plot instanceof ValueAxisPlot) {
+			ValueAxisPlot vap = (ValueAxisPlot) plot;
+
+			Range r = vap.getDataRange(this);
+			if (r == null) {
+				r = getDefaultAutoRange();
+			}
+
+			double upper = r.getUpperBound();
+			double lower = r.getLowerBound();
+			if (this.rangeType == RangeType.POSITIVE) {
+				lower = Math.max(0.0, lower);
+				upper = Math.max(0.0, upper);
+			} else if (this.rangeType == RangeType.NEGATIVE) {
+				lower = Math.min(0.0, lower);
+				upper = Math.min(0.0, upper);
+			}
+
+			if (getAutoRangeIncludesZero()) {
+				lower = Math.min(lower, 0.0);
+				upper = Math.max(upper, 0.0);
+			}
+			double range = upper - lower;
+
+			// if fixed auto range, then derive lower bound...
+			double fixedAutoRange = getFixedAutoRange();
+			if (fixedAutoRange > 0.0) {
+				lower = upper - fixedAutoRange;
+			} else {
+				// ensure the autorange is at least <minRange> in size...
+				double minRange = getAutoRangeMinimumSize();
+				if (range < minRange) {
+					double expand = (minRange - range) / 2;
+					upper = upper + expand;
+					lower = lower - expand;
+					if (lower == upper) { // see bug report 1549218
+						double adjust = Math.abs(lower) / 10.0;
+						lower = lower - adjust;
+						upper = upper + adjust;
+					}
+					if (this.rangeType == RangeType.POSITIVE) {
+						if (lower < 0.0) {
+							upper = upper - lower;
+							lower = 0.0;
+						}
+					} else if (this.rangeType == RangeType.NEGATIVE) {
+						if (upper > 0.0) {
+							lower = lower - upper;
+							upper = 0.0;
+						}
+					}
+				}
+
+				if (getAutoRangeStickyZero()) {
+					if (upper <= 0.0) {
+						upper = Math.min(0.0, upper + getUpperMargin() * range);
+					} else {
+						upper = upper + getUpperMargin() * range;
+					}
+					if (lower >= 0.0) {
+						lower = Math.max(0.0, lower - getLowerMargin() * range);
+					} else {
+						lower = lower - getLowerMargin() * range;
+					}
+				} else {
+					upper = upper + getUpperMargin() * range;
+					lower = lower - getLowerMargin() * range;
+				}
+			}
+
+			setRange(new Range(lower, upper), false, false);
+		}
+
+	}
+
+	/**
+	 * Converts a data value to a coordinate in Java2D space, assuming that the
+	 * axis runs along one edge of the specified dataArea.
+	 * <p>
+	 * Note that it is possible for the coordinate to fall outside the plotArea.
+	 *
+	 * @param value
+	 *            the data value.
+	 * @param area
+	 *            the area for plotting the data.
+	 * @param edge
+	 *            the axis location.
+	 *
+	 * @return The Java2D coordinate.
+	 *
+	 * @see #java2DToValue(double, Rectangle2D, RectangleEdge)
+	 */
+	@Override
+	public double valueToJava2D(double value, Rectangle2D area,
+			RectangleEdge edge) {
+		Range range = getRange();
+		double axisMin = range.getLowerBound();
+		double axisMax = range.getUpperBound();
+
+		double min = 0.0;
+		double max = 0.0;
+		if (RectangleEdge.isTopOrBottom(edge)) {
+			min = area.getMinX();
+			max = area.getMaxX();
+		}
+		else if (RectangleEdge.isLeftOrRight(edge)) {
+			max = area.getMinY();
+			min = area.getMaxY();
+		}
+		if (isInverted()) {
+			return max
+					- ((value - axisMin) / (axisMax - axisMin)) * (max - min);
+		} else {
+			return min
+					+ ((value - axisMin) / (axisMax - axisMin)) * (max - min);
+		}
+
+	}
+
+	/**
+	 * Converts a coordinate in Java2D space to the corresponding data value,
+	 * assuming that the axis runs along one edge of the specified dataArea.
+	 *
+	 * @param java2DValue
+	 *            the coordinate in Java2D space.
+	 * @param area
+	 *            the area in which the data is plotted.
+	 * @param edge
+	 *            the location.
+	 *
+	 * @return The data value.
+	 *
+	 * @see #valueToJava2D(double, Rectangle2D, RectangleEdge)
+	 */
+	@Override
+	public double java2DToValue(double java2DValue, Rectangle2D area,
+			RectangleEdge edge) {
+		Range range = getRange();
+		double axisMin = range.getLowerBound();
+		double axisMax = range.getUpperBound();
+
+		double min = 0.0;
+		double max = 0.0;
+		if (RectangleEdge.isTopOrBottom(edge)) {
+			min = area.getMinX();
+			max = area.getMaxX();
+		} else if (RectangleEdge.isLeftOrRight(edge)) {
+			min = area.getMaxY();
+			max = area.getMinY();
+		}
+		if (isInverted()) {
+			return axisMax
+					- (java2DValue - min) / (max - min) * (axisMax - axisMin);
+		} else {
+			return axisMin
+					+ (java2DValue - min) / (max - min) * (axisMax - axisMin);
+		}
+
+	}
+
+	/**
+	 * Calculates the value of the lowest visible tick on the axis.
+	 *
+	 * @return The value of the lowest visible tick on the axis.
+	 *
+	 * @see #calculateHighestVisibleTickValue()
+	 */
+	protected double calculateLowestVisibleTickValue() {
+		double unit = getTickUnit().getSize();
+		double index = Math.ceil(getRange().getLowerBound() / unit);
+		return index * unit;
+	}
+
+	/**
+	 * Calculates the value of the highest visible tick on the axis.
+	 *
+	 * @return The value of the highest visible tick on the axis.
+	 *
+	 * @see #calculateLowestVisibleTickValue()
+	 */
+	protected double calculateHighestVisibleTickValue() {
+		double unit = getTickUnit().getSize();
+		double index = Math.floor(getRange().getUpperBound() / unit);
+		return index * unit;
+	}
+
+	/**
+	 * Calculates the number of visible ticks.
+	 *
+	 * @return The number of visible ticks on the axis.
+	 */
+	protected int calculateVisibleTickCount() {
+		double unit = getTickUnit().getSize();
+		Range range = getRange();
+		return (int) (Math.floor(range.getUpperBound() / unit)
+				- Math.ceil(range.getLowerBound() / unit) + 1);
+	}
+
 	//
 	// /**
 	// * Draws the axis on a Java 2D graphics device (such as the screen or a
@@ -670,70 +684,72 @@ public class NumberAxis extends ValueAxis implements Cloneable, Serializable {
 	// createAndAddEntity(cursor, state, dataArea, edge, plotState);
 	// return state;
 	// }
-	//
-	// /**
-	// * Creates the standard tick units.
-	// * <P>
-	// * If you don't like these defaults, create your own instance of TickUnits
-	// * and then pass it to the setStandardTickUnits() method in the
-	// * NumberAxis class.
-	// *
-	// * @return The standard tick units.
-	// *
-	// * @see #setStandardTickUnits(TickUnitSource)
-	// * @see #createIntegerTickUnits()
-	// */
-	// public static TickUnitSource createStandardTickUnits() {
-	// return new NumberTickUnitSource();
-	// }
-	//
-	// /**
-	// * Returns a collection of tick units for integer values.
-	// *
-	// * @return A collection of tick units for integer values.
-	// *
-	// * @see #setStandardTickUnits(TickUnitSource)
-	// * @see #createStandardTickUnits()
-	// */
-	// public static TickUnitSource createIntegerTickUnits() {
-	// return new NumberTickUnitSource(true);
-	// }
-	//
-	// /**
-	// * Creates a collection of standard tick units. The supplied locale is
-	// * used to create the number formatter (a localised instance of
-	// * {@code NumberFormat}).
-	// * <P>
-	// * If you don't like these defaults, create your own instance of
-	// * {@link TickUnits} and then pass it to the
-	// * {@code setStandardTickUnits()} method.
-	// *
-	// * @param locale the locale.
-	// *
-	// * @return A tick unit collection.
-	// *
-	// * @see #setStandardTickUnits(TickUnitSource)
-	// */
-	// public static TickUnitSource createStandardTickUnits(Locale locale) {
-	// NumberFormat numberFormat = NumberFormat.getNumberInstance(locale);
-	// return new NumberTickUnitSource(false, numberFormat);
-	// }
-	//
-	// /**
-	// * Returns a collection of tick units for integer values.
-	// * Uses a given Locale to create the DecimalFormats.
-	// *
-	// * @param locale the locale to use to represent Numbers.
-	// *
-	// * @return A collection of tick units for integer values.
-	// *
-	// * @see #setStandardTickUnits(TickUnitSource)
-	// */
-	// public static TickUnitSource createIntegerTickUnits(Locale locale) {
-	// NumberFormat numberFormat = NumberFormat.getNumberInstance(locale);
-	// return new NumberTickUnitSource(true, numberFormat);
-	// }
-	//
+
+	/**
+	 * Creates the standard tick units.
+	 * <P>
+	 * If you don't like these defaults, create your own instance of TickUnits
+	 * and then pass it to the setStandardTickUnits() method in the NumberAxis
+	 * class.
+	 *
+	 * @return The standard tick units.
+	 *
+	 * @see #setStandardTickUnits(TickUnitSource)
+	 * @see #createIntegerTickUnits()
+	 */
+	public static TickUnitSource createStandardTickUnits() {
+		return new NumberTickUnitSource();
+	}
+
+	/**
+	 * Returns a collection of tick units for integer values.
+	 *
+	 * @return A collection of tick units for integer values.
+	 *
+	 * @see #setStandardTickUnits(TickUnitSource)
+	 * @see #createStandardTickUnits()
+	 */
+	public static TickUnitSource createIntegerTickUnits() {
+		return new NumberTickUnitSource(true);
+	}
+
+	/**
+	 * Creates a collection of standard tick units. The supplied locale is used
+	 * to create the number formatter (a localised instance of
+	 * {@code NumberFormat}).
+	 * <P>
+	 * If you don't like these defaults, create your own instance of
+	 * {@link TickUnits} and then pass it to the {@code setStandardTickUnits()}
+	 * method.
+	 *
+	 * @param locale
+	 *            the locale.
+	 *
+	 * @return A tick unit collection.
+	 *
+	 * @see #setStandardTickUnits(TickUnitSource)
+	 */
+	public static TickUnitSource createStandardTickUnits(Locale locale) {
+		NumberFormat numberFormat = NumberFormat.getNumberInstance(locale);
+		return new NumberTickUnitSource(false, numberFormat);
+	}
+
+	/**
+	 * Returns a collection of tick units for integer values. Uses a given
+	 * Locale to create the DecimalFormats.
+	 *
+	 * @param locale
+	 *            the locale to use to represent Numbers.
+	 *
+	 * @return A collection of tick units for integer values.
+	 *
+	 * @see #setStandardTickUnits(TickUnitSource)
+	 */
+	public static TickUnitSource createIntegerTickUnits(Locale locale) {
+		NumberFormat numberFormat = NumberFormat.getNumberInstance(locale);
+		return new NumberTickUnitSource(true, numberFormat);
+	}
+
 	// /**
 	// * Estimates the maximum tick label height.
 	// *
@@ -1094,67 +1110,67 @@ public class NumberAxis extends ValueAxis implements Cloneable, Serializable {
 	// return result;
 	// }
 	//
-	// /**
-	// * Returns a clone of the axis.
-	// *
-	// * @return A clone
-	// *
-	// * @throws CloneNotSupportedException if some component of the axis does
-	// * not support cloning.
-	// */
-	// @Override
-	// public Object clone() throws CloneNotSupportedException {
-	// NumberAxis clone = (NumberAxis) super.clone();
-	// if (this.numberFormatOverride != null) {
-	// clone.numberFormatOverride
-	// = (NumberFormat) this.numberFormatOverride.clone();
-	// }
-	// return clone;
-	// }
-	//
-	// /**
-	// * Tests the axis for equality with an arbitrary object.
-	// *
-	// * @param obj the object ({@code null} permitted).
-	// *
-	// * @return A boolean.
-	// */
-	// @Override
-	// public boolean equals(Object obj) {
-	// if (obj == this) {
-	// return true;
-	// }
-	// if (!(obj instanceof NumberAxis)) {
-	// return false;
-	// }
-	// NumberAxis that = (NumberAxis) obj;
-	// if (this.autoRangeIncludesZero != that.autoRangeIncludesZero) {
-	// return false;
-	// }
-	// if (this.autoRangeStickyZero != that.autoRangeStickyZero) {
-	// return false;
-	// }
-	// if (!ObjectUtils.equal(this.tickUnit, that.tickUnit)) {
-	// return false;
-	// }
-	// if (!ObjectUtils.equal(this.numberFormatOverride,
-	// that.numberFormatOverride)) {
-	// return false;
-	// }
-	// if (!this.rangeType.equals(that.rangeType)) {
-	// return false;
-	// }
-	// return super.equals(obj);
-	// }
-	//
-	// /**
-	// * Returns a hash code for this object.
-	// *
-	// * @return A hash code.
-	// */
-	// @Override
-	// public int hashCode() {
-	// return super.hashCode();
-	// }
-	//
+	/**
+	 * Returns a clone of the axis.
+	 *
+	 * @return A clone
+	 *
+	 * @throws CloneNotSupportedException
+	 *             if some component of the axis does not support cloning.
+	 */
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+		NumberAxis clone = (NumberAxis) super.clone();
+		if (this.numberFormatOverride != null) {
+			clone.numberFormatOverride = (NumberFormat) this.numberFormatOverride.clone();
+		}
+		return clone;
+	}
+
+	/**
+	 * Tests the axis for equality with an arbitrary object.
+	 *
+	 * @param obj
+	 *            the object ({@code null} permitted).
+	 *
+	 * @return A boolean.
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == this) {
+			return true;
+		}
+		if (!(obj instanceof NumberAxis)) {
+			return false;
+		}
+		NumberAxis that = (NumberAxis) obj;
+		if (this.autoRangeIncludesZero != that.autoRangeIncludesZero) {
+			return false;
+		}
+		if (this.autoRangeStickyZero != that.autoRangeStickyZero) {
+			return false;
+		}
+		if (!ObjectUtils.equal(this.tickUnit, that.tickUnit)) {
+			return false;
+		}
+		if (!ObjectUtils.equal(this.numberFormatOverride,
+				that.numberFormatOverride)) {
+			return false;
+		}
+		if (!this.rangeType.equals(that.rangeType)) {
+			return false;
+		}
+		return super.equals(obj);
+	}
+
+	/**
+	 * Returns a hash code for this object.
+	 *
+	 * @return A hash code.
+	 */
+	@Override
+	public int hashCode() {
+		return super.hashCode();
+	}
+
 }
