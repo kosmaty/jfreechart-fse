@@ -59,11 +59,13 @@ import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 // 
-// import org.jfree.chart.ui.HorizontalAlignment;
-// import org.jfree.chart.ui.Size2D;
-// import org.jfree.chart.ui.TextAnchor;
-// import org.jfree.chart.util.ParamChecks;
-// import org.jfree.chart.util.ShapeUtils;
+import org.jfree.chart.ui.HorizontalAlignment;
+import org.jfree.chart.ui.Size2D;
+import org.jfree.chart.ui.TextAnchor;
+import org.jfree.chart.util.ParamChecks;
+import org.jfree.chart.util.ShapeUtils;
+
+import javafx.scene.canvas.GraphicsContext;
 
 /**
  * A list of {@link TextLine} objects that form a block of text.
@@ -194,56 +196,69 @@ public class TextBlock implements Serializable {
 	// rotateX, rotateY);
 	// return rotatedBounds;
 	// }
-	//
-	// /**
-	// * Draws the text block at a specific location.
-	// *
-	// * @param g2 the graphics device.
-	// * @param x the x-coordinate for the anchor point.
-	// * @param y the y-coordinate for the anchor point.
-	// * @param anchor the anchor point.
-	// */
-	// public void draw(Graphics2D g2, float x, float y, TextBlockAnchor anchor)
-	// {
-	// draw(g2, x, y, anchor, 0.0f, 0.0f, 0.0);
-	// }
-	//
-	// /**
-	// * Draws the text block, aligning it with the specified anchor point and
-	// * rotating it about the specified rotation point.
-	// *
-	// * @param g2 the graphics device.
-	// * @param anchorX the x-coordinate for the anchor point.
-	// * @param anchorY the y-coordinate for the anchor point.
-	// * @param anchor the point on the text block that is aligned to the
-	// * anchor point.
-	// * @param rotateX the x-coordinate for the rotation point.
-	// * @param rotateY the x-coordinate for the rotation point.
-	// * @param angle the rotation (in radians).
-	// */
-	// public void draw(Graphics2D g2, float anchorX, float anchorY,
-	// TextBlockAnchor anchor, float rotateX, float rotateY,
-	// double angle) {
-	//
-	// Size2D d = calculateDimensions(g2);
-	// float[] offsets = calculateOffsets(anchor, d.getWidth(), d.getHeight());
-	// float yCursor = 0.0f;
-	// for (TextLine line : this.lines) {
-	// Size2D dimension = line.calculateDimensions(g2);
-	// float lineOffset = 0.0f;
-	// if (this.lineAlignment == HorizontalAlignment.CENTER) {
-	// lineOffset = (float) (d.getWidth() - dimension.getWidth())
-	// / 2.0f;
-	// } else if (this.lineAlignment == HorizontalAlignment.RIGHT) {
-	// lineOffset = (float) (d.getWidth() - dimension.getWidth());
-	// }
-	// line.draw(g2, anchorX + offsets[0] + lineOffset,
-	// anchorY + offsets[1] + yCursor, TextAnchor.TOP_LEFT,
-	// rotateX, rotateY, angle);
-	// yCursor = yCursor + (float) dimension.getHeight();
-	// }
-	//
-	// }
+
+	/**
+	 * Draws the text block at a specific location.
+	 *
+	 * @param g2
+	 *            the graphics device.
+	 * @param x
+	 *            the x-coordinate for the anchor point.
+	 * @param y
+	 *            the y-coordinate for the anchor point.
+	 * @param anchor
+	 *            the anchor point.
+	 */
+	public void draw(GraphicsContext g2, float x, float y, TextBlockAnchor anchor)
+	{
+		draw(g2, x, y, anchor, 0.0f, 0.0f, 0.0);
+	}
+
+	/**
+	 * Draws the text block, aligning it with the specified anchor point and
+	 * rotating it about the specified rotation point.
+	 *
+	 * @param g2
+	 *            the graphics device.
+	 * @param anchorX
+	 *            the x-coordinate for the anchor point.
+	 * @param anchorY
+	 *            the y-coordinate for the anchor point.
+	 * @param anchor
+	 *            the point on the text block that is aligned to the anchor
+	 *            point.
+	 * @param rotateX
+	 *            the x-coordinate for the rotation point.
+	 * @param rotateY
+	 *            the x-coordinate for the rotation point.
+	 * @param angle
+	 *            the rotation (in radians).
+	 */
+	public void draw(GraphicsContext g2, float anchorX, float anchorY,
+			TextBlockAnchor anchor, float rotateX, float rotateY,
+			double angle) {
+
+		// JAVAFX
+		// Size2D d = calculateDimensions(g2);
+		// float[] offsets = calculateOffsets(anchor, d.getWidth(),
+		// d.getHeight());
+		// float yCursor = 0.0f;
+		// for (TextLine line : this.lines) {
+		// Size2D dimension = line.calculateDimensions(g2);
+		// float lineOffset = 0.0f;
+		// if (this.lineAlignment == HorizontalAlignment.CENTER) {
+		// lineOffset = (float) (d.getWidth() - dimension.getWidth())
+		// / 2.0f;
+		// } else if (this.lineAlignment == HorizontalAlignment.RIGHT) {
+		// lineOffset = (float) (d.getWidth() - dimension.getWidth());
+		// }
+		// line.draw(g2, anchorX + offsets[0] + lineOffset,
+		// anchorY + offsets[1] + yCursor, TextAnchor.TOP_LEFT,
+		// rotateX, rotateY, angle);
+		// yCursor = yCursor + (float) dimension.getHeight();
+		// }
+
+	}
 	//
 	// /**
 	// * Calculates the x and y offsets required to align the text block with

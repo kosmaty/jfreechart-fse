@@ -111,6 +111,9 @@
 
 package org.jfree.chart.axis;
 
+import static org.jfree.geometry.GeometryUtils.newLine;
+import static org.jfree.geometry.GeometryUtils.strokeLine;
+
 // 
 // import java.awt.Font;
 // import java.awt.FontMetrics;
@@ -138,8 +141,11 @@ import org.jfree.chart.text.TextUtilities;
 import org.jfree.chart.util.ParamChecks;
 import org.jfree.chart.util.SerialUtils;
 import org.jfree.data.Range;
+import org.jfree.geometry.Line2D;
 
 import javafx.geometry.Rectangle2D;
+import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.text.Font;
 
 /**
  * The base class for axes that display value data, where values are measured
@@ -322,87 +328,89 @@ public abstract class ValueAxis extends Axis
 		this.verticalTickLabels = false;
 	}
 
-	//
-	// /**
-	// * Returns <code>true</code> if the tick labels should be rotated (to
-	// * vertical), and <code>false</code> otherwise.
-	// *
-	// * @return <code>true</code> or <code>false</code>.
-	// *
-	// * @see #setVerticalTickLabels(boolean)
-	// */
-	// public boolean isVerticalTickLabels() {
-	// return this.verticalTickLabels;
-	// }
-	//
-	// /**
-	// * Sets the flag that controls whether the tick labels are displayed
-	// * vertically (that is, rotated 90 degrees from horizontal). If the flag
-	// * is changed, an {@link AxisChangeEvent} is sent to all registered
-	// * listeners.
-	// *
-	// * @param flag the flag.
-	// *
-	// * @see #isVerticalTickLabels()
-	// */
-	// public void setVerticalTickLabels(boolean flag) {
-	// if (this.verticalTickLabels != flag) {
-	// this.verticalTickLabels = flag;
-	// fireChangeEvent();
-	// }
-	// }
-	//
-	// /**
-	// * Returns a flag that controls whether or not the axis line has an arrow
-	// * drawn that points in the positive direction for the axis.
-	// *
-	// * @return A boolean.
-	// *
-	// * @see #setPositiveArrowVisible(boolean)
-	// */
-	// public boolean isPositiveArrowVisible() {
-	// return this.positiveArrowVisible;
-	// }
-	//
-	// /**
-	// * Sets a flag that controls whether or not the axis lines has an arrow
-	// * drawn that points in the positive direction for the axis, and sends an
-	// * {@link AxisChangeEvent} to all registered listeners.
-	// *
-	// * @param visible the flag.
-	// *
-	// * @see #isPositiveArrowVisible()
-	// */
-	// public void setPositiveArrowVisible(boolean visible) {
-	// this.positiveArrowVisible = visible;
-	// fireChangeEvent();
-	// }
-	//
-	// /**
-	// * Returns a flag that controls whether or not the axis line has an arrow
-	// * drawn that points in the negative direction for the axis.
-	// *
-	// * @return A boolean.
-	// *
-	// * @see #setNegativeArrowVisible(boolean)
-	// */
-	// public boolean isNegativeArrowVisible() {
-	// return this.negativeArrowVisible;
-	// }
-	//
-	// /**
-	// * Sets a flag that controls whether or not the axis lines has an arrow
-	// * drawn that points in the negative direction for the axis, and sends an
-	// * {@link AxisChangeEvent} to all registered listeners.
-	// *
-	// * @param visible the flag.
-	// *
-	// * @see #setNegativeArrowVisible(boolean)
-	// */
-	// public void setNegativeArrowVisible(boolean visible) {
-	// this.negativeArrowVisible = visible;
-	// fireChangeEvent();
-	// }
+	/**
+	 * Returns <code>true</code> if the tick labels should be rotated (to
+	 * vertical), and <code>false</code> otherwise.
+	 *
+	 * @return <code>true</code> or <code>false</code>.
+	 *
+	 * @see #setVerticalTickLabels(boolean)
+	 */
+	public boolean isVerticalTickLabels() {
+		return this.verticalTickLabels;
+	}
+
+	/**
+	 * Sets the flag that controls whether the tick labels are displayed
+	 * vertically (that is, rotated 90 degrees from horizontal). If the flag is
+	 * changed, an {@link AxisChangeEvent} is sent to all registered listeners.
+	 *
+	 * @param flag
+	 *            the flag.
+	 *
+	 * @see #isVerticalTickLabels()
+	 */
+	public void setVerticalTickLabels(boolean flag) {
+		if (this.verticalTickLabels != flag) {
+			this.verticalTickLabels = flag;
+			fireChangeEvent();
+		}
+	}
+
+	/**
+	 * Returns a flag that controls whether or not the axis line has an arrow
+	 * drawn that points in the positive direction for the axis.
+	 *
+	 * @return A boolean.
+	 *
+	 * @see #setPositiveArrowVisible(boolean)
+	 */
+	public boolean isPositiveArrowVisible() {
+		return this.positiveArrowVisible;
+	}
+
+	/**
+	 * Sets a flag that controls whether or not the axis lines has an arrow
+	 * drawn that points in the positive direction for the axis, and sends an
+	 * {@link AxisChangeEvent} to all registered listeners.
+	 *
+	 * @param visible
+	 *            the flag.
+	 *
+	 * @see #isPositiveArrowVisible()
+	 */
+	public void setPositiveArrowVisible(boolean visible) {
+		this.positiveArrowVisible = visible;
+		fireChangeEvent();
+	}
+
+	/**
+	 * Returns a flag that controls whether or not the axis line has an arrow
+	 * drawn that points in the negative direction for the axis.
+	 *
+	 * @return A boolean.
+	 *
+	 * @see #setNegativeArrowVisible(boolean)
+	 */
+	public boolean isNegativeArrowVisible() {
+		return this.negativeArrowVisible;
+	}
+
+	/**
+	 * Sets a flag that controls whether or not the axis lines has an arrow
+	 * drawn that points in the negative direction for the axis, and sends an
+	 * {@link AxisChangeEvent} to all registered listeners.
+	 *
+	 * @param visible
+	 *            the flag.
+	 *
+	 * @see #setNegativeArrowVisible(boolean)
+	 */
+	public void setNegativeArrowVisible(boolean visible) {
+		this.negativeArrowVisible = visible;
+		fireChangeEvent();
+	}
+
 	//
 	// /**
 	// * Returns a shape that can be displayed as an arrow pointing upwards at
@@ -512,427 +520,466 @@ public abstract class ValueAxis extends Axis
 	// fireChangeEvent();
 	// }
 	//
-	// /**
-	// * Draws an axis line at the current cursor position and edge.
-	// *
-	// * @param g2 the graphics device ({@code null} not permitted).
-	// * @param cursor the cursor position.
-	// * @param dataArea the data area.
-	// * @param edge the edge.
-	// */
-	// @Override
-	// protected void drawAxisLine(Graphics2D g2, double cursor,
-	// Rectangle2D dataArea, RectangleEdge edge) {
-	// Line2D axisLine = null;
-	// double c = cursor;
-	// if (edge == RectangleEdge.TOP) {
-	// axisLine = new Line2D.Double(dataArea.getX(), c, dataArea.getMaxX(),
-	// c);
-	// } else if (edge == RectangleEdge.BOTTOM) {
-	// axisLine = new Line2D.Double(dataArea.getX(), c, dataArea.getMaxX(),
-	// c);
-	// } else if (edge == RectangleEdge.LEFT) {
-	// axisLine = new Line2D.Double(c, dataArea.getY(), c,
-	// dataArea.getMaxY());
-	// } else if (edge == RectangleEdge.RIGHT) {
-	// axisLine = new Line2D.Double(c, dataArea.getY(), c,
-	// dataArea.getMaxY());
-	// }
-	// g2.setPaint(getAxisLinePaint());
-	// g2.setStroke(getAxisLineStroke());
-	// Object saved = g2.getRenderingHint(RenderingHints.KEY_STROKE_CONTROL);
-	// g2.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL,
-	// RenderingHints.VALUE_STROKE_NORMALIZE);
-	// g2.draw(axisLine);
-	// g2.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, saved);
-	//
-	// boolean drawUpOrRight = false;
-	// boolean drawDownOrLeft = false;
-	// if (this.positiveArrowVisible) {
-	// if (this.inverted) {
-	// drawDownOrLeft = true;
-	// }
-	// else {
-	// drawUpOrRight = true;
-	// }
-	// }
-	// if (this.negativeArrowVisible) {
-	// if (this.inverted) {
-	// drawUpOrRight = true;
-	// } else {
-	// drawDownOrLeft = true;
-	// }
-	// }
-	// if (drawUpOrRight) {
-	// double x = 0.0;
-	// double y = 0.0;
-	// Shape arrow = null;
-	// if (edge == RectangleEdge.TOP || edge == RectangleEdge.BOTTOM) {
-	// x = dataArea.getMaxX();
-	// y = cursor;
-	// arrow = this.rightArrow;
-	// } else if (edge == RectangleEdge.LEFT
-	// || edge == RectangleEdge.RIGHT) {
-	// x = cursor;
-	// y = dataArea.getMinY();
-	// arrow = this.upArrow;
-	// }
-	//
-	// // draw the arrow...
-	// AffineTransform transformer = new AffineTransform();
-	// transformer.setToTranslation(x, y);
-	// Shape shape = transformer.createTransformedShape(arrow);
-	// g2.fill(shape);
-	// g2.draw(shape);
-	// }
-	//
-	// if (drawDownOrLeft) {
-	// double x = 0.0;
-	// double y = 0.0;
-	// Shape arrow = null;
-	// if (edge == RectangleEdge.TOP || edge == RectangleEdge.BOTTOM) {
-	// x = dataArea.getMinX();
-	// y = cursor;
-	// arrow = this.leftArrow;
-	// }
-	// else if (edge == RectangleEdge.LEFT
-	// || edge == RectangleEdge.RIGHT) {
-	// x = cursor;
-	// y = dataArea.getMaxY();
-	// arrow = this.downArrow;
-	// }
-	//
-	// // draw the arrow...
-	// AffineTransform transformer = new AffineTransform();
-	// transformer.setToTranslation(x, y);
-	// Shape shape = transformer.createTransformedShape(arrow);
-	// g2.fill(shape);
-	// g2.draw(shape);
-	// }
-	//
-	// }
-	//
-	// /**
-	// * Calculates the anchor point for a tick label.
-	// *
-	// * @param tick the tick.
-	// * @param cursor the cursor.
-	// * @param dataArea the data area.
-	// * @param edge the edge on which the axis is drawn.
-	// *
-	// * @return The x and y coordinates of the anchor point.
-	// */
-	// protected float[] calculateAnchorPoint(ValueTick tick, double cursor,
-	// Rectangle2D dataArea, RectangleEdge edge) {
-	//
-	// RectangleInsets insets = getTickLabelInsets();
-	// float[] result = new float[2];
-	// if (edge == RectangleEdge.TOP) {
-	// result[0] = (float) valueToJava2D(tick.getValue(), dataArea, edge);
-	// result[1] = (float) (cursor - insets.getBottom() - 2.0);
-	// }
-	// else if (edge == RectangleEdge.BOTTOM) {
-	// result[0] = (float) valueToJava2D(tick.getValue(), dataArea, edge);
-	// result[1] = (float) (cursor + insets.getTop() + 2.0);
-	// }
-	// else if (edge == RectangleEdge.LEFT) {
-	// result[0] = (float) (cursor - insets.getLeft() - 2.0);
-	// result[1] = (float) valueToJava2D(tick.getValue(), dataArea, edge);
-	// }
-	// else if (edge == RectangleEdge.RIGHT) {
-	// result[0] = (float) (cursor + insets.getRight() + 2.0);
-	// result[1] = (float) valueToJava2D(tick.getValue(), dataArea, edge);
-	// }
-	// return result;
-	// }
-	//
-	// /**
-	// * Draws the axis line, tick marks and tick mark labels.
-	// *
-	// * @param g2 the graphics device (<code>null</code> not permitted).
-	// * @param cursor the cursor.
-	// * @param plotArea the plot area (<code>null</code> not permitted).
-	// * @param dataArea the data area (<code>null</code> not permitted).
-	// * @param edge the edge that the axis is aligned with (<code>null</code>
-	// * not permitted).
-	// *
-	// * @return The width or height used to draw the axis.
-	// */
-	// protected AxisState drawTickMarksAndLabels(Graphics2D g2,
-	// double cursor, Rectangle2D plotArea, Rectangle2D dataArea,
-	// RectangleEdge edge) {
-	//
-	// AxisState state = new AxisState(cursor);
-	// if (isAxisLineVisible()) {
-	// drawAxisLine(g2, cursor, dataArea, edge);
-	// }
-	// List<ValueTick> ticks = refreshTicks(g2, state, dataArea, edge);
-	// state.setTicks(ticks);
-	// g2.setFont(getTickLabelFont());
-	// Object saved = g2.getRenderingHint(RenderingHints.KEY_STROKE_CONTROL);
-	// g2.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL,
-	// RenderingHints.VALUE_STROKE_NORMALIZE);
-	// for (ValueTick tick : ticks) {
-	// if (isTickLabelsVisible()) {
-	// g2.setPaint(getTickLabelPaint());
-	// float[] anchorPoint = calculateAnchorPoint(tick, cursor,
-	// dataArea, edge);
-	// if (tick instanceof LogTick) {
-	// LogTick lt = (LogTick) tick;
-	// if (lt.getAttributedLabel() == null) {
-	// continue;
-	// }
-	// TextUtilities.drawRotatedString(lt.getAttributedLabel(),
-	// g2, anchorPoint[0], anchorPoint[1],
-	// tick.getTextAnchor(), tick.getAngle(),
-	// tick.getRotationAnchor());
-	// } else {
-	// if (tick.getText() == null) {
-	// continue;
-	// }
-	// TextUtilities.drawRotatedString(tick.getText(), g2,
-	// anchorPoint[0], anchorPoint[1],
-	// tick.getTextAnchor(), tick.getAngle(),
-	// tick.getRotationAnchor());
-	// }
-	// }
-	//
-	// if ((isTickMarksVisible() && tick.getTickType().equals(
-	// TickType.MAJOR)) || (isMinorTickMarksVisible()
-	// && tick.getTickType().equals(TickType.MINOR))) {
-	//
-	// double ol = (tick.getTickType().equals(TickType.MINOR))
-	// ? getMinorTickMarkOutsideLength()
-	// : getTickMarkOutsideLength();
-	//
-	// double il = (tick.getTickType().equals(TickType.MINOR))
-	// ? getMinorTickMarkInsideLength()
-	// : getTickMarkInsideLength();
-	//
-	// float xx = (float) valueToJava2D(tick.getValue(), dataArea,
-	// edge);
-	// Line2D mark = null;
-	// g2.setStroke(getTickMarkStroke());
-	// g2.setPaint(getTickMarkPaint());
-	// if (edge == RectangleEdge.LEFT) {
-	// mark = new Line2D.Double(cursor - ol, xx, cursor + il, xx);
-	// } else if (edge == RectangleEdge.RIGHT) {
-	// mark = new Line2D.Double(cursor + ol, xx, cursor - il, xx);
-	// } else if (edge == RectangleEdge.TOP) {
-	// mark = new Line2D.Double(xx, cursor - ol, xx, cursor + il);
-	// } else if (edge == RectangleEdge.BOTTOM) {
-	// mark = new Line2D.Double(xx, cursor + ol, xx, cursor - il);
-	// }
-	// g2.draw(mark);
-	// }
-	// }
-	// g2.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, saved);
-	//
-	// // need to work out the space used by the tick labels...
-	// // so we can update the cursor...
-	// double used = 0.0;
-	// if (isTickLabelsVisible()) {
-	// if (edge == RectangleEdge.LEFT) {
-	// used += findMaximumTickLabelWidth(ticks, g2, plotArea,
-	// isVerticalTickLabels());
-	// state.cursorLeft(used);
-	// } else if (edge == RectangleEdge.RIGHT) {
-	// used = findMaximumTickLabelWidth(ticks, g2, plotArea,
-	// isVerticalTickLabels());
-	// state.cursorRight(used);
-	// } else if (edge == RectangleEdge.TOP) {
-	// used = findMaximumTickLabelHeight(ticks, g2, plotArea,
-	// isVerticalTickLabels());
-	// state.cursorUp(used);
-	// } else if (edge == RectangleEdge.BOTTOM) {
-	// used = findMaximumTickLabelHeight(ticks, g2, plotArea,
-	// isVerticalTickLabels());
-	// state.cursorDown(used);
-	// }
-	// }
-	//
-	// return state;
-	// }
-	//
-	// /**
-	// * Calculates the positions of the ticks for the axis, storing the results
-	// * in the tick list (ready for drawing).
-	// *
-	// * @param g2 the graphics device.
-	// * @param state the axis state.
-	// * @param dataArea the area inside the axes.
-	// * @param edge the edge on which the axis is located.
-	// *
-	// * @return The list of ticks.
-	// */
-	// @Override
-	// public abstract List<ValueTick> refreshTicks(Graphics2D g2, AxisState
-	// state,
-	// Rectangle2D dataArea, RectangleEdge edge);
-	//
-	// /**
-	// * Returns the space required to draw the axis.
-	// *
-	// * @param g2 the graphics device.
-	// * @param plot the plot that the axis belongs to.
-	// * @param plotArea the area within which the plot should be drawn.
-	// * @param edge the axis location.
-	// * @param space the space already reserved (for other axes).
-	// *
-	// * @return The space required to draw the axis (including pre-reserved
-	// * space).
-	// */
-	// @Override
-	// public AxisSpace reserveSpace(Graphics2D g2, Plot plot,
-	// Rectangle2D plotArea, RectangleEdge edge, AxisSpace space) {
-	//
-	// // create a new space object if one wasn't supplied...
-	// if (space == null) {
-	// space = new AxisSpace();
-	// }
-	//
-	// // if the axis is not visible, no additional space is required...
-	// if (!isVisible()) {
-	// return space;
-	// }
-	//
-	// // if the axis has a fixed dimension, return it...
-	// double dimension = getFixedDimension();
-	// if (dimension > 0.0) {
-	// space.add(dimension, edge);
-	// return space;
-	// }
-	//
-	// // calculate the max size of the tick labels (if visible)...
-	// double tickLabelHeight = 0.0;
-	// double tickLabelWidth = 0.0;
-	// if (isTickLabelsVisible()) {
-	// g2.setFont(getTickLabelFont());
-	// List<ValueTick> ticks = refreshTicks(g2, new AxisState(), plotArea,
-	// edge);
-	// if (RectangleEdge.isTopOrBottom(edge)) {
-	// tickLabelHeight = findMaximumTickLabelHeight(ticks, g2,
-	// plotArea, isVerticalTickLabels());
-	// }
-	// else if (RectangleEdge.isLeftOrRight(edge)) {
-	// tickLabelWidth = findMaximumTickLabelWidth(ticks, g2, plotArea,
-	// isVerticalTickLabels());
-	// }
-	// }
-	//
-	// // get the axis label size and update the space object...
-	// Rectangle2D labelEnclosure = getLabelEnclosure(g2, edge);
-	// if (RectangleEdge.isTopOrBottom(edge)) {
-	// double labelHeight = labelEnclosure.getHeight();
-	// space.add(labelHeight + tickLabelHeight, edge);
-	// }
-	// else if (RectangleEdge.isLeftOrRight(edge)) {
-	// double labelWidth = labelEnclosure.getWidth();
-	// space.add(labelWidth + tickLabelWidth, edge);
-	// }
-	//
-	// return space;
-	//
-	// }
-	//
-	// /**
-	// * A utility method for determining the height of the tallest tick label.
-	// *
-	// * @param ticks the ticks.
-	// * @param g2 the graphics device.
-	// * @param drawArea the area within which the plot and axes should be
-	// drawn.
-	// * @param vertical a flag that indicates whether or not the tick labels
-	// * are 'vertical'.
-	// *
-	// * @return The height of the tallest tick label.
-	// */
-	// protected double findMaximumTickLabelHeight(List<ValueTick> ticks,
-	// Graphics2D g2, Rectangle2D drawArea, boolean vertical) {
-	//
-	// RectangleInsets insets = getTickLabelInsets();
-	// Font font = getTickLabelFont();
-	// g2.setFont(font);
-	// double maxHeight = 0.0;
-	// if (vertical) {
-	// FontMetrics fm = g2.getFontMetrics(font);
-	// for (Tick tick : ticks) {
-	// Rectangle2D labelBounds = null;
-	// if (tick instanceof LogTick) {
-	// LogTick lt = (LogTick) tick;
-	// if (lt.getAttributedLabel() != null) {
-	// labelBounds = TextUtilities.getTextBounds(
-	// lt.getAttributedLabel(), g2);
-	// }
-	// } else if (tick.getText() != null) {
-	// labelBounds = TextUtilities.getTextBounds(
-	// tick.getText(), g2, fm);
-	// }
-	// if (labelBounds != null && labelBounds.getWidth()
-	// + insets.getTop() + insets.getBottom() > maxHeight) {
-	// maxHeight = labelBounds.getWidth()
-	// + insets.getTop() + insets.getBottom();
-	// }
-	// }
-	// } else {
-	// LineMetrics metrics = font.getLineMetrics("ABCxyz",
-	// g2.getFontRenderContext());
-	// maxHeight = metrics.getHeight()
-	// + insets.getTop() + insets.getBottom();
-	// }
-	// return maxHeight;
-	//
-	// }
-	//
-	// /**
-	// * A utility method for determining the width of the widest tick label.
-	// *
-	// * @param ticks the ticks.
-	// * @param g2 the graphics device.
-	// * @param drawArea the area within which the plot and axes should be
-	// drawn.
-	// * @param vertical a flag that indicates whether or not the tick labels
-	// * are 'vertical'.
-	// *
-	// * @return The width of the tallest tick label.
-	// */
-	// protected double findMaximumTickLabelWidth(List<ValueTick> ticks,
-	// Graphics2D g2, Rectangle2D drawArea, boolean vertical) {
-	//
-	// RectangleInsets insets = getTickLabelInsets();
-	// Font font = getTickLabelFont();
-	// double maxWidth = 0.0;
-	// if (!vertical) {
-	// FontMetrics fm = g2.getFontMetrics(font);
-	// for (ValueTick tick : ticks) {
-	// Rectangle2D labelBounds = null;
-	// if (tick instanceof LogTick) {
-	// LogTick lt = (LogTick) tick;
-	// if (lt.getAttributedLabel() != null) {
-	// labelBounds = TextUtilities.getTextBounds(
-	// lt.getAttributedLabel(), g2);
-	// }
-	// } else if (tick.getText() != null) {
-	// labelBounds = TextUtilities.getTextBounds(tick.getText(),
-	// g2, fm);
-	// }
-	// if (labelBounds != null
-	// && labelBounds.getWidth() + insets.getLeft()
-	// + insets.getRight() > maxWidth) {
-	// maxWidth = labelBounds.getWidth()
-	// + insets.getLeft() + insets.getRight();
-	// }
-	// }
-	// } else {
-	// LineMetrics metrics = font.getLineMetrics("ABCxyz",
-	// g2.getFontRenderContext());
-	// maxWidth = metrics.getHeight()
-	// + insets.getTop() + insets.getBottom();
-	// }
-	// return maxWidth;
-	//
-	// }
-	//
+	/**
+	 * Draws an axis line at the current cursor position and edge.
+	 *
+	 * @param g2
+	 *            the graphics device ({@code null} not permitted).
+	 * @param cursor
+	 *            the cursor position.
+	 * @param dataArea
+	 *            the data area.
+	 * @param edge
+	 *            the edge.
+	 */
+	@Override
+	protected void drawAxisLine(GraphicsContext g2, double cursor,
+			Rectangle2D dataArea, RectangleEdge edge) {
+		Line2D axisLine = null;
+		double c = cursor;
+		if (edge == RectangleEdge.TOP) {
+			axisLine = newLine(dataArea.getMinX(), c, dataArea.getMaxX(),
+					c);
+		} else if (edge == RectangleEdge.BOTTOM) {
+			axisLine = newLine(dataArea.getMinX(), c, dataArea.getMaxX(),
+					c);
+		} else if (edge == RectangleEdge.LEFT) {
+			axisLine = newLine(c, dataArea.getMinY(), c,
+					dataArea.getMaxY());
+		} else if (edge == RectangleEdge.RIGHT) {
+			axisLine = newLine(c, dataArea.getMinY(), c,
+					dataArea.getMaxY());
+		}
+		g2.setStroke(getAxisLinePaint());
+		// JAVAFX stroke
+		// g2.setStroke(getAxisLineStroke());
+		// Object saved =
+		// g2.getRenderingHint(RenderingHints.KEY_STROKE_CONTROL);
+		// g2.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL,
+		// RenderingHints.VALUE_STROKE_NORMALIZE);
+		strokeLine(g2, axisLine);
+		// JAVAFX
+		// g2.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, saved);
+
+		boolean drawUpOrRight = false;
+		boolean drawDownOrLeft = false;
+		if (this.positiveArrowVisible) {
+			if (this.inverted) {
+				drawDownOrLeft = true;
+			}
+			else {
+				drawUpOrRight = true;
+			}
+		}
+		if (this.negativeArrowVisible) {
+			if (this.inverted) {
+				drawUpOrRight = true;
+			} else {
+				drawDownOrLeft = true;
+			}
+		}
+		// JAVAFX
+		// if (drawUpOrRight) {
+		// double x = 0.0;
+		// double y = 0.0;
+		// Shape arrow = null;
+		// if (edge == RectangleEdge.TOP || edge == RectangleEdge.BOTTOM) {
+		// x = dataArea.getMaxX();
+		// y = cursor;
+		// arrow = this.rightArrow;
+		// } else if (edge == RectangleEdge.LEFT
+		// || edge == RectangleEdge.RIGHT) {
+		// x = cursor;
+		// y = dataArea.getMinY();
+		// arrow = this.upArrow;
+		// }
+		//
+		// // draw the arrow...
+		// AffineTransform transformer = new AffineTransform();
+		// transformer.setToTranslation(x, y);
+		// Shape shape = transformer.createTransformedShape(arrow);
+		// g2.fill(shape);
+		// g2.draw(shape);
+		// }
+		//
+		// if (drawDownOrLeft) {
+		// double x = 0.0;
+		// double y = 0.0;
+		// Shape arrow = null;
+		// if (edge == RectangleEdge.TOP || edge == RectangleEdge.BOTTOM) {
+		// x = dataArea.getMinX();
+		// y = cursor;
+		// arrow = this.leftArrow;
+		// }
+		// else if (edge == RectangleEdge.LEFT
+		// || edge == RectangleEdge.RIGHT) {
+		// x = cursor;
+		// y = dataArea.getMaxY();
+		// arrow = this.downArrow;
+		// }
+		//
+		// // draw the arrow...
+		// AffineTransform transformer = new AffineTransform();
+		// transformer.setToTranslation(x, y);
+		// Shape shape = transformer.createTransformedShape(arrow);
+		// g2.fill(shape);
+		// g2.draw(shape);
+		// }
+
+	}
+
+	/**
+	 * Calculates the anchor point for a tick label.
+	 *
+	 * @param tick
+	 *            the tick.
+	 * @param cursor
+	 *            the cursor.
+	 * @param dataArea
+	 *            the data area.
+	 * @param edge
+	 *            the edge on which the axis is drawn.
+	 *
+	 * @return The x and y coordinates of the anchor point.
+	 */
+	protected float[] calculateAnchorPoint(ValueTick tick, double cursor,
+			Rectangle2D dataArea, RectangleEdge edge) {
+
+		RectangleInsets insets = getTickLabelInsets();
+		float[] result = new float[2];
+		if (edge == RectangleEdge.TOP) {
+			result[0] = (float) valueToJava2D(tick.getValue(), dataArea, edge);
+			result[1] = (float) (cursor - insets.getBottom() - 2.0);
+		}
+		else if (edge == RectangleEdge.BOTTOM) {
+			result[0] = (float) valueToJava2D(tick.getValue(), dataArea, edge);
+			result[1] = (float) (cursor + insets.getTop() + 2.0);
+		}
+		else if (edge == RectangleEdge.LEFT) {
+			result[0] = (float) (cursor - insets.getLeft() - 2.0);
+			result[1] = (float) valueToJava2D(tick.getValue(), dataArea, edge);
+		}
+		else if (edge == RectangleEdge.RIGHT) {
+			result[0] = (float) (cursor + insets.getRight() + 2.0);
+			result[1] = (float) valueToJava2D(tick.getValue(), dataArea, edge);
+		}
+		return result;
+	}
+
+	/**
+	 * Draws the axis line, tick marks and tick mark labels.
+	 *
+	 * @param g2
+	 *            the graphics device (<code>null</code> not permitted).
+	 * @param cursor
+	 *            the cursor.
+	 * @param plotArea
+	 *            the plot area (<code>null</code> not permitted).
+	 * @param dataArea
+	 *            the data area (<code>null</code> not permitted).
+	 * @param edge
+	 *            the edge that the axis is aligned with (<code>null</code> not
+	 *            permitted).
+	 *
+	 * @return The width or height used to draw the axis.
+	 */
+	protected AxisState drawTickMarksAndLabels(GraphicsContext g2,
+			double cursor, Rectangle2D plotArea, Rectangle2D dataArea,
+			RectangleEdge edge) {
+
+		AxisState state = new AxisState(cursor);
+		if (isAxisLineVisible()) {
+			drawAxisLine(g2, cursor, dataArea, edge);
+		}
+		// JAVAFX
+		List<ValueTick> ticks = refreshTicks(g2, state, dataArea, edge);
+		state.setTicks(ticks);
+		g2.setFont(getTickLabelFont());
+		// JAVAFX
+		// Object saved =
+		// g2.getRenderingHint(RenderingHints.KEY_STROKE_CONTROL);
+		// g2.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL,
+		// RenderingHints.VALUE_STROKE_NORMALIZE);
+		for (ValueTick tick : ticks) {
+			if (isTickLabelsVisible()) {
+				g2.setFill(getTickLabelPaint());
+				float[] anchorPoint = calculateAnchorPoint(tick, cursor,
+						dataArea, edge);
+				if (tick instanceof LogTick) {
+					LogTick lt = (LogTick) tick;
+					if (lt.getAttributedLabel() == null) {
+						continue;
+					}
+					TextUtilities.drawRotatedString(lt.getAttributedLabel(),
+							g2, anchorPoint[0], anchorPoint[1],
+							tick.getTextAnchor(), tick.getAngle(),
+							tick.getRotationAnchor());
+				} else {
+					if (tick.getText() == null) {
+						continue;
+					}
+					TextUtilities.drawRotatedString(tick.getText(), g2,
+							anchorPoint[0], anchorPoint[1],
+							tick.getTextAnchor(), tick.getAngle(),
+							tick.getRotationAnchor());
+				}
+			}
+
+			if ((isTickMarksVisible() && tick.getTickType().equals(
+					TickType.MAJOR)) || (isMinorTickMarksVisible()
+					&& tick.getTickType().equals(TickType.MINOR))) {
+
+				double ol = (tick.getTickType().equals(TickType.MINOR))
+						? getMinorTickMarkOutsideLength()
+						: getTickMarkOutsideLength();
+
+				double il = (tick.getTickType().equals(TickType.MINOR))
+						? getMinorTickMarkInsideLength()
+						: getTickMarkInsideLength();
+
+				float xx = (float) valueToJava2D(tick.getValue(), dataArea,
+						edge);
+				Line2D mark = null;
+				// JAVAFX stroke
+				// g2.setStroke(getTickMarkStroke());
+				g2.setStroke(getTickMarkPaint());
+				if (edge == RectangleEdge.LEFT) {
+					mark = newLine(cursor - ol, xx, cursor + il, xx);
+				} else if (edge == RectangleEdge.RIGHT) {
+					mark = newLine(cursor + ol, xx, cursor - il, xx);
+				} else if (edge == RectangleEdge.TOP) {
+					mark = newLine(xx, cursor - ol, xx, cursor + il);
+				} else if (edge == RectangleEdge.BOTTOM) {
+					mark = newLine(xx, cursor + ol, xx, cursor - il);
+				}
+				strokeLine(g2, mark);
+			}
+		}
+		// JAVAFX
+		// g2.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, saved);
+
+		// need to work out the space used by the tick labels...
+		// so we can update the cursor...
+		double used = 0.0;
+		if (isTickLabelsVisible()) {
+			if (edge == RectangleEdge.LEFT) {
+				used += findMaximumTickLabelWidth(ticks, g2, plotArea,
+						isVerticalTickLabels());
+				state.cursorLeft(used);
+			} else if (edge == RectangleEdge.RIGHT) {
+				used = findMaximumTickLabelWidth(ticks, g2, plotArea,
+						isVerticalTickLabels());
+				state.cursorRight(used);
+			} else if (edge == RectangleEdge.TOP) {
+				used = findMaximumTickLabelHeight(ticks, g2, plotArea,
+						isVerticalTickLabels());
+				state.cursorUp(used);
+			} else if (edge == RectangleEdge.BOTTOM) {
+				used = findMaximumTickLabelHeight(ticks, g2, plotArea,
+						isVerticalTickLabels());
+				state.cursorDown(used);
+			}
+		}
+
+		return state;
+	}
+
+	/**
+	 * Calculates the positions of the ticks for the axis, storing the results
+	 * in the tick list (ready for drawing).
+	 *
+	 * @param g2
+	 *            the graphics device.
+	 * @param state
+	 *            the axis state.
+	 * @param dataArea
+	 *            the area inside the axes.
+	 * @param edge
+	 *            the edge on which the axis is located.
+	 *
+	 * @return The list of ticks.
+	 */
+	@Override
+	public abstract List<ValueTick> refreshTicks(GraphicsContext g2, AxisState
+			state,
+			Rectangle2D dataArea, RectangleEdge edge);
+
+	/**
+	 * Returns the space required to draw the axis.
+	 *
+	 * @param g2
+	 *            the graphics device.
+	 * @param plot
+	 *            the plot that the axis belongs to.
+	 * @param plotArea
+	 *            the area within which the plot should be drawn.
+	 * @param edge
+	 *            the axis location.
+	 * @param space
+	 *            the space already reserved (for other axes).
+	 *
+	 * @return The space required to draw the axis (including pre-reserved
+	 *         space).
+	 */
+	@Override
+	public AxisSpace reserveSpace(GraphicsContext g2, Plot plot,
+			Rectangle2D plotArea, RectangleEdge edge, AxisSpace space) {
+
+		// create a new space object if one wasn't supplied...
+		if (space == null) {
+			space = new AxisSpace();
+		}
+
+		// if the axis is not visible, no additional space is required...
+		if (!isVisible()) {
+			return space;
+		}
+
+		// if the axis has a fixed dimension, return it...
+		double dimension = getFixedDimension();
+		if (dimension > 0.0) {
+			space.add(dimension, edge);
+			return space;
+		}
+
+		// calculate the max size of the tick labels (if visible)...
+		double tickLabelHeight = 0.0;
+		double tickLabelWidth = 0.0;
+		if (isTickLabelsVisible()) {
+			g2.setFont(getTickLabelFont());
+			List<ValueTick> ticks = refreshTicks(g2, new AxisState(), plotArea,
+					edge);
+			if (RectangleEdge.isTopOrBottom(edge)) {
+				tickLabelHeight = findMaximumTickLabelHeight(ticks, g2,
+						plotArea, isVerticalTickLabels());
+			}
+			else if (RectangleEdge.isLeftOrRight(edge)) {
+				tickLabelWidth = findMaximumTickLabelWidth(ticks, g2, plotArea,
+						isVerticalTickLabels());
+			}
+		}
+
+		// get the axis label size and update the space object...
+		Rectangle2D labelEnclosure = getLabelEnclosure(g2, edge);
+		if (RectangleEdge.isTopOrBottom(edge)) {
+			double labelHeight = labelEnclosure.getHeight();
+			space.add(labelHeight + tickLabelHeight, edge);
+		}
+		else if (RectangleEdge.isLeftOrRight(edge)) {
+			double labelWidth = labelEnclosure.getWidth();
+			space.add(labelWidth + tickLabelWidth, edge);
+		}
+
+		return space;
+
+	}
+
+	/**
+	 * A utility method for determining the height of the tallest tick label.
+	 *
+	 * @param ticks
+	 *            the ticks.
+	 * @param g2
+	 *            the graphics device.
+	 * @param drawArea
+	 *            the area within which the plot and axes should be drawn.
+	 * @param vertical
+	 *            a flag that indicates whether or not the tick labels are
+	 *            'vertical'.
+	 *
+	 * @return The height of the tallest tick label.
+	 */
+	protected double findMaximumTickLabelHeight(List<ValueTick> ticks,
+			GraphicsContext g2, Rectangle2D drawArea, boolean vertical) {
+
+		RectangleInsets insets = getTickLabelInsets();
+		Font font = getTickLabelFont();
+		g2.setFont(font);
+		double maxHeight = 0.0;
+		// JAVAFX font metrics
+		// if (vertical) {
+		// FontMetrics fm = g2.getFontMetrics(font);
+		// for (Tick tick : ticks) {
+		// Rectangle2D labelBounds = null;
+		// if (tick instanceof LogTick) {
+		// LogTick lt = (LogTick) tick;
+		// if (lt.getAttributedLabel() != null) {
+		// labelBounds = TextUtilities.getTextBounds(
+		// lt.getAttributedLabel(), g2);
+		// }
+		// } else if (tick.getText() != null) {
+		// labelBounds = TextUtilities.getTextBounds(
+		// tick.getText(), g2, fm);
+		// }
+		// if (labelBounds != null && labelBounds.getWidth()
+		// + insets.getTop() + insets.getBottom() > maxHeight) {
+		// maxHeight = labelBounds.getWidth()
+		// + insets.getTop() + insets.getBottom();
+		// }
+		// }
+		// } else {
+		// LineMetrics metrics = font.getLineMetrics("ABCxyz",
+		// g2.getFontRenderContext());
+		// maxHeight = metrics.getHeight()
+		// + insets.getTop() + insets.getBottom();
+		// }
+		return maxHeight;
+
+	}
+
+	/**
+	 * A utility method for determining the width of the widest tick label.
+	 *
+	 * @param ticks
+	 *            the ticks.
+	 * @param g2
+	 *            the graphics device.
+	 * @param drawArea
+	 *            the area within which the plot and axes should be drawn.
+	 * @param vertical
+	 *            a flag that indicates whether or not the tick labels are
+	 *            'vertical'.
+	 *
+	 * @return The width of the tallest tick label.
+	 */
+	protected double findMaximumTickLabelWidth(List<ValueTick> ticks,
+			GraphicsContext g2, Rectangle2D drawArea, boolean vertical) {
+
+		RectangleInsets insets = getTickLabelInsets();
+		Font font = getTickLabelFont();
+		double maxWidth = 0.0;
+		// JAVAFX font metrics
+		// if (!vertical) {
+		// FontMetrics fm = g2.getFontMetrics(font);
+		// for (ValueTick tick : ticks) {
+		// Rectangle2D labelBounds = null;
+		// if (tick instanceof LogTick) {
+		// LogTick lt = (LogTick) tick;
+		// if (lt.getAttributedLabel() != null) {
+		// labelBounds = TextUtilities.getTextBounds(
+		// lt.getAttributedLabel(), g2);
+		// }
+		// } else if (tick.getText() != null) {
+		// labelBounds = TextUtilities.getTextBounds(tick.getText(),
+		// g2, fm);
+		// }
+		// if (labelBounds != null
+		// && labelBounds.getWidth() + insets.getLeft()
+		// + insets.getRight() > maxWidth) {
+		// maxWidth = labelBounds.getWidth()
+		// + insets.getLeft() + insets.getRight();
+		// }
+		// }
+		// } else {
+		// LineMetrics metrics = font.getLineMetrics("ABCxyz",
+		// g2.getFontRenderContext());
+		// maxWidth = metrics.getHeight()
+		// + insets.getTop() + insets.getBottom();
+		// }
+		return maxWidth;
+
+	}
+
 	/**
 	 * Returns a flag that controls the direction of values on the axis.
 	 * <P>

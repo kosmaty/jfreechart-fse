@@ -626,20 +626,22 @@ public interface Renderer extends LegendItemSource {
 	// public void setDefaultShape(Shape shape, boolean notify);
 	//
 	//
-	// //// LEGEND ITEMS
-	// ///////////////////////////////////////////////////////////
-	//
-	// /**
-	// * Returns a legend item for a series. This method can return
-	// * <code>null</code>, in which case the series will have no entry in the
-	// * legend.
-	// *
-	// * @param datasetIndex the dataset index (zero-based).
-	// * @param series the series (zero-based index).
-	// *
-	// * @return The legend item (possibly <code>null</code>).
-	// */
-	// public LegendItem getLegendItem(int datasetIndex, int series);
+	// // LEGEND ITEMS
+	// /////////////////////////////////////////////////////////
+
+	/**
+	 * Returns a legend item for a series. This method can return
+	 * <code>null</code>, in which case the series will have no entry in the
+	 * legend.
+	 *
+	 * @param datasetIndex
+	 *            the dataset index (zero-based).
+	 * @param series
+	 *            the series (zero-based index).
+	 *
+	 * @return The legend item (possibly <code>null</code>).
+	 */
+	public LegendItem getLegendItem(int datasetIndex, int series);
 	//
 	//
 	// // ITEM LABELS VISIBLE

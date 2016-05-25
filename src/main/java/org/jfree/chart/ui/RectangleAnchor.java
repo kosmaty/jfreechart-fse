@@ -45,6 +45,9 @@
 
 package org.jfree.chart.ui;
 
+import static org.jfree.geometry.GeometryUtils.getCenterX;
+import static org.jfree.geometry.GeometryUtils.getCenterY;
+
 import org.jfree.chart.util.ParamChecks;
 
 import javafx.geometry.Point2D;
@@ -93,14 +96,6 @@ public enum RectangleAnchor {
 	 */
 	private RectangleAnchor(String name) {
 		this.name = name;
-	}
-
-	private static double getCenterX(Rectangle2D rectangle) {
-		return ((rectangle.getMinX() + rectangle.getMaxX()) / 2);
-	}
-
-	private static double getCenterY(Rectangle2D rectangle) {
-		return ((rectangle.getMinY() + rectangle.getMaxY()) / 2);
 	}
 
 	/**

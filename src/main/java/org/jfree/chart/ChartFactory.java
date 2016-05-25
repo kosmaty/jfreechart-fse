@@ -127,8 +127,6 @@
 package org.jfree.chart;
 
 // 
-// import java.awt.Color;
-// import java.awt.Font;
 import java.text.DateFormat;
 import java.text.NumberFormat;
 import java.util.List;
@@ -152,9 +150,9 @@ import org.jfree.chart.labels.ItemLabelPosition;
 import org.jfree.chart.labels.StandardCategoryToolTipGenerator;
 // import org.jfree.chart.labels.StandardPieSectionLabelGenerator;
 // import org.jfree.chart.labels.StandardPieToolTipGenerator;
-// import org.jfree.chart.labels.StandardXYToolTipGenerator;
+import org.jfree.chart.labels.StandardXYToolTipGenerator;
 // import org.jfree.chart.labels.StandardXYZToolTipGenerator;
-// import org.jfree.chart.labels.XYToolTipGenerator;
+import org.jfree.chart.labels.XYToolTipGenerator;
 import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.plot.Marker;
 // import org.jfree.chart.plot.MultiplePiePlot;
@@ -163,9 +161,9 @@ import org.jfree.chart.plot.Marker;
 import org.jfree.chart.plot.PlotOrientation;
 // import org.jfree.chart.plot.PolarPlot;
 // import org.jfree.chart.plot.RingPlot;
-// import org.jfree.chart.plot.ValueMarker;
+import org.jfree.chart.plot.ValueMarker;
 // import org.jfree.chart.plot.WaferMapPlot;
-// import org.jfree.chart.plot.XYPlot;
+import org.jfree.chart.plot.XYPlot;
 // import org.jfree.chart.renderer.DefaultPolarItemRenderer;
 // import org.jfree.chart.renderer.WaferMapRenderer;
 // import org.jfree.chart.renderer.category.AreaRenderer;
@@ -190,8 +188,8 @@ import org.jfree.chart.renderer.category.LineAndShapeRenderer;
 // import org.jfree.chart.renderer.xy.XYBarRenderer;
 // import org.jfree.chart.renderer.xy.XYBoxAndWhiskerRenderer;
 // import org.jfree.chart.renderer.xy.XYBubbleRenderer;
-// import org.jfree.chart.renderer.xy.XYItemRenderer;
-// import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
+import org.jfree.chart.renderer.xy.XYItemRenderer;
+import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 // import org.jfree.chart.renderer.xy.XYStepAreaRenderer;
 // import org.jfree.chart.renderer.xy.XYStepRenderer;
 // import org.jfree.chart.title.TextTitle;
@@ -896,6 +894,7 @@ public abstract class ChartFactory {
 		return chart;
 
 	}
+
 	//
 	// /**
 	// * Creates a Gantt chart using the supplied attributes plus default values
@@ -1170,32 +1169,36 @@ public abstract class ChartFactory {
 	//
 	// }
 	//
-	// /**
-	// * Creates a line chart (based on an {@link XYDataset}) with default
-	// * settings.
-	// *
-	// * @param title the chart title ({@code null} permitted).
-	// * @param xAxisLabel a label for the X-axis ({@code null} permitted).
-	// * @param yAxisLabel a label for the Y-axis ({@code null} permitted).
-	// * @param dataset the dataset for the chart ({@code null} permitted).
-	// *
-	// * @return The chart.
-	// */
-	// public static JFreeChart createXYLineChart(String title,
-	// String xAxisLabel, String yAxisLabel, XYDataset dataset) {
-	//
-	// NumberAxis xAxis = new NumberAxis(xAxisLabel);
-	// xAxis.setAutoRangeIncludesZero(false);
-	// NumberAxis yAxis = new NumberAxis(yAxisLabel);
-	// XYItemRenderer renderer = new XYLineAndShapeRenderer(true, false);
-	// XYPlot plot = new XYPlot(dataset, xAxis, yAxis, renderer);
-	// renderer.setDefaultToolTipGenerator(new StandardXYToolTipGenerator());
-	//
-	// JFreeChart chart = new JFreeChart(title, plot);
-	// currentTheme.apply(chart);
-	// return chart;
-	//
-	// }
+	/**
+	 * Creates a line chart (based on an {@link XYDataset}) with default
+	 * settings.
+	 *
+	 * @param title
+	 *            the chart title ({@code null} permitted).
+	 * @param xAxisLabel
+	 *            a label for the X-axis ({@code null} permitted).
+	 * @param yAxisLabel
+	 *            a label for the Y-axis ({@code null} permitted).
+	 * @param dataset
+	 *            the dataset for the chart ({@code null} permitted).
+	 *
+	 * @return The chart.
+	 */
+	public static JFreeChart createXYLineChart(String title,
+			String xAxisLabel, String yAxisLabel, XYDataset dataset) {
+
+		NumberAxis xAxis = new NumberAxis(xAxisLabel);
+		xAxis.setAutoRangeIncludesZero(false);
+		NumberAxis yAxis = new NumberAxis(yAxisLabel);
+		XYItemRenderer renderer = new XYLineAndShapeRenderer(true, false);
+		XYPlot plot = new XYPlot(dataset, xAxis, yAxis, renderer);
+		renderer.setDefaultToolTipGenerator(new StandardXYToolTipGenerator());
+
+		JFreeChart chart = new JFreeChart(title, plot);
+		currentTheme.apply(chart);
+		return chart;
+
+	}
 	//
 	// /**
 	// * Creates a stepped XY plot with default settings.

@@ -45,21 +45,21 @@
 
 package org.jfree.chart.util;
 
-import java.awt.AlphaComposite;
-import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.Composite;
-import java.awt.GradientPaint;
-import java.awt.Paint;
-import java.awt.Shape;
-import java.awt.Stroke;
-import java.awt.geom.Arc2D;
-import java.awt.geom.Ellipse2D;
-import java.awt.geom.GeneralPath;
-import java.awt.geom.Line2D;
-import java.awt.geom.PathIterator;
-import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
+//import java.awt.AlphaComposite;
+//import java.awt.BasicStroke;
+//import java.awt.Color;
+//import java.awt.Composite;
+//import java.awt.GradientPaint;
+//import java.awt.Paint;
+//import java.awt.Shape;
+//import java.awt.Stroke;
+//import java.awt.geom.Arc2D;
+//import java.awt.geom.Ellipse2D;
+//import java.awt.geom.GeneralPath;
+//import java.awt.geom.Line2D;
+//import java.awt.geom.PathIterator;
+//import java.awt.geom.Point2D;
+//import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -69,6 +69,9 @@ import java.text.AttributedString;
 import java.text.CharacterIterator;
 import java.util.HashMap;
 import java.util.Map;
+
+import javafx.geometry.Point2D;
+import javafx.scene.paint.Paint;
 
 /**
  * A class containing useful utility methods relating to serialization.
@@ -115,18 +118,19 @@ public class SerialUtils {
 		boolean isNull = stream.readBoolean();
 		if (!isNull) {
 			Class c = (Class) stream.readObject();
-			if (isSerializable(c)) {
-				result = (Paint) stream.readObject();
-			} else if (c.equals(GradientPaint.class)) {
-				float x1 = stream.readFloat();
-				float y1 = stream.readFloat();
-				Color c1 = (Color) stream.readObject();
-				float x2 = stream.readFloat();
-				float y2 = stream.readFloat();
-				Color c2 = (Color) stream.readObject();
-				boolean isCyclic = stream.readBoolean();
-				result = new GradientPaint(x1, y1, c1, x2, y2, c2, isCyclic);
-			}
+			// JAVAFX paint, serialization
+			// if (isSerializable(c)) {
+			// result = (Paint) stream.readObject();
+			// } else if (c.equals(GradientPaint.class)) {
+			// float x1 = stream.readFloat();
+			// float y1 = stream.readFloat();
+			// Color c1 = (Color) stream.readObject();
+			// float x2 = stream.readFloat();
+			// float y2 = stream.readFloat();
+			// Color c2 = (Color) stream.readObject();
+			// boolean isCyclic = stream.readBoolean();
+			// result = new GradientPaint(x1, y1, c1, x2, y2, c2, isCyclic);
+			// }
 		}
 		return result;
 
@@ -150,325 +154,330 @@ public class SerialUtils {
 		if (paint != null) {
 			stream.writeBoolean(false);
 			stream.writeObject(paint.getClass());
-			if (paint instanceof Serializable) {
-				stream.writeObject(paint);
-			} else if (paint instanceof GradientPaint) {
-				GradientPaint gp = (GradientPaint) paint;
-				stream.writeFloat((float) gp.getPoint1().getX());
-				stream.writeFloat((float) gp.getPoint1().getY());
-				stream.writeObject(gp.getColor1());
-				stream.writeFloat((float) gp.getPoint2().getX());
-				stream.writeFloat((float) gp.getPoint2().getY());
-				stream.writeObject(gp.getColor2());
-				stream.writeBoolean(gp.isCyclic());
-			}
+			// JAVAFX paint, serialization
+			// if (paint instanceof Serializable) {
+			// stream.writeObject(paint);
+			// } else if (paint instanceof GradientPaint) {
+			// GradientPaint gp = (GradientPaint) paint;
+			// stream.writeFloat((float) gp.getPoint1().getX());
+			// stream.writeFloat((float) gp.getPoint1().getY());
+			// stream.writeObject(gp.getColor1());
+			// stream.writeFloat((float) gp.getPoint2().getX());
+			// stream.writeFloat((float) gp.getPoint2().getY());
+			// stream.writeObject(gp.getColor2());
+			// stream.writeBoolean(gp.isCyclic());
+			// }
 		} else {
 			stream.writeBoolean(true);
 		}
 	}
 
-	/**
-	 * Reads a {@code Stroke} object that has been serialised by the
-	 * {@link SerialUtils#writeStroke(Stroke, ObjectOutputStream)} method.
-	 *
-	 * @param stream
-	 *            the input stream ({@code null} not permitted).
-	 *
-	 * @return The stroke object (possibly {@code null}).
-	 *
-	 * @throws IOException
-	 *             if there is an I/O problem.
-	 * @throws ClassNotFoundException
-	 *             if there is a problem loading a class.
-	 */
-	public static Stroke readStroke(final ObjectInputStream stream)
-			throws IOException, ClassNotFoundException {
-		ParamChecks.nullNotPermitted(stream, "stream");
-		Stroke result = null;
-		boolean isNull = stream.readBoolean();
-		if (!isNull) {
-			Class c = (Class) stream.readObject();
-			if (c.equals(BasicStroke.class)) {
-				float width = stream.readFloat();
-				int cap = stream.readInt();
-				int join = stream.readInt();
-				float miterLimit = stream.readFloat();
-				float[] dash = (float[]) stream.readObject();
-				float dashPhase = stream.readFloat();
-				result = new BasicStroke(width, cap, join, miterLimit, dash,
-						dashPhase);
-			} else {
-				result = (Stroke) stream.readObject();
-			}
-		}
-		return result;
-	}
+	// JAVAFX stroke, serialization
+	// /**
+	// * Reads a {@code Stroke} object that has been serialised by the
+	// * {@link SerialUtils#writeStroke(Stroke, ObjectOutputStream)} method.
+	// *
+	// * @param stream
+	// * the input stream ({@code null} not permitted).
+	// *
+	// * @return The stroke object (possibly {@code null}).
+	// *
+	// * @throws IOException
+	// * if there is an I/O problem.
+	// * @throws ClassNotFoundException
+	// * if there is a problem loading a class.
+	// */
+	// public static Stroke readStroke(final ObjectInputStream stream)
+	// throws IOException, ClassNotFoundException {
+	// ParamChecks.nullNotPermitted(stream, "stream");
+	// Stroke result = null;
+	// boolean isNull = stream.readBoolean();
+	// if (!isNull) {
+	// Class c = (Class) stream.readObject();
+	// if (c.equals(BasicStroke.class)) {
+	// float width = stream.readFloat();
+	// int cap = stream.readInt();
+	// int join = stream.readInt();
+	// float miterLimit = stream.readFloat();
+	// float[] dash = (float[]) stream.readObject();
+	// float dashPhase = stream.readFloat();
+	// result = new BasicStroke(width, cap, join, miterLimit, dash,
+	// dashPhase);
+	// } else {
+	// result = (Stroke) stream.readObject();
+	// }
+	// }
+	// return result;
+	// }
+	//
+	// /**
+	// * Serialises a {@code Stroke} object. This code handles the
+	// * {@code BasicStroke} class which is the only {@code Stroke}
+	// implementation
+	// * provided by the JDK (and isn't directly {@code Serializable}).
+	// *
+	// * @param stroke
+	// * the stroke object ({@code null} permitted).
+	// * @param stream
+	// * the output stream ({@code null} not permitted).
+	// *
+	// * @throws IOException
+	// * if there is an I/O error.
+	// */
+	// public static void writeStroke(Stroke stroke, ObjectOutputStream stream)
+	// throws IOException {
+	//
+	// ParamChecks.nullNotPermitted(stream, "stream");
+	// if (stroke != null) {
+	// stream.writeBoolean(false);
+	// if (stroke instanceof BasicStroke) {
+	// final BasicStroke s = (BasicStroke) stroke;
+	// stream.writeObject(BasicStroke.class);
+	// stream.writeFloat(s.getLineWidth());
+	// stream.writeInt(s.getEndCap());
+	// stream.writeInt(s.getLineJoin());
+	// stream.writeFloat(s.getMiterLimit());
+	// stream.writeObject(s.getDashArray());
+	// stream.writeFloat(s.getDashPhase());
+	// } else {
+	// stream.writeObject(stroke.getClass());
+	// stream.writeObject(stroke);
+	// }
+	// } else {
+	// stream.writeBoolean(true);
+	// }
+	// }
 
-	/**
-	 * Serialises a {@code Stroke} object. This code handles the
-	 * {@code BasicStroke} class which is the only {@code Stroke} implementation
-	 * provided by the JDK (and isn't directly {@code Serializable}).
-	 *
-	 * @param stroke
-	 *            the stroke object ({@code null} permitted).
-	 * @param stream
-	 *            the output stream ({@code null} not permitted).
-	 *
-	 * @throws IOException
-	 *             if there is an I/O error.
-	 */
-	public static void writeStroke(Stroke stroke, ObjectOutputStream stream)
-			throws IOException {
-
-		ParamChecks.nullNotPermitted(stream, "stream");
-		if (stroke != null) {
-			stream.writeBoolean(false);
-			if (stroke instanceof BasicStroke) {
-				final BasicStroke s = (BasicStroke) stroke;
-				stream.writeObject(BasicStroke.class);
-				stream.writeFloat(s.getLineWidth());
-				stream.writeInt(s.getEndCap());
-				stream.writeInt(s.getLineJoin());
-				stream.writeFloat(s.getMiterLimit());
-				stream.writeObject(s.getDashArray());
-				stream.writeFloat(s.getDashPhase());
-			} else {
-				stream.writeObject(stroke.getClass());
-				stream.writeObject(stroke);
-			}
-		} else {
-			stream.writeBoolean(true);
-		}
-	}
-
-	/**
-	 * Reads a {@code Composite} object that has been serialised by the
-	 * {@link SerialUtils#writeComposite(Composite, ObjectOutputStream)} method.
-	 *
-	 * @param stream
-	 *            the input stream ({@code null} not permitted).
-	 *
-	 * @return The composite object (possibly {@code null}).
-	 *
-	 * @throws IOException
-	 *             if there is an I/O problem.
-	 * @throws ClassNotFoundException
-	 *             if there is a problem loading a class.
-	 * 
-	 * @since 1.0.17
-	 */
-	public static Composite readComposite(ObjectInputStream stream)
-			throws IOException, ClassNotFoundException {
-		ParamChecks.nullNotPermitted(stream, "stream");
-		Composite result = null;
-		boolean isNull = stream.readBoolean();
-		if (!isNull) {
-			Class c = (Class) stream.readObject();
-			if (isSerializable(c)) {
-				result = (Composite) stream.readObject();
-			} else if (c.equals(AlphaComposite.class)) {
-				int rule = stream.readInt();
-				float alpha = stream.readFloat();
-				result = AlphaComposite.getInstance(rule, alpha);
-			}
-		}
-		return result;
-
-	}
-
-	/**
-	 * Serialises a {@code Composite} object.
-	 *
-	 * @param composite
-	 *            the composite object ({@code null} permitted).
-	 * @param stream
-	 *            the output stream ({@code null} not permitted).
-	 *
-	 * @throws IOException
-	 *             if there is an I/O error.
-	 * 
-	 * @since 1.0.17
-	 */
-	public static void writeComposite(Composite composite,
-			ObjectOutputStream stream) throws IOException {
-
-		ParamChecks.nullNotPermitted(stream, "stream");
-		if (composite != null) {
-			stream.writeBoolean(false);
-			stream.writeObject(composite.getClass());
-			if (composite instanceof Serializable) {
-				stream.writeObject(composite);
-			} else if (composite instanceof AlphaComposite) {
-				AlphaComposite ac = (AlphaComposite) composite;
-				stream.writeInt(ac.getRule());
-				stream.writeFloat(ac.getAlpha());
-			}
-		} else {
-			stream.writeBoolean(true);
-		}
-	}
-
-	/**
-	 * Reads a {@code Shape} object that has been serialised by the
-	 * {@link #writeShape(Shape, ObjectOutputStream)} method.
-	 *
-	 * @param stream
-	 *            the input stream ({@code null} not permitted).
-	 *
-	 * @return The shape object (possibly {@code null}).
-	 *
-	 * @throws IOException
-	 *             if there is an I/O problem.
-	 * @throws ClassNotFoundException
-	 *             if there is a problem loading a class.
-	 */
-	public static Shape readShape(ObjectInputStream stream)
-			throws IOException, ClassNotFoundException {
-		ParamChecks.nullNotPermitted(stream, "stream");
-		Shape result = null;
-		boolean isNull = stream.readBoolean();
-		if (!isNull) {
-			Class c = (Class) stream.readObject();
-			if (c.equals(Line2D.class)) {
-				double x1 = stream.readDouble();
-				double y1 = stream.readDouble();
-				double x2 = stream.readDouble();
-				double y2 = stream.readDouble();
-				result = new Line2D.Double(x1, y1, x2, y2);
-			} else if (c.equals(Rectangle2D.class)) {
-				double x = stream.readDouble();
-				double y = stream.readDouble();
-				double w = stream.readDouble();
-				double h = stream.readDouble();
-				result = new Rectangle2D.Double(x, y, w, h);
-			} else if (c.equals(Ellipse2D.class)) {
-				double x = stream.readDouble();
-				double y = stream.readDouble();
-				double w = stream.readDouble();
-				double h = stream.readDouble();
-				result = new Ellipse2D.Double(x, y, w, h);
-			} else if (c.equals(Arc2D.class)) {
-				double x = stream.readDouble();
-				double y = stream.readDouble();
-				double w = stream.readDouble();
-				double h = stream.readDouble();
-				double as = stream.readDouble(); // Angle Start
-				double ae = stream.readDouble(); // Angle Extent
-				int at = stream.readInt(); // Arc type
-				result = new Arc2D.Double(x, y, w, h, as, ae, at);
-			} else if (c.equals(GeneralPath.class)) {
-				GeneralPath gp = new GeneralPath();
-				float[] args = new float[6];
-				boolean hasNext = stream.readBoolean();
-				while (!hasNext) {
-					int type = stream.readInt();
-					for (int i = 0; i < 6; i++) {
-						args[i] = stream.readFloat();
-					}
-					switch (type) {
-					case PathIterator.SEG_MOVETO:
-						gp.moveTo(args[0], args[1]);
-						break;
-					case PathIterator.SEG_LINETO:
-						gp.lineTo(args[0], args[1]);
-						break;
-					case PathIterator.SEG_CUBICTO:
-						gp.curveTo(args[0], args[1], args[2],
-								args[3], args[4], args[5]);
-						break;
-					case PathIterator.SEG_QUADTO:
-						gp.quadTo(args[0], args[1], args[2], args[3]);
-						break;
-					case PathIterator.SEG_CLOSE:
-						gp.closePath();
-						break;
-					default:
-						throw new RuntimeException(
-								"JFreeChart - No path exists");
-					}
-					gp.setWindingRule(stream.readInt());
-					hasNext = stream.readBoolean();
-				}
-				result = gp;
-			} else {
-				result = (Shape) stream.readObject();
-			}
-		}
-		return result;
-	}
-
-	/**
-	 * Serialises a {@code Shape} object.
-	 *
-	 * @param shape
-	 *            the shape object ({@code null} permitted).
-	 * @param stream
-	 *            the output stream ({@code null} not permitted).
-	 *
-	 * @throws IOException
-	 *             if there is an I/O error.
-	 */
-	public static void writeShape(Shape shape, ObjectOutputStream stream)
-			throws IOException {
-		ParamChecks.nullNotPermitted(stream, "stream");
-		if (shape != null) {
-			stream.writeBoolean(false);
-			if (shape instanceof Line2D) {
-				Line2D line = (Line2D) shape;
-				stream.writeObject(Line2D.class);
-				stream.writeDouble(line.getX1());
-				stream.writeDouble(line.getY1());
-				stream.writeDouble(line.getX2());
-				stream.writeDouble(line.getY2());
-			} else if (shape instanceof Rectangle2D) {
-				Rectangle2D rectangle = (Rectangle2D) shape;
-				stream.writeObject(Rectangle2D.class);
-				stream.writeDouble(rectangle.getX());
-				stream.writeDouble(rectangle.getY());
-				stream.writeDouble(rectangle.getWidth());
-				stream.writeDouble(rectangle.getHeight());
-			} else if (shape instanceof Ellipse2D) {
-				Ellipse2D ellipse = (Ellipse2D) shape;
-				stream.writeObject(Ellipse2D.class);
-				stream.writeDouble(ellipse.getX());
-				stream.writeDouble(ellipse.getY());
-				stream.writeDouble(ellipse.getWidth());
-				stream.writeDouble(ellipse.getHeight());
-			} else if (shape instanceof Arc2D) {
-				Arc2D arc = (Arc2D) shape;
-				stream.writeObject(Arc2D.class);
-				stream.writeDouble(arc.getX());
-				stream.writeDouble(arc.getY());
-				stream.writeDouble(arc.getWidth());
-				stream.writeDouble(arc.getHeight());
-				stream.writeDouble(arc.getAngleStart());
-				stream.writeDouble(arc.getAngleExtent());
-				stream.writeInt(arc.getArcType());
-			} else if (shape instanceof GeneralPath) {
-				stream.writeObject(GeneralPath.class);
-				PathIterator pi = shape.getPathIterator(null);
-				float[] args = new float[6];
-				stream.writeBoolean(pi.isDone());
-				while (!pi.isDone()) {
-					int type = pi.currentSegment(args);
-					stream.writeInt(type);
-					// TODO: could write this to only stream the values
-					// required for the segment type
-					for (int i = 0; i < 6; i++) {
-						stream.writeFloat(args[i]);
-					}
-					stream.writeInt(pi.getWindingRule());
-					pi.next();
-					stream.writeBoolean(pi.isDone());
-				}
-			} else {
-				stream.writeObject(shape.getClass());
-				stream.writeObject(shape);
-			}
-		} else {
-			stream.writeBoolean(true);
-		}
-	}
+	// JAVAFX serialization
+	// /**
+	// * Reads a {@code Composite} object that has been serialised by the
+	// * {@link SerialUtils#writeComposite(Composite, ObjectOutputStream)}
+	// method.
+	// *
+	// * @param stream
+	// * the input stream ({@code null} not permitted).
+	// *
+	// * @return The composite object (possibly {@code null}).
+	// *
+	// * @throws IOException
+	// * if there is an I/O problem.
+	// * @throws ClassNotFoundException
+	// * if there is a problem loading a class.
+	// *
+	// * @since 1.0.17
+	// */
+	// public static Composite readComposite(ObjectInputStream stream)
+	// throws IOException, ClassNotFoundException {
+	// ParamChecks.nullNotPermitted(stream, "stream");
+	// Composite result = null;
+	// boolean isNull = stream.readBoolean();
+	// if (!isNull) {
+	// Class c = (Class) stream.readObject();
+	// if (isSerializable(c)) {
+	// result = (Composite) stream.readObject();
+	// } else if (c.equals(AlphaComposite.class)) {
+	// int rule = stream.readInt();
+	// float alpha = stream.readFloat();
+	// result = AlphaComposite.getInstance(rule, alpha);
+	// }
+	// }
+	// return result;
+	//
+	// }
+	//
+	// /**
+	// * Serialises a {@code Composite} object.
+	// *
+	// * @param composite
+	// * the composite object ({@code null} permitted).
+	// * @param stream
+	// * the output stream ({@code null} not permitted).
+	// *
+	// * @throws IOException
+	// * if there is an I/O error.
+	// *
+	// * @since 1.0.17
+	// */
+	// public static void writeComposite(Composite composite,
+	// ObjectOutputStream stream) throws IOException {
+	//
+	// ParamChecks.nullNotPermitted(stream, "stream");
+	// if (composite != null) {
+	// stream.writeBoolean(false);
+	// stream.writeObject(composite.getClass());
+	// if (composite instanceof Serializable) {
+	// stream.writeObject(composite);
+	// } else if (composite instanceof AlphaComposite) {
+	// AlphaComposite ac = (AlphaComposite) composite;
+	// stream.writeInt(ac.getRule());
+	// stream.writeFloat(ac.getAlpha());
+	// }
+	// } else {
+	// stream.writeBoolean(true);
+	// }
+	// }
+	//
+	// /**
+	// * Reads a {@code Shape} object that has been serialised by the
+	// * {@link #writeShape(Shape, ObjectOutputStream)} method.
+	// *
+	// * @param stream
+	// * the input stream ({@code null} not permitted).
+	// *
+	// * @return The shape object (possibly {@code null}).
+	// *
+	// * @throws IOException
+	// * if there is an I/O problem.
+	// * @throws ClassNotFoundException
+	// * if there is a problem loading a class.
+	// */
+	// public static Shape readShape(ObjectInputStream stream)
+	// throws IOException, ClassNotFoundException {
+	// ParamChecks.nullNotPermitted(stream, "stream");
+	// Shape result = null;
+	// boolean isNull = stream.readBoolean();
+	// if (!isNull) {
+	// Class c = (Class) stream.readObject();
+	// if (c.equals(Line2D.class)) {
+	// double x1 = stream.readDouble();
+	// double y1 = stream.readDouble();
+	// double x2 = stream.readDouble();
+	// double y2 = stream.readDouble();
+	// result = new Line2D.Double(x1, y1, x2, y2);
+	// } else if (c.equals(Rectangle2D.class)) {
+	// double x = stream.readDouble();
+	// double y = stream.readDouble();
+	// double w = stream.readDouble();
+	// double h = stream.readDouble();
+	// result = new Rectangle2D.Double(x, y, w, h);
+	// } else if (c.equals(Ellipse2D.class)) {
+	// double x = stream.readDouble();
+	// double y = stream.readDouble();
+	// double w = stream.readDouble();
+	// double h = stream.readDouble();
+	// result = new Ellipse2D.Double(x, y, w, h);
+	// } else if (c.equals(Arc2D.class)) {
+	// double x = stream.readDouble();
+	// double y = stream.readDouble();
+	// double w = stream.readDouble();
+	// double h = stream.readDouble();
+	// double as = stream.readDouble(); // Angle Start
+	// double ae = stream.readDouble(); // Angle Extent
+	// int at = stream.readInt(); // Arc type
+	// result = new Arc2D.Double(x, y, w, h, as, ae, at);
+	// } else if (c.equals(GeneralPath.class)) {
+	// GeneralPath gp = new GeneralPath();
+	// float[] args = new float[6];
+	// boolean hasNext = stream.readBoolean();
+	// while (!hasNext) {
+	// int type = stream.readInt();
+	// for (int i = 0; i < 6; i++) {
+	// args[i] = stream.readFloat();
+	// }
+	// switch (type) {
+	// case PathIterator.SEG_MOVETO:
+	// gp.moveTo(args[0], args[1]);
+	// break;
+	// case PathIterator.SEG_LINETO:
+	// gp.lineTo(args[0], args[1]);
+	// break;
+	// case PathIterator.SEG_CUBICTO:
+	// gp.curveTo(args[0], args[1], args[2],
+	// args[3], args[4], args[5]);
+	// break;
+	// case PathIterator.SEG_QUADTO:
+	// gp.quadTo(args[0], args[1], args[2], args[3]);
+	// break;
+	// case PathIterator.SEG_CLOSE:
+	// gp.closePath();
+	// break;
+	// default:
+	// throw new RuntimeException(
+	// "JFreeChart - No path exists");
+	// }
+	// gp.setWindingRule(stream.readInt());
+	// hasNext = stream.readBoolean();
+	// }
+	// result = gp;
+	// } else {
+	// result = (Shape) stream.readObject();
+	// }
+	// }
+	// return result;
+	// }
+	//
+	// /**
+	// * Serialises a {@code Shape} object.
+	// *
+	// * @param shape
+	// * the shape object ({@code null} permitted).
+	// * @param stream
+	// * the output stream ({@code null} not permitted).
+	// *
+	// * @throws IOException
+	// * if there is an I/O error.
+	// */
+	// public static void writeShape(Shape shape, ObjectOutputStream stream)
+	// throws IOException {
+	// ParamChecks.nullNotPermitted(stream, "stream");
+	// if (shape != null) {
+	// stream.writeBoolean(false);
+	// if (shape instanceof Line2D) {
+	// Line2D line = (Line2D) shape;
+	// stream.writeObject(Line2D.class);
+	// stream.writeDouble(line.getX1());
+	// stream.writeDouble(line.getY1());
+	// stream.writeDouble(line.getX2());
+	// stream.writeDouble(line.getY2());
+	// } else if (shape instanceof Rectangle2D) {
+	// Rectangle2D rectangle = (Rectangle2D) shape;
+	// stream.writeObject(Rectangle2D.class);
+	// stream.writeDouble(rectangle.getX());
+	// stream.writeDouble(rectangle.getY());
+	// stream.writeDouble(rectangle.getWidth());
+	// stream.writeDouble(rectangle.getHeight());
+	// } else if (shape instanceof Ellipse2D) {
+	// Ellipse2D ellipse = (Ellipse2D) shape;
+	// stream.writeObject(Ellipse2D.class);
+	// stream.writeDouble(ellipse.getX());
+	// stream.writeDouble(ellipse.getY());
+	// stream.writeDouble(ellipse.getWidth());
+	// stream.writeDouble(ellipse.getHeight());
+	// } else if (shape instanceof Arc2D) {
+	// Arc2D arc = (Arc2D) shape;
+	// stream.writeObject(Arc2D.class);
+	// stream.writeDouble(arc.getX());
+	// stream.writeDouble(arc.getY());
+	// stream.writeDouble(arc.getWidth());
+	// stream.writeDouble(arc.getHeight());
+	// stream.writeDouble(arc.getAngleStart());
+	// stream.writeDouble(arc.getAngleExtent());
+	// stream.writeInt(arc.getArcType());
+	// } else if (shape instanceof GeneralPath) {
+	// stream.writeObject(GeneralPath.class);
+	// PathIterator pi = shape.getPathIterator(null);
+	// float[] args = new float[6];
+	// stream.writeBoolean(pi.isDone());
+	// while (!pi.isDone()) {
+	// int type = pi.currentSegment(args);
+	// stream.writeInt(type);
+	// // TODO: could write this to only stream the values
+	// // required for the segment type
+	// for (int i = 0; i < 6; i++) {
+	// stream.writeFloat(args[i]);
+	// }
+	// stream.writeInt(pi.getWindingRule());
+	// pi.next();
+	// stream.writeBoolean(pi.isDone());
+	// }
+	// } else {
+	// stream.writeObject(shape.getClass());
+	// stream.writeObject(shape);
+	// }
+	// } else {
+	// stream.writeBoolean(true);
+	// }
+	// }
 
 	/**
 	 * Reads a {@code Point2D} object that has been serialised by the
@@ -490,7 +499,7 @@ public class SerialUtils {
 		if (!isNull) {
 			double x = stream.readDouble();
 			double y = stream.readDouble();
-			result = new Point2D.Double(x, y);
+			result = new Point2D(x, y);
 		}
 		return result;
 	}

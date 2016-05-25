@@ -148,15 +148,14 @@ package org.jfree.chart.plot;
 // import java.awt.geom.Ellipse2D;
 // import java.awt.geom.Point2D;
 // import java.awt.geom.Rectangle2D;
-// import java.io.IOException;
-// import java.io.ObjectInputStream;
-// import java.io.ObjectOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
-// import java.util.ArrayList;
-// import java.util.List;
+import java.util.ArrayList;
+import java.util.List;
 // 
-// import javax.swing.event.EventListenerList;
 // 
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.LegendItem;
@@ -179,8 +178,8 @@ import org.jfree.chart.event.PlotChangeEvent;
 import org.jfree.chart.event.PlotChangeListener;
 // import org.jfree.chart.text.G2TextMeasurer;
 import org.jfree.chart.text.TextBlock;
-// import org.jfree.chart.text.TextBlockAnchor;
-// import org.jfree.chart.text.TextUtilities;
+import org.jfree.chart.text.TextBlockAnchor;
+import org.jfree.chart.text.TextUtilities;
 // import org.jfree.chart.ui.Align;
 import org.jfree.chart.ui.RectangleEdge;
 import org.jfree.chart.ui.RectangleInsets;
@@ -199,6 +198,7 @@ import org.jfree.data.general.DatasetChangeListener;
 // import org.jfree.data.general.LabelChangeListener;
 // import org.jfree.data.general.SelectionChangeEvent;
 // import org.jfree.data.general.SelectionChangeListener;
+import org.jfree.event.EventListenerList;
 
 import static org.jfree.chart.util.ShapeUtils.asShape;
 
@@ -213,7 +213,7 @@ public abstract class Plot implements
 		// JAVAFX
 		AxisChangeListener, DatasetChangeListener,
 		// SelectionChangeListener, LabelChangeListener,
-		// AnnotationChangeListener,
+		AnnotationChangeListener,
 		MarkerChangeListener,
 		LegendItemSource,
 		PublicCloneable, Cloneable, Serializable {
@@ -296,9 +296,9 @@ public abstract class Plot implements
 	// /** The drawing supplier. */
 	// private DrawingSupplier drawingSupplier;
 	//
-	// /** Storage for registered change listeners. */
-	// private transient EventListenerList listenerList;
-	//
+	/** Storage for registered change listeners. */
+	private transient EventListenerList listenerList;
+
 	/**
 	 * A flag that controls whether or not the plot will notify listeners of
 	 * changes (defaults to true, but sometimes it is useful to disable this).
@@ -330,8 +330,7 @@ public abstract class Plot implements
 		// this.drawingSupplier = new DefaultDrawingSupplier();
 		//
 		this.notify = true;
-		// JAVAFX
-		// this.listenerList = new EventListenerList();
+		this.listenerList = new EventListenerList();
 	}
 
 	//
@@ -827,22 +826,21 @@ public abstract class Plot implements
 	 * @see #removeChangeListener(PlotChangeListener)
 	 */
 	public void addChangeListener(PlotChangeListener listener) {
-		// JAVAFX events
-		// this.listenerList.add(PlotChangeListener.class, listener);
+		this.listenerList.add(PlotChangeListener.class, listener);
 	}
 
-	//
-	// /**
-	// * Unregisters an object for notification of changes to the plot.
-	// *
-	// * @param listener the object to be unregistered.
-	// *
-	// * @see #addChangeListener(PlotChangeListener)
-	// */
-	// public void removeChangeListener(PlotChangeListener listener) {
-	// this.listenerList.remove(PlotChangeListener.class, listener);
-	// }
-	//
+	/**
+	 * Unregisters an object for notification of changes to the plot.
+	 *
+	 * @param listener
+	 *            the object to be unregistered.
+	 *
+	 * @see #addChangeListener(PlotChangeListener)
+	 */
+	public void removeChangeListener(PlotChangeListener listener) {
+		this.listenerList.remove(PlotChangeListener.class, listener);
+	}
+
 	/**
 	 * Notifies all registered listeners that the plot has been modified.
 	 *
@@ -856,12 +854,12 @@ public abstract class Plot implements
 			return;
 		}
 		// JAVAFX
-		// Object[] listeners = this.listenerList.getListenerList();
-		// for (int i = listeners.length - 2; i >= 0; i -= 2) {
-		// if (listeners[i] == PlotChangeListener.class) {
-		// ((PlotChangeListener) listeners[i + 1]).plotChanged(event);
-		// }
-		// }
+		Object[] listeners = this.listenerList.getListenerList();
+		for (int i = listeners.length - 2; i >= 0; i -= 2) {
+			if (listeners[i] == PlotChangeListener.class) {
+				((PlotChangeListener) listeners[i + 1]).plotChanged(event);
+			}
+		}
 	}
 
 	//
@@ -1029,43 +1027,47 @@ public abstract class Plot implements
 		}
 	}
 
-	//
-	// /**
-	// * Handles a 'click' on the plot. Since the plot does not maintain any
-	// * information about where it has been drawn, the plot rendering info is
-	// * supplied as an argument so that the plot dimensions can be determined.
-	// *
-	// * @param x the x coordinate (in Java2D space).
-	// * @param y the y coordinate (in Java2D space).
-	// * @param info an object containing information about the dimensions of
-	// * the plot.
-	// */
-	// public void handleClick(int x, int y, PlotRenderingInfo info) {
-	// // provides a 'no action' default
-	// }
-	//
-	// /**
-	// * Performs a zoom on the plot. Subclasses should override if zooming is
-	// * appropriate for the type of plot.
-	// *
-	// * @param percent the zoom percentage.
-	// */
-	// public void zoom(double percent) {
-	// // do nothing by default.
-	// }
-	//
-	// /**
-	// * Receives notification of a change to an {@link Annotation} added to
-	// * this plot.
-	// *
-	// * @param event information about the event (not used here).
-	// *
-	// * @since 1.0.14
-	// */
-	// @Override
-	// public void annotationChanged(AnnotationChangeEvent event) {
-	// fireChangeEvent();
-	// }
+	/**
+	 * Handles a 'click' on the plot. Since the plot does not maintain any
+	 * information about where it has been drawn, the plot rendering info is
+	 * supplied as an argument so that the plot dimensions can be determined.
+	 *
+	 * @param x
+	 *            the x coordinate (in Java2D space).
+	 * @param y
+	 *            the y coordinate (in Java2D space).
+	 * @param info
+	 *            an object containing information about the dimensions of the
+	 *            plot.
+	 */
+	public void handleClick(int x, int y, PlotRenderingInfo info) {
+		// provides a 'no action' default
+	}
+
+	/**
+	 * Performs a zoom on the plot. Subclasses should override if zooming is
+	 * appropriate for the type of plot.
+	 *
+	 * @param percent
+	 *            the zoom percentage.
+	 */
+	public void zoom(double percent) {
+		// do nothing by default.
+	}
+
+	/**
+	 * Receives notification of a change to an {@link Annotation} added to this
+	 * plot.
+	 *
+	 * @param event
+	 *            information about the event (not used here).
+	 *
+	 * @since 1.0.14
+	 */
+	@Override
+	public void annotationChanged(AnnotationChangeEvent event) {
+		fireChangeEvent();
+	}
 
 	/**
 	 * Receives notification of a change to one of the plot's axes.
@@ -1190,69 +1192,73 @@ public abstract class Plot implements
 	// return result;
 	// }
 	//
-	// /**
-	// * Tests this plot for equality with another object.
-	// *
-	// * @param obj the object (<code>null</code> permitted).
-	// *
-	// * @return <code>true</code> or <code>false</code>.
-	// */
-	// @Override
-	// public boolean equals(Object obj) {
-	// if (obj == this) {
-	// return true;
-	// }
-	// if (!(obj instanceof Plot)) {
-	// return false;
-	// }
-	// Plot that = (Plot) obj;
-	// if (!ObjectUtils.equal(this.noDataMessage, that.noDataMessage)) {
-	// return false;
-	// }
-	// if (!ObjectUtils.equal(
-	// this.noDataMessageFont, that.noDataMessageFont
-	// )) {
-	// return false;
-	// }
-	// if (!PaintUtils.equal(this.noDataMessagePaint,
-	// that.noDataMessagePaint)) {
-	// return false;
-	// }
-	// if (!ObjectUtils.equal(this.insets, that.insets)) {
-	// return false;
-	// }
-	// if (!ObjectUtils.equal(this.borderPainter, that.borderPainter)) {
-	// return false;
-	// }
-	// if (!ObjectUtils.equal(this.backgroundPainter,
-	// that.backgroundPainter)) {
-	// return false;
-	// }
-	// if (!ObjectUtils.equal(this.backgroundImage,
-	// that.backgroundImage)) {
-	// return false;
-	// }
-	// if (this.backgroundImageAlignment != that.backgroundImageAlignment) {
-	// return false;
-	// }
-	// if (this.backgroundImageAlpha != that.backgroundImageAlpha) {
-	// return false;
-	// }
-	// if (this.foregroundAlpha != that.foregroundAlpha) {
-	// return false;
-	// }
-	// if (this.backgroundAlpha != that.backgroundAlpha) {
-	// return false;
-	// }
-	// if (!this.drawingSupplier.equals(that.drawingSupplier)) {
-	// return false;
-	// }
-	// if (this.notify != that.notify) {
-	// return false;
-	// }
-	// return true;
-	// }
-	//
+	/**
+	 * Tests this plot for equality with another object.
+	 *
+	 * @param obj
+	 *            the object (<code>null</code> permitted).
+	 *
+	 * @return <code>true</code> or <code>false</code>.
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == this) {
+			return true;
+		}
+		if (!(obj instanceof Plot)) {
+			return false;
+		}
+		Plot that = (Plot) obj;
+		if (!ObjectUtils.equal(this.noDataMessage, that.noDataMessage)) {
+			return false;
+		}
+		// JAVAFX
+		// if (!ObjectUtils.equal(
+		// this.noDataMessageFont, that.noDataMessageFont
+		// )) {
+		// return false;
+		// }
+		// if (!PaintUtils.equal(this.noDataMessagePaint,
+		// that.noDataMessagePaint)) {
+		// return false;
+		// }
+		if (!ObjectUtils.equal(this.insets, that.insets)) {
+			return false;
+		}
+		if (!ObjectUtils.equal(this.borderPainter, that.borderPainter)) {
+			return false;
+		}
+		if (!ObjectUtils.equal(this.backgroundPainter,
+				that.backgroundPainter)) {
+			return false;
+		}
+		// JAVAFX
+		// if (!ObjectUtils.equal(this.backgroundImage,
+		// that.backgroundImage)) {
+		// return false;
+		// }
+		// if (this.backgroundImageAlignment != that.backgroundImageAlignment) {
+		// return false;
+		// }
+		if (this.backgroundImageAlpha != that.backgroundImageAlpha) {
+			return false;
+		}
+		if (this.foregroundAlpha != that.foregroundAlpha) {
+			return false;
+		}
+		if (this.backgroundAlpha != that.backgroundAlpha) {
+			return false;
+		}
+		// JAVAFX
+		// if (!this.drawingSupplier.equals(that.drawingSupplier)) {
+		// return false;
+		// }
+		if (this.notify != that.notify) {
+			return false;
+		}
+		return true;
+	}
+
 	/**
 	 * Creates a clone of the plot.
 	 *
@@ -1268,44 +1274,44 @@ public abstract class Plot implements
 		// childs in combined plots instead
 		// JAVAFX
 		// clone.drawingSupplier = ObjectUtils.clone(this.drawingSupplier);
-		// clone.listenerList = new EventListenerList();
+		clone.listenerList = new EventListenerList();
 		return clone;
 	}
 
-	//
-	// /**
-	// * Provides serialization support.
-	// *
-	// * @param stream the output stream.
-	// *
-	// * @throws IOException if there is an I/O error.
-	// */
-	// private void writeObject(ObjectOutputStream stream) throws IOException {
-	// stream.defaultWriteObject();
-	// SerialUtils.writePaint(this.noDataMessagePaint, stream);
-	// //SerialUtils.writeStroke(this.outlineStroke, stream);
-	// //SerialUtils.writePaint(this.outlinePaint, stream);
-	// // backgroundImage
-	// }
-	//
-	// /**
-	// * Provides serialization support.
-	// *
-	// * @param stream the input stream.
-	// *
-	// * @throws IOException if there is an I/O error.
-	// * @throws ClassNotFoundException if there is a classpath problem.
-	// */
-	// private void readObject(ObjectInputStream stream)
-	// throws IOException, ClassNotFoundException {
-	// stream.defaultReadObject();
-	// this.noDataMessagePaint = SerialUtils.readPaint(stream);
-	// //this.outlineStroke = SerialUtils.readStroke(stream);
-	// //this.outlinePaint = SerialUtils.readPaint(stream);
-	// // backgroundImage
-	// this.listenerList = new EventListenerList();
-	// }
-	//
+	/**
+	 * Provides serialization support.
+	 *
+	 * @param stream
+	 *            the output stream.
+	 *
+	 * @throws IOException
+	 *             if there is an I/O error.
+	 */
+	private void writeObject(ObjectOutputStream stream) throws IOException {
+		stream.defaultWriteObject();
+		// JAVAFX
+		// SerialUtils.writePaint(this.noDataMessagePaint, stream);
+	}
+
+	/**
+	 * Provides serialization support.
+	 *
+	 * @param stream
+	 *            the input stream.
+	 *
+	 * @throws IOException
+	 *             if there is an I/O error.
+	 * @throws ClassNotFoundException
+	 *             if there is a classpath problem.
+	 */
+	private void readObject(ObjectInputStream stream)
+			throws IOException, ClassNotFoundException {
+		stream.defaultReadObject();
+		// JAVAFX
+		// this.noDataMessagePaint = SerialUtils.readPaint(stream);
+		this.listenerList = new EventListenerList();
+	}
+
 	/**
 	 * Resolves a domain axis location for a given plot orientation.
 	 *

@@ -622,168 +622,172 @@ public final class DatasetUtilities {
 		return true;
 	}
 
-	//
-	// /**
-	// * Returns {@code true} if the dataset is empty (or {@code null}),
-	// * and {@code false} otherwise.
-	// *
-	// * @param dataset the dataset ({@code null} permitted).
-	// *
-	// * @return A boolean.
-	// */
-	// public static boolean isEmptyOrNull(XYDataset dataset) {
-	// if (dataset != null) {
-	// for (int s = 0; s < dataset.getSeriesCount(); s++) {
-	// if (dataset.getItemCount(s) > 0) {
-	// return false;
-	// }
-	// }
-	// }
-	// return true;
-	// }
-	//
-	// /**
-	// * Returns the range of values in the domain (x-values) of a dataset.
-	// *
-	// * @param dataset the dataset ({@code null} not permitted).
-	// *
-	// * @return The range of values (possibly {@code null}).
-	// */
-	// public static Range findDomainBounds(XYDataset dataset) {
-	// return findDomainBounds(dataset, true);
-	// }
-	//
-	// /**
-	// * Returns the range of values in the domain (x-values) of a dataset.
-	// *
-	// * @param dataset the dataset ({@code null} not permitted).
-	// * @param includeInterval determines whether or not the x-interval is
-	// taken
-	// * into account (only applies if the dataset is an
-	// * {@link IntervalXYDataset}).
-	// *
-	// * @return The range of values (possibly {@code null}).
-	// */
-	// public static Range findDomainBounds(XYDataset dataset,
-	// boolean includeInterval) {
-	//
-	// ParamChecks.nullNotPermitted(dataset, "dataset");
-	// Range result;
-	// // if the dataset implements DomainInfo, life is easier
-	// if (dataset instanceof DomainInfo) {
-	// DomainInfo info = (DomainInfo) dataset;
-	// result = info.getDomainBounds(includeInterval);
-	// } else {
-	// result = iterateDomainBounds(dataset, includeInterval);
-	// }
-	// return result;
-	// }
-	//
-	// /**
-	// * Returns the bounds of the x-values in the specified {@code dataset}
-	// * taking into account only the visible series and including any
-	// x-interval
-	// * if requested.
-	// *
-	// * @param dataset the dataset ({@code null} not permitted).
-	// * @param visibleSeriesKeys the visible series keys ({@code null}
-	// * not permitted).
-	// * @param includeInterval include the x-interval (if any)?
-	// *
-	// * @return The bounds (or {@code null} if the dataset contains no values.
-	// *
-	// * @since 1.0.13
-	// */
-	// public static Range findDomainBounds(XYDataset dataset,
-	// List<Comparable> visibleSeriesKeys, boolean includeInterval) {
-	// ParamChecks.nullNotPermitted(dataset, "dataset");
-	// Range result;
-	// if (dataset instanceof XYDomainInfo) {
-	// XYDomainInfo info = (XYDomainInfo) dataset;
-	// result = info.getDomainBounds(visibleSeriesKeys, includeInterval);
-	// }
-	// else {
-	// result = iterateToFindDomainBounds(dataset, visibleSeriesKeys,
-	// includeInterval);
-	// }
-	// return result;
-	// }
-	//
-	// /**
-	// * Iterates over the items in an {@link XYDataset} to find
-	// * the range of x-values. If the dataset is an instance of
-	// * {@link IntervalXYDataset}, the starting and ending x-values
-	// * will be used for the bounds calculation.
-	// *
-	// * @param dataset the dataset ({@code null} not permitted).
-	// *
-	// * @return The range (possibly {@code null}).
-	// */
-	// public static Range iterateDomainBounds(XYDataset dataset) {
-	// return iterateDomainBounds(dataset, true);
-	// }
-	//
-	// /**
-	// * Iterates over the items in an {@link XYDataset} to find
-	// * the range of x-values.
-	// *
-	// * @param dataset the dataset ({@code null} not permitted).
-	// * @param includeInterval a flag that determines, for an
-	// * {@link IntervalXYDataset}, whether the x-interval or just the
-	// * x-value is used to determine the overall range.
-	// *
-	// * @return The range (possibly {@code null}).
-	// */
-	// public static Range iterateDomainBounds(XYDataset dataset,
-	// boolean includeInterval) {
-	// ParamChecks.nullNotPermitted(dataset, "dataset");
-	// double minimum = Double.POSITIVE_INFINITY;
-	// double maximum = Double.NEGATIVE_INFINITY;
-	// int seriesCount = dataset.getSeriesCount();
-	// double lvalue;
-	// double uvalue;
-	// if (includeInterval && dataset instanceof IntervalXYDataset) {
-	// IntervalXYDataset intervalXYData = (IntervalXYDataset) dataset;
-	// for (int series = 0; series < seriesCount; series++) {
-	// int itemCount = dataset.getItemCount(series);
-	// for (int item = 0; item < itemCount; item++) {
-	// double value = intervalXYData.getXValue(series, item);
-	// lvalue = intervalXYData.getStartXValue(series, item);
-	// uvalue = intervalXYData.getEndXValue(series, item);
-	// if (!Double.isNaN(value)) {
-	// minimum = Math.min(minimum, value);
-	// maximum = Math.max(maximum, value);
-	// }
-	// if (!Double.isNaN(lvalue)) {
-	// minimum = Math.min(minimum, lvalue);
-	// maximum = Math.max(maximum, lvalue);
-	// }
-	// if (!Double.isNaN(uvalue)) {
-	// minimum = Math.min(minimum, uvalue);
-	// maximum = Math.max(maximum, uvalue);
-	// }
-	// }
-	// }
-	// } else {
-	// for (int series = 0; series < seriesCount; series++) {
-	// int itemCount = dataset.getItemCount(series);
-	// for (int item = 0; item < itemCount; item++) {
-	// lvalue = dataset.getXValue(series, item);
-	// uvalue = lvalue;
-	// if (!Double.isNaN(lvalue)) {
-	// minimum = Math.min(minimum, lvalue);
-	// maximum = Math.max(maximum, uvalue);
-	// }
-	// }
-	// }
-	// }
-	// if (minimum > maximum) {
-	// return null;
-	// } else {
-	// return new Range(minimum, maximum);
-	// }
-	// }
-	//
+	/**
+	 * Returns {@code true} if the dataset is empty (or {@code null}), and
+	 * {@code false} otherwise.
+	 *
+	 * @param dataset
+	 *            the dataset ({@code null} permitted).
+	 *
+	 * @return A boolean.
+	 */
+	public static boolean isEmptyOrNull(XYDataset dataset) {
+		if (dataset != null) {
+			for (int s = 0; s < dataset.getSeriesCount(); s++) {
+				if (dataset.getItemCount(s) > 0) {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+
+	/**
+	 * Returns the range of values in the domain (x-values) of a dataset.
+	 *
+	 * @param dataset
+	 *            the dataset ({@code null} not permitted).
+	 *
+	 * @return The range of values (possibly {@code null}).
+	 */
+	public static Range findDomainBounds(XYDataset dataset) {
+		return findDomainBounds(dataset, true);
+	}
+
+	/**
+	 * Returns the range of values in the domain (x-values) of a dataset.
+	 *
+	 * @param dataset
+	 *            the dataset ({@code null} not permitted).
+	 * @param includeInterval
+	 *            determines whether or not the x-interval is taken into account
+	 *            (only applies if the dataset is an {@link IntervalXYDataset}).
+	 *
+	 * @return The range of values (possibly {@code null}).
+	 */
+	public static Range findDomainBounds(XYDataset dataset,
+			boolean includeInterval) {
+
+		ParamChecks.nullNotPermitted(dataset, "dataset");
+		Range result;
+		// if the dataset implements DomainInfo, life is easier
+		if (dataset instanceof DomainInfo) {
+			DomainInfo info = (DomainInfo) dataset;
+			result = info.getDomainBounds(includeInterval);
+		} else {
+			result = iterateDomainBounds(dataset, includeInterval);
+		}
+		return result;
+	}
+
+	/**
+	 * Returns the bounds of the x-values in the specified {@code dataset}
+	 * taking into account only the visible series and including any x-interval
+	 * if requested.
+	 *
+	 * @param dataset
+	 *            the dataset ({@code null} not permitted).
+	 * @param visibleSeriesKeys
+	 *            the visible series keys ({@code null} not permitted).
+	 * @param includeInterval
+	 *            include the x-interval (if any)?
+	 *
+	 * @return The bounds (or {@code null} if the dataset contains no values.
+	 *
+	 * @since 1.0.13
+	 */
+	public static Range findDomainBounds(XYDataset dataset,
+			List<Comparable> visibleSeriesKeys, boolean includeInterval) {
+		ParamChecks.nullNotPermitted(dataset, "dataset");
+		Range result;
+		if (dataset instanceof XYDomainInfo) {
+			XYDomainInfo info = (XYDomainInfo) dataset;
+			result = info.getDomainBounds(visibleSeriesKeys, includeInterval);
+		}
+		else {
+			result = iterateToFindDomainBounds(dataset, visibleSeriesKeys,
+					includeInterval);
+		}
+		return result;
+	}
+
+	/**
+	 * Iterates over the items in an {@link XYDataset} to find the range of
+	 * x-values. If the dataset is an instance of {@link IntervalXYDataset}, the
+	 * starting and ending x-values will be used for the bounds calculation.
+	 *
+	 * @param dataset
+	 *            the dataset ({@code null} not permitted).
+	 *
+	 * @return The range (possibly {@code null}).
+	 */
+	public static Range iterateDomainBounds(XYDataset dataset) {
+		return iterateDomainBounds(dataset, true);
+	}
+
+	/**
+	 * Iterates over the items in an {@link XYDataset} to find the range of
+	 * x-values.
+	 *
+	 * @param dataset
+	 *            the dataset ({@code null} not permitted).
+	 * @param includeInterval
+	 *            a flag that determines, for an {@link IntervalXYDataset},
+	 *            whether the x-interval or just the x-value is used to
+	 *            determine the overall range.
+	 *
+	 * @return The range (possibly {@code null}).
+	 */
+	public static Range iterateDomainBounds(XYDataset dataset,
+			boolean includeInterval) {
+		ParamChecks.nullNotPermitted(dataset, "dataset");
+		double minimum = Double.POSITIVE_INFINITY;
+		double maximum = Double.NEGATIVE_INFINITY;
+		int seriesCount = dataset.getSeriesCount();
+		double lvalue;
+		double uvalue;
+		if (includeInterval && dataset instanceof IntervalXYDataset) {
+			IntervalXYDataset intervalXYData = (IntervalXYDataset) dataset;
+			for (int series = 0; series < seriesCount; series++) {
+				int itemCount = dataset.getItemCount(series);
+				for (int item = 0; item < itemCount; item++) {
+					double value = intervalXYData.getXValue(series, item);
+					lvalue = intervalXYData.getStartXValue(series, item);
+					uvalue = intervalXYData.getEndXValue(series, item);
+					if (!Double.isNaN(value)) {
+						minimum = Math.min(minimum, value);
+						maximum = Math.max(maximum, value);
+					}
+					if (!Double.isNaN(lvalue)) {
+						minimum = Math.min(minimum, lvalue);
+						maximum = Math.max(maximum, lvalue);
+					}
+					if (!Double.isNaN(uvalue)) {
+						minimum = Math.min(minimum, uvalue);
+						maximum = Math.max(maximum, uvalue);
+					}
+				}
+			}
+		} else {
+			for (int series = 0; series < seriesCount; series++) {
+				int itemCount = dataset.getItemCount(series);
+				for (int item = 0; item < itemCount; item++) {
+					lvalue = dataset.getXValue(series, item);
+					uvalue = lvalue;
+					if (!Double.isNaN(lvalue)) {
+						minimum = Math.min(minimum, lvalue);
+						maximum = Math.max(maximum, uvalue);
+					}
+				}
+			}
+		}
+		if (minimum > maximum) {
+			return null;
+		} else {
+			return new Range(minimum, maximum);
+		}
+	}
+
 	/**
 	 * Returns the range of values in the range for the dataset.
 	 *

@@ -117,8 +117,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-// 
-// import org.jfree.chart.ui.RectangleAnchor;
+
+import org.jfree.chart.ui.RectangleAnchor;
 import org.jfree.chart.ui.RectangleEdge;
 import org.jfree.chart.ui.RectangleInsets;
 import org.jfree.chart.ui.Size2D;
@@ -138,7 +138,9 @@ import org.jfree.chart.util.SerialUtils;
 import org.jfree.chart.util.ShapeUtils;
 import org.jfree.data.category.CategoryDataset;
 
+import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.text.Font;
 
 /**
@@ -935,71 +937,74 @@ public class CategoryAxis extends Axis implements Cloneable, Serializable {
 		return result;
 	}
 
-	//
-	// /**
-	// * Estimates the space required for the axis, given a specific drawing
-	// area.
-	// *
-	// * @param g2 the graphics device (used to obtain font information).
-	// * @param plot the plot that the axis belongs to.
-	// * @param plotArea the area within which the axis should be drawn.
-	// * @param edge the axis location (top or bottom).
-	// * @param space the space already reserved.
-	// *
-	// * @return The space required to draw the axis.
-	// */
-	// @Override
-	// public AxisSpace reserveSpace(Graphics2D g2, Plot plot,
-	// Rectangle2D plotArea, RectangleEdge edge, AxisSpace space) {
-	//
-	// // create a new space object if one wasn't supplied...
-	// if (space == null) {
-	// space = new AxisSpace();
-	// }
-	//
-	// // if the axis is not visible, no additional space is required...
-	// if (!isVisible()) {
-	// return space;
-	// }
-	//
-	// // calculate the max size of the tick labels (if visible)...
-	// double tickLabelHeight = 0.0;
-	// double tickLabelWidth = 0.0;
-	// if (isTickLabelsVisible()) {
-	// g2.setFont(getTickLabelFont());
-	// AxisState state = new AxisState();
-	// // we call refresh ticks just to get the maximum width or height
-	// refreshTicks(g2, state, plotArea, edge);
-	// if (edge == RectangleEdge.TOP) {
-	// tickLabelHeight = state.getMax();
-	// }
-	// else if (edge == RectangleEdge.BOTTOM) {
-	// tickLabelHeight = state.getMax();
-	// }
-	// else if (edge == RectangleEdge.LEFT) {
-	// tickLabelWidth = state.getMax();
-	// }
-	// else if (edge == RectangleEdge.RIGHT) {
-	// tickLabelWidth = state.getMax();
-	// }
-	// }
-	//
-	// // get the axis label size and update the space object...
-	// Rectangle2D labelEnclosure = getLabelEnclosure(g2, edge);
-	// double labelHeight, labelWidth;
-	// if (RectangleEdge.isTopOrBottom(edge)) {
-	// labelHeight = labelEnclosure.getHeight();
-	// space.add(labelHeight + tickLabelHeight
-	// + this.categoryLabelPositionOffset, edge);
-	// }
-	// else if (RectangleEdge.isLeftOrRight(edge)) {
-	// labelWidth = labelEnclosure.getWidth();
-	// space.add(labelWidth + tickLabelWidth
-	// + this.categoryLabelPositionOffset, edge);
-	// }
-	// return space;
-	// }
-	//
+	/**
+	 * Estimates the space required for the axis, given a specific drawing area.
+	 *
+	 * @param g2
+	 *            the graphics device (used to obtain font information).
+	 * @param plot
+	 *            the plot that the axis belongs to.
+	 * @param plotArea
+	 *            the area within which the axis should be drawn.
+	 * @param edge
+	 *            the axis location (top or bottom).
+	 * @param space
+	 *            the space already reserved.
+	 *
+	 * @return The space required to draw the axis.
+	 */
+	@Override
+	public AxisSpace reserveSpace(GraphicsContext g2, Plot plot,
+			Rectangle2D plotArea, RectangleEdge edge, AxisSpace space) {
+
+		// create a new space object if one wasn't supplied...
+		if (space == null) {
+			space = new AxisSpace();
+		}
+
+		// if the axis is not visible, no additional space is required...
+		if (!isVisible()) {
+			return space;
+		}
+
+		// calculate the max size of the tick labels (if visible)...
+		double tickLabelHeight = 0.0;
+		double tickLabelWidth = 0.0;
+		if (isTickLabelsVisible()) {
+			g2.setFont(getTickLabelFont());
+			AxisState state = new AxisState();
+			// we call refresh ticks just to get the maximum width or height
+			refreshTicks(g2, state, plotArea, edge);
+			if (edge == RectangleEdge.TOP) {
+				tickLabelHeight = state.getMax();
+			}
+			else if (edge == RectangleEdge.BOTTOM) {
+				tickLabelHeight = state.getMax();
+			}
+			else if (edge == RectangleEdge.LEFT) {
+				tickLabelWidth = state.getMax();
+			}
+			else if (edge == RectangleEdge.RIGHT) {
+				tickLabelWidth = state.getMax();
+			}
+		}
+
+		// get the axis label size and update the space object...
+		Rectangle2D labelEnclosure = getLabelEnclosure(g2, edge);
+		double labelHeight, labelWidth;
+		if (RectangleEdge.isTopOrBottom(edge)) {
+			labelHeight = labelEnclosure.getHeight();
+			space.add(labelHeight + tickLabelHeight
+					+ this.categoryLabelPositionOffset, edge);
+		}
+		else if (RectangleEdge.isLeftOrRight(edge)) {
+			labelWidth = labelEnclosure.getWidth();
+			space.add(labelWidth + tickLabelWidth
+					+ this.categoryLabelPositionOffset, edge);
+		}
+		return space;
+	}
+
 	/**
 	 * Configures the axis against the current plot.
 	 */
@@ -1007,369 +1012,406 @@ public class CategoryAxis extends Axis implements Cloneable, Serializable {
 	public void configure() {
 		// nothing required
 	}
-	//
-	// /**
-	// * Draws the axis on a Java 2D graphics device (such as the screen or a
-	// * printer).
-	// *
-	// * @param g2 the graphics device (<code>null</code> not permitted).
-	// * @param cursor the cursor location.
-	// * @param plotArea the area within which the axis should be drawn
-	// * (<code>null</code> not permitted).
-	// * @param dataArea the area within which the plot is being drawn
-	// * (<code>null</code> not permitted).
-	// * @param edge the location of the axis (<code>null</code> not permitted).
-	// * @param plotState collects information about the plot
-	// * (<code>null</code> permitted).
-	// *
-	// * @return The axis state (never <code>null</code>).
-	// */
-	// @Override
-	// public AxisState draw(Graphics2D g2, double cursor, Rectangle2D plotArea,
-	// Rectangle2D dataArea, RectangleEdge edge,
-	// PlotRenderingInfo plotState) {
-	//
-	// // if the axis is not visible, don't draw it...
-	// if (!isVisible()) {
-	// return new AxisState(cursor);
-	// }
-	//
-	// if (isAxisLineVisible()) {
-	// drawAxisLine(g2, cursor, dataArea, edge);
-	// }
-	// AxisState state = new AxisState(cursor);
-	// if (isTickMarksVisible()) {
-	// drawTickMarks(g2, cursor, dataArea, edge, state);
-	// }
-	//
-	// createAndAddEntity(cursor, state, dataArea, edge, plotState);
-	//
-	// // draw the category labels and axis label
-	// state = drawCategoryLabels(g2, plotArea, dataArea, edge, state,
-	// plotState);
-	// state = drawLabel(getLabel(), g2, plotArea, dataArea, edge, state);
-	// return state;
-	//
-	// }
-	//
-	// /**
-	// * Draws the category labels and returns the updated axis state.
-	// *
-	// * @param g2 the graphics device (<code>null</code> not permitted).
-	// * @param plotArea the plot area (<code>null</code> not permitted).
-	// * @param dataArea the area inside the axes (<code>null</code> not
-	// * permitted).
-	// * @param edge the axis location (<code>null</code> not permitted).
-	// * @param state the axis state (<code>null</code> not permitted).
-	// * @param plotState collects information about the plot (<code>null</code>
-	// * permitted).
-	// *
-	// * @return The updated axis state (never <code>null</code>).
-	// */
-	// protected AxisState drawCategoryLabels(Graphics2D g2, Rectangle2D
-	// plotArea,
-	// Rectangle2D dataArea, RectangleEdge edge, AxisState state,
-	// PlotRenderingInfo plotState) {
-	//
-	// ParamChecks.nullNotPermitted(state, "state");
-	// if (!isTickLabelsVisible()) {
-	// return state;
-	// }
-	// List<CategoryTick> ticks = refreshTicks(g2, state, plotArea, edge);
-	// //state.setTicks(ticks);
-	// //FIXME MMC had to remove this as the types don't match
-	//
-	// int categoryIndex = 0;
-	// for (CategoryTick tick : ticks) {
-	//
-	// g2.setFont(getTickLabelFont(tick.getCategory()));
-	// g2.setPaint(getTickLabelPaint(tick.getCategory()));
-	//
-	// CategoryLabelPosition position
-	// = this.categoryLabelPositions.getLabelPosition(edge);
-	// double x0 = 0.0;
-	// double x1 = 0.0;
-	// double y0 = 0.0;
-	// double y1 = 0.0;
-	// if (edge == RectangleEdge.TOP) {
-	// x0 = getCategoryStart(categoryIndex, ticks.size(), dataArea,
-	// edge);
-	// x1 = getCategoryEnd(categoryIndex, ticks.size(), dataArea,
-	// edge);
-	// y1 = state.getCursor() - this.categoryLabelPositionOffset;
-	// y0 = y1 - state.getMax();
-	// } else if (edge == RectangleEdge.BOTTOM) {
-	// x0 = getCategoryStart(categoryIndex, ticks.size(), dataArea,
-	// edge);
-	// x1 = getCategoryEnd(categoryIndex, ticks.size(), dataArea,
-	// edge);
-	// y0 = state.getCursor() + this.categoryLabelPositionOffset;
-	// y1 = y0 + state.getMax();
-	// } else if (edge == RectangleEdge.LEFT) {
-	// y0 = getCategoryStart(categoryIndex, ticks.size(), dataArea,
-	// edge);
-	// y1 = getCategoryEnd(categoryIndex, ticks.size(), dataArea,
-	// edge);
-	// x1 = state.getCursor() - this.categoryLabelPositionOffset;
-	// x0 = x1 - state.getMax();
-	// } else if (edge == RectangleEdge.RIGHT) {
-	// y0 = getCategoryStart(categoryIndex, ticks.size(), dataArea,
-	// edge);
-	// y1 = getCategoryEnd(categoryIndex, ticks.size(), dataArea,
-	// edge);
-	// x0 = state.getCursor() + this.categoryLabelPositionOffset;
-	// x1 = x0 - state.getMax();
-	// }
-	// Rectangle2D area = new Rectangle2D.Double(x0, y0, (x1 - x0),
-	// (y1 - y0));
-	// Point2D anchorPoint = RectangleAnchor.coordinates(area,
-	// position.getCategoryAnchor());
-	// TextBlock block = tick.getLabel();
-	// block.draw(g2, (float) anchorPoint.getX(),
-	// (float) anchorPoint.getY(), position.getLabelAnchor(),
-	// (float) anchorPoint.getX(), (float) anchorPoint.getY(),
-	// position.getAngle());
-	// Shape bounds = block.calculateBounds(g2,
-	// (float) anchorPoint.getX(), (float) anchorPoint.getY(),
-	// position.getLabelAnchor(), (float) anchorPoint.getX(),
-	// (float) anchorPoint.getY(), position.getAngle());
-	// if (plotState != null && plotState.getOwner() != null) {
-	// EntityCollection entities
-	// = plotState.getOwner().getEntityCollection();
-	// if (entities != null) {
-	// String tooltip = getCategoryLabelToolTip(
-	// tick.getCategory());
-	// String url = getCategoryLabelURL(tick.getCategory());
-	// entities.add(new CategoryLabelEntity(tick.getCategory(),
-	// bounds, tooltip, url));
-	// }
-	// }
-	// categoryIndex++;
-	// }
-	//
-	// if (edge.equals(RectangleEdge.TOP)) {
-	// double h = state.getMax() + this.categoryLabelPositionOffset;
-	// state.cursorUp(h);
-	// }
-	// else if (edge.equals(RectangleEdge.BOTTOM)) {
-	// double h = state.getMax() + this.categoryLabelPositionOffset;
-	// state.cursorDown(h);
-	// }
-	// else if (edge == RectangleEdge.LEFT) {
-	// double w = state.getMax() + this.categoryLabelPositionOffset;
-	// state.cursorLeft(w);
-	// }
-	// else if (edge == RectangleEdge.RIGHT) {
-	// double w = state.getMax() + this.categoryLabelPositionOffset;
-	// state.cursorRight(w);
-	// }
-	// return state;
-	// }
-	//
-	// /**
-	// * Creates a temporary list of ticks that can be used when drawing the
-	// axis.
-	// *
-	// * @param g2 the graphics device (used to get font measurements).
-	// * @param state the axis state.
-	// * @param dataArea the area inside the axes.
-	// * @param edge the location of the axis.
-	// *
-	// * @return A list of ticks.
-	// */
-	// @Override
-	// public List<CategoryTick> refreshTicks(Graphics2D g2, AxisState state,
-	// Rectangle2D dataArea, RectangleEdge edge) {
-	//
-	// List<CategoryTick> ticks = new java.util.ArrayList<CategoryTick>();
-	//
-	// // sanity check for data area...
-	// if (dataArea.getHeight() <= 0.0 || dataArea.getWidth() < 0.0) {
-	// return ticks;
-	// }
-	//
-	// CategoryPlot plot = (CategoryPlot) getPlot();
-	// List<Comparable> categories = plot.getCategoriesForAxis(this);
-	// double max = 0.0;
-	//
-	// if (categories != null) {
-	// CategoryLabelPosition position
-	// = this.categoryLabelPositions.getLabelPosition(edge);
-	// float r = this.maximumCategoryLabelWidthRatio;
-	// if (r <= 0.0) {
-	// r = position.getWidthRatio();
-	// }
-	//
-	// float l;
-	// if (position.getWidthType() == CategoryLabelWidthType.CATEGORY) {
-	// l = (float) calculateCategorySize(categories.size(), dataArea,
-	// edge);
-	// }
-	// else {
-	// if (RectangleEdge.isLeftOrRight(edge)) {
-	// l = (float) dataArea.getWidth();
-	// }
-	// else {
-	// l = (float) dataArea.getHeight();
-	// }
-	// }
-	// int categoryIndex = 0;
-	// for (Comparable category : categories) {
-	// g2.setFont(getTickLabelFont(category));
-	// TextBlock label = createLabel(category, l * r, edge, g2);
-	// if (edge == RectangleEdge.TOP || edge == RectangleEdge.BOTTOM) {
-	// max = Math.max(max, calculateTextBlockHeight(label,
-	// position, g2));
-	// } else if (edge == RectangleEdge.LEFT
-	// || edge == RectangleEdge.RIGHT) {
-	// max = Math.max(max, calculateTextBlockWidth(label,
-	// position, g2));
-	// }
-	// ticks.add(new CategoryTick(category, label,
-	// position.getLabelAnchor(),
-	// position.getRotationAnchor(), position.getAngle()));
-	// categoryIndex = categoryIndex + 1;
-	// }
-	// }
-	// state.setMax(max);
-	// return ticks;
-	//
-	// }
-	//
-	// /**
-	// * Draws the tick marks. This method is called during chart rendering,
-	// * you normally would not call this method yourself.
-	// *
-	// * @param g2 the graphics target ({@code null} not permitted)
-	// * @param cursor the current offset from the edge of the dataArea
-	// * @param dataArea the area used for plotting data ({@code null} not
-	// * permitted)
-	// * @param edge the location of the axis ({@code null} not permitted)
-	// * @param state axis state information ({@code null} not permitted)
-	// *
-	// * @since 1.0.13
-	// */
-	// public void drawTickMarks(Graphics2D g2, double cursor,
-	// Rectangle2D dataArea, RectangleEdge edge, AxisState state) {
-	//
-	// Plot p = getPlot();
-	// if (p == null) {
-	// return;
-	// }
-	// CategoryPlot plot = (CategoryPlot) p;
-	// double il = getTickMarkInsideLength();
-	// double ol = getTickMarkOutsideLength();
-	// Line2D line = new Line2D.Double();
-	// List<Comparable> categories = plot.getCategoriesForAxis(this);
-	// g2.setPaint(getTickMarkPaint());
-	// g2.setStroke(getTickMarkStroke());
-	// Object saved = g2.getRenderingHint(RenderingHints.KEY_STROKE_CONTROL);
-	// g2.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL,
-	// RenderingHints.VALUE_STROKE_NORMALIZE);
-	// if (edge.equals(RectangleEdge.TOP)) {
-	// for (Comparable key : categories) {
-	// double x = getCategoryMiddle(key, categories, dataArea, edge);
-	// line.setLine(x, cursor, x, cursor + il);
-	// g2.draw(line);
-	// line.setLine(x, cursor, x, cursor - ol);
-	// g2.draw(line);
-	// }
-	// state.cursorUp(ol);
-	// }
-	// else if (edge.equals(RectangleEdge.BOTTOM)) {
-	// for (Comparable key : categories) {
-	// double x = getCategoryMiddle(key, categories, dataArea, edge);
-	// line.setLine(x, cursor, x, cursor - il);
-	// g2.draw(line);
-	// line.setLine(x, cursor, x, cursor + ol);
-	// g2.draw(line);
-	// }
-	// state.cursorDown(ol);
-	// }
-	// else if (edge.equals(RectangleEdge.LEFT)) {
-	// for (Comparable key : categories) {
-	// double y = getCategoryMiddle(key, categories, dataArea, edge);
-	// line.setLine(cursor, y, cursor + il, y);
-	// g2.draw(line);
-	// line.setLine(cursor, y, cursor - ol, y);
-	// g2.draw(line);
-	// }
-	// state.cursorLeft(ol);
-	// }
-	// else if (edge.equals(RectangleEdge.RIGHT)) {
-	// for (Comparable key : categories) {
-	// double y = getCategoryMiddle(key, categories, dataArea, edge);
-	// line.setLine(cursor, y, cursor - il, y);
-	// g2.draw(line);
-	// line.setLine(cursor, y, cursor + ol, y);
-	// g2.draw(line);
-	// }
-	// state.cursorRight(ol);
-	// }
-	// g2.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, saved);
-	// }
-	//
-	// /**
-	// * Creates a label.
-	// *
-	// * @param category the category.
-	// * @param width the available width.
-	// * @param edge the edge on which the axis appears.
-	// * @param g2 the graphics device.
-	// *
-	// * @return A label.
-	// */
-	// protected TextBlock createLabel(Comparable category, float width,
-	// RectangleEdge edge, Graphics2D g2) {
-	// TextBlock label = TextUtilities.createTextBlock(category.toString(),
-	// getTickLabelFont(category), getTickLabelPaint(category), width,
-	// this.maximumCategoryLabelLines, new G2TextMeasurer(g2));
-	// return label;
-	// }
-	//
-	// /**
-	// * A utility method for determining the width of a text block.
-	// *
-	// * @param block the text block.
-	// * @param position the position.
-	// * @param g2 the graphics device.
-	// *
-	// * @return The width.
-	// */
-	// protected double calculateTextBlockWidth(TextBlock block,
-	// CategoryLabelPosition position, Graphics2D g2) {
-	// RectangleInsets insets = getTickLabelInsets();
-	// Size2D size = block.calculateDimensions(g2);
-	// Rectangle2D box = new Rectangle2D.Double(0.0, 0.0, size.getWidth(),
-	// size.getHeight());
-	// Shape rotatedBox = ShapeUtils.rotateShape(box, position.getAngle(),
-	// 0.0f, 0.0f);
-	// double w = rotatedBox.getBounds2D().getWidth() + insets.getLeft()
-	// + insets.getRight();
-	// return w;
-	// }
-	//
-	// /**
-	// * A utility method for determining the height of a text block.
-	// *
-	// * @param block the text block.
-	// * @param position the label position.
-	// * @param g2 the graphics device.
-	// *
-	// * @return The height.
-	// */
-	// protected double calculateTextBlockHeight(TextBlock block,
-	// CategoryLabelPosition position, Graphics2D g2) {
-	// RectangleInsets insets = getTickLabelInsets();
-	// Size2D size = block.calculateDimensions(g2);
-	// Rectangle2D box = new Rectangle2D.Double(0.0, 0.0, size.getWidth(),
-	// size.getHeight());
-	// Shape rotatedBox = ShapeUtils.rotateShape(box, position.getAngle(),
-	// 0.0f, 0.0f);
-	// double h = rotatedBox.getBounds2D().getHeight()
-	// + insets.getTop() + insets.getBottom();
-	// return h;
-	// }
+
+	/**
+	 * Draws the axis on a Java 2D graphics device (such as the screen or a
+	 * printer).
+	 *
+	 * @param g2
+	 *            the graphics device (<code>null</code> not permitted).
+	 * @param cursor
+	 *            the cursor location.
+	 * @param plotArea
+	 *            the area within which the axis should be drawn (
+	 *            <code>null</code> not permitted).
+	 * @param dataArea
+	 *            the area within which the plot is being drawn (
+	 *            <code>null</code> not permitted).
+	 * @param edge
+	 *            the location of the axis (<code>null</code> not permitted).
+	 * @param plotState
+	 *            collects information about the plot (<code>null</code>
+	 *            permitted).
+	 *
+	 * @return The axis state (never <code>null</code>).
+	 */
+	@Override
+	public AxisState draw(GraphicsContext g2, double cursor, Rectangle2D plotArea,
+			Rectangle2D dataArea, RectangleEdge edge,
+			PlotRenderingInfo plotState) {
+
+		// if the axis is not visible, don't draw it...
+		if (!isVisible()) {
+			return new AxisState(cursor);
+		}
+
+		if (isAxisLineVisible()) {
+			drawAxisLine(g2, cursor, dataArea, edge);
+		}
+		AxisState state = new AxisState(cursor);
+		if (isTickMarksVisible()) {
+			drawTickMarks(g2, cursor, dataArea, edge, state);
+		}
+
+		createAndAddEntity(cursor, state, dataArea, edge, plotState);
+
+		// draw the category labels and axis label
+		state = drawCategoryLabels(g2, plotArea, dataArea, edge, state,
+				plotState);
+		state = drawLabel(getLabel(), g2, plotArea, dataArea, edge, state);
+		return state;
+
+	}
+
+	/**
+	 * Draws the category labels and returns the updated axis state.
+	 *
+	 * @param g2
+	 *            the graphics device (<code>null</code> not permitted).
+	 * @param plotArea
+	 *            the plot area (<code>null</code> not permitted).
+	 * @param dataArea
+	 *            the area inside the axes (<code>null</code> not permitted).
+	 * @param edge
+	 *            the axis location (<code>null</code> not permitted).
+	 * @param state
+	 *            the axis state (<code>null</code> not permitted).
+	 * @param plotState
+	 *            collects information about the plot (<code>null</code>
+	 *            permitted).
+	 *
+	 * @return The updated axis state (never <code>null</code>).
+	 */
+	protected AxisState drawCategoryLabels(GraphicsContext g2, Rectangle2D
+			plotArea,
+			Rectangle2D dataArea, RectangleEdge edge, AxisState state,
+			PlotRenderingInfo plotState) {
+
+		ParamChecks.nullNotPermitted(state, "state");
+		if (!isTickLabelsVisible()) {
+			return state;
+		}
+		List<CategoryTick> ticks = refreshTicks(g2, state, plotArea, edge);
+
+		// NON-JAVA-FX
+		// state.setTicks(ticks);
+		// FIXME MMC had to remove this as the types don't match
+
+		int categoryIndex = 0;
+		for (CategoryTick tick : ticks) {
+
+			g2.setFont(getTickLabelFont(tick.getCategory()));
+			// JAVAFX paint
+			// g2.setPaint(getTickLabelPaint(tick.getCategory()));
+
+			CategoryLabelPosition position = this.categoryLabelPositions.getLabelPosition(edge);
+			double x0 = 0.0;
+			double x1 = 0.0;
+			double y0 = 0.0;
+			double y1 = 0.0;
+			if (edge == RectangleEdge.TOP) {
+				x0 = getCategoryStart(categoryIndex, ticks.size(), dataArea,
+						edge);
+				x1 = getCategoryEnd(categoryIndex, ticks.size(), dataArea,
+						edge);
+				y1 = state.getCursor() - this.categoryLabelPositionOffset;
+				y0 = y1 - state.getMax();
+			} else if (edge == RectangleEdge.BOTTOM) {
+				x0 = getCategoryStart(categoryIndex, ticks.size(), dataArea,
+						edge);
+				x1 = getCategoryEnd(categoryIndex, ticks.size(), dataArea,
+						edge);
+				y0 = state.getCursor() + this.categoryLabelPositionOffset;
+				y1 = y0 + state.getMax();
+			} else if (edge == RectangleEdge.LEFT) {
+				y0 = getCategoryStart(categoryIndex, ticks.size(), dataArea,
+						edge);
+				y1 = getCategoryEnd(categoryIndex, ticks.size(), dataArea,
+						edge);
+				x1 = state.getCursor() - this.categoryLabelPositionOffset;
+				x0 = x1 - state.getMax();
+			} else if (edge == RectangleEdge.RIGHT) {
+				y0 = getCategoryStart(categoryIndex, ticks.size(), dataArea,
+						edge);
+				y1 = getCategoryEnd(categoryIndex, ticks.size(), dataArea,
+						edge);
+				x0 = state.getCursor() + this.categoryLabelPositionOffset;
+				x1 = x0 - state.getMax();
+			}
+			Rectangle2D area = new Rectangle2D(x0, y0, (x1 - x0),
+					(y1 - y0));
+			Point2D anchorPoint = RectangleAnchor.coordinates(area,
+					position.getCategoryAnchor());
+			TextBlock block = tick.getLabel();
+			block.draw(g2, (float) anchorPoint.getX(),
+					(float) anchorPoint.getY(), position.getLabelAnchor(),
+					(float) anchorPoint.getX(), (float) anchorPoint.getY(),
+					position.getAngle());
+			// JAVAFX
+			// Shape bounds = block.calculateBounds(g2,
+			// (float) anchorPoint.getX(), (float) anchorPoint.getY(),
+			// position.getLabelAnchor(), (float) anchorPoint.getX(),
+			// (float) anchorPoint.getY(), position.getAngle());
+			// if (plotState != null && plotState.getOwner() != null) {
+			// EntityCollection entities =
+			// plotState.getOwner().getEntityCollection();
+			// if (entities != null) {
+			// String tooltip = getCategoryLabelToolTip(
+			// tick.getCategory());
+			// String url = getCategoryLabelURL(tick.getCategory());
+			// entities.add(new CategoryLabelEntity(tick.getCategory(),
+			// bounds, tooltip, url));
+			// }
+			// }
+			categoryIndex++;
+		}
+
+		if (edge.equals(RectangleEdge.TOP)) {
+			double h = state.getMax() + this.categoryLabelPositionOffset;
+			state.cursorUp(h);
+		}
+		else if (edge.equals(RectangleEdge.BOTTOM)) {
+			double h = state.getMax() + this.categoryLabelPositionOffset;
+			state.cursorDown(h);
+		}
+		else if (edge == RectangleEdge.LEFT) {
+			double w = state.getMax() + this.categoryLabelPositionOffset;
+			state.cursorLeft(w);
+		}
+		else if (edge == RectangleEdge.RIGHT) {
+			double w = state.getMax() + this.categoryLabelPositionOffset;
+			state.cursorRight(w);
+		}
+		return state;
+	}
+
+	/**
+	 * Creates a temporary list of ticks that can be used when drawing the axis.
+	 *
+	 * @param g2
+	 *            the graphics device (used to get font measurements).
+	 * @param state
+	 *            the axis state.
+	 * @param dataArea
+	 *            the area inside the axes.
+	 * @param edge
+	 *            the location of the axis.
+	 *
+	 * @return A list of ticks.
+	 */
+	@Override
+	public List<CategoryTick> refreshTicks(GraphicsContext g2, AxisState state,
+			Rectangle2D dataArea, RectangleEdge edge) {
+
+		List<CategoryTick> ticks = new java.util.ArrayList<CategoryTick>();
+
+		// sanity check for data area...
+		if (dataArea.getHeight() <= 0.0 || dataArea.getWidth() < 0.0) {
+			return ticks;
+		}
+
+		CategoryPlot plot = (CategoryPlot) getPlot();
+		List<Comparable> categories = plot.getCategoriesForAxis(this);
+		double max = 0.0;
+
+		if (categories != null) {
+			CategoryLabelPosition position = this.categoryLabelPositions.getLabelPosition(edge);
+			float r = this.maximumCategoryLabelWidthRatio;
+			if (r <= 0.0) {
+				r = position.getWidthRatio();
+			}
+
+			float l;
+			if (position.getWidthType() == CategoryLabelWidthType.CATEGORY) {
+				l = (float) calculateCategorySize(categories.size(), dataArea,
+						edge);
+			}
+			else {
+				if (RectangleEdge.isLeftOrRight(edge)) {
+					l = (float) dataArea.getWidth();
+				}
+				else {
+					l = (float) dataArea.getHeight();
+				}
+			}
+			int categoryIndex = 0;
+			for (Comparable category : categories) {
+				g2.setFont(getTickLabelFont(category));
+				TextBlock label = createLabel(category, l * r, edge, g2);
+				if (edge == RectangleEdge.TOP || edge == RectangleEdge.BOTTOM) {
+					max = Math.max(max, calculateTextBlockHeight(label,
+							position, g2));
+				} else if (edge == RectangleEdge.LEFT
+						|| edge == RectangleEdge.RIGHT) {
+					max = Math.max(max, calculateTextBlockWidth(label,
+							position, g2));
+				}
+				ticks.add(new CategoryTick(category, label,
+						position.getLabelAnchor(),
+						position.getRotationAnchor(), position.getAngle()));
+				categoryIndex = categoryIndex + 1;
+			}
+		}
+		state.setMax(max);
+		return ticks;
+
+	}
+
+	/**
+	 * Draws the tick marks. This method is called during chart rendering, you
+	 * normally would not call this method yourself.
+	 *
+	 * @param g2
+	 *            the graphics target ({@code null} not permitted)
+	 * @param cursor
+	 *            the current offset from the edge of the dataArea
+	 * @param dataArea
+	 *            the area used for plotting data ({@code null} not permitted)
+	 * @param edge
+	 *            the location of the axis ({@code null} not permitted)
+	 * @param state
+	 *            axis state information ({@code null} not permitted)
+	 *
+	 * @since 1.0.13
+	 */
+	public void drawTickMarks(GraphicsContext g2, double cursor,
+			Rectangle2D dataArea, RectangleEdge edge, AxisState state) {
+
+		Plot p = getPlot();
+		if (p == null) {
+			return;
+		}
+		CategoryPlot plot = (CategoryPlot) p;
+		double il = getTickMarkInsideLength();
+		double ol = getTickMarkOutsideLength();
+		// JAVAFX
+		// Line2D line = new Line2D.Double();
+		// List<Comparable> categories = plot.getCategoriesForAxis(this);
+		// g2.setPaint(getTickMarkPaint());
+		// g2.setStroke(getTickMarkStroke());
+		// Object saved =
+		// g2.getRenderingHint(RenderingHints.KEY_STROKE_CONTROL);
+		// g2.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL,
+		// RenderingHints.VALUE_STROKE_NORMALIZE);
+		// if (edge.equals(RectangleEdge.TOP)) {
+		// for (Comparable key : categories) {
+		// double x = getCategoryMiddle(key, categories, dataArea, edge);
+		// line.setLine(x, cursor, x, cursor + il);
+		// g2.draw(line);
+		// line.setLine(x, cursor, x, cursor - ol);
+		// g2.draw(line);
+		// }
+		// state.cursorUp(ol);
+		// }
+		// else if (edge.equals(RectangleEdge.BOTTOM)) {
+		// for (Comparable key : categories) {
+		// double x = getCategoryMiddle(key, categories, dataArea, edge);
+		// line.setLine(x, cursor, x, cursor - il);
+		// g2.draw(line);
+		// line.setLine(x, cursor, x, cursor + ol);
+		// g2.draw(line);
+		// }
+		// state.cursorDown(ol);
+		// }
+		// else if (edge.equals(RectangleEdge.LEFT)) {
+		// for (Comparable key : categories) {
+		// double y = getCategoryMiddle(key, categories, dataArea, edge);
+		// line.setLine(cursor, y, cursor + il, y);
+		// g2.draw(line);
+		// line.setLine(cursor, y, cursor - ol, y);
+		// g2.draw(line);
+		// }
+		// state.cursorLeft(ol);
+		// }
+		// else if (edge.equals(RectangleEdge.RIGHT)) {
+		// for (Comparable key : categories) {
+		// double y = getCategoryMiddle(key, categories, dataArea, edge);
+		// line.setLine(cursor, y, cursor - il, y);
+		// g2.draw(line);
+		// line.setLine(cursor, y, cursor + ol, y);
+		// g2.draw(line);
+		// }
+		// state.cursorRight(ol);
+		// }
+		// g2.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, saved);
+	}
+
+	/**
+	 * Creates a label.
+	 *
+	 * @param category
+	 *            the category.
+	 * @param width
+	 *            the available width.
+	 * @param edge
+	 *            the edge on which the axis appears.
+	 * @param g2
+	 *            the graphics device.
+	 *
+	 * @return A label.
+	 */
+	protected TextBlock createLabel(Comparable category, float width,
+			RectangleEdge edge, GraphicsContext g2) {
+		// JAVAFX
+		// TextBlock label = TextUtilities.createTextBlock(category.toString(),
+		// getTickLabelFont(category), getTickLabelPaint(category), width,
+		// this.maximumCategoryLabelLines, new G2TextMeasurer(g2));
+		// return label;
+		return new TextBlock(); // JAVAFX - fake return
+	}
+
+	/**
+	 * A utility method for determining the width of a text block.
+	 *
+	 * @param block
+	 *            the text block.
+	 * @param position
+	 *            the position.
+	 * @param g2
+	 *            the graphics device.
+	 *
+	 * @return The width.
+	 */
+	protected double calculateTextBlockWidth(TextBlock block,
+			CategoryLabelPosition position, GraphicsContext g2) {
+		RectangleInsets insets = getTickLabelInsets();
+		// Size2D size = block.calculateDimensions(g2);
+		// Rectangle2D box = new Rectangle2D.Double(0.0, 0.0, size.getWidth(),
+		// size.getHeight());
+		// Shape rotatedBox = ShapeUtils.rotateShape(box, position.getAngle(),
+		// 0.0f, 0.0f);
+		// double w = rotatedBox.getBounds2D().getWidth() + insets.getLeft()
+		// + insets.getRight();
+		// return w;
+		return 0.0; // JAVAFX - fake return
+	}
+
+	/**
+	 * A utility method for determining the height of a text block.
+	 *
+	 * @param block
+	 *            the text block.
+	 * @param position
+	 *            the label position.
+	 * @param g2
+	 *            the graphics device.
+	 *
+	 * @return The height.
+	 */
+	protected double calculateTextBlockHeight(TextBlock block,
+			CategoryLabelPosition position, GraphicsContext g2) {
+		RectangleInsets insets = getTickLabelInsets();
+		// JAVAFX
+		// Size2D size = block.calculateDimensions(g2);
+		// Rectangle2D box = new Rectangle2D.Double(0.0, 0.0, size.getWidth(),
+		// size.getHeight());
+		// Shape rotatedBox = ShapeUtils.rotateShape(box, position.getAngle(),
+		// 0.0f, 0.0f);
+		// double h = rotatedBox.getBounds2D().getHeight()
+		// + insets.getTop() + insets.getBottom();
+		// return h;
+		return 0.0; // JAVAFX - fake return
+	}
 	//
 	// /**
 	// * Creates a clone of the axis.

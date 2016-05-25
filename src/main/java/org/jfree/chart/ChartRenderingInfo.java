@@ -247,8 +247,8 @@ public class ChartRenderingInfo implements Cloneable, Serializable {
 	 *             if there is an I/O error.
 	 */
 	private void writeObject(ObjectOutputStream stream) throws IOException {
+		stream.defaultWriteObject();
 		// JAVAFX
-		// stream.defaultWriteObject();
 		// SerialUtils.writeShape(this.chartArea, stream);
 	}
 
@@ -266,7 +266,8 @@ public class ChartRenderingInfo implements Cloneable, Serializable {
 	private void readObject(ObjectInputStream stream)
 			throws IOException, ClassNotFoundException {
 		stream.defaultReadObject();
-		this.chartArea = (Rectangle2D) SerialUtils.readShape(stream);
+		// JAVAFX
+		// this.chartArea = (Rectangle2D) SerialUtils.readShape(stream);
 	}
 
 }

@@ -113,20 +113,23 @@ import java.util.EventListener;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-// 
-// import javax.swing.event.EventListenerList;
 
 import org.jfree.chart.util.HashUtils;
 import org.jfree.chart.ui.TextAnchor;
 import org.jfree.chart.util.BooleanList;
 import org.jfree.chart.util.ObjectUtils;
-// import org.jfree.chart.util.PaintUtils;
+import org.jfree.chart.util.PaintUtils;
 // import org.jfree.chart.util.ShapeList;
 import org.jfree.chart.util.ShapeUtils;
 import org.jfree.chart.util.StrokeList;
+import org.jfree.event.EventListenerList;
 
 import javafx.geometry.Point2D;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 import javafx.scene.text.Font;
+import javafx.scene.text.FontPosture;
+import javafx.scene.text.FontWeight;
 
 import org.jfree.chart.event.RendererChangeEvent;
 import org.jfree.chart.event.RendererChangeListener;
@@ -135,12 +138,12 @@ import org.jfree.chart.labels.ItemLabelPosition;
 // import org.jfree.chart.plot.DrawingSupplier;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.renderer.item.DefaultLabelIRS;
-// import org.jfree.chart.renderer.item.DefaultPaintIRS;
+import org.jfree.chart.renderer.item.DefaultPaintIRS;
 // import org.jfree.chart.renderer.item.DefaultShapeIRS;
 // import org.jfree.chart.renderer.item.DefaultStrokeIRS;
 import org.jfree.chart.renderer.item.DefaultVisibilityIRS;
 import org.jfree.chart.renderer.item.LabelIRS;
-// import org.jfree.chart.renderer.item.PaintIRS;
+import org.jfree.chart.renderer.item.PaintIRS;
 // import org.jfree.chart.renderer.item.ShapeIRS;
 // import org.jfree.chart.renderer.item.StrokeIRS;
 import org.jfree.chart.renderer.item.VisibilityIRS;
@@ -162,13 +165,13 @@ public abstract class AbstractRenderer implements Cloneable, Serializable {
 	/** Zero represented as a <code>Double</code>. */
 	public static final Double ZERO = 0.0;
 
+	/** The default paint. */
+	public static final Paint DEFAULT_PAINT = Color.BLUE;
+
+	/** The default outline paint. */
+	public static final Paint DEFAULT_OUTLINE_PAINT = Color.GRAY;
+
 	// JAVAFX
-	//
-	// /** The default paint. */
-	// public static final Paint DEFAULT_PAINT = Color.BLUE;
-	//
-	// /** The default outline paint. */
-	// public static final Paint DEFAULT_OUTLINE_PAINT = Color.GRAY;
 	//
 	// /** The default stroke. */
 	// public static final Stroke DEFAULT_STROKE = new BasicStroke(1.0f);
@@ -180,25 +183,25 @@ public abstract class AbstractRenderer implements Cloneable, Serializable {
 	// /** The default shape. */
 	// public static final Shape DEFAULT_SHAPE
 	// = new Rectangle2D.Double(-3.0, -3.0, 6.0, 6.0);
-	//
-	// /** The default value label font. */
-	// public static final Font DEFAULT_VALUE_LABEL_FONT
-	// = new Font("SansSerif", Font.PLAIN, 10);
-	//
-	// /** The default value label paint. */
-	// public static final Paint DEFAULT_VALUE_LABEL_PAINT = Color.BLACK;
+
+	/** The default value label font. */
+	public static final Font DEFAULT_VALUE_LABEL_FONT = Font.font("SansSerif", FontWeight.NORMAL, FontPosture.REGULAR,
+			10.0);
+
+	/** The default value label paint. */
+	public static final Paint DEFAULT_VALUE_LABEL_PAINT = Color.BLACK;
 	//
 	/**
 	 * A hook that allows to control the rendering of individual item labels (if
 	 * the renderer uses {@link #getItemLabelFont(int, int)} ... )
 	 */
 	private LabelIRS labelIRS = new DefaultLabelIRS(this);
-	//
-	// /**
-	// * A hook that allows to control the painting of individual items (if the
-	// * renderer uses {@link #getItemPaint(int, int)} ... )
-	// */
-	// private PaintIRS paintIRS = new DefaultPaintIRS(this);
+
+	/**
+	 * A hook that allows to control the painting of individual items (if the
+	 * renderer uses {@link #getItemPaint(int, int)} ... )
+	 */
+	private PaintIRS paintIRS = new DefaultPaintIRS(this);
 	//
 	// /**
 	// * A hook that allows to control the shape of individual items
@@ -232,12 +235,11 @@ public abstract class AbstractRenderer implements Cloneable, Serializable {
 
 	/** The default visibility for each series in the legend. */
 	private boolean defaultSeriesVisibleInLegend;
-	//
-	// /**
-	// * Storage for the paint assigned to each series (never
-	// <code>null</code>).
-	// */
-	// private transient Map<Integer, Paint> paintMap;
+
+	/**
+	 * Storage for the paint assigned to each series (never <code>null</code>).
+	 */
+	private transient Map<Integer, Paint> paintMap;
 
 	/**
 	 * A flag that controls whether or not the paintList is auto-populated in
@@ -246,13 +248,14 @@ public abstract class AbstractRenderer implements Cloneable, Serializable {
 	 * @since 1.0.6
 	 */
 	private boolean autoPopulateSeriesPaint;
-	//
-	// /** The default paint, used when there is no paint assigned for a series.
-	// */
-	// private transient Paint defaultPaint;
-	//
-	// /** Storage for the fill paint assigned to each series. */
-	// private transient Map<Integer, Paint> fillPaintMap;
+
+	/**
+	 * The default paint, used when there is no paint assigned for a series.
+	 */
+	private transient Paint defaultPaint;
+
+	/** Storage for the fill paint assigned to each series. */
+	private transient Map<Integer, Paint> fillPaintMap;
 
 	/**
 	 * A flag that controls whether or not the fillPaintList is auto-populated
@@ -261,12 +264,12 @@ public abstract class AbstractRenderer implements Cloneable, Serializable {
 	 * @since 1.0.6
 	 */
 	private boolean autoPopulateSeriesFillPaint;
-	//
-	// /** The base fill paint. */
-	// private transient Paint defaultFillPaint;
-	//
-	// /** Storage for the outline paint assigned to each series. */
-	// private transient Map<Integer, Paint> outlinePaintMap;
+
+	/** The base fill paint. */
+	private transient Paint defaultFillPaint;
+
+	/** Storage for the outline paint assigned to each series. */
+	private transient Map<Integer, Paint> outlinePaintMap;
 
 	/**
 	 * A flag that controls whether or not the outlinePaintList is
@@ -275,9 +278,9 @@ public abstract class AbstractRenderer implements Cloneable, Serializable {
 	 * @since 1.0.6
 	 */
 	private boolean autoPopulateSeriesOutlinePaint;
-	//
-	// /** The base outline paint. */
-	// private transient Paint defaultOutlinePaint;
+
+	/** The base outline paint. */
+	private transient Paint defaultOutlinePaint;
 	//
 	// /** The stroke list. */
 	// private StrokeList strokeList;
@@ -332,12 +335,12 @@ public abstract class AbstractRenderer implements Cloneable, Serializable {
 
 	/** The base item label font. */
 	private Font defaultItemLabelFont;
-	//
-	// /** The item label paint list (one paint per series). */
-	// private transient Map<Integer, Paint> itemLabelPaintMap;
-	//
-	// /** The base item label paint. */
-	// private transient Paint defaultItemLabelPaint;
+
+	/** The item label paint list (one paint per series). */
+	private transient Map<Integer, Paint> itemLabelPaintMap;
+
+	/** The base item label paint. */
+	private transient Paint defaultItemLabelPaint;
 
 	/** The positive item label position (per series). */
 	private Map<Integer, ItemLabelPosition> positiveItemLabelPositionMap;
@@ -402,22 +405,21 @@ public abstract class AbstractRenderer implements Cloneable, Serializable {
 	 * @since 1.0.11
 	 */
 	private Font defaultLegendTextFont;
-	//
-	// /**
-	// * The per series legend text paint settings.
-	// *
-	// * @since 1.0.11
-	// */
-	// private transient Map<Integer, Paint> legendTextPaintMap;
-	//
-	// /**
-	// * The default paint for the legend text items (if this is
-	// * <code>null</code>, the {@link LegendTitle} class will determine the
-	// * text paint to use.
-	// *
-	// * @since 1.0.11
-	// */
-	// private transient Paint defaultLegendTextPaint;
+
+	/**
+	 * The per series legend text paint settings.
+	 *
+	 * @since 1.0.11
+	 */
+	private transient Map<Integer, Paint> legendTextPaintMap;
+
+	/**
+	 * The default paint for the legend text items (if this is <code>null</code>
+	 * , the {@link LegendTitle} class will determine the text paint to use.
+	 *
+	 * @since 1.0.11
+	 */
+	private transient Paint defaultLegendTextPaint;
 
 	/**
 	 * A flag that controls whether or not the renderer will include the
@@ -430,8 +432,8 @@ public abstract class AbstractRenderer implements Cloneable, Serializable {
 	/** The default radius for the entity 'hotspot' */
 	private int defaultEntityRadius;
 
-	// /** Storage for registered change listeners. */
-	// private transient EventListenerList listenerList;
+	/** Storage for registered change listeners. */
+	private transient EventListenerList listenerList;
 
 	/** An event for re-use. */
 	private transient RendererChangeEvent event;
@@ -446,26 +448,29 @@ public abstract class AbstractRenderer implements Cloneable, Serializable {
 		this.seriesVisibleInLegendList = new BooleanList();
 		this.defaultSeriesVisibleInLegend = true;
 
-		// this.paintMap = new HashMap<Integer, Paint>();
-		// this.defaultPaint = DEFAULT_PAINT;
+		this.paintMap = new HashMap<Integer, Paint>();
+		this.defaultPaint = DEFAULT_PAINT;
 		this.autoPopulateSeriesPaint = true;
 
-		// this.fillPaintMap = new HashMap<Integer, Paint>();
-		// this.defaultFillPaint = Color.WHITE;
+		this.fillPaintMap = new HashMap<Integer, Paint>();
+		this.defaultFillPaint = Color.WHITE;
 		this.autoPopulateSeriesFillPaint = false;
 
-		// this.outlinePaintMap = new HashMap<Integer, Paint>();
-		// this.defaultOutlinePaint = DEFAULT_OUTLINE_PAINT;
+		this.outlinePaintMap = new HashMap<Integer, Paint>();
+		this.defaultOutlinePaint = DEFAULT_OUTLINE_PAINT;
 		this.autoPopulateSeriesOutlinePaint = false;
 
+		// JAVAFX
 		// this.strokeList = new StrokeList();
 		// this.defaultStroke = DEFAULT_STROKE;
 		this.autoPopulateSeriesStroke = true;
 
+		// JAVAFX
 		// this.outlineStrokeList = new StrokeList();
 		// this.defaultOutlineStroke = DEFAULT_OUTLINE_STROKE;
 		this.autoPopulateSeriesOutlineStroke = false;
 
+		// JAVAFX
 		// this.shapeList = new ShapeList();
 		// this.defaultShape = DEFAULT_SHAPE;
 		this.autoPopulateSeriesShape = true;
@@ -473,68 +478,70 @@ public abstract class AbstractRenderer implements Cloneable, Serializable {
 		this.itemLabelsVisibleList = new BooleanList();
 		this.defaultItemLabelsVisible = Boolean.FALSE;
 
-		// this.itemLabelFontMap = new HashMap<Integer, Font>();
-		// this.defaultItemLabelFont = new Font("SansSerif", Font.PLAIN, 10);
+		this.itemLabelFontMap = new HashMap<Integer, Font>();
+		this.defaultItemLabelFont = Font.font("SansSerif", FontWeight.NORMAL, FontPosture.REGULAR, 10);
 		//
-		// this.itemLabelPaintMap = new HashMap<Integer, Paint>();
-		// this.defaultItemLabelPaint = Color.BLACK;
+		this.itemLabelPaintMap = new HashMap<Integer, Paint>();
+		this.defaultItemLabelPaint = Color.BLACK;
 		//
-		// this.positiveItemLabelPositionMap
-		// = new HashMap<Integer, ItemLabelPosition>();
-		// this.defaultPositiveItemLabelPosition = new ItemLabelPosition(
-		// ItemLabelAnchor.OUTSIDE12, TextAnchor.BOTTOM_CENTER);
+		this.positiveItemLabelPositionMap = new HashMap<Integer, ItemLabelPosition>();
+		this.defaultPositiveItemLabelPosition = new ItemLabelPosition(
+				ItemLabelAnchor.OUTSIDE12, TextAnchor.BOTTOM_CENTER);
 		//
-		// this.negativeItemLabelPositionMap
-		// = new HashMap<Integer, ItemLabelPosition>();
-		// this.defaultNegativeItemLabelPosition = new ItemLabelPosition(
-		// ItemLabelAnchor.OUTSIDE6, TextAnchor.TOP_CENTER);
+		this.negativeItemLabelPositionMap = new HashMap<Integer, ItemLabelPosition>();
+		this.defaultNegativeItemLabelPosition = new ItemLabelPosition(
+				ItemLabelAnchor.OUTSIDE6, TextAnchor.TOP_CENTER);
 
 		this.createEntitiesList = new BooleanList();
 		this.defaultCreateEntities = true;
 
 		this.defaultEntityRadius = 3;
 
+		// JAVAFX
 		// this.legendShapeList = new ShapeList();
 		// this.defaultLegendShape = null;
 
 		this.treatLegendShapeAsLine = false;
 
-		// this.legendTextFontMap = new HashMap<Integer, Font>();
-		// this.defaultLegendTextFont = new Font("Dialog", Font.PLAIN, 12);
-		//
-		// this.legendTextPaintMap = new HashMap<Integer, Paint>();
-		// this.defaultLegendTextPaint = null;
-		//
-		// this.listenerList = new EventListenerList();
+		this.legendTextFontMap = new HashMap<Integer, Font>();
+		this.defaultLegendTextFont = Font.font("Dialog", FontWeight.NORMAL, FontPosture.REGULAR, 12);
+
+		this.legendTextPaintMap = new HashMap<Integer, Paint>();
+		this.defaultLegendTextPaint = null;
+
+		this.listenerList = new EventListenerList();
 
 	}
 
-	//
+	// JAVAFX
 	// /**
 	// * Returns the drawing supplier from the plot.
 	// *
 	// * @return The drawing supplier.
 	// */
 	// public abstract DrawingSupplier getDrawingSupplier();
-	//
-	// // SETTER FOR ITEM RENDERING STRATEGIES
-	//
-	// /**
-	// * @param labelIRS {@link #labelIRS} (<code>null</code> not permitted)
-	// */
-	// public void setLabelIRS(LabelIRS labelIRS) {
-	// ParamChecks.nullNotPermitted(labelIRS, "labelIRS");
-	// this.labelIRS = labelIRS;
-	// }
-	//
-	// /**
-	// * @param paintIRS {@link #paintIRS} (<code>null</code> not permitted)
-	// */
-	// public void setPaintIRS(PaintIRS paintIRS) {
-	// ParamChecks.nullNotPermitted(paintIRS, "paintIRS");
-	// this.paintIRS = paintIRS;
-	// }
-	//
+
+	// SETTER FOR ITEM RENDERING STRATEGIES
+
+	/**
+	 * @param labelIRS
+	 *            {@link #labelIRS} (<code>null</code> not permitted)
+	 */
+	public void setLabelIRS(LabelIRS labelIRS) {
+		ParamChecks.nullNotPermitted(labelIRS, "labelIRS");
+		this.labelIRS = labelIRS;
+	}
+
+	/**
+	 * @param paintIRS
+	 *            {@link #paintIRS} (<code>null</code> not permitted)
+	 */
+	public void setPaintIRS(PaintIRS paintIRS) {
+		ParamChecks.nullNotPermitted(paintIRS, "paintIRS");
+		this.paintIRS = paintIRS;
+	}
+
+	// JAVAFX
 	// /**
 	// * @param shapeIRS {@link #shapeIRS} (<code>null</code> not permitted)
 	// */
@@ -550,18 +557,18 @@ public abstract class AbstractRenderer implements Cloneable, Serializable {
 	// ParamChecks.nullNotPermitted(strokeIRS, "strokeIRS");
 	// this.strokeIRS = strokeIRS;
 	// }
-	//
-	// /**
-	// * @param visibilityIRS {@link #visibilityIRS} (<code>null</code> not
-	// * permitted)
-	// */
-	// public void setVisibilityIRS(VisibilityIRS visibilityIRS) {
-	// ParamChecks.nullNotPermitted(visibilityIRS, null);
-	// this.visibilityIRS = visibilityIRS;
-	// }
-	//
-	// // SERIES VISIBLE (not yet respected by all renderers)
-	//
+
+	/**
+	 * @param visibilityIRS
+	 *            {@link #visibilityIRS} (<code>null</code> not permitted)
+	 */
+	public void setVisibilityIRS(VisibilityIRS visibilityIRS) {
+		ParamChecks.nullNotPermitted(visibilityIRS, null);
+		this.visibilityIRS = visibilityIRS;
+	}
+
+	// SERIES VISIBLE (not yet respected by all renderers)
+
 	/**
 	 * Returns a boolean that indicates whether or not the specified item should
 	 * be drawn (this is typically used to hide an entire series).
@@ -601,102 +608,110 @@ public abstract class AbstractRenderer implements Cloneable, Serializable {
 		return result;
 	}
 
-	//
-	// /**
-	// * Returns the flag that controls whether a series is visible.
-	// *
-	// * @param series the series index (zero-based).
-	// *
-	// * @return The flag (possibly <code>null</code>).
-	// *
-	// * @see #setSeriesVisible(int, Boolean)
-	// */
-	// public Boolean getSeriesVisible(int series) {
-	// return this.seriesVisibleList.getBoolean(series);
-	// }
-	//
-	// /**
-	// * Sets the flag that controls whether a series is visible and sends a
-	// * {@link RendererChangeEvent} to all registered listeners.
-	// *
-	// * @param series the series index (zero-based).
-	// * @param visible the flag (<code>null</code> permitted).
-	// *
-	// * @see #getSeriesVisible(int)
-	// */
-	// public void setSeriesVisible(int series, Boolean visible) {
-	// setSeriesVisible(series, visible, true);
-	// }
-	//
-	// /**
-	// * Sets the flag that controls whether a series is visible and, if
-	// * requested, sends a {@link RendererChangeEvent} to all registered
-	// * listeners.
-	// *
-	// * @param series the series index.
-	// * @param visible the flag (<code>null</code> permitted).
-	// * @param notify notify listeners?
-	// *
-	// * @see #getSeriesVisible(int)
-	// */
-	// public void setSeriesVisible(int series, Boolean visible, boolean notify)
-	// {
-	// this.seriesVisibleList.setBoolean(series, visible);
-	// if (notify) {
-	// // we create an event with a special flag set...the purpose of
-	// // this is to communicate to the plot (the default receiver of
-	// // the event) that series visibility has changed so the axis
-	// // ranges might need updating...
-	// RendererChangeEvent e = new RendererChangeEvent(this, true);
-	// notifyListeners(e);
-	// }
-	// }
-	//
-	// /**
-	// * Returns the default visibility for all series.
-	// *
-	// * @return The default visibility.
-	// *
-	// * @see #setDefaultSeriesVisible(boolean)
-	// */
-	// public boolean getDefaultSeriesVisible() {
-	// return this.defaultSeriesVisible;
-	// }
-	//
-	// /**
-	// * Sets the default series visibility and sends a
-	// * {@link RendererChangeEvent} to all registered listeners.
-	// *
-	// * @param visible the flag.
-	// *
-	// * @see #getDefaultSeriesVisible()
-	// */
-	// public void setDefaultSeriesVisible(boolean visible) {
-	// // defer argument checking...
-	// setDefaultSeriesVisible(visible, true);
-	// }
-	//
-	// /**
-	// * Sets the default series visibility and, if requested, sends
-	// * a {@link RendererChangeEvent} to all registered listeners.
-	// *
-	// * @param visible the visibility.
-	// * @param notify notify listeners?
-	// *
-	// * @see #getDefaultSeriesVisible()
-	// */
-	// public void setDefaultSeriesVisible(boolean visible, boolean notify) {
-	// this.defaultSeriesVisible = visible;
-	// if (notify) {
-	// // we create an event with a special flag set...the purpose of
-	// // this is to communicate to the plot (the default receiver of
-	// // the event) that series visibility has changed so the axis
-	// // ranges might need updating...
-	// RendererChangeEvent e = new RendererChangeEvent(this, true);
-	// notifyListeners(e);
-	// }
-	// }
-	//
+	/**
+	 * Returns the flag that controls whether a series is visible.
+	 *
+	 * @param series
+	 *            the series index (zero-based).
+	 *
+	 * @return The flag (possibly <code>null</code>).
+	 *
+	 * @see #setSeriesVisible(int, Boolean)
+	 */
+	public Boolean getSeriesVisible(int series) {
+		return this.seriesVisibleList.getBoolean(series);
+	}
+
+	/**
+	 * Sets the flag that controls whether a series is visible and sends a
+	 * {@link RendererChangeEvent} to all registered listeners.
+	 *
+	 * @param series
+	 *            the series index (zero-based).
+	 * @param visible
+	 *            the flag (<code>null</code> permitted).
+	 *
+	 * @see #getSeriesVisible(int)
+	 */
+	public void setSeriesVisible(int series, Boolean visible) {
+		setSeriesVisible(series, visible, true);
+	}
+
+	/**
+	 * Sets the flag that controls whether a series is visible and, if
+	 * requested, sends a {@link RendererChangeEvent} to all registered
+	 * listeners.
+	 *
+	 * @param series
+	 *            the series index.
+	 * @param visible
+	 *            the flag (<code>null</code> permitted).
+	 * @param notify
+	 *            notify listeners?
+	 *
+	 * @see #getSeriesVisible(int)
+	 */
+	public void setSeriesVisible(int series, Boolean visible, boolean notify)
+	{
+		this.seriesVisibleList.setBoolean(series, visible);
+		if (notify) {
+			// we create an event with a special flag set...the purpose of
+			// this is to communicate to the plot (the default receiver of
+			// the event) that series visibility has changed so the axis
+			// ranges might need updating...
+			RendererChangeEvent e = new RendererChangeEvent(this, true);
+			notifyListeners(e);
+		}
+	}
+
+	/**
+	 * Returns the default visibility for all series.
+	 *
+	 * @return The default visibility.
+	 *
+	 * @see #setDefaultSeriesVisible(boolean)
+	 */
+	public boolean getDefaultSeriesVisible() {
+		return this.defaultSeriesVisible;
+	}
+
+	/**
+	 * Sets the default series visibility and sends a
+	 * {@link RendererChangeEvent} to all registered listeners.
+	 *
+	 * @param visible
+	 *            the flag.
+	 *
+	 * @see #getDefaultSeriesVisible()
+	 */
+	public void setDefaultSeriesVisible(boolean visible) {
+		// defer argument checking...
+		setDefaultSeriesVisible(visible, true);
+	}
+
+	/**
+	 * Sets the default series visibility and, if requested, sends a
+	 * {@link RendererChangeEvent} to all registered listeners.
+	 *
+	 * @param visible
+	 *            the visibility.
+	 * @param notify
+	 *            notify listeners?
+	 *
+	 * @see #getDefaultSeriesVisible()
+	 */
+	public void setDefaultSeriesVisible(boolean visible, boolean notify) {
+		this.defaultSeriesVisible = visible;
+		if (notify) {
+			// we create an event with a special flag set...the purpose of
+			// this is to communicate to the plot (the default receiver of
+			// the event) that series visibility has changed so the axis
+			// ranges might need updating...
+			RendererChangeEvent e = new RendererChangeEvent(this, true);
+			notifyListeners(e);
+		}
+	}
+
 	// SERIES VISIBLE IN LEGEND (not yet respected by all renderers)
 
 	/**
@@ -815,510 +830,545 @@ public abstract class AbstractRenderer implements Cloneable, Serializable {
 		}
 	}
 
-	//
-	// // PAINT
-	//
-	// /**
-	// * Returns the paint used to fill data items as they are drawn.
-	// * (this is typically the same for an entire series).
-	// * <p>
-	// * The default implementation passes control to the {@link
-	// DefaultPaintIRS}
-	// * which uses the <code>lookupSeriesPaint(row)</code> method. You can
-	// * implement your own {@link PaintIRS} or override this method if you
-	// * require different behavior.
-	// *
-	// * @param row the row (or series) index (zero-based).
-	// * @param column the column (or category) index (zero-based).
-	// *
-	// * @return The paint (never <code>null</code>).
-	// */
-	// public Paint getItemPaint(int row, int column) {
-	// return paintIRS.getItemPaint(row, column);
-	// }
-	//
-	// /**
-	// * Returns the paint used to fill an item drawn by the renderer.
-	// *
-	// * @param series the series index (zero-based).
-	// *
-	// * @return The paint (never <code>null</code>).
-	// *
-	// * @since 1.0.6
-	// */
-	// public Paint lookupSeriesPaint(int series) {
-	//
-	// Paint seriesPaint = getSeriesPaint(series);
-	// if (seriesPaint == null && this.autoPopulateSeriesPaint) {
-	// DrawingSupplier supplier = getDrawingSupplier();
-	// if (supplier != null) {
-	// seriesPaint = supplier.getNextPaint();
-	// setSeriesPaint(series, seriesPaint, false);
-	// }
-	// }
-	// if (seriesPaint == null) {
-	// seriesPaint = this.defaultPaint;
-	// }
-	// return seriesPaint;
-	//
-	// }
-	//
-	// /**
-	// * Returns the paint used to fill an item drawn by the renderer.
-	// *
-	// * @param series the series index (zero-based).
-	// *
-	// * @return The paint (possibly <code>null</code>).
-	// *
-	// * @see #setSeriesPaint(int, Paint)
-	// */
-	// public Paint getSeriesPaint(int series) {
-	// return this.paintMap.get(series);
-	// }
-	//
-	// /**
-	// * Sets the paint used for a series and sends a {@link
-	// RendererChangeEvent}
-	// * to all registered listeners.
-	// *
-	// * @param series the series index (zero-based).
-	// * @param paint the paint (<code>null</code> permitted).
-	// *
-	// * @see #getSeriesPaint(int)
-	// */
-	// public void setSeriesPaint(int series, Paint paint) {
-	// setSeriesPaint(series, paint, true);
-	// }
-	//
-	// /**
-	// * Sets the paint used for a series and, if requested, sends a
-	// * {@link RendererChangeEvent} to all registered listeners.
-	// *
-	// * @param series the series index.
-	// * @param paint the paint (<code>null</code> permitted).
-	// * @param notify notify listeners?
-	// *
-	// * @see #getSeriesPaint(int)
-	// */
-	// public void setSeriesPaint(int series, Paint paint, boolean notify) {
-	// this.paintMap.put(series, paint);
-	// if (notify) {
-	// fireChangeEvent();
-	// }
-	// }
-	//
-	// /**
-	// * Clears the series paint settings for this renderer and, if requested,
-	// * sends a {@link RendererChangeEvent} to all registered listeners.
-	// *
-	// * @param notify notify listeners?
-	// *
-	// * @since 1.0.11
-	// */
-	// public void clearSeriesPaints(boolean notify) {
-	// this.paintMap.clear();
-	// if (notify) {
-	// fireChangeEvent();
-	// }
-	// }
-	//
-	// /**
-	// * Returns the default paint.
-	// *
-	// * @return The default paint (never <code>null</code>).
-	// *
-	// * @see #setDefaultPaint(Paint)
-	// */
-	// public Paint getDefaultPaint() {
-	// return this.defaultPaint;
-	// }
-	//
-	// /**
-	// * Sets the default paint and sends a {@link RendererChangeEvent} to all
-	// * registered listeners.
-	// *
-	// * @param paint the paint (<code>null</code> not permitted).
-	// *
-	// * @see #getDefaultPaint()
-	// */
-	// public void setDefaultPaint(Paint paint) {
-	// // defer argument checking...
-	// setDefaultPaint(paint, true);
-	// }
-	//
-	// /**
-	// * Sets the default paint and, if requested, sends a
-	// * {@link RendererChangeEvent} to all registered listeners.
-	// *
-	// * @param paint the paint (<code>null</code> not permitted).
-	// * @param notify notify listeners?
-	// *
-	// * @see #getDefaultPaint()
-	// */
-	// public void setDefaultPaint(Paint paint, boolean notify) {
-	// this.defaultPaint = paint;
-	// if (notify) {
-	// fireChangeEvent();
-	// }
-	// }
-	//
-	// /**
-	// * Returns the flag that controls whether or not the series paint list is
-	// * automatically populated when {@link #lookupSeriesPaint(int)} is called.
-	// *
-	// * @return A boolean.
-	// *
-	// * @since 1.0.6
-	// *
-	// * @see #setAutoPopulateSeriesPaint(boolean)
-	// */
-	// public boolean getAutoPopulateSeriesPaint() {
-	// return this.autoPopulateSeriesPaint;
-	// }
-	//
-	// /**
-	// * Sets the flag that controls whether or not the series paint list is
-	// * automatically populated when {@link #lookupSeriesPaint(int)} is called.
-	// *
-	// * @param auto the new flag value.
-	// *
-	// * @since 1.0.6
-	// *
-	// * @see #getAutoPopulateSeriesPaint()
-	// */
-	// public void setAutoPopulateSeriesPaint(boolean auto) {
-	// this.autoPopulateSeriesPaint = auto;
-	// }
-	//
-	// //// FILL PAINT
-	// //////////////////////////////////////////////////////////
-	//
-	// /**
-	// * Returns the paint used to fill data items as they are drawn.
-	// * (this is typically the same for an entire series).
-	// * <p>
-	// * The default implementation passes control to the {@link
-	// DefaultPaintIRS}
-	// * which uses the <code>lookupSeriesFillPaint(row)</code> method. You can
-	// * implement your own {@link PaintIRS} or override this method if you
-	// * require different behavior.
-	// *
-	// * @param row the row (or series) index (zero-based).
-	// * @param column the column (or category) index (zero-based).
-	// *
-	// * @return The paint (never <code>null</code>).
-	// */
-	// public Paint getItemFillPaint(int row, int column) {
-	// return paintIRS.getItemFillPaint(row, column);
-	// }
-	//
-	// /**
-	// * Returns the paint used to fill an item drawn by the renderer.
-	// *
-	// * @param series the series (zero-based index).
-	// *
-	// * @return The paint (never <code>null</code>).
-	// *
-	// * @since 1.0.6
-	// */
-	// public Paint lookupSeriesFillPaint(int series) {
-	//
-	// Paint seriesFillPaint = getSeriesFillPaint(series);
-	// if (seriesFillPaint == null && this.autoPopulateSeriesFillPaint) {
-	// DrawingSupplier supplier = getDrawingSupplier();
-	// if (supplier != null) {
-	// seriesFillPaint = supplier.getNextFillPaint();
-	// setSeriesFillPaint(series, seriesFillPaint, false);
-	// }
-	// }
-	// if (seriesFillPaint == null) {
-	// seriesFillPaint = this.defaultFillPaint;
-	// }
-	// return seriesFillPaint;
-	//
-	// }
-	//
-	// /**
-	// * Returns the paint used to fill an item drawn by the renderer.
-	// *
-	// * @param series the series (zero-based index).
-	// *
-	// * @return The paint (never <code>null</code>).
-	// *
-	// * @see #setSeriesFillPaint(int, Paint)
-	// */
-	// public Paint getSeriesFillPaint(int series) {
-	// return this.fillPaintMap.get(series);
-	// }
-	//
-	// /**
-	// * Sets the paint used for a series fill and sends a
-	// * {@link RendererChangeEvent} to all registered listeners.
-	// *
-	// * @param series the series index (zero-based).
-	// * @param paint the paint (<code>null</code> permitted).
-	// *
-	// * @see #getSeriesFillPaint(int)
-	// */
-	// public void setSeriesFillPaint(int series, Paint paint) {
-	// setSeriesFillPaint(series, paint, true);
-	// }
-	//
-	// /**
-	// * Sets the paint used to fill a series and, if requested,
-	// * sends a {@link RendererChangeEvent} to all registered listeners.
-	// *
-	// * @param series the series index (zero-based).
-	// * @param paint the paint (<code>null</code> permitted).
-	// * @param notify notify listeners?
-	// *
-	// * @see #getSeriesFillPaint(int)
-	// */
-	// public void setSeriesFillPaint(int series, Paint paint, boolean notify) {
-	// this.fillPaintMap.put(series, paint);
-	// if (notify) {
-	// fireChangeEvent();
-	// }
-	// }
-	//
-	// /**
-	// * Returns the default fill paint.
-	// *
-	// * @return The paint (never <code>null</code>).
-	// *
-	// * @see #setDefaultFillPaint(Paint)
-	// */
-	// public Paint getDefaultFillPaint() {
-	// return this.defaultFillPaint;
-	// }
-	//
-	// /**
-	// * Sets the default fill paint and sends a {@link RendererChangeEvent} to
-	// * all registered listeners.
-	// *
-	// * @param paint the paint (<code>null</code> not permitted).
-	// *
-	// * @see #getDefaultFillPaint()
-	// */
-	// public void setDefaultFillPaint(Paint paint) {
-	// // defer argument checking...
-	// setDefaultFillPaint(paint, true);
-	// }
-	//
-	// /**
-	// * Sets the default fill paint and, if requested, sends a
-	// * {@link RendererChangeEvent} to all registered listeners.
-	// *
-	// * @param paint the paint (<code>null</code> not permitted).
-	// * @param notify notify listeners?
-	// *
-	// * @see #getDefaultFillPaint()
-	// */
-	// public void setDefaultFillPaint(Paint paint, boolean notify) {
-	// ParamChecks.nullNotPermitted(paint, "paint");
-	// this.defaultFillPaint = paint;
-	// if (notify) {
-	// fireChangeEvent();
-	// }
-	// }
-	//
-	// /**
-	// * Returns the flag that controls whether or not the series fill paint
-	// list
-	// * is automatically populated when {@link #lookupSeriesFillPaint(int)} is
-	// * called.
-	// *
-	// * @return A boolean.
-	// *
-	// * @since 1.0.6
-	// *
-	// * @see #setAutoPopulateSeriesFillPaint(boolean)
-	// */
-	// public boolean getAutoPopulateSeriesFillPaint() {
-	// return this.autoPopulateSeriesFillPaint;
-	// }
-	//
-	// /**
-	// * Sets the flag that controls whether or not the series fill paint list
-	// is
-	// * automatically populated when {@link #lookupSeriesFillPaint(int)} is
-	// * called.
-	// *
-	// * @param auto the new flag value.
-	// *
-	// * @since 1.0.6
-	// *
-	// * @see #getAutoPopulateSeriesFillPaint()
-	// */
-	// public void setAutoPopulateSeriesFillPaint(boolean auto) {
-	// this.autoPopulateSeriesFillPaint = auto;
-	// }
-	//
-	// // OUTLINE PAINT
-	// //////////////////////////////////////////////////////////
-	//
-	// /**
-	// * Returns the paint used to outline data items as they are drawn.
-	// * (this is typically the same for an entire series).
-	// * <p>
-	// * The default implementation passes control to the {@link
-	// DefaultPaintIRS}
-	// * which uses the <code>return lookupSeriesOutlinePaint(row)</code>
-	// method.
-	// * You can implement your own {@link PaintIRS} or override this method if
-	// * you require different behavior.
-	// *
-	// * @param row the row (or series) index (zero-based).
-	// * @param column the column (or category) index (zero-based).
-	// *
-	// * @return The paint (never <code>null</code>).
-	// */
-	// public Paint getItemOutlinePaint(int row, int column) {
-	// return paintIRS.getItemOutlinePaint(row, column);
-	// }
-	//
-	// /**
-	// * Returns the paint used to outline an item drawn by the renderer.
-	// *
-	// * @param series the series (zero-based index).
-	// *
-	// * @return The paint (never <code>null</code>).
-	// *
-	// * @since 1.0.6
-	// */
-	// public Paint lookupSeriesOutlinePaint(int series) {
-	//
-	// Paint seriesOutlinePaint = getSeriesOutlinePaint(series);
-	// if (seriesOutlinePaint == null && this.autoPopulateSeriesOutlinePaint) {
-	// DrawingSupplier supplier = getDrawingSupplier();
-	// if (supplier != null) {
-	// seriesOutlinePaint = supplier.getNextOutlinePaint();
-	// setSeriesOutlinePaint(series, seriesOutlinePaint, false);
-	// }
-	// }
-	// if (seriesOutlinePaint == null) {
-	// seriesOutlinePaint = this.defaultOutlinePaint;
-	// }
-	// return seriesOutlinePaint;
-	//
-	// }
-	//
-	// /**
-	// * Returns the paint used to outline an item drawn by the renderer.
-	// *
-	// * @param series the series (zero-based index).
-	// *
-	// * @return The paint (possibly <code>null</code>).
-	// *
-	// * @see #setSeriesOutlinePaint(int, Paint)
-	// */
-	// public Paint getSeriesOutlinePaint(int series) {
-	// return this.outlinePaintMap.get(series);
-	// }
-	//
-	// /**
-	// * Sets the paint used for a series outline and sends a
-	// * {@link RendererChangeEvent} to all registered listeners.
-	// *
-	// * @param series the series index (zero-based).
-	// * @param paint the paint (<code>null</code> permitted).
-	// *
-	// * @see #getSeriesOutlinePaint(int)
-	// */
-	// public void setSeriesOutlinePaint(int series, Paint paint) {
-	// setSeriesOutlinePaint(series, paint, true);
-	// }
-	//
-	// /**
-	// * Sets the paint used to draw the outline for a series and, if requested,
-	// * sends a {@link RendererChangeEvent} to all registered listeners.
-	// *
-	// * @param series the series index (zero-based).
-	// * @param paint the paint (<code>null</code> permitted).
-	// * @param notify notify listeners?
-	// *
-	// * @see #getSeriesOutlinePaint(int)
-	// */
-	// public void setSeriesOutlinePaint(int series, Paint paint, boolean
-	// notify) {
-	// this.outlinePaintMap.put(series, paint);
-	// if (notify) {
-	// fireChangeEvent();
-	// }
-	// }
-	//
-	// /**
-	// * Returns the default outline paint.
-	// *
-	// * @return The paint (never <code>null</code>).
-	// *
-	// * @see #setDefaultOutlinePaint(Paint)
-	// */
-	// public Paint getDefaultOutlinePaint() {
-	// return this.defaultOutlinePaint;
-	// }
-	//
-	// /**
-	// * Sets the default outline paint and sends a {@link RendererChangeEvent}
-	// to
-	// * all registered listeners.
-	// *
-	// * @param paint the paint (<code>null</code> not permitted).
-	// *
-	// * @see #getDefaultOutlinePaint()
-	// */
-	// public void setDefaultOutlinePaint(Paint paint) {
-	// // defer argument checking...
-	// setDefaultOutlinePaint(paint, true);
-	// }
-	//
-	// /**
-	// * Sets the default outline paint and, if requested, sends a
-	// * {@link RendererChangeEvent} to all registered listeners.
-	// *
-	// * @param paint the paint (<code>null</code> not permitted).
-	// * @param notify notify listeners?
-	// *
-	// * @see #getDefaultOutlinePaint()
-	// */
-	// public void setDefaultOutlinePaint(Paint paint, boolean notify) {
-	// ParamChecks.nullNotPermitted(paint, "paint");
-	// this.defaultOutlinePaint = paint;
-	// if (notify) {
-	// fireChangeEvent();
-	// }
-	// }
-	//
-	// /**
-	// * Returns the flag that controls whether or not the series outline paint
-	// * list is automatically populated when
-	// * {@link #lookupSeriesOutlinePaint(int)} is called.
-	// *
-	// * @return A boolean.
-	// *
-	// * @since 1.0.6
-	// *
-	// * @see #setAutoPopulateSeriesOutlinePaint(boolean)
-	// */
-	// public boolean getAutoPopulateSeriesOutlinePaint() {
-	// return this.autoPopulateSeriesOutlinePaint;
-	// }
-	//
-	// /**
-	// * Sets the flag that controls whether or not the series outline paint
-	// list
-	// * is automatically populated when {@link #lookupSeriesOutlinePaint(int)}
-	// * is called.
-	// *
-	// * @param auto the new flag value.
-	// *
-	// * @since 1.0.6
-	// *
-	// * @see #getAutoPopulateSeriesOutlinePaint()
-	// */
-	// public void setAutoPopulateSeriesOutlinePaint(boolean auto) {
-	// this.autoPopulateSeriesOutlinePaint = auto;
-	// }
+	// PAINT
+
+	/**
+	 * Returns the paint used to fill data items as they are drawn. (this is
+	 * typically the same for an entire series).
+	 * <p>
+	 * The default implementation passes control to the {@link DefaultPaintIRS}
+	 * which uses the <code>lookupSeriesPaint(row)</code> method. You can
+	 * implement your own {@link PaintIRS} or override this method if you
+	 * require different behavior.
+	 *
+	 * @param row
+	 *            the row (or series) index (zero-based).
+	 * @param column
+	 *            the column (or category) index (zero-based).
+	 *
+	 * @return The paint (never <code>null</code>).
+	 */
+	public Paint getItemPaint(int row, int column) {
+		return paintIRS.getItemPaint(row, column);
+	}
+
+	/**
+	 * Returns the paint used to fill an item drawn by the renderer.
+	 *
+	 * @param series
+	 *            the series index (zero-based).
+	 *
+	 * @return The paint (never <code>null</code>).
+	 *
+	 * @since 1.0.6
+	 */
+	public Paint lookupSeriesPaint(int series) {
+
+		Paint seriesPaint = getSeriesPaint(series);
+		if (seriesPaint == null && this.autoPopulateSeriesPaint) {
+			// JAVAFX
+			// DrawingSupplier supplier = getDrawingSupplier();
+			// if (supplier != null) {
+			// seriesPaint = supplier.getNextPaint();
+			// setSeriesPaint(series, seriesPaint, false);
+			// }
+		}
+		if (seriesPaint == null) {
+			seriesPaint = this.defaultPaint;
+		}
+		return seriesPaint;
+
+	}
+
+	/**
+	 * Returns the paint used to fill an item drawn by the renderer.
+	 *
+	 * @param series
+	 *            the series index (zero-based).
+	 *
+	 * @return The paint (possibly <code>null</code>).
+	 *
+	 * @see #setSeriesPaint(int, Paint)
+	 */
+	public Paint getSeriesPaint(int series) {
+		return this.paintMap.get(series);
+	}
+
+	/**
+	 * Sets the paint used for a series and sends a {@link RendererChangeEvent}
+	 * to all registered listeners.
+	 *
+	 * @param series
+	 *            the series index (zero-based).
+	 * @param paint
+	 *            the paint (<code>null</code> permitted).
+	 *
+	 * @see #getSeriesPaint(int)
+	 */
+	public void setSeriesPaint(int series, Paint paint) {
+		setSeriesPaint(series, paint, true);
+	}
+
+	/**
+	 * Sets the paint used for a series and, if requested, sends a
+	 * {@link RendererChangeEvent} to all registered listeners.
+	 *
+	 * @param series
+	 *            the series index.
+	 * @param paint
+	 *            the paint (<code>null</code> permitted).
+	 * @param notify
+	 *            notify listeners?
+	 *
+	 * @see #getSeriesPaint(int)
+	 */
+	public void setSeriesPaint(int series, Paint paint, boolean notify) {
+		this.paintMap.put(series, paint);
+		if (notify) {
+			fireChangeEvent();
+		}
+	}
+
+	/**
+	 * Clears the series paint settings for this renderer and, if requested,
+	 * sends a {@link RendererChangeEvent} to all registered listeners.
+	 *
+	 * @param notify
+	 *            notify listeners?
+	 *
+	 * @since 1.0.11
+	 */
+	public void clearSeriesPaints(boolean notify) {
+		this.paintMap.clear();
+		if (notify) {
+			fireChangeEvent();
+		}
+	}
+
+	/**
+	 * Returns the default paint.
+	 *
+	 * @return The default paint (never <code>null</code>).
+	 *
+	 * @see #setDefaultPaint(Paint)
+	 */
+	public Paint getDefaultPaint() {
+		return this.defaultPaint;
+	}
+
+	/**
+	 * Sets the default paint and sends a {@link RendererChangeEvent} to all
+	 * registered listeners.
+	 *
+	 * @param paint
+	 *            the paint (<code>null</code> not permitted).
+	 *
+	 * @see #getDefaultPaint()
+	 */
+	public void setDefaultPaint(Paint paint) {
+		// defer argument checking...
+		setDefaultPaint(paint, true);
+	}
+
+	/**
+	 * Sets the default paint and, if requested, sends a
+	 * {@link RendererChangeEvent} to all registered listeners.
+	 *
+	 * @param paint
+	 *            the paint (<code>null</code> not permitted).
+	 * @param notify
+	 *            notify listeners?
+	 *
+	 * @see #getDefaultPaint()
+	 */
+	public void setDefaultPaint(Paint paint, boolean notify) {
+		this.defaultPaint = paint;
+		if (notify) {
+			fireChangeEvent();
+		}
+	}
+
+	/**
+	 * Returns the flag that controls whether or not the series paint list is
+	 * automatically populated when {@link #lookupSeriesPaint(int)} is called.
+	 *
+	 * @return A boolean.
+	 *
+	 * @since 1.0.6
+	 *
+	 * @see #setAutoPopulateSeriesPaint(boolean)
+	 */
+	public boolean getAutoPopulateSeriesPaint() {
+		return this.autoPopulateSeriesPaint;
+	}
+
+	/**
+	 * Sets the flag that controls whether or not the series paint list is
+	 * automatically populated when {@link #lookupSeriesPaint(int)} is called.
+	 *
+	 * @param auto
+	 *            the new flag value.
+	 *
+	 * @since 1.0.6
+	 *
+	 * @see #getAutoPopulateSeriesPaint()
+	 */
+	public void setAutoPopulateSeriesPaint(boolean auto) {
+		this.autoPopulateSeriesPaint = auto;
+	}
+
+	// // FILL PAINT
+	// ////////////////////////////////////////////////////////
+
+	/**
+	 * Returns the paint used to fill data items as they are drawn. (this is
+	 * typically the same for an entire series).
+	 * <p>
+	 * The default implementation passes control to the {@link DefaultPaintIRS}
+	 * which uses the <code>lookupSeriesFillPaint(row)</code> method. You can
+	 * implement your own {@link PaintIRS} or override this method if you
+	 * require different behavior.
+	 *
+	 * @param row
+	 *            the row (or series) index (zero-based).
+	 * @param column
+	 *            the column (or category) index (zero-based).
+	 *
+	 * @return The paint (never <code>null</code>).
+	 */
+	public Paint getItemFillPaint(int row, int column) {
+		return paintIRS.getItemFillPaint(row, column);
+	}
+
+	/**
+	 * Returns the paint used to fill an item drawn by the renderer.
+	 *
+	 * @param series
+	 *            the series (zero-based index).
+	 *
+	 * @return The paint (never <code>null</code>).
+	 *
+	 * @since 1.0.6
+	 */
+	public Paint lookupSeriesFillPaint(int series) {
+
+		Paint seriesFillPaint = getSeriesFillPaint(series);
+		if (seriesFillPaint == null && this.autoPopulateSeriesFillPaint) {
+			// JAVAFX
+			// DrawingSupplier supplier = getDrawingSupplier();
+			// if (supplier != null) {
+			// seriesFillPaint = supplier.getNextFillPaint();
+			// setSeriesFillPaint(series, seriesFillPaint, false);
+			// }
+		}
+		if (seriesFillPaint == null) {
+			seriesFillPaint = this.defaultFillPaint;
+		}
+		return seriesFillPaint;
+
+	}
+
+	/**
+	 * Returns the paint used to fill an item drawn by the renderer.
+	 *
+	 * @param series
+	 *            the series (zero-based index).
+	 *
+	 * @return The paint (never <code>null</code>).
+	 *
+	 * @see #setSeriesFillPaint(int, Paint)
+	 */
+	public Paint getSeriesFillPaint(int series) {
+		return this.fillPaintMap.get(series);
+	}
+
+	/**
+	 * Sets the paint used for a series fill and sends a
+	 * {@link RendererChangeEvent} to all registered listeners.
+	 *
+	 * @param series
+	 *            the series index (zero-based).
+	 * @param paint
+	 *            the paint (<code>null</code> permitted).
+	 *
+	 * @see #getSeriesFillPaint(int)
+	 */
+	public void setSeriesFillPaint(int series, Paint paint) {
+		setSeriesFillPaint(series, paint, true);
+	}
+
+	/**
+	 * Sets the paint used to fill a series and, if requested, sends a
+	 * {@link RendererChangeEvent} to all registered listeners.
+	 *
+	 * @param series
+	 *            the series index (zero-based).
+	 * @param paint
+	 *            the paint (<code>null</code> permitted).
+	 * @param notify
+	 *            notify listeners?
+	 *
+	 * @see #getSeriesFillPaint(int)
+	 */
+	public void setSeriesFillPaint(int series, Paint paint, boolean notify) {
+		this.fillPaintMap.put(series, paint);
+		if (notify) {
+			fireChangeEvent();
+		}
+	}
+
+	/**
+	 * Returns the default fill paint.
+	 *
+	 * @return The paint (never <code>null</code>).
+	 *
+	 * @see #setDefaultFillPaint(Paint)
+	 */
+	public Paint getDefaultFillPaint() {
+		return this.defaultFillPaint;
+	}
+
+	/**
+	 * Sets the default fill paint and sends a {@link RendererChangeEvent} to
+	 * all registered listeners.
+	 *
+	 * @param paint
+	 *            the paint (<code>null</code> not permitted).
+	 *
+	 * @see #getDefaultFillPaint()
+	 */
+	public void setDefaultFillPaint(Paint paint) {
+		// defer argument checking...
+		setDefaultFillPaint(paint, true);
+	}
+
+	/**
+	 * Sets the default fill paint and, if requested, sends a
+	 * {@link RendererChangeEvent} to all registered listeners.
+	 *
+	 * @param paint
+	 *            the paint (<code>null</code> not permitted).
+	 * @param notify
+	 *            notify listeners?
+	 *
+	 * @see #getDefaultFillPaint()
+	 */
+	public void setDefaultFillPaint(Paint paint, boolean notify) {
+		ParamChecks.nullNotPermitted(paint, "paint");
+		this.defaultFillPaint = paint;
+		if (notify) {
+			fireChangeEvent();
+		}
+	}
+
+	/**
+	 * Returns the flag that controls whether or not the series fill paint list
+	 * is automatically populated when {@link #lookupSeriesFillPaint(int)} is
+	 * called.
+	 *
+	 * @return A boolean.
+	 *
+	 * @since 1.0.6
+	 *
+	 * @see #setAutoPopulateSeriesFillPaint(boolean)
+	 */
+	public boolean getAutoPopulateSeriesFillPaint() {
+		return this.autoPopulateSeriesFillPaint;
+	}
+
+	/**
+	 * Sets the flag that controls whether or not the series fill paint list is
+	 * automatically populated when {@link #lookupSeriesFillPaint(int)} is
+	 * called.
+	 *
+	 * @param auto
+	 *            the new flag value.
+	 *
+	 * @since 1.0.6
+	 *
+	 * @see #getAutoPopulateSeriesFillPaint()
+	 */
+	public void setAutoPopulateSeriesFillPaint(boolean auto) {
+		this.autoPopulateSeriesFillPaint = auto;
+	}
+
+	// OUTLINE PAINT
+	// ////////////////////////////////////////////////////////
+
+	/**
+	 * Returns the paint used to outline data items as they are drawn. (this is
+	 * typically the same for an entire series).
+	 * <p>
+	 * The default implementation passes control to the {@link DefaultPaintIRS}
+	 * which uses the <code>return lookupSeriesOutlinePaint(row)</code> method.
+	 * You can implement your own {@link PaintIRS} or override this method if
+	 * you require different behavior.
+	 *
+	 * @param row
+	 *            the row (or series) index (zero-based).
+	 * @param column
+	 *            the column (or category) index (zero-based).
+	 *
+	 * @return The paint (never <code>null</code>).
+	 */
+	public Paint getItemOutlinePaint(int row, int column) {
+		return paintIRS.getItemOutlinePaint(row, column);
+	}
+
+	/**
+	 * Returns the paint used to outline an item drawn by the renderer.
+	 *
+	 * @param series
+	 *            the series (zero-based index).
+	 *
+	 * @return The paint (never <code>null</code>).
+	 *
+	 * @since 1.0.6
+	 */
+	public Paint lookupSeriesOutlinePaint(int series) {
+
+		Paint seriesOutlinePaint = getSeriesOutlinePaint(series);
+		if (seriesOutlinePaint == null && this.autoPopulateSeriesOutlinePaint) {
+			// JAVAFX
+			// DrawingSupplier supplier = getDrawingSupplier();
+			// if (supplier != null) {
+			// seriesOutlinePaint = supplier.getNextOutlinePaint();
+			// setSeriesOutlinePaint(series, seriesOutlinePaint, false);
+			// }
+		}
+		if (seriesOutlinePaint == null) {
+			seriesOutlinePaint = this.defaultOutlinePaint;
+		}
+		return seriesOutlinePaint;
+
+	}
+
+	/**
+	 * Returns the paint used to outline an item drawn by the renderer.
+	 *
+	 * @param series
+	 *            the series (zero-based index).
+	 *
+	 * @return The paint (possibly <code>null</code>).
+	 *
+	 * @see #setSeriesOutlinePaint(int, Paint)
+	 */
+	public Paint getSeriesOutlinePaint(int series) {
+		return this.outlinePaintMap.get(series);
+	}
+
+	/**
+	 * Sets the paint used for a series outline and sends a
+	 * {@link RendererChangeEvent} to all registered listeners.
+	 *
+	 * @param series
+	 *            the series index (zero-based).
+	 * @param paint
+	 *            the paint (<code>null</code> permitted).
+	 *
+	 * @see #getSeriesOutlinePaint(int)
+	 */
+	public void setSeriesOutlinePaint(int series, Paint paint) {
+		setSeriesOutlinePaint(series, paint, true);
+	}
+
+	/**
+	 * Sets the paint used to draw the outline for a series and, if requested,
+	 * sends a {@link RendererChangeEvent} to all registered listeners.
+	 *
+	 * @param series
+	 *            the series index (zero-based).
+	 * @param paint
+	 *            the paint (<code>null</code> permitted).
+	 * @param notify
+	 *            notify listeners?
+	 *
+	 * @see #getSeriesOutlinePaint(int)
+	 */
+	public void setSeriesOutlinePaint(int series, Paint paint, boolean
+			notify) {
+		this.outlinePaintMap.put(series, paint);
+		if (notify) {
+			fireChangeEvent();
+		}
+	}
+
+	/**
+	 * Returns the default outline paint.
+	 *
+	 * @return The paint (never <code>null</code>).
+	 *
+	 * @see #setDefaultOutlinePaint(Paint)
+	 */
+	public Paint getDefaultOutlinePaint() {
+		return this.defaultOutlinePaint;
+	}
+
+	/**
+	 * Sets the default outline paint and sends a {@link RendererChangeEvent} to
+	 * all registered listeners.
+	 *
+	 * @param paint
+	 *            the paint (<code>null</code> not permitted).
+	 *
+	 * @see #getDefaultOutlinePaint()
+	 */
+	public void setDefaultOutlinePaint(Paint paint) {
+		// defer argument checking...
+		setDefaultOutlinePaint(paint, true);
+	}
+
+	/**
+	 * Sets the default outline paint and, if requested, sends a
+	 * {@link RendererChangeEvent} to all registered listeners.
+	 *
+	 * @param paint
+	 *            the paint (<code>null</code> not permitted).
+	 * @param notify
+	 *            notify listeners?
+	 *
+	 * @see #getDefaultOutlinePaint()
+	 */
+	public void setDefaultOutlinePaint(Paint paint, boolean notify) {
+		ParamChecks.nullNotPermitted(paint, "paint");
+		this.defaultOutlinePaint = paint;
+		if (notify) {
+			fireChangeEvent();
+		}
+	}
+
+	/**
+	 * Returns the flag that controls whether or not the series outline paint
+	 * list is automatically populated when
+	 * {@link #lookupSeriesOutlinePaint(int)} is called.
+	 *
+	 * @return A boolean.
+	 *
+	 * @since 1.0.6
+	 *
+	 * @see #setAutoPopulateSeriesOutlinePaint(boolean)
+	 */
+	public boolean getAutoPopulateSeriesOutlinePaint() {
+		return this.autoPopulateSeriesOutlinePaint;
+	}
+
+	/**
+	 * Sets the flag that controls whether or not the series outline paint list
+	 * is automatically populated when {@link #lookupSeriesOutlinePaint(int)} is
+	 * called.
+	 *
+	 * @param auto
+	 *            the new flag value.
+	 *
+	 * @since 1.0.6
+	 *
+	 * @see #getAutoPopulateSeriesOutlinePaint()
+	 */
+	public void setAutoPopulateSeriesOutlinePaint(boolean auto) {
+		this.autoPopulateSeriesOutlinePaint = auto;
+	}
+
+	// JAVAFX stroke
 	//
 	// // STROKE
 	//
@@ -2070,116 +2120,123 @@ public abstract class AbstractRenderer implements Cloneable, Serializable {
 		}
 	}
 
-	//
-	// //// ITEM LABEL PAINT
-	// ////////////////////////////////////////////////////
-	//
-	// /**
-	// * Returns the paint used to draw an item label.
-	// *
-	// * @param row the row index (zero based).
-	// * @param column the column index (zero based).
-	// *
-	// * @return The paint (never <code>null</code>).
-	// */
-	// public Paint getItemLabelPaint(int row, int column) {
-	// Paint result = getSeriesItemLabelPaint(row);
-	// if (result == null) {
-	// result = this.defaultItemLabelPaint;
-	// }
-	// return result;
-	// }
-	//
-	// /**
-	// * Returns the paint used to draw the item labels for a series.
-	// *
-	// * @param series the series index (zero based).
-	// *
-	// * @return The paint (possibly <code>null</code>).
-	// *
-	// * @see #setSeriesItemLabelPaint(int, Paint)
-	// */
-	// public Paint getSeriesItemLabelPaint(int series) {
-	// return this.itemLabelPaintMap.get(series);
-	// }
-	//
-	// /**
-	// * Sets the item label paint for a series and sends a
-	// * {@link RendererChangeEvent} to all registered listeners.
-	// *
-	// * @param series the series (zero based index).
-	// * @param paint the paint (<code>null</code> permitted).
-	// *
-	// * @see #getSeriesItemLabelPaint(int)
-	// */
-	// public void setSeriesItemLabelPaint(int series, Paint paint) {
-	// setSeriesItemLabelPaint(series, paint, true);
-	// }
-	//
-	// /**
-	// * Sets the item label paint for a series and, if requested, sends a
-	// * {@link RendererChangeEvent} to all registered listeners.
-	// *
-	// * @param series the series index (zero based).
-	// * @param paint the paint (<code>null</code> permitted).
-	// * @param notify a flag that controls whether or not listeners are
-	// * notified.
-	// *
-	// * @see #getSeriesItemLabelPaint(int)
-	// */
-	// public void setSeriesItemLabelPaint(int series, Paint paint,
-	// boolean notify) {
-	// this.itemLabelPaintMap.put(series, paint);
-	// if (notify) {
-	// fireChangeEvent();
-	// }
-	// }
-	//
-	// /**
-	// * Returns the default item label paint.
-	// *
-	// * @return The paint (never <code>null</code>).
-	// *
-	// * @see #setDefaultItemLabelPaint(Paint)
-	// */
-	// public Paint getDefaultItemLabelPaint() {
-	// return this.defaultItemLabelPaint;
-	// }
-	//
-	// /**
-	// * Sets the default item label paint and sends a {@link
-	// RendererChangeEvent}
-	// * to all registered listeners.
-	// *
-	// * @param paint the paint (<code>null</code> not permitted).
-	// *
-	// * @see #getDefaultItemLabelPaint()
-	// */
-	// public void setDefaultItemLabelPaint(Paint paint) {
-	// // defer argument checking...
-	// setDefaultItemLabelPaint(paint, true);
-	// }
-	//
-	// /**
-	// * Sets the default item label paint and, if requested, sends a
-	// * {@link RendererChangeEvent} to all registered listeners..
-	// *
-	// * @param paint the paint (<code>null</code> not permitted).
-	// * @param notify a flag that controls whether or not listeners are
-	// * notified.
-	// *
-	// * @see #getDefaultItemLabelPaint()
-	// */
-	// public void setDefaultItemLabelPaint(Paint paint, boolean notify) {
-	// ParamChecks.nullNotPermitted(paint, "paint");
-	// this.defaultItemLabelPaint = paint;
-	// if (notify) {
-	// fireChangeEvent();
-	// }
-	// }
-	//
-	// // POSITIVE ITEM LABEL POSITION...
-	//
+	// // ITEM LABEL PAINT
+	// //////////////////////////////////////////////////
+
+	/**
+	 * Returns the paint used to draw an item label.
+	 *
+	 * @param row
+	 *            the row index (zero based).
+	 * @param column
+	 *            the column index (zero based).
+	 *
+	 * @return The paint (never <code>null</code>).
+	 */
+	public Paint getItemLabelPaint(int row, int column) {
+		Paint result = getSeriesItemLabelPaint(row);
+		if (result == null) {
+			result = this.defaultItemLabelPaint;
+		}
+		return result;
+	}
+
+	/**
+	 * Returns the paint used to draw the item labels for a series.
+	 *
+	 * @param series
+	 *            the series index (zero based).
+	 *
+	 * @return The paint (possibly <code>null</code>).
+	 *
+	 * @see #setSeriesItemLabelPaint(int, Paint)
+	 */
+	public Paint getSeriesItemLabelPaint(int series) {
+		return this.itemLabelPaintMap.get(series);
+	}
+
+	/**
+	 * Sets the item label paint for a series and sends a
+	 * {@link RendererChangeEvent} to all registered listeners.
+	 *
+	 * @param series
+	 *            the series (zero based index).
+	 * @param paint
+	 *            the paint (<code>null</code> permitted).
+	 *
+	 * @see #getSeriesItemLabelPaint(int)
+	 */
+	public void setSeriesItemLabelPaint(int series, Paint paint) {
+		setSeriesItemLabelPaint(series, paint, true);
+	}
+
+	/**
+	 * Sets the item label paint for a series and, if requested, sends a
+	 * {@link RendererChangeEvent} to all registered listeners.
+	 *
+	 * @param series
+	 *            the series index (zero based).
+	 * @param paint
+	 *            the paint (<code>null</code> permitted).
+	 * @param notify
+	 *            a flag that controls whether or not listeners are notified.
+	 *
+	 * @see #getSeriesItemLabelPaint(int)
+	 */
+	public void setSeriesItemLabelPaint(int series, Paint paint,
+			boolean notify) {
+		this.itemLabelPaintMap.put(series, paint);
+		if (notify) {
+			fireChangeEvent();
+		}
+	}
+
+	/**
+	 * Returns the default item label paint.
+	 *
+	 * @return The paint (never <code>null</code>).
+	 *
+	 * @see #setDefaultItemLabelPaint(Paint)
+	 */
+	public Paint getDefaultItemLabelPaint() {
+		return this.defaultItemLabelPaint;
+	}
+
+	/**
+	 * Sets the default item label paint and sends a {@link RendererChangeEvent}
+	 * to all registered listeners.
+	 *
+	 * @param paint
+	 *            the paint (<code>null</code> not permitted).
+	 *
+	 * @see #getDefaultItemLabelPaint()
+	 */
+	public void setDefaultItemLabelPaint(Paint paint) {
+		// defer argument checking...
+		setDefaultItemLabelPaint(paint, true);
+	}
+
+	/**
+	 * Sets the default item label paint and, if requested, sends a
+	 * {@link RendererChangeEvent} to all registered listeners..
+	 *
+	 * @param paint
+	 *            the paint (<code>null</code> not permitted).
+	 * @param notify
+	 *            a flag that controls whether or not listeners are notified.
+	 *
+	 * @see #getDefaultItemLabelPaint()
+	 */
+	public void setDefaultItemLabelPaint(Paint paint, boolean notify) {
+		ParamChecks.nullNotPermitted(paint, "paint");
+		this.defaultItemLabelPaint = paint;
+		if (notify) {
+			fireChangeEvent();
+		}
+	}
+
+	// POSITIVE ITEM LABEL POSITION...
+
 	/**
 	 * Returns the item label position for positive values (this is typically
 	 * the same for an entire series).
@@ -2222,85 +2279,90 @@ public abstract class AbstractRenderer implements Cloneable, Serializable {
 
 	}
 
-	//
-	// /**
-	// * Sets the item label position for all positive values in a series and
-	// * sends a {@link RendererChangeEvent} to all registered listeners.
-	// *
-	// * @param series the series index (zero-based).
-	// * @param position the position (<code>null</code> permitted).
-	// *
-	// * @see #getSeriesPositiveItemLabelPosition(int)
-	// */
-	// public void setSeriesPositiveItemLabelPosition(int series,
-	// ItemLabelPosition position) {
-	// setSeriesPositiveItemLabelPosition(series, position, true);
-	// }
-	//
-	// /**
-	// * Sets the item label position for all positive values in a series and
-	// (if
-	// * requested) sends a {@link RendererChangeEvent} to all registered
-	// * listeners.
-	// *
-	// * @param series the series index (zero-based).
-	// * @param position the position (<code>null</code> permitted).
-	// * @param notify notify registered listeners?
-	// *
-	// * @see #getSeriesPositiveItemLabelPosition(int)
-	// */
-	// public void setSeriesPositiveItemLabelPosition(int series,
-	// ItemLabelPosition position, boolean notify) {
-	// this.positiveItemLabelPositionMap.put(series, position);
-	// if (notify) {
-	// fireChangeEvent();
-	// }
-	// }
-	//
-	// /**
-	// * Returns the default positive item label position.
-	// *
-	// * @return The position (never <code>null</code>).
-	// *
-	// * @see #setDefaultPositiveItemLabelPosition(ItemLabelPosition)
-	// */
-	// public ItemLabelPosition getDefaultPositiveItemLabelPosition() {
-	// return this.defaultPositiveItemLabelPosition;
-	// }
-	//
-	// /**
-	// * Sets the default positive item label position.
-	// *
-	// * @param position the position (<code>null</code> not permitted).
-	// *
-	// * @see #getDefaultPositiveItemLabelPosition()
-	// */
-	// public void setDefaultPositiveItemLabelPosition(
-	// ItemLabelPosition position) {
-	// // defer argument checking...
-	// setDefaultPositiveItemLabelPosition(position, true);
-	// }
-	//
-	// /**
-	// * Sets the default positive item label position and, if requested, sends
-	// a
-	// * {@link RendererChangeEvent} to all registered listeners.
-	// *
-	// * @param position the position (<code>null</code> not permitted).
-	// * @param notify notify registered listeners?
-	// *
-	// * @see #getDefaultPositiveItemLabelPosition()
-	// */
-	// public void setDefaultPositiveItemLabelPosition(ItemLabelPosition
-	// position,
-	// boolean notify) {
-	// ParamChecks.nullNotPermitted(position, "positions");
-	// this.defaultPositiveItemLabelPosition = position;
-	// if (notify) {
-	// fireChangeEvent();
-	// }
-	// }
-	//
+	/**
+	 * Sets the item label position for all positive values in a series and
+	 * sends a {@link RendererChangeEvent} to all registered listeners.
+	 *
+	 * @param series
+	 *            the series index (zero-based).
+	 * @param position
+	 *            the position (<code>null</code> permitted).
+	 *
+	 * @see #getSeriesPositiveItemLabelPosition(int)
+	 */
+	public void setSeriesPositiveItemLabelPosition(int series,
+			ItemLabelPosition position) {
+		setSeriesPositiveItemLabelPosition(series, position, true);
+	}
+
+	/**
+	 * Sets the item label position for all positive values in a series and (if
+	 * requested) sends a {@link RendererChangeEvent} to all registered
+	 * listeners.
+	 *
+	 * @param series
+	 *            the series index (zero-based).
+	 * @param position
+	 *            the position (<code>null</code> permitted).
+	 * @param notify
+	 *            notify registered listeners?
+	 *
+	 * @see #getSeriesPositiveItemLabelPosition(int)
+	 */
+	public void setSeriesPositiveItemLabelPosition(int series,
+			ItemLabelPosition position, boolean notify) {
+		this.positiveItemLabelPositionMap.put(series, position);
+		if (notify) {
+			fireChangeEvent();
+		}
+	}
+
+	/**
+	 * Returns the default positive item label position.
+	 *
+	 * @return The position (never <code>null</code>).
+	 *
+	 * @see #setDefaultPositiveItemLabelPosition(ItemLabelPosition)
+	 */
+	public ItemLabelPosition getDefaultPositiveItemLabelPosition() {
+		return this.defaultPositiveItemLabelPosition;
+	}
+
+	/**
+	 * Sets the default positive item label position.
+	 *
+	 * @param position
+	 *            the position (<code>null</code> not permitted).
+	 *
+	 * @see #getDefaultPositiveItemLabelPosition()
+	 */
+	public void setDefaultPositiveItemLabelPosition(
+			ItemLabelPosition position) {
+		// defer argument checking...
+		setDefaultPositiveItemLabelPosition(position, true);
+	}
+
+	/**
+	 * Sets the default positive item label position and, if requested, sends a
+	 * {@link RendererChangeEvent} to all registered listeners.
+	 *
+	 * @param position
+	 *            the position (<code>null</code> not permitted).
+	 * @param notify
+	 *            notify registered listeners?
+	 *
+	 * @see #getDefaultPositiveItemLabelPosition()
+	 */
+	public void setDefaultPositiveItemLabelPosition(ItemLabelPosition
+			position,
+			boolean notify) {
+		ParamChecks.nullNotPermitted(position, "positions");
+		this.defaultPositiveItemLabelPosition = position;
+		if (notify) {
+			fireChangeEvent();
+		}
+	}
+
 	// NEGATIVE ITEM LABEL POSITION...
 
 	/**
@@ -2773,80 +2835,82 @@ public abstract class AbstractRenderer implements Cloneable, Serializable {
 		fireChangeEvent();
 	}
 
-	// JAVAFX paint
-	//
-	// /**
-	// * Performs a lookup for the legend text paint.
-	// *
-	// * @param series the series index.
-	// *
-	// * @return The paint (possibly <code>null</code>).
-	// *
-	// * @since 1.0.11
-	// */
-	// public Paint lookupLegendTextPaint(int series) {
-	// Paint result = getLegendTextPaint(series);
-	// if (result == null) {
-	// result = this.defaultLegendTextPaint;
-	// }
-	// return result;
-	// }
-	//
-	// /**
-	// * Returns the legend text paint defined for the specified series
-	// (possibly
-	// * <code>null</code>).
-	// *
-	// * @param series the series index.
-	// *
-	// * @return The paint (possibly <code>null</code>).
-	// *
-	// * @see #lookupLegendTextPaint(int)
-	// *
-	// * @since 1.0.11
-	// */
-	// public Paint getLegendTextPaint(int series) {
-	// return this.legendTextPaintMap.get(series);
-	// }
-	//
-	// /**
-	// * Sets the paint used for the legend text for the specified series, and
-	// * sends a {@link RendererChangeEvent} to all registered listeners.
-	// *
-	// * @param series the series index.
-	// * @param paint the paint (<code>null</code> permitted).
-	// *
-	// * @since 1.0.11
-	// */
-	// public void setLegendTextPaint(int series, Paint paint) {
-	// this.legendTextPaintMap.put(series, paint);
-	// fireChangeEvent();
-	// }
-	//
-	// /**
-	// * Returns the default legend text paint, which may be <code>null</code>.
-	// *
-	// * @return The default legend text paint.
-	// *
-	// * @since 1.0.11
-	// */
-	// public Paint getDefaultLegendTextPaint() {
-	// return this.defaultLegendTextPaint;
-	// }
-	//
-	// /**
-	// * Sets the default legend text paint and sends a
-	// * {@link RendererChangeEvent} to all registered listeners.
-	// *
-	// * @param paint the paint (<code>null</code> permitted).
-	// *
-	// * @since 1.0.11
-	// */
-	// public void setDefaultLegendTextPaint(Paint paint) {
-	// this.defaultLegendTextPaint = paint;
-	// fireChangeEvent();
-	// }
-	//
+	/**
+	 * Performs a lookup for the legend text paint.
+	 *
+	 * @param series
+	 *            the series index.
+	 *
+	 * @return The paint (possibly <code>null</code>).
+	 *
+	 * @since 1.0.11
+	 */
+	public Paint lookupLegendTextPaint(int series) {
+		Paint result = getLegendTextPaint(series);
+		if (result == null) {
+			result = this.defaultLegendTextPaint;
+		}
+		return result;
+	}
+
+	/**
+	 * Returns the legend text paint defined for the specified series (possibly
+	 * <code>null</code>).
+	 *
+	 * @param series
+	 *            the series index.
+	 *
+	 * @return The paint (possibly <code>null</code>).
+	 *
+	 * @see #lookupLegendTextPaint(int)
+	 *
+	 * @since 1.0.11
+	 */
+	public Paint getLegendTextPaint(int series) {
+		return this.legendTextPaintMap.get(series);
+	}
+
+	/**
+	 * Sets the paint used for the legend text for the specified series, and
+	 * sends a {@link RendererChangeEvent} to all registered listeners.
+	 *
+	 * @param series
+	 *            the series index.
+	 * @param paint
+	 *            the paint (<code>null</code> permitted).
+	 *
+	 * @since 1.0.11
+	 */
+	public void setLegendTextPaint(int series, Paint paint) {
+		this.legendTextPaintMap.put(series, paint);
+		fireChangeEvent();
+	}
+
+	/**
+	 * Returns the default legend text paint, which may be <code>null</code>.
+	 *
+	 * @return The default legend text paint.
+	 *
+	 * @since 1.0.11
+	 */
+	public Paint getDefaultLegendTextPaint() {
+		return this.defaultLegendTextPaint;
+	}
+
+	/**
+	 * Sets the default legend text paint and sends a
+	 * {@link RendererChangeEvent} to all registered listeners.
+	 *
+	 * @param paint
+	 *            the paint (<code>null</code> permitted).
+	 *
+	 * @since 1.0.11
+	 */
+	public void setDefaultLegendTextPaint(Paint paint) {
+		this.defaultLegendTextPaint = paint;
+		fireChangeEvent();
+	}
+
 	/**
 	 * Returns the flag that controls whether or not the data bounds reported by
 	 * this renderer will exclude non-visible series.
@@ -3013,8 +3077,7 @@ public abstract class AbstractRenderer implements Cloneable, Serializable {
 	 */
 	public void addChangeListener(RendererChangeListener listener) {
 		ParamChecks.nullNotPermitted(listener, "listener");
-		// JAVAFX events
-		// this.listenerList.add(RendererChangeListener.class, listener);
+		this.listenerList.add(RendererChangeListener.class, listener);
 	}
 
 	/**
@@ -3028,24 +3091,23 @@ public abstract class AbstractRenderer implements Cloneable, Serializable {
 	 */
 	public void removeChangeListener(RendererChangeListener listener) {
 		ParamChecks.nullNotPermitted(listener, "listener");
-		// JAVAFX events
-		// this.listenerList.remove(RendererChangeListener.class, listener);
+		this.listenerList.remove(RendererChangeListener.class, listener);
 	}
 
-	//
-	// /**
-	// * Returns <code>true</code> if the specified object is registered with
-	// * the dataset as a listener. Most applications won't need to call this
-	// * method, it exists mainly for use by unit testing code.
-	// *
-	// * @param listener the listener.
-	// *
-	// * @return A boolean.
-	// */
-	// public boolean hasListener(EventListener listener) {
-	// List<Object> list = Arrays.asList(this.listenerList.getListenerList());
-	// return list.contains(listener);
-	// }
+	/**
+	 * Returns <code>true</code> if the specified object is registered with the
+	 * dataset as a listener. Most applications won't need to call this method,
+	 * it exists mainly for use by unit testing code.
+	 *
+	 * @param listener
+	 *            the listener.
+	 *
+	 * @return A boolean.
+	 */
+	public boolean hasListener(EventListener listener) {
+		List<Object> list = Arrays.asList(this.listenerList.getListenerList());
+		return list.contains(listener);
+	}
 
 	/**
 	 * Sends a {@link RendererChangeEvent} to all registered listeners.
@@ -3053,7 +3115,7 @@ public abstract class AbstractRenderer implements Cloneable, Serializable {
 	 * @since 1.0.5
 	 */
 	protected void fireChangeEvent() {
-
+		// NON-JAVA-FX
 		// the commented out code would be better, but only if
 		// RendererChangeEvent is immutable, which it isn't. See if there is
 		// a way to fix this...
@@ -3073,378 +3135,384 @@ public abstract class AbstractRenderer implements Cloneable, Serializable {
 	 *            information about the change event.
 	 */
 	public void notifyListeners(RendererChangeEvent event) {
-		// JAVAFX events
-		// Object[] ls = this.listenerList.getListenerList();
-		// for (int i = ls.length - 2; i >= 0; i -= 2) {
-		// if (ls[i] == RendererChangeListener.class) {
-		// ((RendererChangeListener) ls[i + 1]).rendererChanged(event);
-		// }
-		// }
+		Object[] ls = this.listenerList.getListenerList();
+		for (int i = ls.length - 2; i >= 0; i -= 2) {
+			if (ls[i] == RendererChangeListener.class) {
+				((RendererChangeListener) ls[i + 1]).rendererChanged(event);
+			}
+		}
 	}
-	//
-	// /**
-	// * Tests this renderer for equality with another object.
-	// *
-	// * @param obj the object (<code>null</code> permitted).
-	// *
-	// * @return <code>true</code> or <code>false</code>.
-	// */
-	// @Override
-	// public boolean equals(Object obj) {
-	// if (obj == this) {
-	// return true;
-	// }
-	// if (!(obj instanceof AbstractRenderer)) {
-	// return false;
-	// }
-	// AbstractRenderer that = (AbstractRenderer) obj;
-	// if (this.dataBoundsIncludesVisibleSeriesOnly
-	// != that.dataBoundsIncludesVisibleSeriesOnly) {
-	// return false;
-	// }
-	// if (this.treatLegendShapeAsLine != that.treatLegendShapeAsLine) {
-	// return false;
-	// }
-	// if (this.defaultEntityRadius != that.defaultEntityRadius) {
-	// return false;
-	// }
-	// if (!this.seriesVisibleList.equals(that.seriesVisibleList)) {
-	// return false;
-	// }
-	// if (this.defaultSeriesVisible != that.defaultSeriesVisible) {
-	// return false;
-	// }
-	// if (!this.seriesVisibleInLegendList.equals(
-	// that.seriesVisibleInLegendList)) {
-	// return false;
-	// }
-	// if (this.defaultSeriesVisibleInLegend
-	// != that.defaultSeriesVisibleInLegend) {
-	// return false;
-	// }
-	// if (!PaintUtils.equalMaps(this.paintMap, that.paintMap)) {
-	// return false;
-	// }
-	// if (!PaintUtils.equal(this.defaultPaint, that.defaultPaint)) {
-	// return false;
-	// }
-	// if (!PaintUtils.equalMaps(this.fillPaintMap, that.fillPaintMap)) {
-	// return false;
-	// }
-	// if (!PaintUtils.equal(this.defaultFillPaint,
-	// that.defaultFillPaint)) {
-	// return false;
-	// }
-	// if (!PaintUtils.equalMaps(this.outlinePaintMap,
-	// that.outlinePaintMap)) {
-	// return false;
-	// }
-	// if (!PaintUtils.equal(this.defaultOutlinePaint,
-	// that.defaultOutlinePaint)) {
-	// return false;
-	// }
-	// if (!ObjectUtils.equal(this.strokeList, that.strokeList)) {
-	// return false;
-	// }
-	// if (!ObjectUtils.equal(this.defaultStroke, that.defaultStroke)) {
-	// return false;
-	// }
-	// if (!ObjectUtils.equal(this.outlineStrokeList,
-	// that.outlineStrokeList)) {
-	// return false;
-	// }
-	// if (!ObjectUtils.equal(this.defaultOutlineStroke,
-	// that.defaultOutlineStroke)) {
-	// return false;
-	// }
-	// if (!ObjectUtils.equal(this.shapeList, that.shapeList)) {
-	// return false;
-	// }
-	// if (!ShapeUtils.equal(this.defaultShape, that.defaultShape)) {
-	// return false;
-	// }
-	// if (!ObjectUtils.equal(this.itemLabelsVisibleList,
-	// that.itemLabelsVisibleList)) {
-	// return false;
-	// }
-	// if (!ObjectUtils.equal(this.defaultItemLabelsVisible,
-	// that.defaultItemLabelsVisible)) {
-	// return false;
-	// }
-	// if (!ObjectUtils.equal(this.itemLabelFontMap,
-	// that.itemLabelFontMap)) {
-	// return false;
-	// }
-	// if (!ObjectUtils.equal(this.defaultItemLabelFont,
-	// that.defaultItemLabelFont)) {
-	// return false;
-	// }
-	//
-	// if (!PaintUtils.equalMaps(this.itemLabelPaintMap,
-	// that.itemLabelPaintMap)) {
-	// return false;
-	// }
-	// if (!PaintUtils.equal(this.defaultItemLabelPaint,
-	// that.defaultItemLabelPaint)) {
-	// return false;
-	// }
-	//
-	// if (!ObjectUtils.equal(this.positiveItemLabelPositionMap,
-	// that.positiveItemLabelPositionMap)) {
-	// return false;
-	// }
-	// if (!ObjectUtils.equal(this.defaultPositiveItemLabelPosition,
-	// that.defaultPositiveItemLabelPosition)) {
-	// return false;
-	// }
-	//
-	// if (!ObjectUtils.equal(this.negativeItemLabelPositionMap,
-	// that.negativeItemLabelPositionMap)) {
-	// return false;
-	// }
-	// if (!ObjectUtils.equal(this.defaultNegativeItemLabelPosition,
-	// that.defaultNegativeItemLabelPosition)) {
-	// return false;
-	// }
-	// if (this.itemLabelAnchorOffset != that.itemLabelAnchorOffset) {
-	// return false;
-	// }
-	// if (!ObjectUtils.equal(this.createEntitiesList,
-	// that.createEntitiesList)) {
-	// return false;
-	// }
-	// if (this.defaultCreateEntities != that.defaultCreateEntities) {
-	// return false;
-	// }
-	// if (!ObjectUtils.equal(this.legendShapeList,
-	// that.legendShapeList)) {
-	// return false;
-	// }
-	// if (!ShapeUtils.equal(this.defaultLegendShape,
-	// that.defaultLegendShape)) {
-	// return false;
-	// }
-	// if (!ObjectUtils.equal(this.legendTextFontMap,
-	// that.legendTextFontMap)) {
-	// return false;
-	// }
-	// if (!ObjectUtils.equal(this.defaultLegendTextFont,
-	// that.defaultLegendTextFont)) {
-	// return false;
-	// }
-	// if (!PaintUtils.equalMaps(this.legendTextPaintMap,
-	// that.legendTextPaintMap)) {
-	// return false;
-	// }
-	// if (!PaintUtils.equal(this.defaultLegendTextPaint,
-	// that.defaultLegendTextPaint)) {
-	// return false;
-	// }
-	// return true;
-	// }
-	//
-	// /**
-	// * Returns a hashcode for the renderer.
-	// *
-	// * @return The hashcode.
-	// */
-	// @Override
-	// public int hashCode() {
-	// int result = 193;
-	// result = HashUtils.hashCode(result, this.seriesVisibleList);
-	// result = HashUtils.hashCode(result, this.defaultSeriesVisible);
-	// result = HashUtils.hashCode(result, this.seriesVisibleInLegendList);
-	// result = HashUtils.hashCode(result, this.defaultSeriesVisibleInLegend);
-	// result = HashUtils.hashCode(result, this.paintMap);
-	// result = HashUtils.hashCode(result, this.defaultPaint);
-	// result = HashUtils.hashCode(result, this.fillPaintMap);
-	// result = HashUtils.hashCode(result, this.defaultFillPaint);
-	// result = HashUtils.hashCode(result, this.outlinePaintMap);
-	// result = HashUtils.hashCode(result, this.defaultOutlinePaint);
-	// result = HashUtils.hashCode(result, this.strokeList);
-	// result = HashUtils.hashCode(result, this.defaultStroke);
-	// result = HashUtils.hashCode(result, this.outlineStrokeList);
-	// result = HashUtils.hashCode(result, this.defaultOutlineStroke);
-	// // shapeList
-	// // baseShape
-	// result = HashUtils.hashCode(result, this.itemLabelsVisibleList);
-	// result = HashUtils.hashCode(result, this.defaultItemLabelsVisible);
-	// // itemLabelFontList
-	// // baseItemLabelFont
-	// // itemLabelPaintList
-	// // baseItemLabelPaint
-	// // positiveItemLabelPositionList
-	// // basePositiveItemLabelPosition
-	// // negativeItemLabelPositionList
-	// // baseNegativeItemLabelPosition
-	// // itemLabelAnchorOffset
-	// // createEntityList
-	// // baseCreateEntities
-	// return result;
-	// }
-	//
-	// /**
-	// * Returns an independent copy of the renderer.
-	// *
-	// * @return A clone.
-	// *
-	// * @throws CloneNotSupportedException if some component of the renderer
-	// * does not support cloning.
-	// */
-	// @Override
-	// protected Object clone() throws CloneNotSupportedException {
-	// AbstractRenderer clone = (AbstractRenderer) super.clone();
-	//
-	// if (this.seriesVisibleList != null) {
-	// clone.seriesVisibleList
-	// = (BooleanList) this.seriesVisibleList.clone();
-	// }
-	//
-	// if (this.seriesVisibleInLegendList != null) {
-	// clone.seriesVisibleInLegendList
-	// = (BooleanList) this.seriesVisibleInLegendList.clone();
-	// }
-	//
-	// // 'paint' : immutable, no need to clone reference
-	// clone.paintMap = new HashMap<Integer, Paint>(this.paintMap);
-	//
-	// // 'basePaint' : immutable, no need to clone reference
-	//
-	// clone.fillPaintMap = new HashMap<Integer, Paint>(this.fillPaintMap);
-	//
-	// // 'outlinePaint' : immutable, no need to clone reference
-	// clone.outlinePaintMap
-	// = new HashMap<Integer, Paint>(this.outlinePaintMap);
-	// // 'baseOutlinePaint' : immutable, no need to clone reference
-	//
-	// // 'stroke' : immutable, no need to clone reference
-	// if (this.strokeList != null) {
-	// clone.strokeList = (StrokeList) this.strokeList.clone();
-	// }
-	// // 'baseStroke' : immutable, no need to clone reference
-	//
-	// // 'outlineStroke' : immutable, no need to clone reference
-	// if (this.outlineStrokeList != null) {
-	// clone.outlineStrokeList
-	// = (StrokeList) this.outlineStrokeList.clone();
-	// }
-	// // 'baseOutlineStroke' : immutable, no need to clone reference
-	//
-	// if (this.shapeList != null) {
-	// clone.shapeList = (ShapeList) this.shapeList.clone();
-	// }
-	// if (this.defaultShape != null) {
-	// clone.defaultShape = ShapeUtils.clone(this.defaultShape);
-	// }
-	//
-	// // 'itemLabelsVisible' : immutable, no need to clone reference
-	// if (this.itemLabelsVisibleList != null) {
-	// clone.itemLabelsVisibleList
-	// = (BooleanList) this.itemLabelsVisibleList.clone();
-	// }
-	// // 'basePaint' : immutable, no need to clone reference
-	//
-	// // 'itemLabelFont' : immutable, no need to clone reference
-	// if (this.itemLabelFontMap != null) {
-	// clone.itemLabelFontMap
-	// = new HashMap<Integer, Font>(this.itemLabelFontMap);
-	// }
-	// // 'baseItemLabelFont' : immutable, no need to clone reference
-	//
-	// // 'itemLabelPaint' : immutable, no need to clone reference
-	// if (this.itemLabelPaintMap != null) {
-	// clone.itemLabelPaintMap
-	// = new HashMap<Integer, Paint>(this.itemLabelPaintMap);
-	// }
-	// // 'baseItemLabelPaint' : immutable, no need to clone reference
-	//
-	// if (this.positiveItemLabelPositionMap != null) {
-	// clone.positiveItemLabelPositionMap
-	// = new HashMap<Integer, ItemLabelPosition>(
-	// this.positiveItemLabelPositionMap);
-	// }
-	//
-	// if (this.negativeItemLabelPositionMap != null) {
-	// clone.negativeItemLabelPositionMap
-	// = new HashMap<Integer, ItemLabelPosition>(
-	// this.negativeItemLabelPositionMap);
-	// }
-	//
-	// if (this.createEntitiesList != null) {
-	// clone.createEntitiesList
-	// = (BooleanList) this.createEntitiesList.clone();
-	// }
-	//
-	// if (this.legendShapeList != null) {
-	// clone.legendShapeList = (ShapeList) this.legendShapeList.clone();
-	// }
-	// if (this.legendTextFontMap != null) {
-	// clone.legendTextFontMap
-	// = new HashMap<Integer, Font>(this.legendTextFontMap);
-	// }
-	// if (this.legendTextPaintMap != null) {
-	// clone.legendTextPaintMap
-	// = new HashMap<Integer, Paint>(this.legendTextPaintMap);
-	// }
-	// clone.listenerList = new EventListenerList();
-	// clone.event = null;
-	// return clone;
-	// }
-	//
-	// /**
-	// * Provides serialization support.
-	// *
-	// * @param stream the output stream.
-	// *
-	// * @throws IOException if there is an I/O error.
-	// */
-	// private void writeObject(ObjectOutputStream stream) throws IOException {
-	// stream.defaultWriteObject();
-	// SerialUtils.writePaint(this.defaultPaint, stream);
-	// SerialUtils.writePaintMap(this.paintMap, stream);
-	// SerialUtils.writePaint(this.defaultFillPaint, stream);
-	// SerialUtils.writePaintMap(this.fillPaintMap, stream);
-	// SerialUtils.writePaint(this.defaultOutlinePaint, stream);
-	// SerialUtils.writePaintMap(this.outlinePaintMap, stream);
-	// SerialUtils.writeStroke(this.defaultStroke, stream);
-	// SerialUtils.writeStroke(this.defaultOutlineStroke, stream);
-	// SerialUtils.writeShape(this.defaultShape, stream);
-	// SerialUtils.writePaint(this.defaultItemLabelPaint, stream);
-	// SerialUtils.writePaintMap(this.itemLabelPaintMap, stream);
-	// SerialUtils.writeShape(this.defaultLegendShape, stream);
-	// SerialUtils.writePaint(this.defaultLegendTextPaint, stream);
-	// SerialUtils.writePaintMap(this.legendTextPaintMap, stream);
-	// }
-	//
-	// /**
-	// * Provides serialization support.
-	// *
-	// * @param stream the input stream.
-	// *
-	// * @throws IOException if there is an I/O error.
-	// * @throws ClassNotFoundException if there is a classpath problem.
-	// */
-	// private void readObject(ObjectInputStream stream)
-	// throws IOException, ClassNotFoundException {
-	// stream.defaultReadObject();
-	// this.defaultPaint = SerialUtils.readPaint(stream);
-	// this.paintMap = SerialUtils.readPaintMap(stream);
-	// this.defaultFillPaint = SerialUtils.readPaint(stream);
-	// this.fillPaintMap = SerialUtils.readPaintMap(stream);
-	// this.defaultOutlinePaint = SerialUtils.readPaint(stream);
-	// this.outlinePaintMap = SerialUtils.readPaintMap(stream);
-	// this.defaultStroke = SerialUtils.readStroke(stream);
-	// this.defaultOutlineStroke = SerialUtils.readStroke(stream);
-	// this.defaultShape = SerialUtils.readShape(stream);
-	// this.defaultItemLabelPaint = SerialUtils.readPaint(stream);
-	// this.itemLabelPaintMap = SerialUtils.readPaintMap(stream);
-	// this.defaultLegendShape = SerialUtils.readShape(stream);
-	// this.defaultLegendTextPaint = SerialUtils.readPaint(stream);
-	// this.legendTextPaintMap = SerialUtils.readPaintMap(stream);
-	//
-	// // listeners are not restored automatically, but storage must be
-	// // provided...
-	// this.listenerList = new EventListenerList();
-	// }
-	//
+
+	/**
+	 * Tests this renderer for equality with another object.
+	 *
+	 * @param obj
+	 *            the object (<code>null</code> permitted).
+	 *
+	 * @return <code>true</code> or <code>false</code>.
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == this) {
+			return true;
+		}
+		if (!(obj instanceof AbstractRenderer)) {
+			return false;
+		}
+		AbstractRenderer that = (AbstractRenderer) obj;
+		if (this.dataBoundsIncludesVisibleSeriesOnly
+				!= that.dataBoundsIncludesVisibleSeriesOnly) {
+			return false;
+		}
+		if (this.treatLegendShapeAsLine != that.treatLegendShapeAsLine) {
+			return false;
+		}
+		if (this.defaultEntityRadius != that.defaultEntityRadius) {
+			return false;
+		}
+		if (!this.seriesVisibleList.equals(that.seriesVisibleList)) {
+			return false;
+		}
+		if (this.defaultSeriesVisible != that.defaultSeriesVisible) {
+			return false;
+		}
+		if (!this.seriesVisibleInLegendList.equals(
+				that.seriesVisibleInLegendList)) {
+			return false;
+		}
+		if (this.defaultSeriesVisibleInLegend
+				!= that.defaultSeriesVisibleInLegend) {
+			return false;
+		}
+		if (!PaintUtils.equalMaps(this.paintMap, that.paintMap)) {
+			return false;
+		}
+		if (!PaintUtils.equal(this.defaultPaint, that.defaultPaint)) {
+			return false;
+		}
+		if (!PaintUtils.equalMaps(this.fillPaintMap, that.fillPaintMap)) {
+			return false;
+		}
+		if (!PaintUtils.equal(this.defaultFillPaint,
+				that.defaultFillPaint)) {
+			return false;
+		}
+		if (!PaintUtils.equalMaps(this.outlinePaintMap,
+				that.outlinePaintMap)) {
+			return false;
+		}
+		if (!PaintUtils.equal(this.defaultOutlinePaint,
+				that.defaultOutlinePaint)) {
+			return false;
+		}
+		// JAVAFX stroke, shape
+		// if (!ObjectUtils.equal(this.strokeList, that.strokeList)) {
+		// return false;
+		// }
+		// if (!ObjectUtils.equal(this.defaultStroke, that.defaultStroke)) {
+		// return false;
+		// }
+		// if (!ObjectUtils.equal(this.outlineStrokeList,
+		// that.outlineStrokeList)) {
+		// return false;
+		// }
+		// if (!ObjectUtils.equal(this.defaultOutlineStroke,
+		// that.defaultOutlineStroke)) {
+		// return false;
+		// }
+		// if (!ObjectUtils.equal(this.shapeList, that.shapeList)) {
+		// return false;
+		// }
+		// if (!ShapeUtils.equal(this.defaultShape, that.defaultShape)) {
+		// return false;
+		// }
+		if (!ObjectUtils.equal(this.itemLabelsVisibleList,
+				that.itemLabelsVisibleList)) {
+			return false;
+		}
+		if (!ObjectUtils.equal(this.defaultItemLabelsVisible,
+				that.defaultItemLabelsVisible)) {
+			return false;
+		}
+		if (!ObjectUtils.equal(this.itemLabelFontMap,
+				that.itemLabelFontMap)) {
+			return false;
+		}
+		if (!ObjectUtils.equal(this.defaultItemLabelFont,
+				that.defaultItemLabelFont)) {
+			return false;
+		}
+
+		if (!PaintUtils.equalMaps(this.itemLabelPaintMap,
+				that.itemLabelPaintMap)) {
+			return false;
+		}
+		if (!PaintUtils.equal(this.defaultItemLabelPaint,
+				that.defaultItemLabelPaint)) {
+			return false;
+		}
+
+		if (!ObjectUtils.equal(this.positiveItemLabelPositionMap,
+				that.positiveItemLabelPositionMap)) {
+			return false;
+		}
+		if (!ObjectUtils.equal(this.defaultPositiveItemLabelPosition,
+				that.defaultPositiveItemLabelPosition)) {
+			return false;
+		}
+
+		if (!ObjectUtils.equal(this.negativeItemLabelPositionMap,
+				that.negativeItemLabelPositionMap)) {
+			return false;
+		}
+		if (!ObjectUtils.equal(this.defaultNegativeItemLabelPosition,
+				that.defaultNegativeItemLabelPosition)) {
+			return false;
+		}
+		if (this.itemLabelAnchorOffset != that.itemLabelAnchorOffset) {
+			return false;
+		}
+		if (!ObjectUtils.equal(this.createEntitiesList,
+				that.createEntitiesList)) {
+			return false;
+		}
+		if (this.defaultCreateEntities != that.defaultCreateEntities) {
+			return false;
+		}
+		// JAVAFX
+		// if (!ObjectUtils.equal(this.legendShapeList,
+		// that.legendShapeList)) {
+		// return false;
+		// }
+		// if (!ShapeUtils.equal(this.defaultLegendShape,
+		// that.defaultLegendShape)) {
+		// return false;
+		// }
+		if (!ObjectUtils.equal(this.legendTextFontMap,
+				that.legendTextFontMap)) {
+			return false;
+		}
+		if (!ObjectUtils.equal(this.defaultLegendTextFont,
+				that.defaultLegendTextFont)) {
+			return false;
+		}
+		if (!PaintUtils.equalMaps(this.legendTextPaintMap,
+				that.legendTextPaintMap)) {
+			return false;
+		}
+		if (!PaintUtils.equal(this.defaultLegendTextPaint,
+				that.defaultLegendTextPaint)) {
+			return false;
+		}
+		return true;
+	}
+
+	/**
+	 * Returns a hashcode for the renderer.
+	 *
+	 * @return The hashcode.
+	 */
+	@Override
+	public int hashCode() {
+		int result = 193;
+		result = HashUtils.hashCode(result, this.seriesVisibleList);
+		result = HashUtils.hashCode(result, this.defaultSeriesVisible);
+		result = HashUtils.hashCode(result, this.seriesVisibleInLegendList);
+		result = HashUtils.hashCode(result, this.defaultSeriesVisibleInLegend);
+		result = HashUtils.hashCode(result, this.paintMap);
+		result = HashUtils.hashCode(result, this.defaultPaint);
+		result = HashUtils.hashCode(result, this.fillPaintMap);
+		result = HashUtils.hashCode(result, this.defaultFillPaint);
+		result = HashUtils.hashCode(result, this.outlinePaintMap);
+		result = HashUtils.hashCode(result, this.defaultOutlinePaint);
+		// JAVAFX
+		// result = HashUtils.hashCode(result, this.strokeList);
+		// result = HashUtils.hashCode(result, this.defaultStroke);
+		// result = HashUtils.hashCode(result, this.outlineStrokeList);
+		// result = HashUtils.hashCode(result, this.defaultOutlineStroke);
+		// // shapeList
+		// // baseShape
+		result = HashUtils.hashCode(result, this.itemLabelsVisibleList);
+		result = HashUtils.hashCode(result, this.defaultItemLabelsVisible);
+		// NON-JAVA-FX
+		// itemLabelFontList
+		// baseItemLabelFont
+		// itemLabelPaintList
+		// baseItemLabelPaint
+		// positiveItemLabelPositionList
+		// basePositiveItemLabelPosition
+		// negativeItemLabelPositionList
+		// baseNegativeItemLabelPosition
+		// itemLabelAnchorOffset
+		// createEntityList
+		// baseCreateEntities
+		return result;
+	}
+
+	/**
+	 * Returns an independent copy of the renderer.
+	 *
+	 * @return A clone.
+	 *
+	 * @throws CloneNotSupportedException
+	 *             if some component of the renderer does not support cloning.
+	 */
+	@Override
+	protected Object clone() throws CloneNotSupportedException {
+		AbstractRenderer clone = (AbstractRenderer) super.clone();
+
+		if (this.seriesVisibleList != null) {
+			clone.seriesVisibleList = (BooleanList) this.seriesVisibleList.clone();
+		}
+
+		if (this.seriesVisibleInLegendList != null) {
+			clone.seriesVisibleInLegendList = (BooleanList) this.seriesVisibleInLegendList.clone();
+		}
+		// 'paint' : immutable, no need to clone reference
+		clone.paintMap = new HashMap<Integer, Paint>(this.paintMap);
+
+		// 'basePaint' : immutable, no need to clone reference
+
+		clone.fillPaintMap = new HashMap<Integer, Paint>(this.fillPaintMap);
+
+		// 'outlinePaint' : immutable, no need to clone reference
+		clone.outlinePaintMap = new HashMap<Integer, Paint>(this.outlinePaintMap);
+		// 'baseOutlinePaint' : immutable, no need to clone reference
+
+		// JAVAFX
+		//
+		// // 'stroke' : immutable, no need to clone reference
+		// if (this.strokeList != null) {
+		// clone.strokeList = (StrokeList) this.strokeList.clone();
+		// }
+		// // 'baseStroke' : immutable, no need to clone reference
+		//
+		// // 'outlineStroke' : immutable, no need to clone reference
+		// if (this.outlineStrokeList != null) {
+		// clone.outlineStrokeList
+		// = (StrokeList) this.outlineStrokeList.clone();
+		// }
+		// // 'baseOutlineStroke' : immutable, no need to clone reference
+		//
+		// if (this.shapeList != null) {
+		// clone.shapeList = (ShapeList) this.shapeList.clone();
+		// }
+		// if (this.defaultShape != null) {
+		// clone.defaultShape = ShapeUtils.clone(this.defaultShape);
+		// }
+
+		// 'itemLabelsVisible' : immutable, no need to clone reference
+		if (this.itemLabelsVisibleList != null) {
+			clone.itemLabelsVisibleList = (BooleanList) this.itemLabelsVisibleList.clone();
+		}
+		// 'basePaint' : immutable, no need to clone reference
+
+		// 'itemLabelFont' : immutable, no need to clone reference
+		if (this.itemLabelFontMap != null) {
+			clone.itemLabelFontMap = new HashMap<Integer, Font>(this.itemLabelFontMap);
+		}
+		// 'baseItemLabelFont' : immutable, no need to clone reference
+
+		// JAVAFX
+		// 'itemLabelPaint' : immutable, no need to clone reference
+		if (this.itemLabelPaintMap != null) {
+			clone.itemLabelPaintMap = new HashMap<Integer,
+					Paint>(this.itemLabelPaintMap);
+		}
+		// 'baseItemLabelPaint' : immutable, no need to clone reference
+
+		if (this.positiveItemLabelPositionMap != null) {
+			clone.positiveItemLabelPositionMap = new HashMap<Integer, ItemLabelPosition>(
+					this.positiveItemLabelPositionMap);
+		}
+
+		if (this.negativeItemLabelPositionMap != null) {
+			clone.negativeItemLabelPositionMap = new HashMap<Integer, ItemLabelPosition>(
+					this.negativeItemLabelPositionMap);
+		}
+
+		if (this.createEntitiesList != null) {
+			clone.createEntitiesList = (BooleanList) this.createEntitiesList.clone();
+		}
+		// JAVAFX
+		// if (this.legendShapeList != null) {
+		// clone.legendShapeList = (ShapeList) this.legendShapeList.clone();
+		// }
+		if (this.legendTextFontMap != null) {
+			clone.legendTextFontMap = new HashMap<Integer, Font>(this.legendTextFontMap);
+		}
+		if (this.legendTextPaintMap != null) {
+			clone.legendTextPaintMap = new HashMap<Integer,
+					Paint>(this.legendTextPaintMap);
+		}
+		clone.listenerList = new EventListenerList();
+		clone.event = null;
+		return clone;
+	}
+
+	/**
+	 * Provides serialization support.
+	 *
+	 * @param stream
+	 *            the output stream.
+	 *
+	 * @throws IOException
+	 *             if there is an I/O error.
+	 */
+	private void writeObject(ObjectOutputStream stream) throws IOException {
+		stream.defaultWriteObject();
+		SerialUtils.writePaint(this.defaultPaint, stream);
+		SerialUtils.writePaintMap(this.paintMap, stream);
+		SerialUtils.writePaint(this.defaultFillPaint, stream);
+		SerialUtils.writePaintMap(this.fillPaintMap, stream);
+		SerialUtils.writePaint(this.defaultOutlinePaint, stream);
+		SerialUtils.writePaintMap(this.outlinePaintMap, stream);
+		// JAVAFX
+		// SerialUtils.writeStroke(this.defaultStroke, stream);
+		// SerialUtils.writeStroke(this.defaultOutlineStroke, stream);
+		// SerialUtils.writeShape(this.defaultShape, stream);
+		SerialUtils.writePaint(this.defaultItemLabelPaint, stream);
+		SerialUtils.writePaintMap(this.itemLabelPaintMap, stream);
+		// JAVAFX
+		// SerialUtils.writeShape(this.defaultLegendShape, stream);
+		SerialUtils.writePaint(this.defaultLegendTextPaint, stream);
+		SerialUtils.writePaintMap(this.legendTextPaintMap, stream);
+	}
+
+	/**
+	 * Provides serialization support.
+	 *
+	 * @param stream
+	 *            the input stream.
+	 *
+	 * @throws IOException
+	 *             if there is an I/O error.
+	 * @throws ClassNotFoundException
+	 *             if there is a classpath problem.
+	 */
+	private void readObject(ObjectInputStream stream)
+			throws IOException, ClassNotFoundException {
+		stream.defaultReadObject();
+		this.defaultPaint = SerialUtils.readPaint(stream);
+		this.paintMap = SerialUtils.readPaintMap(stream);
+		this.defaultFillPaint = SerialUtils.readPaint(stream);
+		this.fillPaintMap = SerialUtils.readPaintMap(stream);
+		this.defaultOutlinePaint = SerialUtils.readPaint(stream);
+		this.outlinePaintMap = SerialUtils.readPaintMap(stream);
+		// JAVAFX
+		// this.defaultStroke = SerialUtils.readStroke(stream);
+		// this.defaultOutlineStroke = SerialUtils.readStroke(stream);
+		// this.defaultShape = SerialUtils.readShape(stream);
+		this.defaultItemLabelPaint = SerialUtils.readPaint(stream);
+		this.itemLabelPaintMap = SerialUtils.readPaintMap(stream);
+		// JAVAFX
+		// this.defaultLegendShape = SerialUtils.readShape(stream);
+		this.defaultLegendTextPaint = SerialUtils.readPaint(stream);
+		this.legendTextPaintMap = SerialUtils.readPaintMap(stream);
+
+		// listeners are not restored automatically, but storage must be
+		// provided...
+		this.listenerList = new EventListenerList();
+	}
+
 }

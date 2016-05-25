@@ -127,6 +127,8 @@ import org.jfree.data.Range;
 import org.jfree.data.RangeType;
 
 import javafx.geometry.Rectangle2D;
+import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.text.Font;
 
 /**
  * An axis for displaying numerical data.
@@ -635,55 +637,60 @@ public class NumberAxis extends ValueAxis implements Cloneable, Serializable {
 				- Math.ceil(range.getLowerBound() / unit) + 1);
 	}
 
-	//
-	// /**
-	// * Draws the axis on a Java 2D graphics device (such as the screen or a
-	// * printer).
-	// *
-	// * @param g2 the graphics device ({@code null} not permitted).
-	// * @param cursor the cursor location.
-	// * @param plotArea the area within which the axes and data should be drawn
-	// * ({@code null} not permitted).
-	// * @param dataArea the area within which the data should be drawn
-	// * ({@code null} not permitted).
-	// * @param edge the location of the axis ({@code null} not permitted).
-	// * @param plotState collects information about the plot
-	// * ({@code null} permitted).
-	// *
-	// * @return The axis state (never {@code null}).
-	// */
-	// @Override
-	// public AxisState draw(Graphics2D g2, double cursor, Rectangle2D plotArea,
-	// Rectangle2D dataArea, RectangleEdge edge,
-	// PlotRenderingInfo plotState) {
-	//
-	// AxisState state;
-	// // if the axis is not visible, don't draw it...
-	// if (!isVisible()) {
-	// state = new AxisState(cursor);
-	// // even though the axis is not visible, we need ticks for the
-	// // gridlines...
-	// List<ValueTick> ticks = refreshTicks(g2, state, dataArea, edge);
-	// state.setTicks(ticks);
-	// return state;
-	// }
-	//
-	// // draw the tick marks and labels...
-	// state = drawTickMarksAndLabels(g2, cursor, plotArea, dataArea, edge);
-	//
-	// // // draw the marker band (if there is one)...
-	// // if (getMarkerBand() != null) {
-	// // if (edge == RectangleEdge.BOTTOM) {
-	// // cursor = cursor - getMarkerBand().getHeight(g2);
-	// // }
-	// // getMarkerBand().draw(g2, plotArea, dataArea, 0, cursor);
-	// // }
-	//
-	// // draw the axis label...
-	// state = drawLabel(getLabel(), g2, plotArea, dataArea, edge, state);
-	// createAndAddEntity(cursor, state, dataArea, edge, plotState);
-	// return state;
-	// }
+	/**
+	 * Draws the axis on a Java 2D graphics device (such as the screen or a
+	 * printer).
+	 *
+	 * @param g2
+	 *            the graphics device ({@code null} not permitted).
+	 * @param cursor
+	 *            the cursor location.
+	 * @param plotArea
+	 *            the area within which the axes and data should be drawn (
+	 *            {@code null} not permitted).
+	 * @param dataArea
+	 *            the area within which the data should be drawn ({@code null}
+	 *            not permitted).
+	 * @param edge
+	 *            the location of the axis ({@code null} not permitted).
+	 * @param plotState
+	 *            collects information about the plot ({@code null} permitted).
+	 *
+	 * @return The axis state (never {@code null}).
+	 */
+	@Override
+	public AxisState draw(GraphicsContext g2, double cursor, Rectangle2D plotArea,
+			Rectangle2D dataArea, RectangleEdge edge,
+			PlotRenderingInfo plotState) {
+
+		AxisState state;
+		// if the axis is not visible, don't draw it...
+		if (!isVisible()) {
+			state = new AxisState(cursor);
+			// even though the axis is not visible, we need ticks for the
+			// gridlines...
+			List<ValueTick> ticks = refreshTicks(g2, state, dataArea, edge);
+			state.setTicks(ticks);
+			return state;
+		}
+
+		// draw the tick marks and labels...
+		state = drawTickMarksAndLabels(g2, cursor, plotArea, dataArea, edge);
+
+		// NON-JAVA-FX
+		// // draw the marker band (if there is one)...
+		// if (getMarkerBand() != null) {
+		// if (edge == RectangleEdge.BOTTOM) {
+		// cursor = cursor - getMarkerBand().getHeight(g2);
+		// }
+		// getMarkerBand().draw(g2, plotArea, dataArea, 0, cursor);
+		// }
+
+		// draw the axis label...
+		state = drawLabel(getLabel(), g2, plotArea, dataArea, edge, state);
+		createAndAddEntity(cursor, state, dataArea, edge, plotState);
+		return state;
+	}
 
 	/**
 	 * Creates the standard tick units.
@@ -750,366 +757,390 @@ public class NumberAxis extends ValueAxis implements Cloneable, Serializable {
 		return new NumberTickUnitSource(true, numberFormat);
 	}
 
-	// /**
-	// * Estimates the maximum tick label height.
-	// *
-	// * @param g2 the graphics device.
-	// *
-	// * @return The maximum height.
-	// */
-	// protected double estimateMaximumTickLabelHeight(Graphics2D g2) {
-	// RectangleInsets tickLabelInsets = getTickLabelInsets();
-	// double result = tickLabelInsets.getTop() + tickLabelInsets.getBottom();
-	//
-	// Font tickLabelFont = getTickLabelFont();
-	// FontRenderContext frc = g2.getFontRenderContext();
-	// result += tickLabelFont.getLineMetrics("123", frc).getHeight();
-	// return result;
-	// }
-	//
-	// /**
-	// * Estimates the maximum width of the tick labels, assuming the specified
-	// * tick unit is used.
-	// * <P>
-	// * Rather than computing the string bounds of every tick on the axis, we
-	// * just look at two values: the lower bound and the upper bound for the
-	// * axis. These two values will usually be representative.
-	// *
-	// * @param g2 the graphics device.
-	// * @param unit the tick unit to use for calculation.
-	// *
-	// * @return The estimated maximum width of the tick labels.
-	// */
-	// protected double estimateMaximumTickLabelWidth(Graphics2D g2,
-	// TickUnit unit) {
-	//
-	// RectangleInsets tickLabelInsets = getTickLabelInsets();
-	// double result = tickLabelInsets.getLeft() + tickLabelInsets.getRight();
-	//
-	// if (isVerticalTickLabels()) {
-	// // all tick labels have the same width (equal to the height of the
-	// // font)...
-	// FontRenderContext frc = g2.getFontRenderContext();
-	// LineMetrics lm = getTickLabelFont().getLineMetrics("0", frc);
-	// result += lm.getHeight();
-	// } else {
-	// // look at lower and upper bounds...
-	// FontMetrics fm = g2.getFontMetrics(getTickLabelFont());
-	// Range range = getRange();
-	// double lower = range.getLowerBound();
-	// double upper = range.getUpperBound();
-	// String lowerStr;
-	// String upperStr;
-	// NumberFormat formatter = getNumberFormatOverride();
-	// if (formatter != null) {
-	// lowerStr = formatter.format(lower);
-	// upperStr = formatter.format(upper);
-	// } else {
-	// lowerStr = unit.valueToString(lower);
-	// upperStr = unit.valueToString(upper);
-	// }
-	// double w1 = fm.stringWidth(lowerStr);
-	// double w2 = fm.stringWidth(upperStr);
-	// result += Math.max(w1, w2);
-	// }
-	// return result;
-	// }
-	//
-	// /**
-	// * Selects an appropriate tick value for the axis. The strategy is to
-	// * display as many ticks as possible (selected from an array of 'standard'
-	// * tick units) without the labels overlapping.
-	// *
-	// * @param g2 the graphics device.
-	// * @param dataArea the area defined by the axes.
-	// * @param edge the axis location.
-	// */
-	// protected void selectAutoTickUnit(Graphics2D g2, Rectangle2D dataArea,
-	// RectangleEdge edge) {
-	// if (RectangleEdge.isTopOrBottom(edge)) {
-	// selectHorizontalAutoTickUnit(g2, dataArea, edge);
-	// }
-	// else if (RectangleEdge.isLeftOrRight(edge)) {
-	// selectVerticalAutoTickUnit(g2, dataArea, edge);
-	// }
-	// }
-	//
-	// /**
-	// * Selects an appropriate tick value for the axis. The strategy is to
-	// * display as many ticks as possible (selected from an array of 'standard'
-	// * tick units) without the labels overlapping.
-	// *
-	// * @param g2 the graphics device.
-	// * @param dataArea the area defined by the axes.
-	// * @param edge the axis location.
-	// */
-	// protected void selectHorizontalAutoTickUnit(Graphics2D g2,
-	// Rectangle2D dataArea, RectangleEdge edge) {
-	//
-	// TickUnit unit = getTickUnit();
-	// TickUnitSource tickUnitSource = getStandardTickUnits();
-	// // we should use the current tick unit if it gives a count in the range
-	// // 2 to 40 otherwise just estimate one that will give a count <= 20
-	// double length = getRange().getLength();
-	// int count = (int) (length / unit.getSize());
-	// if (count < 2 || count > 40) {
-	// unit = tickUnitSource.getCeilingTickUnit(length / 20);
-	// }
-	// double tickLabelWidth = estimateMaximumTickLabelWidth(g2, unit);
-	//
-	// TickUnit unit1 = tickUnitSource.getCeilingTickUnit(unit);
-	// double unit1Width = lengthToJava2D(unit1.getSize(), dataArea, edge);
-	//
-	// // then extrapolate...
-	// double guess = (tickLabelWidth / unit1Width) * unit1.getSize();
-	// NumberTickUnit unit2 = (NumberTickUnit)
-	// tickUnitSource.getCeilingTickUnit(guess);
-	// double unit2Width = lengthToJava2D(unit2.getSize(), dataArea, edge);
-	//
-	// tickLabelWidth = estimateMaximumTickLabelWidth(g2, unit2);
-	// if (tickLabelWidth > unit2Width) {
-	// unit2 = (NumberTickUnit) tickUnitSource.getLargerTickUnit(unit2);
-	// }
-	// setTickUnit(unit2, false, false);
-	// }
-	//
-	// /**
-	// * Selects an appropriate tick value for the axis. The strategy is to
-	// * display as many ticks as possible (selected from an array of 'standard'
-	// * tick units) without the labels overlapping.
-	// *
-	// * @param g2 the graphics device.
-	// * @param dataArea the area in which the plot should be drawn.
-	// * @param edge the axis location.
-	// */
-	// protected void selectVerticalAutoTickUnit(Graphics2D g2,
-	// Rectangle2D dataArea, RectangleEdge edge) {
-	//
-	// double tickLabelHeight = estimateMaximumTickLabelHeight(g2);
-	//
-	// // start with the current tick unit...
-	// TickUnitSource tickUnits = getStandardTickUnits();
-	// TickUnit unit1 = tickUnits.getCeilingTickUnit(getTickUnit());
-	// double unitHeight = lengthToJava2D(unit1.getSize(), dataArea, edge);
-	// double guess;
-	// if (unitHeight > 0) { // then extrapolate...
-	// guess = (tickLabelHeight / unitHeight) * unit1.getSize();
-	// } else {
-	// guess = getRange().getLength() / 20.0;
-	// }
-	// NumberTickUnit unit2 = (NumberTickUnit) tickUnits.getCeilingTickUnit(
-	// guess);
-	// double unit2Height = lengthToJava2D(unit2.getSize(), dataArea, edge);
-	//
-	// tickLabelHeight = estimateMaximumTickLabelHeight(g2);
-	// if (tickLabelHeight > unit2Height) {
-	// unit2 = (NumberTickUnit) tickUnits.getLargerTickUnit(unit2);
-	// }
-	// setTickUnit(unit2, false, false);
-	// }
-	//
-	// /**
-	// * Calculates the positions of the tick labels for the axis, storing the
-	// * results in the tick label list (ready for drawing).
-	// *
-	// * @param g2 the graphics device.
-	// * @param state the axis state.
-	// * @param dataArea the area in which the plot should be drawn.
-	// * @param edge the location of the axis.
-	// *
-	// * @return A list of ticks.
-	// */
-	// @Override
-	// public List<ValueTick> refreshTicks(Graphics2D g2, AxisState state,
-	// Rectangle2D dataArea, RectangleEdge edge) {
-	// List<ValueTick> result = new java.util.ArrayList<ValueTick>();
-	// if (RectangleEdge.isTopOrBottom(edge)) {
-	// result = refreshTicksHorizontal(g2, dataArea, edge);
-	// }
-	// else if (RectangleEdge.isLeftOrRight(edge)) {
-	// result = refreshTicksVertical(g2, dataArea, edge);
-	// }
-	// return result;
-	// }
-	//
-	// /**
-	// * Calculates the positions of the tick labels for the axis, storing the
-	// * results in the tick label list (ready for drawing).
-	// *
-	// * @param g2 the graphics device.
-	// * @param dataArea the area in which the data should be drawn.
-	// * @param edge the location of the axis.
-	// *
-	// * @return A list of ticks.
-	// */
-	// protected List<ValueTick> refreshTicksHorizontal(Graphics2D g2,
-	// Rectangle2D dataArea, RectangleEdge edge) {
-	//
-	// List<ValueTick> result = new java.util.ArrayList<ValueTick>();
-	//
-	// Font tickLabelFont = getTickLabelFont();
-	// g2.setFont(tickLabelFont);
-	//
-	// if (isAutoTickUnitSelection()) {
-	// selectAutoTickUnit(g2, dataArea, edge);
-	// }
-	//
-	// TickUnit tu = getTickUnit();
-	// double size = tu.getSize();
-	// int count = calculateVisibleTickCount();
-	// double lowestTickValue = calculateLowestVisibleTickValue();
-	//
-	// if (count <= ValueAxis.MAXIMUM_TICK_COUNT) {
-	// int minorTickIntervals = tu.getMinorTickIntervals();
-	// for (int mt = 1; mt < minorTickIntervals; mt++) {
-	// double minorTickValue = lowestTickValue
-	// - size * mt / minorTickIntervals;
-	// if (getRange().contains(minorTickValue)) {
-	// result.add(new NumberTick(TickType.MINOR, minorTickValue,
-	// null, TextAnchor.TOP_CENTER, TextAnchor.CENTER,
-	// 0.0));
-	// }
-	// }
-	// for (int i = 0; i < count; i++) {
-	// double currentTickValue = lowestTickValue + (i * size);
-	// String tickLabel;
-	// NumberFormat formatter = getNumberFormatOverride();
-	// if (formatter != null) {
-	// tickLabel = formatter.format(currentTickValue);
-	// } else {
-	// tickLabel = getTickUnit().valueToString(currentTickValue);
-	// }
-	// TextAnchor anchor;
-	// TextAnchor rotationAnchor;
-	// double angle = 0.0;
-	// if (isVerticalTickLabels()) {
-	// anchor = TextAnchor.CENTER_RIGHT;
-	// rotationAnchor = TextAnchor.CENTER_RIGHT;
-	// if (edge == RectangleEdge.TOP) {
-	// angle = Math.PI / 2.0;
-	// } else {
-	// angle = -Math.PI / 2.0;
-	// }
-	// } else {
-	// if (edge == RectangleEdge.TOP) {
-	// anchor = TextAnchor.BOTTOM_CENTER;
-	// rotationAnchor = TextAnchor.BOTTOM_CENTER;
-	// } else {
-	// anchor = TextAnchor.TOP_CENTER;
-	// rotationAnchor = TextAnchor.TOP_CENTER;
-	// }
-	// }
-	//
-	// result.add(new NumberTick(currentTickValue,
-	// tickLabel, anchor, rotationAnchor, angle));
-	// double nextTickValue = lowestTickValue + ((i + 1) * size);
-	// for (int mt = 1; mt < minorTickIntervals; mt++) {
-	// double minorTickValue = currentTickValue
-	// + (nextTickValue - currentTickValue)
-	// * mt / minorTickIntervals;
-	// if (getRange().contains(minorTickValue)) {
-	// result.add(new NumberTick(TickType.MINOR,
-	// minorTickValue, null, TextAnchor.TOP_CENTER,
-	// TextAnchor.CENTER, 0.0));
-	// }
-	// }
-	// }
-	// }
-	// return result;
-	//
-	// }
-	//
-	// /**
-	// * Calculates the positions of the tick labels for the axis, storing the
-	// * results in the tick label list (ready for drawing).
-	// *
-	// * @param g2 the graphics device.
-	// * @param dataArea the area in which the plot should be drawn.
-	// * @param edge the location of the axis.
-	// *
-	// * @return A list of ticks.
-	// */
-	// protected List<ValueTick> refreshTicksVertical(Graphics2D g2,
-	// Rectangle2D dataArea, RectangleEdge edge) {
-	//
-	// List<ValueTick> result = new java.util.ArrayList<ValueTick>();
-	// result.clear();
-	//
-	// Font tickLabelFont = getTickLabelFont();
-	// g2.setFont(tickLabelFont);
-	// if (isAutoTickUnitSelection()) {
-	// selectAutoTickUnit(g2, dataArea, edge);
-	// }
-	//
-	// TickUnit tu = getTickUnit();
-	// double size = tu.getSize();
-	// int count = calculateVisibleTickCount();
-	// double lowestTickValue = calculateLowestVisibleTickValue();
-	//
-	// if (count <= ValueAxis.MAXIMUM_TICK_COUNT) {
-	// int minorTickIntervals = tu.getMinorTickIntervals();
-	// for (int mt = 1; mt < minorTickIntervals; mt++) {
-	// double minorTickValue = lowestTickValue
-	// - size * mt / minorTickIntervals;
-	// if (getRange().contains(minorTickValue)) {
-	// result.add(new NumberTick(TickType.MINOR, minorTickValue,
-	// null, TextAnchor.TOP_CENTER, TextAnchor.CENTER,
-	// 0.0));
-	// }
-	// }
-	//
-	// for (int i = 0; i < count; i++) {
-	// double currentTickValue = lowestTickValue + (i * size);
-	// String tickLabel;
-	// NumberFormat formatter = getNumberFormatOverride();
-	// if (formatter != null) {
-	// tickLabel = formatter.format(currentTickValue);
-	// } else {
-	// tickLabel = getTickUnit().valueToString(currentTickValue);
-	// }
-	//
-	// TextAnchor anchor;
-	// TextAnchor rotationAnchor;
-	// double angle = 0.0;
-	// if (isVerticalTickLabels()) {
-	// if (edge == RectangleEdge.LEFT) {
-	// anchor = TextAnchor.BOTTOM_CENTER;
-	// rotationAnchor = TextAnchor.BOTTOM_CENTER;
-	// angle = -Math.PI / 2.0;
-	// } else {
-	// anchor = TextAnchor.BOTTOM_CENTER;
-	// rotationAnchor = TextAnchor.BOTTOM_CENTER;
-	// angle = Math.PI / 2.0;
-	// }
-	// } else {
-	// if (edge == RectangleEdge.LEFT) {
-	// anchor = TextAnchor.CENTER_RIGHT;
-	// rotationAnchor = TextAnchor.CENTER_RIGHT;
-	// } else {
-	// anchor = TextAnchor.CENTER_LEFT;
-	// rotationAnchor = TextAnchor.CENTER_LEFT;
-	// }
-	// }
-	//
-	// result.add(new NumberTick(currentTickValue,
-	// tickLabel, anchor, rotationAnchor, angle));
-	//
-	// double nextTickValue = lowestTickValue + ((i + 1) * size);
-	// for (int mt = 1; mt < minorTickIntervals; mt++) {
-	// double minorTickValue = currentTickValue
-	// + (nextTickValue - currentTickValue)
-	// * mt / minorTickIntervals;
-	// if (getRange().contains(minorTickValue)) {
-	// result.add(new NumberTick(TickType.MINOR,
-	// minorTickValue, null, TextAnchor.TOP_CENTER,
-	// TextAnchor.CENTER, 0.0));
-	// }
-	// }
-	// }
-	// }
-	// return result;
-	// }
-	//
+	/**
+	 * Estimates the maximum tick label height.
+	 *
+	 * @param g2
+	 *            the graphics device.
+	 *
+	 * @return The maximum height.
+	 */
+	protected double estimateMaximumTickLabelHeight(GraphicsContext g2) {
+		RectangleInsets tickLabelInsets = getTickLabelInsets();
+		double result = tickLabelInsets.getTop() + tickLabelInsets.getBottom();
+
+		Font tickLabelFont = getTickLabelFont();
+		// JAVAFX
+		// FontRenderContext frc = g2.getFontRenderContext();
+		// result += tickLabelFont.getLineMetrics("123", frc).getHeight();
+		return result;
+	}
+
+	/**
+	 * Estimates the maximum width of the tick labels, assuming the specified
+	 * tick unit is used.
+	 * <P>
+	 * Rather than computing the string bounds of every tick on the axis, we
+	 * just look at two values: the lower bound and the upper bound for the
+	 * axis. These two values will usually be representative.
+	 *
+	 * @param g2
+	 *            the graphics device.
+	 * @param unit
+	 *            the tick unit to use for calculation.
+	 *
+	 * @return The estimated maximum width of the tick labels.
+	 */
+	protected double estimateMaximumTickLabelWidth(GraphicsContext g2,
+			TickUnit unit) {
+
+		RectangleInsets tickLabelInsets = getTickLabelInsets();
+		double result = tickLabelInsets.getLeft() + tickLabelInsets.getRight();
+
+		// JAVAFX
+		// if (isVerticalTickLabels()) {
+		// // all tick labels have the same width (equal to the height of the
+		// // font)...
+		// FontRenderContext frc = g2.getFontRenderContext();
+		// LineMetrics lm = getTickLabelFont().getLineMetrics("0", frc);
+		// result += lm.getHeight();
+		// } else {
+		// // look at lower and upper bounds...
+		// FontMetrics fm = g2.getFontMetrics(getTickLabelFont());
+		// Range range = getRange();
+		// double lower = range.getLowerBound();
+		// double upper = range.getUpperBound();
+		// String lowerStr;
+		// String upperStr;
+		// NumberFormat formatter = getNumberFormatOverride();
+		// if (formatter != null) {
+		// lowerStr = formatter.format(lower);
+		// upperStr = formatter.format(upper);
+		// } else {
+		// lowerStr = unit.valueToString(lower);
+		// upperStr = unit.valueToString(upper);
+		// }
+		// double w1 = fm.stringWidth(lowerStr);
+		// double w2 = fm.stringWidth(upperStr);
+		// result += Math.max(w1, w2);
+		// }
+		return result;
+	}
+
+	/**
+	 * Selects an appropriate tick value for the axis. The strategy is to
+	 * display as many ticks as possible (selected from an array of 'standard'
+	 * tick units) without the labels overlapping.
+	 *
+	 * @param g2
+	 *            the graphics device.
+	 * @param dataArea
+	 *            the area defined by the axes.
+	 * @param edge
+	 *            the axis location.
+	 */
+	protected void selectAutoTickUnit(GraphicsContext g2, Rectangle2D dataArea,
+			RectangleEdge edge) {
+		if (RectangleEdge.isTopOrBottom(edge)) {
+			selectHorizontalAutoTickUnit(g2, dataArea, edge);
+		}
+		else if (RectangleEdge.isLeftOrRight(edge)) {
+			selectVerticalAutoTickUnit(g2, dataArea, edge);
+		}
+	}
+
+	/**
+	 * Selects an appropriate tick value for the axis. The strategy is to
+	 * display as many ticks as possible (selected from an array of 'standard'
+	 * tick units) without the labels overlapping.
+	 *
+	 * @param g2
+	 *            the graphics device.
+	 * @param dataArea
+	 *            the area defined by the axes.
+	 * @param edge
+	 *            the axis location.
+	 */
+	protected void selectHorizontalAutoTickUnit(GraphicsContext g2,
+			Rectangle2D dataArea, RectangleEdge edge) {
+
+		TickUnit unit = getTickUnit();
+		TickUnitSource tickUnitSource = getStandardTickUnits();
+		// we should use the current tick unit if it gives a count in the range
+		// 2 to 40 otherwise just estimate one that will give a count <= 20
+		double length = getRange().getLength();
+		int count = (int) (length / unit.getSize());
+		if (count < 2 || count > 40) {
+			unit = tickUnitSource.getCeilingTickUnit(length / 20);
+		}
+		double tickLabelWidth = estimateMaximumTickLabelWidth(g2, unit);
+
+		TickUnit unit1 = tickUnitSource.getCeilingTickUnit(unit);
+		double unit1Width = lengthToJava2D(unit1.getSize(), dataArea, edge);
+
+		// then extrapolate...
+		double guess = (tickLabelWidth / unit1Width) * unit1.getSize();
+		NumberTickUnit unit2 = (NumberTickUnit)
+				tickUnitSource.getCeilingTickUnit(guess);
+		double unit2Width = lengthToJava2D(unit2.getSize(), dataArea, edge);
+
+		tickLabelWidth = estimateMaximumTickLabelWidth(g2, unit2);
+		if (tickLabelWidth > unit2Width) {
+			unit2 = (NumberTickUnit) tickUnitSource.getLargerTickUnit(unit2);
+		}
+		setTickUnit(unit2, false, false);
+	}
+
+	/**
+	 * Selects an appropriate tick value for the axis. The strategy is to
+	 * display as many ticks as possible (selected from an array of 'standard'
+	 * tick units) without the labels overlapping.
+	 *
+	 * @param g2
+	 *            the graphics device.
+	 * @param dataArea
+	 *            the area in which the plot should be drawn.
+	 * @param edge
+	 *            the axis location.
+	 */
+	protected void selectVerticalAutoTickUnit(GraphicsContext g2,
+			Rectangle2D dataArea, RectangleEdge edge) {
+
+		double tickLabelHeight = estimateMaximumTickLabelHeight(g2);
+
+		// start with the current tick unit...
+		TickUnitSource tickUnits = getStandardTickUnits();
+		TickUnit unit1 = tickUnits.getCeilingTickUnit(getTickUnit());
+		double unitHeight = lengthToJava2D(unit1.getSize(), dataArea, edge);
+		double guess;
+		if (unitHeight > 0) { // then extrapolate...
+			guess = (tickLabelHeight / unitHeight) * unit1.getSize();
+		} else {
+			guess = getRange().getLength() / 20.0;
+		}
+		NumberTickUnit unit2 = (NumberTickUnit) tickUnits.getCeilingTickUnit(
+				guess);
+		double unit2Height = lengthToJava2D(unit2.getSize(), dataArea, edge);
+
+		tickLabelHeight = estimateMaximumTickLabelHeight(g2);
+		if (tickLabelHeight > unit2Height) {
+			unit2 = (NumberTickUnit) tickUnits.getLargerTickUnit(unit2);
+		}
+		setTickUnit(unit2, false, false);
+	}
+
+	/**
+	 * Calculates the positions of the tick labels for the axis, storing the
+	 * results in the tick label list (ready for drawing).
+	 *
+	 * @param g2
+	 *            the graphics device.
+	 * @param state
+	 *            the axis state.
+	 * @param dataArea
+	 *            the area in which the plot should be drawn.
+	 * @param edge
+	 *            the location of the axis.
+	 *
+	 * @return A list of ticks.
+	 */
+	@Override
+	public List<ValueTick> refreshTicks(GraphicsContext g2, AxisState state,
+			Rectangle2D dataArea, RectangleEdge edge) {
+		List<ValueTick> result = new java.util.ArrayList<ValueTick>();
+		if (RectangleEdge.isTopOrBottom(edge)) {
+			result = refreshTicksHorizontal(g2, dataArea, edge);
+		}
+		else if (RectangleEdge.isLeftOrRight(edge)) {
+			result = refreshTicksVertical(g2, dataArea, edge);
+		}
+		return result;
+	}
+
+	/**
+	 * Calculates the positions of the tick labels for the axis, storing the
+	 * results in the tick label list (ready for drawing).
+	 *
+	 * @param g2
+	 *            the graphics device.
+	 * @param dataArea
+	 *            the area in which the data should be drawn.
+	 * @param edge
+	 *            the location of the axis.
+	 *
+	 * @return A list of ticks.
+	 */
+	protected List<ValueTick> refreshTicksHorizontal(GraphicsContext g2,
+			Rectangle2D dataArea, RectangleEdge edge) {
+
+		List<ValueTick> result = new java.util.ArrayList<ValueTick>();
+
+		Font tickLabelFont = getTickLabelFont();
+		g2.setFont(tickLabelFont);
+
+		if (isAutoTickUnitSelection()) {
+			selectAutoTickUnit(g2, dataArea, edge);
+		}
+
+		TickUnit tu = getTickUnit();
+		double size = tu.getSize();
+		int count = calculateVisibleTickCount();
+		double lowestTickValue = calculateLowestVisibleTickValue();
+
+		if (count <= ValueAxis.MAXIMUM_TICK_COUNT) {
+			int minorTickIntervals = tu.getMinorTickIntervals();
+			for (int mt = 1; mt < minorTickIntervals; mt++) {
+				double minorTickValue = lowestTickValue
+						- size * mt / minorTickIntervals;
+				if (getRange().contains(minorTickValue)) {
+					result.add(new NumberTick(TickType.MINOR, minorTickValue,
+							null, TextAnchor.TOP_CENTER, TextAnchor.CENTER,
+							0.0));
+				}
+			}
+			for (int i = 0; i < count; i++) {
+				double currentTickValue = lowestTickValue + (i * size);
+				String tickLabel;
+				NumberFormat formatter = getNumberFormatOverride();
+				if (formatter != null) {
+					tickLabel = formatter.format(currentTickValue);
+				} else {
+					tickLabel = getTickUnit().valueToString(currentTickValue);
+				}
+				TextAnchor anchor;
+				TextAnchor rotationAnchor;
+				double angle = 0.0;
+				if (isVerticalTickLabels()) {
+					anchor = TextAnchor.CENTER_RIGHT;
+					rotationAnchor = TextAnchor.CENTER_RIGHT;
+					if (edge == RectangleEdge.TOP) {
+						angle = Math.PI / 2.0;
+					} else {
+						angle = -Math.PI / 2.0;
+					}
+				} else {
+					if (edge == RectangleEdge.TOP) {
+						anchor = TextAnchor.BOTTOM_CENTER;
+						rotationAnchor = TextAnchor.BOTTOM_CENTER;
+					} else {
+						anchor = TextAnchor.TOP_CENTER;
+						rotationAnchor = TextAnchor.TOP_CENTER;
+					}
+				}
+
+				result.add(new NumberTick(currentTickValue,
+						tickLabel, anchor, rotationAnchor, angle));
+				double nextTickValue = lowestTickValue + ((i + 1) * size);
+				for (int mt = 1; mt < minorTickIntervals; mt++) {
+					double minorTickValue = currentTickValue
+							+ (nextTickValue - currentTickValue)
+							* mt / minorTickIntervals;
+					if (getRange().contains(minorTickValue)) {
+						result.add(new NumberTick(TickType.MINOR,
+								minorTickValue, null, TextAnchor.TOP_CENTER,
+								TextAnchor.CENTER, 0.0));
+					}
+				}
+			}
+		}
+		return result;
+
+	}
+
+	/**
+	 * Calculates the positions of the tick labels for the axis, storing the
+	 * results in the tick label list (ready for drawing).
+	 *
+	 * @param g2
+	 *            the graphics device.
+	 * @param dataArea
+	 *            the area in which the plot should be drawn.
+	 * @param edge
+	 *            the location of the axis.
+	 *
+	 * @return A list of ticks.
+	 */
+	protected List<ValueTick> refreshTicksVertical(GraphicsContext g2,
+			Rectangle2D dataArea, RectangleEdge edge) {
+
+		List<ValueTick> result = new java.util.ArrayList<ValueTick>();
+		result.clear();
+
+		Font tickLabelFont = getTickLabelFont();
+		g2.setFont(tickLabelFont);
+		if (isAutoTickUnitSelection()) {
+			selectAutoTickUnit(g2, dataArea, edge);
+		}
+
+		TickUnit tu = getTickUnit();
+		double size = tu.getSize();
+		int count = calculateVisibleTickCount();
+		double lowestTickValue = calculateLowestVisibleTickValue();
+
+		if (count <= ValueAxis.MAXIMUM_TICK_COUNT) {
+			int minorTickIntervals = tu.getMinorTickIntervals();
+			for (int mt = 1; mt < minorTickIntervals; mt++) {
+				double minorTickValue = lowestTickValue
+						- size * mt / minorTickIntervals;
+				if (getRange().contains(minorTickValue)) {
+					result.add(new NumberTick(TickType.MINOR, minorTickValue,
+							null, TextAnchor.TOP_CENTER, TextAnchor.CENTER,
+							0.0));
+				}
+			}
+
+			for (int i = 0; i < count; i++) {
+				double currentTickValue = lowestTickValue + (i * size);
+				String tickLabel;
+				NumberFormat formatter = getNumberFormatOverride();
+				if (formatter != null) {
+					tickLabel = formatter.format(currentTickValue);
+				} else {
+					tickLabel = getTickUnit().valueToString(currentTickValue);
+				}
+
+				TextAnchor anchor;
+				TextAnchor rotationAnchor;
+				double angle = 0.0;
+				if (isVerticalTickLabels()) {
+					if (edge == RectangleEdge.LEFT) {
+						anchor = TextAnchor.BOTTOM_CENTER;
+						rotationAnchor = TextAnchor.BOTTOM_CENTER;
+						angle = -Math.PI / 2.0;
+					} else {
+						anchor = TextAnchor.BOTTOM_CENTER;
+						rotationAnchor = TextAnchor.BOTTOM_CENTER;
+						angle = Math.PI / 2.0;
+					}
+				} else {
+					if (edge == RectangleEdge.LEFT) {
+						anchor = TextAnchor.CENTER_RIGHT;
+						rotationAnchor = TextAnchor.CENTER_RIGHT;
+					} else {
+						anchor = TextAnchor.CENTER_LEFT;
+						rotationAnchor = TextAnchor.CENTER_LEFT;
+					}
+				}
+
+				result.add(new NumberTick(currentTickValue,
+						tickLabel, anchor, rotationAnchor, angle));
+
+				double nextTickValue = lowestTickValue + ((i + 1) * size);
+				for (int mt = 1; mt < minorTickIntervals; mt++) {
+					double minorTickValue = currentTickValue
+							+ (nextTickValue - currentTickValue)
+							* mt / minorTickIntervals;
+					if (getRange().contains(minorTickValue)) {
+						result.add(new NumberTick(TickType.MINOR,
+								minorTickValue, null, TextAnchor.TOP_CENTER,
+								TextAnchor.CENTER, 0.0));
+					}
+				}
+			}
+		}
+		return result;
+	}
+
 	/**
 	 * Returns a clone of the axis.
 	 *

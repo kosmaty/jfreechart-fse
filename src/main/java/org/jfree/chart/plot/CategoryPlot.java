@@ -266,12 +266,13 @@ import org.jfree.data.general.DatasetUtilities;
  * renders each data item using a {@link CategoryItemRenderer}.
  */
 public class CategoryPlot extends Plot implements
-		// ValueAxisPlot,
+		ValueAxisPlot,
 		Pannable,
-		// Zoomable, AnnotationChangeListener,
+		Zoomable,
+		AnnotationChangeListener,
 		RendererChangeListener,
-		// Cloneable,
-		// PublicCloneable,
+		Cloneable,
+		PublicCloneable,
 		Serializable {
 
 	/** For serialization. */
@@ -563,14 +564,14 @@ public class CategoryPlot extends Plot implements
 	// * @since 1.0.14
 	// */
 	// private ShadowGenerator shadowGenerator;
-	//
-	// /**
-	// * Default constructor.
-	// */
-	// public CategoryPlot() {
-	// this(null, null, null, null);
-	// }
-	//
+
+	/**
+	 * Default constructor.
+	 */
+	public CategoryPlot() {
+		this(null, null, null, null);
+	}
+
 	/**
 	 * Creates a new plot.
 	 *
@@ -622,8 +623,7 @@ public class CategoryPlot extends Plot implements
 		this.domainAxes.put(0, domainAxis);
 		this.mapDatasetToDomainAxis(0, 0);
 		if (domainAxis != null) {
-			// JAVAFX
-			// domainAxis.setPlot(this);
+			domainAxis.setPlot(this);
 			domainAxis.addChangeListener(this);
 		}
 		this.drawSharedDomainAxis = false;
@@ -631,8 +631,7 @@ public class CategoryPlot extends Plot implements
 		this.rangeAxes.put(0, rangeAxis);
 		this.mapDatasetToRangeAxis(0, 0);
 		if (rangeAxis != null) {
-			// JAVAFX
-			// rangeAxis.setPlot(this);
+			rangeAxis.setPlot(this);
 			rangeAxis.addChangeListener(this);
 		}
 
@@ -682,8 +681,7 @@ public class CategoryPlot extends Plot implements
 		// this.rangeCrosshairStroke = DEFAULT_CROSSHAIR_STROKE;
 		// this.rangeCrosshairPaint = DEFAULT_CROSSHAIR_PAINT;
 
-		// JAVAFX
-		// this.annotations = new java.util.ArrayList<CategoryAnnotation>();
+		this.annotations = new java.util.ArrayList<CategoryAnnotation>();
 
 		this.rangePannable = false;
 		// JAVAFX
@@ -1129,13 +1127,11 @@ public class CategoryPlot extends Plot implements
 			existing.removeChangeListener(this);
 		}
 		if (axis != null) {
-			// JAVAFX axis
-			// axis.setPlot(this);
+			axis.setPlot(this);
 		}
 		this.rangeAxes.put(index, axis);
 		if (axis != null) {
-			// JAVAFX axis
-			// axis.configure();
+			axis.configure();
 			axis.addChangeListener(this);
 		}
 		if (notify) {
@@ -1345,8 +1341,7 @@ public class CategoryPlot extends Plot implements
 	public void configureRangeAxes() {
 		for (ValueAxis axis : this.rangeAxes.values()) {
 			if (axis != null) {
-				// JAVAFX axis
-				// axis.configure();
+				axis.configure();
 			}
 		}
 	}
@@ -2344,70 +2339,73 @@ public class CategoryPlot extends Plot implements
 	//
 	// }
 	//
-	// /**
-	// * Zooms (in or out) on the plot's value axis.
-	// * <p>
-	// * If the value 0.0 is passed in as the zoom percent, the auto-range
-	// * calculation for the axis is restored (which sets the range to include
-	// * the minimum and maximum data values, thus displaying all the data).
-	// *
-	// * @param percent the zoom amount.
-	// */
-	// @Override
-	// public void zoom(double percent) {
-	// if (percent > 0.0) {
-	// double range = getRangeAxis().getRange().getLength();
-	// double scaledRange = range * percent;
-	// getRangeAxis().setRange(this.anchorValue - scaledRange / 2.0,
-	// this.anchorValue + scaledRange / 2.0);
-	// }
-	// else {
-	// getRangeAxis().setAutoRange(true);
-	// }
-	// }
-	//
-	// /**
-	// * Receives notification of a change to an {@link Annotation} added to
-	// * this plot.
-	// *
-	// * @param event information about the event (not used here).
-	// *
-	// * @since 1.0.14
-	// */
-	// @Override
-	// public void annotationChanged(AnnotationChangeEvent event) {
-	// if (getParent() != null) {
-	// getParent().annotationChanged(event);
-	// }
-	// else {
-	// PlotChangeEvent e = new PlotChangeEvent(this);
-	// notifyListeners(e);
-	// }
-	// }
-	//
-	// /**
-	// * Receives notification of a change to the plot's dataset.
-	// * <P>
-	// * The range axis bounds will be recalculated if necessary.
-	// *
-	// * @param event information about the event (not used here).
-	// */
-	// @Override
-	// public void datasetChanged(DatasetChangeEvent event) {
-	// for (ValueAxis yAxis : this.rangeAxes.values()) {
-	// if (yAxis != null) {
-	// yAxis.configure();
-	// }
-	// }
-	// if (getParent() != null) {
-	// getParent().datasetChanged(event);
-	// } else {
-	// PlotChangeEvent e = new PlotChangeEvent(this);
-	// e.setType(ChartChangeEventType.DATASET_UPDATED);
-	// notifyListeners(e);
-	// }
-	// }
-	//
+	/**
+	 * Zooms (in or out) on the plot's value axis.
+	 * <p>
+	 * If the value 0.0 is passed in as the zoom percent, the auto-range
+	 * calculation for the axis is restored (which sets the range to include the
+	 * minimum and maximum data values, thus displaying all the data).
+	 *
+	 * @param percent
+	 *            the zoom amount.
+	 */
+	@Override
+	public void zoom(double percent) {
+		if (percent > 0.0) {
+			double range = getRangeAxis().getRange().getLength();
+			double scaledRange = range * percent;
+			getRangeAxis().setRange(this.anchorValue - scaledRange / 2.0,
+					this.anchorValue + scaledRange / 2.0);
+		}
+		else {
+			getRangeAxis().setAutoRange(true);
+		}
+	}
+
+	/**
+	 * Receives notification of a change to an {@link Annotation} added to this
+	 * plot.
+	 *
+	 * @param event
+	 *            information about the event (not used here).
+	 *
+	 * @since 1.0.14
+	 */
+	@Override
+	public void annotationChanged(AnnotationChangeEvent event) {
+		if (getParent() != null) {
+			getParent().annotationChanged(event);
+		}
+		else {
+			PlotChangeEvent e = new PlotChangeEvent(this);
+			notifyListeners(e);
+		}
+	}
+
+	/**
+	 * Receives notification of a change to the plot's dataset.
+	 * <P>
+	 * The range axis bounds will be recalculated if necessary.
+	 *
+	 * @param event
+	 *            information about the event (not used here).
+	 */
+	@Override
+	public void datasetChanged(DatasetChangeEvent event) {
+		for (ValueAxis yAxis : this.rangeAxes.values()) {
+			if (yAxis != null) {
+				yAxis.configure();
+			}
+		}
+		if (getParent() != null) {
+			getParent().datasetChanged(event);
+		} else {
+			PlotChangeEvent e = new PlotChangeEvent(this);
+			e.setType(ChartChangeEventType.DATASET_UPDATED);
+			notifyListeners(e);
+		}
+	}
+
 	/**
 	 * Receives notification of a renderer change event.
 	 *
@@ -3982,11 +3980,11 @@ public class CategoryPlot extends Plot implements
 		for (Axis axis : axisCollection.getAxesAtTop()) {
 			if (axis != null) {
 				// JAVAFX axis
-				// AxisState axisState = axis.draw(g2, cursor, plotArea,
-				// dataArea,
-				// RectangleEdge.TOP, plotState);
-				// cursor = axisState.getCursor();
-				// axisStateMap.put(axis, axisState);
+				AxisState axisState = axis.draw(g2, cursor, plotArea,
+						dataArea,
+						RectangleEdge.TOP, plotState);
+				cursor = axisState.getCursor();
+				axisStateMap.put(axis, axisState);
 			}
 		}
 
@@ -4459,267 +4457,278 @@ public class CategoryPlot extends Plot implements
 	//
 	// }
 	//
-	// /**
-	// * Returns the range of data values that will be plotted against the range
-	// * axis. If the dataset is <code>null</code>, this method returns
-	// * <code>null</code>.
-	// *
-	// * @param axis the axis.
-	// *
-	// * @return The data range.
-	// */
-	// @Override
-	// public Range getDataRange(ValueAxis axis) {
-	// Range result = null;
-	// List<CategoryDataset> mappedDatasets = new ArrayList<CategoryDataset>();
-	// int rangeIndex = this.findRangeAxisIndex(axis);
-	// if (rangeIndex >= 0) {
-	// mappedDatasets.addAll(datasetsMappedToRangeAxis(rangeIndex));
-	// }
-	// else if (axis == getRangeAxis()) {
-	// mappedDatasets.addAll(datasetsMappedToRangeAxis(0));
-	// }
-	//
-	// // iterate through the datasets that map to the axis and get the union
-	// // of the ranges.
-	// for (CategoryDataset d : mappedDatasets) {
-	// CategoryItemRenderer r = getRendererForDataset(d);
-	// if (r != null) {
-	// result = Range.combine(result, r.findRangeBounds(d));
-	// }
-	// }
-	// return result;
-	// }
-	//
-	// /**
-	// * Returns a list of the datasets that are mapped to the axis with the
-	// * specified index.
-	// *
-	// * @param axisIndex the axis index.
-	// *
-	// * @return The list (possibly empty, but never <code>null</code>).
-	// *
-	// * @since 1.0.3
-	// */
-	// private List<CategoryDataset> datasetsMappedToDomainAxis(int axisIndex) {
-	// List<CategoryDataset> result = new ArrayList<CategoryDataset>();
-	// for (CategoryDataset dataset : this.datasets.values()) {
-	// if (dataset == null) {
-	// continue;
-	// }
-	// int i = findDatasetIndex(dataset);
-	// List<Integer> mappedAxes = this.datasetToDomainAxesMap.get(i);
-	// if (mappedAxes == null) {
-	// if (axisIndex == 0) {
-	// result.add(dataset);
-	// }
-	// } else {
-	// if (mappedAxes.contains(axisIndex)) {
-	// result.add(dataset);
-	// }
-	// }
-	// }
-	// return result;
-	// }
-	//
-	// /**
-	// * A utility method that returns a list of datasets that are mapped to a
-	// * given range axis.
-	// *
-	// * @param axisIndex the axis index.
-	// *
-	// * @return A list of datasets.
-	// */
-	// private List<CategoryDataset> datasetsMappedToRangeAxis(int axisIndex) {
-	// List<CategoryDataset> result = new ArrayList<CategoryDataset>();
-	// for (CategoryDataset dataset : this.datasets.values()) {
-	// int i = findDatasetIndex(dataset);
-	// List<Integer> mappedAxes = this.datasetToRangeAxesMap.get(i);
-	// if (mappedAxes == null) {
-	// if (axisIndex == 0) {
-	// result.add(this.datasets.get(i));
-	// }
-	// } else if (mappedAxes.contains(axisIndex)) {
-	// result.add(this.datasets.get(i));
-	// }
-	// }
-	// return result;
-	// }
-	//
-	// /**
-	// * Returns the weight for this plot when it is used as a subplot within a
-	// * combined plot.
-	// *
-	// * @return The weight.
-	// *
-	// * @see #setWeight(int)
-	// */
-	// public int getWeight() {
-	// return this.weight;
-	// }
-	//
-	// /**
-	// * Sets the weight for the plot and sends a {@link PlotChangeEvent} to all
-	// * registered listeners.
-	// *
-	// * @param weight the weight.
-	// *
-	// * @see #getWeight()
-	// */
-	// public void setWeight(int weight) {
-	// this.weight = weight;
-	// fireChangeEvent();
-	// }
-	//
-	// /**
-	// * Returns the fixed domain axis space.
-	// *
-	// * @return The fixed domain axis space (possibly <code>null</code>).
-	// *
-	// * @see #setFixedDomainAxisSpace(AxisSpace)
-	// */
-	// public AxisSpace getFixedDomainAxisSpace() {
-	// return this.fixedDomainAxisSpace;
-	// }
-	//
-	// /**
-	// * Sets the fixed domain axis space and sends a {@link PlotChangeEvent} to
-	// * all registered listeners.
-	// *
-	// * @param space the space (<code>null</code> permitted).
-	// *
-	// * @see #getFixedDomainAxisSpace()
-	// */
-	// public void setFixedDomainAxisSpace(AxisSpace space) {
-	// setFixedDomainAxisSpace(space, true);
-	// }
-	//
-	// /**
-	// * Sets the fixed domain axis space and sends a {@link PlotChangeEvent} to
-	// * all registered listeners.
-	// *
-	// * @param space the space (<code>null</code> permitted).
-	// * @param notify notify listeners?
-	// *
-	// * @see #getFixedDomainAxisSpace()
-	// *
-	// * @since 1.0.7
-	// */
-	// public void setFixedDomainAxisSpace(AxisSpace space, boolean notify) {
-	// this.fixedDomainAxisSpace = space;
-	// if (notify) {
-	// fireChangeEvent();
-	// }
-	// }
-	//
-	// /**
-	// * Returns the fixed range axis space.
-	// *
-	// * @return The fixed range axis space (possibly <code>null</code>).
-	// *
-	// * @see #setFixedRangeAxisSpace(AxisSpace)
-	// */
-	// public AxisSpace getFixedRangeAxisSpace() {
-	// return this.fixedRangeAxisSpace;
-	// }
-	//
-	// /**
-	// * Sets the fixed range axis space and sends a {@link PlotChangeEvent} to
-	// * all registered listeners.
-	// *
-	// * @param space the space (<code>null</code> permitted).
-	// *
-	// * @see #getFixedRangeAxisSpace()
-	// */
-	// public void setFixedRangeAxisSpace(AxisSpace space) {
-	// setFixedRangeAxisSpace(space, true);
-	// }
-	//
-	// /**
-	// * Sets the fixed range axis space and sends a {@link PlotChangeEvent} to
-	// * all registered listeners.
-	// *
-	// * @param space the space (<code>null</code> permitted).
-	// * @param notify notify listeners?
-	// *
-	// * @see #getFixedRangeAxisSpace()
-	// *
-	// * @since 1.0.7
-	// */
-	// public void setFixedRangeAxisSpace(AxisSpace space, boolean notify) {
-	// this.fixedRangeAxisSpace = space;
-	// if (notify) {
-	// fireChangeEvent();
-	// }
-	// }
-	//
-	// /**
-	// * Returns a list of the categories in the plot's primary dataset.
-	// *
-	// * @return A list of the categories in the plot's primary dataset.
-	// *
-	// * @see #getCategoriesForAxis(CategoryAxis)
-	// */
-	// public List<Comparable> getCategories() {
-	// List<Comparable> result = null;
-	// if (getDataset() != null) {
-	// result = Collections.unmodifiableList(getDataset().getColumnKeys());
-	// }
-	// return result;
-	// }
-	//
-	// /**
-	// * Returns a list of the categories that should be displayed for the
-	// * specified axis.
-	// *
-	// * @param axis the axis (<code>null</code> not permitted)
-	// *
-	// * @return The categories.
-	// *
-	// * @since 1.0.3
-	// */
-	// public List<Comparable> getCategoriesForAxis(CategoryAxis axis) {
-	// List<Comparable> result = new ArrayList<Comparable>();
-	// int axisIndex = getDomainAxisIndex(axis);
-	// List<CategoryDataset> mappedDatasets =
-	// datasetsMappedToDomainAxis(axisIndex);
-	// for (CategoryDataset dataset : mappedDatasets) {
-	// // add the unique categories from this dataset
-	// for (int i = 0; i < dataset.getColumnCount(); i++) {
-	// Comparable category = dataset.getColumnKey(i);
-	// if (!result.contains(category)) {
-	// result.add(category);
-	// }
-	// }
-	// }
-	// return result;
-	// }
-	//
-	// /**
-	// * Returns the flag that controls whether or not the shared domain axis is
-	// * drawn for each subplot.
-	// *
-	// * @return A boolean.
-	// *
-	// * @see #setDrawSharedDomainAxis(boolean)
-	// */
-	// public boolean getDrawSharedDomainAxis() {
-	// return this.drawSharedDomainAxis;
-	// }
-	//
-	// /**
-	// * Sets the flag that controls whether the shared domain axis is drawn
-	// when
-	// * this plot is being used as a subplot.
-	// *
-	// * @param draw a boolean.
-	// *
-	// * @see #getDrawSharedDomainAxis()
-	// */
-	// public void setDrawSharedDomainAxis(boolean draw) {
-	// this.drawSharedDomainAxis = draw;
-	// fireChangeEvent();
-	// }
+	/**
+	 * Returns the range of data values that will be plotted against the range
+	 * axis. If the dataset is <code>null</code>, this method returns
+	 * <code>null</code>.
+	 *
+	 * @param axis
+	 *            the axis.
+	 *
+	 * @return The data range.
+	 */
+	@Override
+	public Range getDataRange(ValueAxis axis) {
+		Range result = null;
+		List<CategoryDataset> mappedDatasets = new ArrayList<CategoryDataset>();
+		int rangeIndex = this.findRangeAxisIndex(axis);
+		if (rangeIndex >= 0) {
+			mappedDatasets.addAll(datasetsMappedToRangeAxis(rangeIndex));
+		}
+		else if (axis == getRangeAxis()) {
+			mappedDatasets.addAll(datasetsMappedToRangeAxis(0));
+		}
+
+		// iterate through the datasets that map to the axis and get the union
+		// of the ranges.
+		for (CategoryDataset d : mappedDatasets) {
+			CategoryItemRenderer r = getRendererForDataset(d);
+			if (r != null) {
+				result = Range.combine(result, r.findRangeBounds(d));
+			}
+		}
+		return result;
+	}
+
+	/**
+	 * Returns a list of the datasets that are mapped to the axis with the
+	 * specified index.
+	 *
+	 * @param axisIndex
+	 *            the axis index.
+	 *
+	 * @return The list (possibly empty, but never <code>null</code>).
+	 *
+	 * @since 1.0.3
+	 */
+	private List<CategoryDataset> datasetsMappedToDomainAxis(int axisIndex) {
+		List<CategoryDataset> result = new ArrayList<CategoryDataset>();
+		for (CategoryDataset dataset : this.datasets.values()) {
+			if (dataset == null) {
+				continue;
+			}
+			int i = findDatasetIndex(dataset);
+			List<Integer> mappedAxes = this.datasetToDomainAxesMap.get(i);
+			if (mappedAxes == null) {
+				if (axisIndex == 0) {
+					result.add(dataset);
+				}
+			} else {
+				if (mappedAxes.contains(axisIndex)) {
+					result.add(dataset);
+				}
+			}
+		}
+		return result;
+	}
+
+	/**
+	 * A utility method that returns a list of datasets that are mapped to a
+	 * given range axis.
+	 *
+	 * @param axisIndex
+	 *            the axis index.
+	 *
+	 * @return A list of datasets.
+	 */
+	private List<CategoryDataset> datasetsMappedToRangeAxis(int axisIndex) {
+		List<CategoryDataset> result = new ArrayList<CategoryDataset>();
+		for (CategoryDataset dataset : this.datasets.values()) {
+			int i = findDatasetIndex(dataset);
+			List<Integer> mappedAxes = this.datasetToRangeAxesMap.get(i);
+			if (mappedAxes == null) {
+				if (axisIndex == 0) {
+					result.add(this.datasets.get(i));
+				}
+			} else if (mappedAxes.contains(axisIndex)) {
+				result.add(this.datasets.get(i));
+			}
+		}
+		return result;
+	}
+
+	/**
+	 * Returns the weight for this plot when it is used as a subplot within a
+	 * combined plot.
+	 *
+	 * @return The weight.
+	 *
+	 * @see #setWeight(int)
+	 */
+	public int getWeight() {
+		return this.weight;
+	}
+
+	/**
+	 * Sets the weight for the plot and sends a {@link PlotChangeEvent} to all
+	 * registered listeners.
+	 *
+	 * @param weight
+	 *            the weight.
+	 *
+	 * @see #getWeight()
+	 */
+	public void setWeight(int weight) {
+		this.weight = weight;
+		fireChangeEvent();
+	}
+
+	/**
+	 * Returns the fixed domain axis space.
+	 *
+	 * @return The fixed domain axis space (possibly <code>null</code>).
+	 *
+	 * @see #setFixedDomainAxisSpace(AxisSpace)
+	 */
+	public AxisSpace getFixedDomainAxisSpace() {
+		return this.fixedDomainAxisSpace;
+	}
+
+	/**
+	 * Sets the fixed domain axis space and sends a {@link PlotChangeEvent} to
+	 * all registered listeners.
+	 *
+	 * @param space
+	 *            the space (<code>null</code> permitted).
+	 *
+	 * @see #getFixedDomainAxisSpace()
+	 */
+	public void setFixedDomainAxisSpace(AxisSpace space) {
+		setFixedDomainAxisSpace(space, true);
+	}
+
+	/**
+	 * Sets the fixed domain axis space and sends a {@link PlotChangeEvent} to
+	 * all registered listeners.
+	 *
+	 * @param space
+	 *            the space (<code>null</code> permitted).
+	 * @param notify
+	 *            notify listeners?
+	 *
+	 * @see #getFixedDomainAxisSpace()
+	 *
+	 * @since 1.0.7
+	 */
+	public void setFixedDomainAxisSpace(AxisSpace space, boolean notify) {
+		this.fixedDomainAxisSpace = space;
+		if (notify) {
+			fireChangeEvent();
+		}
+	}
+
+	/**
+	 * Returns the fixed range axis space.
+	 *
+	 * @return The fixed range axis space (possibly <code>null</code>).
+	 *
+	 * @see #setFixedRangeAxisSpace(AxisSpace)
+	 */
+	public AxisSpace getFixedRangeAxisSpace() {
+		return this.fixedRangeAxisSpace;
+	}
+
+	/**
+	 * Sets the fixed range axis space and sends a {@link PlotChangeEvent} to
+	 * all registered listeners.
+	 *
+	 * @param space
+	 *            the space (<code>null</code> permitted).
+	 *
+	 * @see #getFixedRangeAxisSpace()
+	 */
+	public void setFixedRangeAxisSpace(AxisSpace space) {
+		setFixedRangeAxisSpace(space, true);
+	}
+
+	/**
+	 * Sets the fixed range axis space and sends a {@link PlotChangeEvent} to
+	 * all registered listeners.
+	 *
+	 * @param space
+	 *            the space (<code>null</code> permitted).
+	 * @param notify
+	 *            notify listeners?
+	 *
+	 * @see #getFixedRangeAxisSpace()
+	 *
+	 * @since 1.0.7
+	 */
+	public void setFixedRangeAxisSpace(AxisSpace space, boolean notify) {
+		this.fixedRangeAxisSpace = space;
+		if (notify) {
+			fireChangeEvent();
+		}
+	}
+
+	/**
+	 * Returns a list of the categories in the plot's primary dataset.
+	 *
+	 * @return A list of the categories in the plot's primary dataset.
+	 *
+	 * @see #getCategoriesForAxis(CategoryAxis)
+	 */
+	public List<Comparable> getCategories() {
+		List<Comparable> result = null;
+		if (getDataset() != null) {
+			result = Collections.unmodifiableList(getDataset().getColumnKeys());
+		}
+		return result;
+	}
+
+	/**
+	 * Returns a list of the categories that should be displayed for the
+	 * specified axis.
+	 *
+	 * @param axis
+	 *            the axis (<code>null</code> not permitted)
+	 *
+	 * @return The categories.
+	 *
+	 * @since 1.0.3
+	 */
+	public List<Comparable> getCategoriesForAxis(CategoryAxis axis) {
+		List<Comparable> result = new ArrayList<Comparable>();
+		int axisIndex = getDomainAxisIndex(axis);
+		List<CategoryDataset> mappedDatasets =
+				datasetsMappedToDomainAxis(axisIndex);
+		for (CategoryDataset dataset : mappedDatasets) {
+			// add the unique categories from this dataset
+			for (int i = 0; i < dataset.getColumnCount(); i++) {
+				Comparable category = dataset.getColumnKey(i);
+				if (!result.contains(category)) {
+					result.add(category);
+				}
+			}
+		}
+		return result;
+	}
+
+	/**
+	 * Returns the flag that controls whether or not the shared domain axis is
+	 * drawn for each subplot.
+	 *
+	 * @return A boolean.
+	 *
+	 * @see #setDrawSharedDomainAxis(boolean)
+	 */
+	public boolean getDrawSharedDomainAxis() {
+		return this.drawSharedDomainAxis;
+	}
+
+	/**
+	 * Sets the flag that controls whether the shared domain axis is drawn when
+	 * this plot is being used as a subplot.
+	 *
+	 * @param draw
+	 *            a boolean.
+	 *
+	 * @see #getDrawSharedDomainAxis()
+	 */
+	public void setDrawSharedDomainAxis(boolean draw) {
+		this.drawSharedDomainAxis = draw;
+		fireChangeEvent();
+	}
 
 	/**
 	 * Returns <code>false</code> always, because the plot cannot be panned
@@ -4807,486 +4816,518 @@ public class CategoryPlot extends Plot implements
 			if (axis == null) {
 				continue;
 			}
-			// JAVAFX
-			// double length = axis.getRange().getLength();
-			// double adj = percent * length;
-			// if (axis.isInverted()) {
-			// adj = -adj;
-			// }
-			// axis.setRange(axis.getLowerBound() + adj,
-			// axis.getUpperBound() + adj);
+			double length = axis.getRange().getLength();
+			double adj = percent * length;
+			if (axis.isInverted()) {
+				adj = -adj;
+			}
+			axis.setRange(axis.getLowerBound() + adj,
+					axis.getUpperBound() + adj);
 		}
 	}
+
+	/**
+	 * Returns <code>false</code> to indicate that the domain axes are not
+	 * zoomable.
+	 *
+	 * @return A boolean.
+	 *
+	 * @see #isRangeZoomable()
+	 */
+	@Override
+	public boolean isDomainZoomable() {
+		return false;
+	}
+
+	/**
+	 * Returns <code>true</code> to indicate that the range axes are zoomable.
+	 *
+	 * @return A boolean.
+	 *
+	 * @see #isDomainZoomable()
+	 */
+	@Override
+	public boolean isRangeZoomable() {
+		return true;
+	}
+
+	/**
+	 * This method does nothing, because <code>CategoryPlot</code> doesn't
+	 * support zooming on the domain.
+	 *
+	 * @param factor
+	 *            the zoom factor.
+	 * @param state
+	 *            the plot state.
+	 * @param source
+	 *            the source point (in Java2D space) for the zoom.
+	 */
+	@Override
+	public void zoomDomainAxes(double factor, PlotRenderingInfo state,
+			Point2D source) {
+		// can't zoom domain axis
+	}
+
+	/**
+	 * This method does nothing, because <code>CategoryPlot</code> doesn't
+	 * support zooming on the domain.
+	 *
+	 * @param lowerPercent
+	 *            the lower bound.
+	 * @param upperPercent
+	 *            the upper bound.
+	 * @param state
+	 *            the plot state.
+	 * @param source
+	 *            the source point (in Java2D space) for the zoom.
+	 */
+	@Override
+	public void zoomDomainAxes(double lowerPercent, double upperPercent,
+			PlotRenderingInfo state, Point2D source) {
+		// can't zoom domain axis
+	}
+
+	/**
+	 * This method does nothing, because <code>CategoryPlot</code> doesn't
+	 * support zooming on the domain.
+	 *
+	 * @param factor
+	 *            the zoom factor.
+	 * @param info
+	 *            the plot rendering info.
+	 * @param source
+	 *            the source point (in Java2D space).
+	 * @param useAnchor
+	 *            use source point as zoom anchor?
+	 *
+	 * @see #zoomRangeAxes(double, PlotRenderingInfo, Point2D, boolean)
+	 *
+	 * @since 1.0.7
+	 */
+	@Override
+	public void zoomDomainAxes(double factor, PlotRenderingInfo info,
+			Point2D source, boolean useAnchor) {
+		// can't zoom domain axis
+	}
+
+	/**
+	 * Multiplies the range on the range axis/axes by the specified factor.
+	 *
+	 * @param factor
+	 *            the zoom factor.
+	 * @param state
+	 *            the plot state.
+	 * @param source
+	 *            the source point (in Java2D space) for the zoom.
+	 */
+	@Override
+	public void zoomRangeAxes(double factor, PlotRenderingInfo state,
+			Point2D source) {
+		// delegate to other method
+		zoomRangeAxes(factor, state, source, false);
+	}
+
+	/**
+	 * Multiplies the range on the range axis/axes by the specified factor.
+	 *
+	 * @param factor
+	 *            the zoom factor.
+	 * @param info
+	 *            the plot rendering info.
+	 * @param source
+	 *            the source point.
+	 * @param useAnchor
+	 *            a flag that controls whether or not the source point is used
+	 *            for the zoom anchor.
+	 *
+	 * @see #zoomDomainAxes(double, PlotRenderingInfo, Point2D, boolean)
+	 *
+	 * @since 1.0.7
+	 */
+	@Override
+	public void zoomRangeAxes(double factor, PlotRenderingInfo info,
+			Point2D source, boolean useAnchor) {
+
+		// perform the zoom on each range axis
+		for (ValueAxis yAxis : this.rangeAxes.values()) {
+			if (yAxis == null) {
+				continue;
+			}
+			if (useAnchor) {
+				// get the relevant source coordinate given the plot orientation
+				double sourceY = source.getY();
+				if (this.orientation == PlotOrientation.HORIZONTAL) {
+					sourceY = source.getX();
+				}
+				double anchorY = yAxis.java2DToValue(sourceY,
+						info.getDataArea(), getRangeAxisEdge());
+				yAxis.resizeRange2(factor, anchorY);
+			} else {
+				yAxis.resizeRange(factor);
+			}
+		}
+	}
+
 	//
-	// /**
-	// * Returns <code>false</code> to indicate that the domain axes are not
-	// * zoomable.
-	// *
-	// * @return A boolean.
-	// *
-	// * @see #isRangeZoomable()
-	// */
-	// @Override
-	// public boolean isDomainZoomable() {
-	// return false;
-	// }
-	//
-	// /**
-	// * Returns <code>true</code> to indicate that the range axes are zoomable.
-	// *
-	// * @return A boolean.
-	// *
-	// * @see #isDomainZoomable()
-	// */
-	// @Override
-	// public boolean isRangeZoomable() {
-	// return true;
-	// }
-	//
-	// /**
-	// * This method does nothing, because <code>CategoryPlot</code> doesn't
-	// * support zooming on the domain.
-	// *
-	// * @param factor the zoom factor.
-	// * @param state the plot state.
-	// * @param source the source point (in Java2D space) for the zoom.
-	// */
-	// @Override
-	// public void zoomDomainAxes(double factor, PlotRenderingInfo state,
-	// Point2D source) {
-	// // can't zoom domain axis
-	// }
-	//
-	// /**
-	// * This method does nothing, because <code>CategoryPlot</code> doesn't
-	// * support zooming on the domain.
-	// *
-	// * @param lowerPercent the lower bound.
-	// * @param upperPercent the upper bound.
-	// * @param state the plot state.
-	// * @param source the source point (in Java2D space) for the zoom.
-	// */
-	// @Override
-	// public void zoomDomainAxes(double lowerPercent, double upperPercent,
-	// PlotRenderingInfo state, Point2D source) {
-	// // can't zoom domain axis
-	// }
-	//
-	// /**
-	// * This method does nothing, because <code>CategoryPlot</code> doesn't
-	// * support zooming on the domain.
-	// *
-	// * @param factor the zoom factor.
-	// * @param info the plot rendering info.
-	// * @param source the source point (in Java2D space).
-	// * @param useAnchor use source point as zoom anchor?
-	// *
-	// * @see #zoomRangeAxes(double, PlotRenderingInfo, Point2D, boolean)
-	// *
-	// * @since 1.0.7
-	// */
-	// @Override
-	// public void zoomDomainAxes(double factor, PlotRenderingInfo info,
-	// Point2D source, boolean useAnchor) {
-	// // can't zoom domain axis
-	// }
-	//
-	// /**
-	// * Multiplies the range on the range axis/axes by the specified factor.
-	// *
-	// * @param factor the zoom factor.
-	// * @param state the plot state.
-	// * @param source the source point (in Java2D space) for the zoom.
-	// */
-	// @Override
-	// public void zoomRangeAxes(double factor, PlotRenderingInfo state,
-	// Point2D source) {
-	// // delegate to other method
-	// zoomRangeAxes(factor, state, source, false);
-	// }
-	//
-	// /**
-	// * Multiplies the range on the range axis/axes by the specified factor.
-	// *
-	// * @param factor the zoom factor.
-	// * @param info the plot rendering info.
-	// * @param source the source point.
-	// * @param useAnchor a flag that controls whether or not the source point
-	// * is used for the zoom anchor.
-	// *
-	// * @see #zoomDomainAxes(double, PlotRenderingInfo, Point2D, boolean)
-	// *
-	// * @since 1.0.7
-	// */
-	// @Override
-	// public void zoomRangeAxes(double factor, PlotRenderingInfo info,
-	// Point2D source, boolean useAnchor) {
-	//
-	// // perform the zoom on each range axis
-	// for (ValueAxis yAxis : this.rangeAxes.values()) {
-	// if (yAxis == null) {
-	// continue;
-	// }
-	// if (useAnchor) {
-	// // get the relevant source coordinate given the plot orientation
-	// double sourceY = source.getY();
-	// if (this.orientation == PlotOrientation.HORIZONTAL) {
-	// sourceY = source.getX();
-	// }
-	// double anchorY = yAxis.java2DToValue(sourceY,
-	// info.getDataArea(), getRangeAxisEdge());
-	// yAxis.resizeRange2(factor, anchorY);
-	// } else {
-	// yAxis.resizeRange(factor);
-	// }
-	// }
-	// }
-	//
-	// /**
-	// * Zooms in on the range axes.
-	// *
-	// * @param lowerPercent the lower bound.
-	// * @param upperPercent the upper bound.
-	// * @param state the plot state.
-	// * @param source the source point (in Java2D space) for the zoom.
-	// */
-	// @Override
-	// public void zoomRangeAxes(double lowerPercent, double upperPercent,
-	// PlotRenderingInfo state, Point2D source) {
-	// for (ValueAxis yAxis : this.rangeAxes.values()) {
-	// if (yAxis != null) {
-	// yAxis.zoomRange(lowerPercent, upperPercent);
-	// }
-	// }
-	// }
-	//
-	// /**
-	// * Returns the anchor value.
-	// *
-	// * @return The anchor value.
-	// *
-	// * @see #setAnchorValue(double)
-	// */
-	// public double getAnchorValue() {
-	// return this.anchorValue;
-	// }
-	//
-	// /**
-	// * Sets the anchor value and sends a {@link PlotChangeEvent} to all
-	// * registered listeners.
-	// *
-	// * @param value the anchor value.
-	// *
-	// * @see #getAnchorValue()
-	// */
-	// public void setAnchorValue(double value) {
-	// setAnchorValue(value, true);
-	// }
-	//
-	// /**
-	// * Sets the anchor value and, if requested, sends a {@link
-	// PlotChangeEvent}
-	// * to all registered listeners.
-	// *
-	// * @param value the value.
-	// * @param notify notify listeners?
-	// *
-	// * @see #getAnchorValue()
-	// */
-	// public void setAnchorValue(double value, boolean notify) {
-	// this.anchorValue = value;
-	// if (notify) {
-	// fireChangeEvent();
-	// }
-	// }
-	//
-	// /**
-	// * Tests the plot for equality with an arbitrary object.
-	// *
-	// * @param obj the object to test against (<code>null</code> permitted).
-	// *
-	// * @return A boolean.
-	// */
-	// @Override
-	// public boolean equals(Object obj) {
-	// if (obj == this) {
-	// return true;
-	// }
-	// if (!(obj instanceof CategoryPlot)) {
-	// return false;
-	// }
-	// CategoryPlot that = (CategoryPlot) obj;
-	// if (this.orientation != that.orientation) {
-	// return false;
-	// }
-	// if (!ObjectUtils.equal(this.axisOffset, that.axisOffset)) {
-	// return false;
-	// }
-	// if (!this.domainAxes.equals(that.domainAxes)) {
-	// return false;
-	// }
-	// if (!this.domainAxisLocations.equals(that.domainAxisLocations)) {
-	// return false;
-	// }
-	// if (this.drawSharedDomainAxis != that.drawSharedDomainAxis) {
-	// return false;
-	// }
-	// if (!this.rangeAxes.equals(that.rangeAxes)) {
-	// return false;
-	// }
-	// if (!this.rangeAxisLocations.equals(that.rangeAxisLocations)) {
-	// return false;
-	// }
-	// if (!ObjectUtils.equal(this.datasetToDomainAxesMap,
-	// that.datasetToDomainAxesMap)) {
-	// return false;
-	// }
-	// if (!ObjectUtils.equal(this.datasetToRangeAxesMap,
-	// that.datasetToRangeAxesMap)) {
-	// return false;
-	// }
-	// if (!ObjectUtils.equal(this.renderers, that.renderers)) {
-	// return false;
-	// }
-	// if (this.renderingOrder != that.renderingOrder) {
-	// return false;
-	// }
-	// if (this.columnRenderingOrder != that.columnRenderingOrder) {
-	// return false;
-	// }
-	// if (this.rowRenderingOrder != that.rowRenderingOrder) {
-	// return false;
-	// }
-	// if (this.domainGridlinesVisible != that.domainGridlinesVisible) {
-	// return false;
-	// }
-	// if (this.domainGridlinePosition != that.domainGridlinePosition) {
-	// return false;
-	// }
-	// if (!ObjectUtils.equal(this.domainGridlineStroke,
-	// that.domainGridlineStroke)) {
-	// return false;
-	// }
-	// if (!PaintUtils.equal(this.domainGridlinePaint,
-	// that.domainGridlinePaint)) {
-	// return false;
-	// }
-	// if (this.rangeGridlinesVisible != that.rangeGridlinesVisible) {
-	// return false;
-	// }
-	// if (!ObjectUtils.equal(this.rangeGridlineStroke,
-	// that.rangeGridlineStroke)) {
-	// return false;
-	// }
-	// if (!PaintUtils.equal(this.rangeGridlinePaint,
-	// that.rangeGridlinePaint)) {
-	// return false;
-	// }
-	// if (this.anchorValue != that.anchorValue) {
-	// return false;
-	// }
-	// if (this.rangeCrosshairVisible != that.rangeCrosshairVisible) {
-	// return false;
-	// }
-	// if (this.rangeCrosshairValue != that.rangeCrosshairValue) {
-	// return false;
-	// }
-	// if (!ObjectUtils.equal(this.rangeCrosshairStroke,
-	// that.rangeCrosshairStroke)) {
-	// return false;
-	// }
-	// if (!PaintUtils.equal(this.rangeCrosshairPaint,
-	// that.rangeCrosshairPaint)) {
-	// return false;
-	// }
-	// if (this.rangeCrosshairLockedOnData
-	// != that.rangeCrosshairLockedOnData) {
-	// return false;
-	// }
-	// if (!ObjectUtils.equal(this.foregroundDomainMarkers,
-	// that.foregroundDomainMarkers)) {
-	// return false;
-	// }
-	// if (!ObjectUtils.equal(this.backgroundDomainMarkers,
-	// that.backgroundDomainMarkers)) {
-	// return false;
-	// }
-	// if (!ObjectUtils.equal(this.foregroundRangeMarkers,
-	// that.foregroundRangeMarkers)) {
-	// return false;
-	// }
-	// if (!ObjectUtils.equal(this.backgroundRangeMarkers,
-	// that.backgroundRangeMarkers)) {
-	// return false;
-	// }
-	// if (!ObjectUtils.equal(this.annotations, that.annotations)) {
-	// return false;
-	// }
-	// if (this.weight != that.weight) {
-	// return false;
-	// }
-	// if (!ObjectUtils.equal(this.fixedDomainAxisSpace,
-	// that.fixedDomainAxisSpace)) {
-	// return false;
-	// }
-	// if (!ObjectUtils.equal(this.fixedRangeAxisSpace,
-	// that.fixedRangeAxisSpace)) {
-	// return false;
-	// }
-	// if (!ObjectUtils.equal(this.fixedLegendItems,
-	// that.fixedLegendItems)) {
-	// return false;
-	// }
-	// if (this.domainCrosshairVisible != that.domainCrosshairVisible) {
-	// return false;
-	// }
-	// if (this.crosshairDatasetIndex != that.crosshairDatasetIndex) {
-	// return false;
-	// }
-	// if (!ObjectUtils.equal(this.domainCrosshairColumnKey,
-	// that.domainCrosshairColumnKey)) {
-	// return false;
-	// }
-	// if (!ObjectUtils.equal(this.domainCrosshairRowKey,
-	// that.domainCrosshairRowKey)) {
-	// return false;
-	// }
-	// if (!PaintUtils.equal(this.domainCrosshairPaint,
-	// that.domainCrosshairPaint)) {
-	// return false;
-	// }
-	// if (!ObjectUtils.equal(this.domainCrosshairStroke,
-	// that.domainCrosshairStroke)) {
-	// return false;
-	// }
-	// if (this.rangeMinorGridlinesVisible
-	// != that.rangeMinorGridlinesVisible) {
-	// return false;
-	// }
-	// if (!PaintUtils.equal(this.rangeMinorGridlinePaint,
-	// that.rangeMinorGridlinePaint)) {
-	// return false;
-	// }
-	// if (!ObjectUtils.equal(this.rangeMinorGridlineStroke,
-	// that.rangeMinorGridlineStroke)) {
-	// return false;
-	// }
-	// if (this.rangeZeroBaselineVisible != that.rangeZeroBaselineVisible) {
-	// return false;
-	// }
-	// if (!PaintUtils.equal(this.rangeZeroBaselinePaint,
-	// that.rangeZeroBaselinePaint)) {
-	// return false;
-	// }
-	// if (!ObjectUtils.equal(this.rangeZeroBaselineStroke,
-	// that.rangeZeroBaselineStroke)) {
-	// return false;
-	// }
-	// if (!ObjectUtils.equal(this.shadowGenerator,
-	// that.shadowGenerator)) {
-	// return false;
-	// }
-	// return super.equals(obj);
-	// }
-	//
-	// /**
-	// * Returns a clone of the plot.
-	// *
-	// * @return A clone.
-	// *
-	// * @throws CloneNotSupportedException if the cloning is not supported.
-	// */
-	// @Override
-	// public Object clone() throws CloneNotSupportedException {
-	// CategoryPlot clone = (CategoryPlot) super.clone();
-	// clone.domainAxes = CloneUtils.cloneMapValues(this.domainAxes);
-	// for (CategoryAxis axis : clone.domainAxes.values()) {
-	// if (axis != null) {
-	// axis.setPlot(clone);
-	// axis.addChangeListener(clone);
-	// }
-	// }
-	// clone.rangeAxes = CloneUtils.cloneMapValues(this.rangeAxes);
-	// for (ValueAxis axis : clone.rangeAxes.values()) {
-	// if (axis != null) {
-	// axis.setPlot(clone);
-	// axis.addChangeListener(clone);
-	// }
-	// }
-	//
-	// // AxisLocation is immutable, so we can just copy the maps
-	// clone.domainAxisLocations = new HashMap<Integer, AxisLocation>(
-	// this.domainAxisLocations);
-	// clone.rangeAxisLocations = new HashMap<Integer, AxisLocation>(
-	// this.rangeAxisLocations);
-	//
-	// // we don't clone the datasets
-	// clone.datasets = new HashMap<Integer, CategoryDataset>(this.datasets);
-	// for (CategoryDataset dataset : clone.datasets.values()) {
-	// if (dataset != null) {
-	// dataset.addChangeListener(clone);
-	// }
-	// }
-	// clone.datasetToDomainAxesMap = new TreeMap<Integer, List<Integer>>();
-	// clone.datasetToDomainAxesMap.putAll(this.datasetToDomainAxesMap);
-	// clone.datasetToRangeAxesMap = new TreeMap<Integer, List<Integer>>();
-	// clone.datasetToRangeAxesMap.putAll(this.datasetToRangeAxesMap);
-	//
-	// clone.renderers = CloneUtils.cloneMapValues(this.renderers);
-	// for (CategoryItemRenderer renderer : clone.renderers.values()) {
-	// if (renderer != null) {
-	// renderer.setPlot(clone);
-	// renderer.addChangeListener(clone);
-	// }
-	// }
-	// if (this.fixedDomainAxisSpace != null) {
-	// clone.fixedDomainAxisSpace = ObjectUtils.clone(
-	// this.fixedDomainAxisSpace);
-	// }
-	// if (this.fixedRangeAxisSpace != null) {
-	// clone.fixedRangeAxisSpace = ObjectUtils.clone(
-	// this.fixedRangeAxisSpace);
-	// }
-	//
-	// clone.annotations = ObjectUtils.deepClone(this.annotations);
-	// clone.foregroundDomainMarkers = cloneMarkerMap(
-	// this.foregroundDomainMarkers);
-	// clone.backgroundDomainMarkers = cloneMarkerMap(
-	// this.backgroundDomainMarkers);
-	// clone.foregroundRangeMarkers = cloneMarkerMap(
-	// this.foregroundRangeMarkers);
-	// clone.backgroundRangeMarkers = cloneMarkerMap(
-	// this.backgroundRangeMarkers);
-	// if (this.fixedLegendItems != null) {
-	// clone.fixedLegendItems
-	// = ObjectUtils.deepClone(this.fixedLegendItems);
-	// }
-	// return clone;
-	// }
-	//
-	// /**
-	// * A utility method to clone the marker maps.
-	// *
-	// * @param map the map to clone.
-	// *
-	// * @return A clone of the map.
-	// *
-	// * @throws CloneNotSupportedException if there is some problem cloning the
-	// * map.
-	// */
-	// private Map<Integer, Collection<Marker>> cloneMarkerMap(Map<Integer,
-	// Collection<Marker>> map) throws CloneNotSupportedException {
-	// Map<Integer, Collection<Marker>> clone = new HashMap<Integer,
-	// Collection<Marker>>();
-	// Set<Integer> keys = map.keySet();
-	// for (Integer key : keys) {
-	// Collection<Marker> entry = map.get(key);
-	// Collection<Marker> toAdd = ObjectUtils.<Marker,
-	// Collection<Marker>>deepClone(entry);
-	// clone.put(key, toAdd);
-	// }
-	// return clone;
-	// }
+	/**
+	 * Zooms in on the range axes.
+	 *
+	 * @param lowerPercent
+	 *            the lower bound.
+	 * @param upperPercent
+	 *            the upper bound.
+	 * @param state
+	 *            the plot state.
+	 * @param source
+	 *            the source point (in Java2D space) for the zoom.
+	 */
+	@Override
+	public void zoomRangeAxes(double lowerPercent, double upperPercent,
+			PlotRenderingInfo state, Point2D source) {
+		for (ValueAxis yAxis : this.rangeAxes.values()) {
+			if (yAxis != null) {
+				yAxis.zoomRange(lowerPercent, upperPercent);
+			}
+		}
+	}
+
+	/**
+	 * Returns the anchor value.
+	 *
+	 * @return The anchor value.
+	 *
+	 * @see #setAnchorValue(double)
+	 */
+	public double getAnchorValue() {
+		return this.anchorValue;
+	}
+
+	/**
+	 * Sets the anchor value and sends a {@link PlotChangeEvent} to all
+	 * registered listeners.
+	 *
+	 * @param value
+	 *            the anchor value.
+	 *
+	 * @see #getAnchorValue()
+	 */
+	public void setAnchorValue(double value) {
+		setAnchorValue(value, true);
+	}
+
+	/**
+	 * Sets the anchor value and, if requested, sends a {@link PlotChangeEvent}
+	 * to all registered listeners.
+	 *
+	 * @param value
+	 *            the value.
+	 * @param notify
+	 *            notify listeners?
+	 *
+	 * @see #getAnchorValue()
+	 */
+	public void setAnchorValue(double value, boolean notify) {
+		this.anchorValue = value;
+		if (notify) {
+			fireChangeEvent();
+		}
+	}
+
+	/**
+	 * Tests the plot for equality with an arbitrary object.
+	 *
+	 * @param obj
+	 *            the object to test against (<code>null</code> permitted).
+	 *
+	 * @return A boolean.
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == this) {
+			return true;
+		}
+		if (!(obj instanceof CategoryPlot)) {
+			return false;
+		}
+		CategoryPlot that = (CategoryPlot) obj;
+		if (this.orientation != that.orientation) {
+			return false;
+		}
+		if (!ObjectUtils.equal(this.axisOffset, that.axisOffset)) {
+			return false;
+		}
+		if (!this.domainAxes.equals(that.domainAxes)) {
+			return false;
+		}
+		if (!this.domainAxisLocations.equals(that.domainAxisLocations)) {
+			return false;
+		}
+		if (this.drawSharedDomainAxis != that.drawSharedDomainAxis) {
+			return false;
+		}
+		if (!this.rangeAxes.equals(that.rangeAxes)) {
+			return false;
+		}
+		if (!this.rangeAxisLocations.equals(that.rangeAxisLocations)) {
+			return false;
+		}
+		if (!ObjectUtils.equal(this.datasetToDomainAxesMap,
+				that.datasetToDomainAxesMap)) {
+			return false;
+		}
+		if (!ObjectUtils.equal(this.datasetToRangeAxesMap,
+				that.datasetToRangeAxesMap)) {
+			return false;
+		}
+		if (!ObjectUtils.equal(this.renderers, that.renderers)) {
+			return false;
+		}
+		if (this.renderingOrder != that.renderingOrder) {
+			return false;
+		}
+		if (this.columnRenderingOrder != that.columnRenderingOrder) {
+			return false;
+		}
+		if (this.rowRenderingOrder != that.rowRenderingOrder) {
+			return false;
+		}
+		if (this.domainGridlinesVisible != that.domainGridlinesVisible) {
+			return false;
+		}
+		if (this.domainGridlinePosition != that.domainGridlinePosition) {
+			return false;
+		}
+		// JAVAFX
+		// if (!ObjectUtils.equal(this.domainGridlineStroke,
+		// that.domainGridlineStroke)) {
+		// return false;
+		// }
+		// if (!PaintUtils.equal(this.domainGridlinePaint,
+		// that.domainGridlinePaint)) {
+		// return false;
+		// }
+		if (this.rangeGridlinesVisible != that.rangeGridlinesVisible) {
+			return false;
+		}
+		// JAVAFX
+		// if (!ObjectUtils.equal(this.rangeGridlineStroke,
+		// that.rangeGridlineStroke)) {
+		// return false;
+		// }
+		// if (!PaintUtils.equal(this.rangeGridlinePaint,
+		// that.rangeGridlinePaint)) {
+		// return false;
+		// }
+		if (this.anchorValue != that.anchorValue) {
+			return false;
+		}
+		if (this.rangeCrosshairVisible != that.rangeCrosshairVisible) {
+			return false;
+		}
+		if (this.rangeCrosshairValue != that.rangeCrosshairValue) {
+			return false;
+		}
+		// JAVAFX
+		// if (!ObjectUtils.equal(this.rangeCrosshairStroke,
+		// that.rangeCrosshairStroke)) {
+		// return false;
+		// }
+		// if (!PaintUtils.equal(this.rangeCrosshairPaint,
+		// that.rangeCrosshairPaint)) {
+		// return false;
+		// }
+		if (this.rangeCrosshairLockedOnData
+				!= that.rangeCrosshairLockedOnData) {
+			return false;
+		}
+		if (!ObjectUtils.equal(this.foregroundDomainMarkers,
+				that.foregroundDomainMarkers)) {
+			return false;
+		}
+		if (!ObjectUtils.equal(this.backgroundDomainMarkers,
+				that.backgroundDomainMarkers)) {
+			return false;
+		}
+		if (!ObjectUtils.equal(this.foregroundRangeMarkers,
+				that.foregroundRangeMarkers)) {
+			return false;
+		}
+		if (!ObjectUtils.equal(this.backgroundRangeMarkers,
+				that.backgroundRangeMarkers)) {
+			return false;
+		}
+		if (!ObjectUtils.equal(this.annotations, that.annotations)) {
+			return false;
+		}
+		if (this.weight != that.weight) {
+			return false;
+		}
+		if (!ObjectUtils.equal(this.fixedDomainAxisSpace,
+				that.fixedDomainAxisSpace)) {
+			return false;
+		}
+		if (!ObjectUtils.equal(this.fixedRangeAxisSpace,
+				that.fixedRangeAxisSpace)) {
+			return false;
+		}
+		if (!ObjectUtils.equal(this.fixedLegendItems,
+				that.fixedLegendItems)) {
+			return false;
+		}
+		if (this.domainCrosshairVisible != that.domainCrosshairVisible) {
+			return false;
+		}
+		if (this.crosshairDatasetIndex != that.crosshairDatasetIndex) {
+			return false;
+		}
+		if (!ObjectUtils.equal(this.domainCrosshairColumnKey,
+				that.domainCrosshairColumnKey)) {
+			return false;
+		}
+		if (!ObjectUtils.equal(this.domainCrosshairRowKey,
+				that.domainCrosshairRowKey)) {
+			return false;
+		}
+		// JAVAFX
+		// if (!PaintUtils.equal(this.domainCrosshairPaint,
+		// that.domainCrosshairPaint)) {
+		// return false;
+		// }
+		// if (!ObjectUtils.equal(this.domainCrosshairStroke,
+		// that.domainCrosshairStroke)) {
+		// return false;
+		// }
+		if (this.rangeMinorGridlinesVisible
+				!= that.rangeMinorGridlinesVisible) {
+			return false;
+		}
+		// JAVAFX
+		// if (!PaintUtils.equal(this.rangeMinorGridlinePaint,
+		// that.rangeMinorGridlinePaint)) {
+		// return false;
+		// }
+		// if (!ObjectUtils.equal(this.rangeMinorGridlineStroke,
+		// that.rangeMinorGridlineStroke)) {
+		// return false;
+		// }
+		if (this.rangeZeroBaselineVisible != that.rangeZeroBaselineVisible) {
+			return false;
+		}
+		// JAVAFX
+		// if (!PaintUtils.equal(this.rangeZeroBaselinePaint,
+		// that.rangeZeroBaselinePaint)) {
+		// return false;
+		// }
+		// if (!ObjectUtils.equal(this.rangeZeroBaselineStroke,
+		// that.rangeZeroBaselineStroke)) {
+		// return false;
+		// }
+		// if (!ObjectUtils.equal(this.shadowGenerator,
+		// that.shadowGenerator)) {
+		// return false;
+		// }
+		return super.equals(obj);
+	}
+
+	/**
+	 * Returns a clone of the plot.
+	 *
+	 * @return A clone.
+	 *
+	 * @throws CloneNotSupportedException
+	 *             if the cloning is not supported.
+	 */
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+		CategoryPlot clone = (CategoryPlot) super.clone();
+		clone.domainAxes = CloneUtils.cloneMapValues(this.domainAxes);
+		for (CategoryAxis axis : clone.domainAxes.values()) {
+			if (axis != null) {
+				axis.setPlot(clone);
+				axis.addChangeListener(clone);
+			}
+		}
+		clone.rangeAxes = CloneUtils.cloneMapValues(this.rangeAxes);
+		for (ValueAxis axis : clone.rangeAxes.values()) {
+			if (axis != null) {
+				axis.setPlot(clone);
+				axis.addChangeListener(clone);
+			}
+		}
+
+		// AxisLocation is immutable, so we can just copy the maps
+		clone.domainAxisLocations = new HashMap<Integer, AxisLocation>(
+				this.domainAxisLocations);
+		clone.rangeAxisLocations = new HashMap<Integer, AxisLocation>(
+				this.rangeAxisLocations);
+
+		// we don't clone the datasets
+		clone.datasets = new HashMap<Integer, CategoryDataset>(this.datasets);
+		for (CategoryDataset dataset : clone.datasets.values()) {
+			if (dataset != null) {
+				dataset.addChangeListener(clone);
+			}
+		}
+		clone.datasetToDomainAxesMap = new TreeMap<Integer, List<Integer>>();
+		clone.datasetToDomainAxesMap.putAll(this.datasetToDomainAxesMap);
+		clone.datasetToRangeAxesMap = new TreeMap<Integer, List<Integer>>();
+		clone.datasetToRangeAxesMap.putAll(this.datasetToRangeAxesMap);
+
+		clone.renderers = CloneUtils.cloneMapValues(this.renderers);
+		for (CategoryItemRenderer renderer : clone.renderers.values()) {
+			if (renderer != null) {
+				renderer.setPlot(clone);
+				renderer.addChangeListener(clone);
+			}
+		}
+		if (this.fixedDomainAxisSpace != null) {
+			clone.fixedDomainAxisSpace = ObjectUtils.clone(
+					this.fixedDomainAxisSpace);
+		}
+		if (this.fixedRangeAxisSpace != null) {
+			clone.fixedRangeAxisSpace = ObjectUtils.clone(
+					this.fixedRangeAxisSpace);
+		}
+
+		clone.annotations = ObjectUtils.deepClone(this.annotations);
+		clone.foregroundDomainMarkers = cloneMarkerMap(
+				this.foregroundDomainMarkers);
+		clone.backgroundDomainMarkers = cloneMarkerMap(
+				this.backgroundDomainMarkers);
+		clone.foregroundRangeMarkers = cloneMarkerMap(
+				this.foregroundRangeMarkers);
+		clone.backgroundRangeMarkers = cloneMarkerMap(
+				this.backgroundRangeMarkers);
+		if (this.fixedLegendItems != null) {
+			clone.fixedLegendItems = ObjectUtils.deepClone(this.fixedLegendItems);
+		}
+		return clone;
+	}
+
+	/**
+	 * A utility method to clone the marker maps.
+	 *
+	 * @param map
+	 *            the map to clone.
+	 *
+	 * @return A clone of the map.
+	 *
+	 * @throws CloneNotSupportedException
+	 *             if there is some problem cloning the map.
+	 */
+	private Map<Integer, Collection<Marker>> cloneMarkerMap(Map<Integer,
+			Collection<Marker>> map) throws CloneNotSupportedException {
+		Map<Integer, Collection<Marker>> clone = new HashMap<Integer,
+				Collection<Marker>>();
+		Set<Integer> keys = map.keySet();
+		for (Integer key : keys) {
+			Collection<Marker> entry = map.get(key);
+			Collection<Marker> toAdd = ObjectUtils.<Marker,
+					Collection<Marker>> deepClone(entry);
+			clone.put(key, toAdd);
+		}
+		return clone;
+	}
 	//
 	// /**
 	// * Provides serialization support.

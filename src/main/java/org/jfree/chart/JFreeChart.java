@@ -211,6 +211,7 @@ import org.jfree.chart.plot.PlotRenderingInfo;
 // import org.jfree.chart.title.Title;
 import org.jfree.chart.util.ParamChecks;
 import org.jfree.data.Range;
+import org.jfree.event.EventListenerList;
 
 /**
  * A chart class implemented using the Java 2D APIs. The current version
@@ -316,12 +317,12 @@ public class JFreeChart implements Drawable,
 	// /** The alpha transparency for the background image. */
 	// private float backgroundImageAlpha = 0.5f;
 	//
-	// /** Storage for registered change listeners. */
-	// private transient EventListenerList changeListeners;
-	//
-	// /** Storage for registered progress listeners. */
-	// private transient EventListenerList progressListeners;
-	//
+	/** Storage for registered change listeners. */
+	private transient EventListenerList changeListeners;
+
+	/** Storage for registered progress listeners. */
+	private transient EventListenerList progressListeners;
+
 	/**
 	 * A flag that can be used to enable/disable notification of chart change
 	 * events.
@@ -389,11 +390,10 @@ public class JFreeChart implements Drawable,
 		ParamChecks.nullNotPermitted(plot, "plot");
 
 		// create storage for listeners...
-		// JAVAFX events
-		// this.progressListeners = new EventListenerList();
-		// this.changeListeners = new EventListenerList();
-		this.notify = true; // default is to notify listeners when the
-		// chart changes
+		this.progressListeners = new EventListenerList();
+		this.changeListeners = new EventListenerList();
+		this.notify = true; // default is to notify listeners when the chart
+							// changes
 
 		// JAVAFX rendering hints
 		// this.renderingHints = new RenderingHints(
@@ -1066,10 +1066,10 @@ public class JFreeChart implements Drawable,
 	 */
 	public void draw(GraphicsContext graphicsContext, Rectangle2D chartArea, Point2D anchor,
 			ChartRenderingInfo info) {
-		//
-		// notifyListeners(new ChartProgressEvent(this, this,
-		// ChartProgressEvent.DRAWING_STARTED, 0));
-		//
+
+		notifyListeners(new ChartProgressEvent(this, this,
+				ChartProgressEvent.DRAWING_STARTED, 0));
+
 		EntityCollection entities = null;
 		// record the chart area, if info is requested...
 		if (info != null) {
@@ -1150,8 +1150,8 @@ public class JFreeChart implements Drawable,
 		//
 		// g2.setClip(savedClip);
 		//
-		// notifyListeners(new ChartProgressEvent(this, this,
-		// ChartProgressEvent.DRAWING_FINISHED, 100));
+		notifyListeners(new ChartProgressEvent(this, this,
+				ChartProgressEvent.DRAWING_FINISHED, 100));
 	}
 
 	//
@@ -1391,32 +1391,31 @@ public class JFreeChart implements Drawable,
 	 */
 	public void addChangeListener(ChartChangeListener listener) {
 		ParamChecks.nullNotPermitted(listener, "listener");
-		// JAVAFX events
-		// this.changeListeners.add(ChartChangeListener.class, listener);
+		this.changeListeners.add(ChartChangeListener.class, listener);
 	}
 
-	//
-	// /**
-	// * Deregisters an object for notification of changes to the chart.
-	// *
-	// * @param listener the listener (<code>null</code> not permitted)
-	// *
-	// * @see #addChangeListener(ChartChangeListener)
-	// */
-	// public void removeChangeListener(ChartChangeListener listener) {
-	// ParamChecks.nullNotPermitted(listener, "listener");
-	// this.changeListeners.remove(ChartChangeListener.class, listener);
-	// }
-	//
-	// /**
-	// * Sends a default {@link ChartChangeEvent} to all registered listeners.
-	// * <P>
-	// * This method is for convenience only.
-	// */
-	// public void fireChartChanged() {
-	// ChartChangeEvent event = new ChartChangeEvent(this);
-	// notifyListeners(event);
-	// }
+	/**
+	 * Deregisters an object for notification of changes to the chart.
+	 *
+	 * @param listener
+	 *            the listener (<code>null</code> not permitted)
+	 *
+	 * @see #addChangeListener(ChartChangeListener)
+	 */
+	public void removeChangeListener(ChartChangeListener listener) {
+		ParamChecks.nullNotPermitted(listener, "listener");
+		this.changeListeners.remove(ChartChangeListener.class, listener);
+	}
+
+	/**
+	 * Sends a default {@link ChartChangeEvent} to all registered listeners.
+	 * <P>
+	 * This method is for convenience only.
+	 */
+	public void fireChartChanged() {
+		ChartChangeEvent event = new ChartChangeEvent(this);
+		notifyListeners(event);
+	}
 
 	/**
 	 * Sends a {@link ChartChangeEvent} to all registered listeners.
@@ -1426,57 +1425,59 @@ public class JFreeChart implements Drawable,
 	 */
 	protected void notifyListeners(ChartChangeEvent event) {
 		if (this.notify) {
-			// JAVAFX events
-			// Object[] listeners = this.changeListeners.getListenerList();
-			// for (int i = listeners.length - 2; i >= 0; i -= 2) {
-			// if (listeners[i] == ChartChangeListener.class) {
-			// ((ChartChangeListener) listeners[i + 1]).chartChanged(
-			// event);
-			// }
-			// }
+			Object[] listeners = this.changeListeners.getListenerList();
+			for (int i = listeners.length - 2; i >= 0; i -= 2) {
+				if (listeners[i] == ChartChangeListener.class) {
+					((ChartChangeListener) listeners[i + 1]).chartChanged(
+							event);
+				}
+			}
 		}
 	}
 
-	//
-	// /**
-	// * Registers an object for notification of progress events relating to the
-	// * chart.
-	// *
-	// * @param listener the object being registered.
-	// *
-	// * @see #removeProgressListener(ChartProgressListener)
-	// */
-	// public void addProgressListener(ChartProgressListener listener) {
-	// this.progressListeners.add(ChartProgressListener.class, listener);
-	// }
-	//
-	// /**
-	// * Deregisters an object for notification of changes to the chart.
-	// *
-	// * @param listener the object being deregistered.
-	// *
-	// * @see #addProgressListener(ChartProgressListener)
-	// */
-	// public void removeProgressListener(ChartProgressListener listener) {
-	// this.progressListeners.remove(ChartProgressListener.class, listener);
-	// }
-	//
-	// /**
-	// * Sends a {@link ChartProgressEvent} to all registered listeners.
-	// *
-	// * @param event information about the event that triggered the
-	// * notification.
-	// */
-	// protected void notifyListeners(ChartProgressEvent event) {
-	//
-	// Object[] listeners = this.progressListeners.getListenerList();
-	// for (int i = listeners.length - 2; i >= 0; i -= 2) {
-	// if (listeners[i] == ChartProgressListener.class) {
-	// ((ChartProgressListener) listeners[i + 1]).chartProgress(event);
-	// }
-	// }
-	//
-	// }
+	/**
+	 * Registers an object for notification of progress events relating to the
+	 * chart.
+	 *
+	 * @param listener
+	 *            the object being registered.
+	 *
+	 * @see #removeProgressListener(ChartProgressListener)
+	 */
+	public void addProgressListener(ChartProgressListener listener) {
+		this.progressListeners.add(ChartProgressListener.class, listener);
+	}
+
+	/**
+	 * Deregisters an object for notification of changes to the chart.
+	 *
+	 * @param listener
+	 *            the object being deregistered.
+	 *
+	 * @see #addProgressListener(ChartProgressListener)
+	 */
+	public void removeProgressListener(ChartProgressListener listener) {
+		this.progressListeners.remove(ChartProgressListener.class, listener);
+	}
+
+	/**
+	 * Sends a {@link ChartProgressEvent} to all registered listeners.
+	 *
+	 * @param event
+	 *            information about the event that triggered the notification.
+	 */
+	protected void notifyListeners(ChartProgressEvent event) {
+
+		Object[] listeners = this.progressListeners.getListenerList();
+		for (int i = listeners.length - 2; i >= 0; i -= 2) {
+			if (listeners[i] == ChartProgressListener.class) {
+				((ChartProgressListener) listeners[i + 1]).chartProgress(event);
+			}
+		}
+
+	}
+
+	// JAVAFX
 	//
 	// /**
 	// * Receives notification that a chart title has changed, and passes this
@@ -1502,125 +1503,135 @@ public class JFreeChart implements Drawable,
 		event.setChart(this);
 		notifyListeners(event);
 	}
+
+	/**
+	 * Tests this chart for equality with another object.
+	 *
+	 * @param obj
+	 *            the object (<code>null</code> permitted).
+	 *
+	 * @return A boolean.
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == this) {
+			return true;
+		}
+		if (!(obj instanceof JFreeChart)) {
+			return false;
+		}
+		JFreeChart that = (JFreeChart) obj;
+		// JAVAFX
+		// if (!this.renderingHints.equals(that.renderingHints)) {
+		// return false;
+		// }
+		if (!ObjectUtils.equal(this.borderPainter, that.borderPainter)) {
+			return false;
+		}
+		if (!this.padding.equals(that.padding)) {
+			return false;
+		}
+		// JAVAFX
+		// if (!ObjectUtils.equal(this.title, that.title)) {
+		// return false;
+		// }
+		// if (!ObjectUtils.equal(this.subtitles, that.subtitles)) {
+		// return false;
+		// }
+		if (!ObjectUtils.equal(this.plot, that.plot)) {
+			return false;
+		}
+		if (!ObjectUtils.equal(this.backgroundPainter,
+				that.backgroundPainter)) {
+			return false;
+		}
+		// JAVAFX
+		// if (!ObjectUtils.equal(this.backgroundImage,
+		// that.backgroundImage)) {
+		// return false;
+		// }
+		// if (this.backgroundImageAlignment != that.backgroundImageAlignment) {
+		// return false;
+		// }
+		// if (this.backgroundImageAlpha != that.backgroundImageAlpha) {
+		// return false;
+		// }
+		if (this.notify != that.notify) {
+			return false;
+		}
+		return true;
+	}
+
 	//
-	// /**
-	// * Tests this chart for equality with another object.
-	// *
-	// * @param obj the object (<code>null</code> permitted).
-	// *
-	// * @return A boolean.
-	// */
-	// @Override
-	// public boolean equals(Object obj) {
-	// if (obj == this) {
-	// return true;
-	// }
-	// if (!(obj instanceof JFreeChart)) {
-	// return false;
-	// }
-	// JFreeChart that = (JFreeChart) obj;
-	// if (!this.renderingHints.equals(that.renderingHints)) {
-	// return false;
-	// }
-	// if (!ObjectUtils.equal(this.borderPainter, that.borderPainter)) {
-	// return false;
-	// }
-	// if (!this.padding.equals(that.padding)) {
-	// return false;
-	// }
-	// if (!ObjectUtils.equal(this.title, that.title)) {
-	// return false;
-	// }
-	// if (!ObjectUtils.equal(this.subtitles, that.subtitles)) {
-	// return false;
-	// }
-	// if (!ObjectUtils.equal(this.plot, that.plot)) {
-	// return false;
-	// }
-	// if (!ObjectUtils.equal(this.backgroundPainter,
-	// that.backgroundPainter)) {
-	// return false;
-	// }
-	// if (!ObjectUtils.equal(this.backgroundImage,
-	// that.backgroundImage)) {
-	// return false;
-	// }
-	// if (this.backgroundImageAlignment != that.backgroundImageAlignment) {
-	// return false;
-	// }
-	// if (this.backgroundImageAlpha != that.backgroundImageAlpha) {
-	// return false;
-	// }
-	// if (this.notify != that.notify) {
-	// return false;
-	// }
-	// return true;
-	// }
-	//
-	//
-	// /**
-	// * Provides serialization support.
-	// *
-	// * @param stream the input stream.
-	// *
-	// * @throws IOException if there is an I/O error.
-	// * @throws ClassNotFoundException if there is a classpath problem.
-	// */
-	// private void readObject(ObjectInputStream stream) throws IOException,
-	// ClassNotFoundException {
-	// stream.defaultReadObject();
-	// this.progressListeners = new EventListenerList();
-	// this.changeListeners = new EventListenerList();
-	// this.renderingHints = new RenderingHints(
-	// RenderingHints.KEY_ANTIALIASING,
-	// RenderingHints.VALUE_ANTIALIAS_ON);
-	// this.renderingHints.put(RenderingHints.KEY_STROKE_CONTROL,
-	// RenderingHints.VALUE_STROKE_PURE);
-	//
-	// // register as a listener with sub-components...
-	// if (this.title != null) {
-	// this.title.addChangeListener(this);
-	// }
-	//
-	// for (int i = 0; i < getSubtitleCount(); i++) {
-	// getSubtitle(i).addChangeListener(this);
-	// }
-	// this.plot.addChangeListener(this);
-	// }
-	//
-	// /**
-	// * Clones the object, and takes care of listeners.
-	// * Note: caller shall register its own listeners on cloned graph.
-	// *
-	// * @return A clone.
-	// *
-	// * @throws CloneNotSupportedException if the chart is not cloneable.
-	// */
-	// @Override
-	// public Object clone() throws CloneNotSupportedException {
-	// JFreeChart chart = (JFreeChart) super.clone();
-	//
-	// chart.renderingHints = (RenderingHints) this.renderingHints.clone();
-	// if (this.title != null) {
-	// chart.title = (TextTitle) this.title.clone();
-	// chart.title.addChangeListener(chart);
-	// }
-	//
-	// chart.subtitles = new ArrayList<Title>();
-	// for (int i = 0; i < getSubtitleCount(); i++) {
-	// Title subtitle = (Title) getSubtitle(i).clone();
-	// chart.subtitles.add(subtitle);
-	// subtitle.addChangeListener(chart);
-	// }
-	//
-	// if (this.plot != null) {
-	// chart.plot = (Plot) this.plot.clone();
-	// chart.plot.addChangeListener(chart);
-	// }
-	//
-	// chart.progressListeners = new EventListenerList();
-	// chart.changeListeners = new EventListenerList();
-	// return chart;
-	// }
-	//
+	/**
+	 * Provides serialization support.
+	 *
+	 * @param stream
+	 *            the input stream.
+	 *
+	 * @throws IOException
+	 *             if there is an I/O error.
+	 * @throws ClassNotFoundException
+	 *             if there is a classpath problem.
+	 */
+	private void readObject(ObjectInputStream stream) throws IOException,
+			ClassNotFoundException {
+		stream.defaultReadObject();
+		this.progressListeners = new EventListenerList();
+		this.changeListeners = new EventListenerList();
+		// JAVAFX serialization
+		// this.renderingHints = new RenderingHints(
+		// RenderingHints.KEY_ANTIALIASING,
+		// RenderingHints.VALUE_ANTIALIAS_ON);
+		// this.renderingHints.put(RenderingHints.KEY_STROKE_CONTROL,
+		// RenderingHints.VALUE_STROKE_PURE);
+		//
+		// // register as a listener with sub-components...
+		// if (this.title != null) {
+		// this.title.addChangeListener(this);
+		// }
+		//
+		// for (int i = 0; i < getSubtitleCount(); i++) {
+		// getSubtitle(i).addChangeListener(this);
+		// }
+		this.plot.addChangeListener(this);
+	}
+
+	/**
+	 * Clones the object, and takes care of listeners. Note: caller shall
+	 * register its own listeners on cloned graph.
+	 *
+	 * @return A clone.
+	 *
+	 * @throws CloneNotSupportedException
+	 *             if the chart is not cloneable.
+	 */
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+		JFreeChart chart = (JFreeChart) super.clone();
+
+		// JAVAFX
+		// chart.renderingHints = (RenderingHints) this.renderingHints.clone();
+		// if (this.title != null) {
+		// chart.title = (TextTitle) this.title.clone();
+		// chart.title.addChangeListener(chart);
+		// }
+		//
+		// chart.subtitles = new ArrayList<Title>();
+		// for (int i = 0; i < getSubtitleCount(); i++) {
+		// Title subtitle = (Title) getSubtitle(i).clone();
+		// chart.subtitles.add(subtitle);
+		// subtitle.addChangeListener(chart);
+		// }
+
+		if (this.plot != null) {
+			chart.plot = (Plot) this.plot.clone();
+			chart.plot.addChangeListener(chart);
+		}
+
+		chart.progressListeners = new EventListenerList();
+		chart.changeListeners = new EventListenerList();
+		return chart;
+	}
+
 }

@@ -127,37 +127,34 @@ public class LineChartTest {
 
 	}
 
-	//
-	// /**
-	// * Check that setting a tool tip generator for a series does override the
-	// * default generator.
-	// */
-	// @Test
-	// public void testSetSeriesToolTipGenerator() {
-	// CategoryPlot plot = (CategoryPlot) this.chart.getPlot();
-	// CategoryItemRenderer renderer = plot.getRenderer();
-	// StandardCategoryToolTipGenerator tt
-	// = new StandardCategoryToolTipGenerator();
-	// renderer.setSeriesToolTipGenerator(0, tt);
-	// CategoryToolTipGenerator tt2 = renderer.getToolTipGenerator(0, 0);
-	// assertSame(tt2, tt);
-	// }
-	//
-	// /**
-	// * Check that setting a URL generator for a series does override the
-	// * default generator.
-	// */
-	// @Test
-	// public void testSetSeriesURLGenerator() {
-	// CategoryPlot plot = (CategoryPlot) this.chart.getPlot();
-	// CategoryItemRenderer renderer = plot.getRenderer();
-	// StandardCategoryURLGenerator url1
-	// = new StandardCategoryURLGenerator();
-	// renderer.setSeriesItemURLGenerator(0, url1);
-	// CategoryURLGenerator url2 = renderer.getItemURLGenerator(0, 0);
-	// assertSame(url2, url1);
-	// }
-	//
+	/**
+	 * Check that setting a tool tip generator for a series does override the
+	 * default generator.
+	 */
+	@Test
+	public void testSetSeriesToolTipGenerator() {
+		CategoryPlot plot = (CategoryPlot) this.chart.getPlot();
+		CategoryItemRenderer renderer = plot.getRenderer();
+		StandardCategoryToolTipGenerator tt = new StandardCategoryToolTipGenerator();
+		renderer.setSeriesToolTipGenerator(0, tt);
+		CategoryToolTipGenerator tt2 = renderer.getToolTipGenerator(0, 0);
+		assertSame(tt2, tt);
+	}
+
+	/**
+	 * Check that setting a URL generator for a series does override the default
+	 * generator.
+	 */
+	@Test
+	public void testSetSeriesURLGenerator() {
+		CategoryPlot plot = (CategoryPlot) this.chart.getPlot();
+		CategoryItemRenderer renderer = plot.getRenderer();
+		StandardCategoryURLGenerator url1 = new StandardCategoryURLGenerator();
+		renderer.setSeriesItemURLGenerator(0, url1);
+		CategoryURLGenerator url2 = renderer.getItemURLGenerator(0, 0);
+		assertSame(url2, url1);
+	}
+
 	/**
 	 * Create a line chart with sample data in the range -3 to +3.
 	 *
