@@ -103,9 +103,6 @@ import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.util.LineUtils;
 import org.jfree.chart.util.SerialUtils;
 import org.jfree.data.xy.XYDataset;
-import org.jfree.geometry.DrawableShape;
-import org.jfree.geometry.DrawableShapes;
-import org.jfree.geometry.Line2D;
 
 import com.sun.javafx.geom.Shape;
 
@@ -951,7 +948,7 @@ public class XYLineAndShapeRenderer extends AbstractXYItemRenderer
 		// JAVAFX
 		// visible = LineUtils.clipLine(state.workingLine, dataArea);
 		// if (visible) {
-		drawFirstPassShape(g2, pass, series, item, DrawableShapes.from(state.workingLine));
+		drawFirstPassShape(g2, pass, series, item, ShapeUtils.asShape(state.workingLine));
 		// }
 	}
 
@@ -970,12 +967,12 @@ public class XYLineAndShapeRenderer extends AbstractXYItemRenderer
 	 *            the shape.
 	 */
 	protected void drawFirstPassShape(GraphicsContext g2, int pass, int series,
-			int item, DrawableShape shape) {
+			int item, Shape shape) {
 		// JAVAFX stroke
 		// g2.setStroke(getItemStroke(series, item));
 		g2.setFill(getItemPaint(series, item));
 		g2.setStroke(getItemPaint(series, item));
-		shape.draw(g2);
+		ShapeUtils.outlineShape(g2, shape);
 	}
 
 	/**
