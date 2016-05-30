@@ -104,6 +104,7 @@ import org.jfree.chart.util.LineUtils;
 import org.jfree.chart.util.SerialUtils;
 import org.jfree.data.xy.XYDataset;
 
+import com.sun.javafx.geom.Path2D;
 import com.sun.javafx.geom.Shape;
 
 import javafx.geometry.Rectangle2D;
@@ -666,9 +667,8 @@ public class XYLineAndShapeRenderer extends AbstractXYItemRenderer
 	 */
 	public static class State extends XYItemRendererState {
 
-		// JAVAFX
-		// /** The path for the current series. */
-		// public GeneralPath seriesPath;
+		/** The path for the current series. */
+		public Path2D seriesPath;
 
 		/**
 		 * A flag that indicates if the last (x, y) point was 'good' (non-null).
@@ -726,8 +726,7 @@ public class XYLineAndShapeRenderer extends AbstractXYItemRenderer
 		@Override
 		public void startSeriesPass(XYDataset dataset, int series,
 				int firstItem, int lastItem, int pass, int passCount) {
-			// JAVAFX
-			// this.seriesPath.reset();
+			this.seriesPath.reset();
 			this.lastPointGood = false;
 			super.startSeriesPass(dataset, series, firstItem, lastItem, pass,
 					passCount);
@@ -764,8 +763,7 @@ public class XYLineAndShapeRenderer extends AbstractXYItemRenderer
 			PlotRenderingInfo info) {
 
 		State state = new State(info);
-		// JAVAFX
-		// state.seriesPath = new GeneralPath();
+		state.seriesPath = new Path2D();
 		return state;
 
 	}
@@ -1031,13 +1029,12 @@ public class XYLineAndShapeRenderer extends AbstractXYItemRenderer
 				x = (float) transY1;
 				y = (float) transX1;
 			}
-			// JAVAFX
-			// if (s.isLastPointGood()) {
-			// s.seriesPath.lineTo(x, y);
-			// }
-			// else {
-			// s.seriesPath.moveTo(x, y);
-			// }
+			if (s.isLastPointGood()) {
+				s.seriesPath.lineTo(x, y);
+			}
+			else {
+				s.seriesPath.moveTo(x, y);
+			}
 			s.setLastPointGood(true);
 		}
 		else {
@@ -1045,9 +1042,8 @@ public class XYLineAndShapeRenderer extends AbstractXYItemRenderer
 		}
 		// if this is the last item, draw the path ...
 		if (item == s.getLastItemIndex()) {
-			// JAVAFX
-			// // draw path
-			// drawFirstPassShape(g2, pass, series, item, s.seriesPath);
+			// draw path
+			drawFirstPassShape(g2, pass, series, item, s.seriesPath);
 		}
 	}
 
@@ -1107,44 +1103,43 @@ public class XYLineAndShapeRenderer extends AbstractXYItemRenderer
 		double transY1 = rangeAxis.valueToJava2D(y1, dataArea,
 				yAxisLocation);
 
-		// JAVAFX
-		// if (getItemShapeVisible(series, item)) {
-		// Shape shape = getItemShape(series, item);
-		// if (orientation == PlotOrientation.HORIZONTAL) {
-		// shape = ShapeUtils.createTranslatedShape(shape, transY1,
-		// transX1);
-		// } else if (orientation == PlotOrientation.VERTICAL) {
-		// shape = ShapeUtils.createTranslatedShape(shape, transX1,
-		// transY1);
-		// }
-		// entityArea = shape;
-		// if (shape.intersects(dataArea)) {
-		// if (getItemShapeFilled(series, item)) {
-		// if (this.useFillPaint) {
-		// g2.setFill(getItemFillPaint(series, item));
-		// g2.setStroke(getItemFillPaint(series, item));
-		// }
-		// else {
-		// g2.setFill(getItemPaint(series, item));
-		// g2.setStroke(getItemPaint(series, item));
-		// }
-		// ShapeUtils.fillShape(g2, shape);
-		// }
-		// if (this.drawOutlines) {
-		// if (getUseOutlinePaint()) {
-		// g2.setFill(getItemOutlinePaint(series, item));
-		// g2.setStroke(getItemOutlinePaint(series, item));
-		// }
-		// else {
-		// g2.setFill(getItemPaint(series, item));
-		// g2.setStroke(getItemPaint(series, item));
-		// }
-		// // JAVAFX stroke
-		// // g2.setStroke(getItemOutlineStroke(series, item));
-		// ShapeUtils.drawShape(g2, shape);
-		// }
-		// }
-		// }
+		if (getItemShapeVisible(series, item)) {
+			Shape shape = getItemShape(series, item);
+			if (orientation == PlotOrientation.HORIZONTAL) {
+				shape = ShapeUtils.createTranslatedShape(shape, transY1,
+						transX1);
+			} else if (orientation == PlotOrientation.VERTICAL) {
+				shape = ShapeUtils.createTranslatedShape(shape, transX1,
+						transY1);
+			}
+			entityArea = shape;
+			if (shape.intersects(ShapeUtils.asRectBounds(dataArea))) {
+				if (getItemShapeFilled(series, item)) {
+					if (this.useFillPaint) {
+						g2.setFill(getItemFillPaint(series, item));
+						g2.setStroke(getItemFillPaint(series, item));
+					}
+					else {
+						g2.setFill(getItemPaint(series, item));
+						g2.setStroke(getItemPaint(series, item));
+					}
+					ShapeUtils.fillShape(g2, shape);
+				}
+				if (this.drawOutlines) {
+					if (getUseOutlinePaint()) {
+						g2.setFill(getItemOutlinePaint(series, item));
+						g2.setStroke(getItemOutlinePaint(series, item));
+					}
+					else {
+						g2.setFill(getItemPaint(series, item));
+						g2.setStroke(getItemPaint(series, item));
+					}
+					// JAVAFX stroke
+					// g2.setStroke(getItemOutlineStroke(series, item));
+					ShapeUtils.outlineShape(g2, shape);
+				}
+			}
+		}
 
 		double xx = transX1;
 		double yy = transY1;

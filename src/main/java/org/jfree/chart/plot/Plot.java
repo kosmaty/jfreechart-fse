@@ -301,9 +301,9 @@ public abstract class Plot implements
 	/** The alpha transparency for the background paint. */
 	private float backgroundAlpha;
 
-	// /** The drawing supplier. */
-	// private DrawingSupplier drawingSupplier;
-	//
+	/** The drawing supplier. */
+	private DrawingSupplier drawingSupplier;
+
 	/** Storage for registered change listeners. */
 	private transient EventListenerList listenerList;
 
@@ -334,9 +334,8 @@ public abstract class Plot implements
 		this.noDataMessageFont = Font.font("SansSerif", FontWeight.NORMAL, FontPosture.REGULAR, 12);
 		this.noDataMessagePaint = Color.BLACK;
 
-		// JAVAFX
-		// this.drawingSupplier = new DefaultDrawingSupplier();
-		//
+		this.drawingSupplier = new DefaultDrawingSupplier();
+
 		this.notify = true;
 		this.listenerList = new EventListenerList();
 	}
@@ -599,65 +598,66 @@ public abstract class Plot implements
 		}
 	}
 
-	// JAVAFX
-	// /**
-	// * Returns the drawing supplier for the plot.
-	// *
-	// * @return The drawing supplier (possibly <code>null</code>).
-	// *
-	// * @see #setDrawingSupplier(DrawingSupplier)
-	// */
-	// public DrawingSupplier getDrawingSupplier() {
-	// DrawingSupplier result = null;
-	// Plot p = getParent();
-	// if (p != null) {
-	// result = p.getDrawingSupplier();
-	// }
-	// else {
-	// result = this.drawingSupplier;
-	// }
-	// return result;
-	// }
-	//
-	// /**
-	// * Sets the drawing supplier for the plot and sends a
-	// * {@link PlotChangeEvent} to all registered listeners. The drawing
-	// * supplier is responsible for supplying a limitless (possibly repeating)
-	// * sequence of <code>Paint</code>, <code>Stroke</code> and
-	// * <code>Shape</code> objects that the plot's renderer(s) can use to
-	// * populate its (their) tables.
-	// *
-	// * @param supplier the new supplier.
-	// *
-	// * @see #getDrawingSupplier()
-	// */
-	// public void setDrawingSupplier(DrawingSupplier supplier) {
-	// this.drawingSupplier = supplier;
-	// fireChangeEvent();
-	// }
-	//
-	// /**
-	// * Sets the drawing supplier for the plot and, if requested, sends a
-	// * {@link PlotChangeEvent} to all registered listeners. The drawing
-	// * supplier is responsible for supplying a limitless (possibly repeating)
-	// * sequence of <code>Paint</code>, <code>Stroke</code> and
-	// * <code>Shape</code> objects that the plot's renderer(s) can use to
-	// * populate its (their) tables.
-	// *
-	// * @param supplier the new supplier.
-	// * @param notify notify listeners?
-	// *
-	// * @see #getDrawingSupplier()
-	// *
-	// * @since 1.0.11
-	// */
-	// public void setDrawingSupplier(DrawingSupplier supplier, boolean notify)
-	// {
-	// this.drawingSupplier = supplier;
-	// if (notify) {
-	// fireChangeEvent();
-	// }
-	// }
+	/**
+	 * Returns the drawing supplier for the plot.
+	 *
+	 * @return The drawing supplier (possibly <code>null</code>).
+	 *
+	 * @see #setDrawingSupplier(DrawingSupplier)
+	 */
+	public DrawingSupplier getDrawingSupplier() {
+		DrawingSupplier result = null;
+		Plot p = getParent();
+		if (p != null) {
+			result = p.getDrawingSupplier();
+		}
+		else {
+			result = this.drawingSupplier;
+		}
+		return result;
+	}
+
+	/**
+	 * Sets the drawing supplier for the plot and sends a
+	 * {@link PlotChangeEvent} to all registered listeners. The drawing supplier
+	 * is responsible for supplying a limitless (possibly repeating) sequence of
+	 * <code>Paint</code>, <code>Stroke</code> and <code>Shape</code> objects
+	 * that the plot's renderer(s) can use to populate its (their) tables.
+	 *
+	 * @param supplier
+	 *            the new supplier.
+	 *
+	 * @see #getDrawingSupplier()
+	 */
+	public void setDrawingSupplier(DrawingSupplier supplier) {
+		this.drawingSupplier = supplier;
+		fireChangeEvent();
+	}
+
+	/**
+	 * Sets the drawing supplier for the plot and, if requested, sends a
+	 * {@link PlotChangeEvent} to all registered listeners. The drawing supplier
+	 * is responsible for supplying a limitless (possibly repeating) sequence of
+	 * <code>Paint</code>, <code>Stroke</code> and <code>Shape</code> objects
+	 * that the plot's renderer(s) can use to populate its (their) tables.
+	 *
+	 * @param supplier
+	 *            the new supplier.
+	 * @param notify
+	 *            notify listeners?
+	 *
+	 * @see #getDrawingSupplier()
+	 *
+	 * @since 1.0.11
+	 */
+	public void setDrawingSupplier(DrawingSupplier supplier, boolean notify)
+	{
+		this.drawingSupplier = supplier;
+		if (notify) {
+			fireChangeEvent();
+		}
+	}
+
 	//
 	// /**
 	// * Returns the background image that is used to fill the plot's background

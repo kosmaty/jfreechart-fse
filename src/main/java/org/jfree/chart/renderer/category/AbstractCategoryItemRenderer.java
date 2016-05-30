@@ -152,12 +152,12 @@ import org.jfree.chart.labels.StandardCategorySeriesLabelGenerator;
 import org.jfree.chart.plot.CategoryCrosshairState;
 import org.jfree.chart.plot.CategoryMarker;
 import org.jfree.chart.plot.CategoryPlot;
-// import org.jfree.chart.plot.DrawingSupplier;
-// import org.jfree.chart.plot.IntervalMarker;
+import org.jfree.chart.plot.DrawingSupplier;
+import org.jfree.chart.plot.IntervalMarker;
 import org.jfree.chart.plot.Marker;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.PlotRenderingInfo;
-// import org.jfree.chart.plot.ValueMarker;
+import org.jfree.chart.plot.ValueMarker;
 import org.jfree.chart.renderer.AbstractRenderer;
 import org.jfree.chart.text.TextUtilities;
 import org.jfree.chart.urls.CategoryURLGenerator;
@@ -1480,21 +1480,21 @@ public abstract class AbstractCategoryItemRenderer extends AbstractRenderer
 		return result;
 	}
 
-	// /**
-	// * Returns the drawing supplier from the plot.
-	// *
-	// * @return The drawing supplier (possibly {@code null}).
-	// */
-	// @Override
-	// public DrawingSupplier getDrawingSupplier() {
-	// DrawingSupplier result = null;
-	// CategoryPlot cp = getPlot();
-	// if (cp != null) {
-	// result = cp.getDrawingSupplier();
-	// }
-	// return result;
-	// }
-	//
+	/**
+	 * Returns the drawing supplier from the plot.
+	 *
+	 * @return The drawing supplier (possibly {@code null}).
+	 */
+	@Override
+	public DrawingSupplier getDrawingSupplier() {
+		DrawingSupplier result = null;
+		CategoryPlot cp = getPlot();
+		if (cp != null) {
+			result = cp.getDrawingSupplier();
+		}
+		return result;
+	}
+
 	/**
 	 * Considers the current (x, y) coordinate and updates the crosshair point
 	 * if it meets the criteria (usually means the (x, y) coordinate is the

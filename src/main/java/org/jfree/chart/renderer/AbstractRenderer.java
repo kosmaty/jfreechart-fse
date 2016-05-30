@@ -119,12 +119,15 @@ import org.jfree.chart.ui.TextAnchor;
 import org.jfree.chart.util.BooleanList;
 import org.jfree.chart.util.ObjectUtils;
 import org.jfree.chart.util.PaintUtils;
-// import org.jfree.chart.util.ShapeList;
+import org.jfree.chart.util.ShapeList;
 import org.jfree.chart.util.ShapeUtils;
 import org.jfree.chart.util.StrokeList;
 import org.jfree.event.EventListenerList;
 
+import com.sun.javafx.geom.Shape;
+
 import javafx.geometry.Point2D;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.text.Font;
@@ -135,16 +138,16 @@ import org.jfree.chart.event.RendererChangeEvent;
 import org.jfree.chart.event.RendererChangeListener;
 import org.jfree.chart.labels.ItemLabelAnchor;
 import org.jfree.chart.labels.ItemLabelPosition;
-// import org.jfree.chart.plot.DrawingSupplier;
+import org.jfree.chart.plot.DrawingSupplier;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.renderer.item.DefaultLabelIRS;
 import org.jfree.chart.renderer.item.DefaultPaintIRS;
-// import org.jfree.chart.renderer.item.DefaultShapeIRS;
+import org.jfree.chart.renderer.item.DefaultShapeIRS;
 // import org.jfree.chart.renderer.item.DefaultStrokeIRS;
 import org.jfree.chart.renderer.item.DefaultVisibilityIRS;
 import org.jfree.chart.renderer.item.LabelIRS;
 import org.jfree.chart.renderer.item.PaintIRS;
-// import org.jfree.chart.renderer.item.ShapeIRS;
+import org.jfree.chart.renderer.item.ShapeIRS;
 // import org.jfree.chart.renderer.item.StrokeIRS;
 import org.jfree.chart.renderer.item.VisibilityIRS;
 // import org.jfree.chart.title.LegendTitle;
@@ -180,9 +183,8 @@ public abstract class AbstractRenderer implements Cloneable, Serializable {
 	// public static final Stroke DEFAULT_OUTLINE_STROKE = new
 	// BasicStroke(1.0f);
 	//
-	// /** The default shape. */
-	// public static final Shape DEFAULT_SHAPE
-	// = new Rectangle2D.Double(-3.0, -3.0, 6.0, 6.0);
+	/** The default shape. */
+	public static final Shape DEFAULT_SHAPE = ShapeUtils.asShape(new Rectangle2D(-3.0, -3.0, 6.0, 6.0));
 
 	/** The default value label font. */
 	public static final Font DEFAULT_VALUE_LABEL_FONT = Font.font("SansSerif", FontWeight.NORMAL, FontPosture.REGULAR,
@@ -202,13 +204,13 @@ public abstract class AbstractRenderer implements Cloneable, Serializable {
 	 * renderer uses {@link #getItemPaint(int, int)} ... )
 	 */
 	private PaintIRS paintIRS = new DefaultPaintIRS(this);
-	//
-	// /**
-	// * A hook that allows to control the shape of individual items
-	// * (if the renderer uses {@link #getItemShape(int, int)} ... )
-	// */
-	// private ShapeIRS shapeIRS = new DefaultShapeIRS(this);
-	//
+
+	/**
+	 * A hook that allows to control the shape of individual items (if the
+	 * renderer uses {@link #getItemShape(int, int)} ... )
+	 */
+	private ShapeIRS shapeIRS = new DefaultShapeIRS(this);
+
 	// /**
 	// * A hook that allows to use individual strokes for each item
 	// * (if the renderer uses {@link #getItemStroke(int, int)} ... )
@@ -309,9 +311,9 @@ public abstract class AbstractRenderer implements Cloneable, Serializable {
 	 * @since 1.0.6
 	 */
 	private boolean autoPopulateSeriesOutlineStroke;
-	//
-	// /** A shape list. */
-	// private ShapeList shapeList;
+
+	/** A shape list. */
+	private ShapeList shapeList;
 
 	/**
 	 * A flag that controls whether or not the shapeList is auto-populated in
@@ -320,9 +322,9 @@ public abstract class AbstractRenderer implements Cloneable, Serializable {
 	 * @since 1.0.6
 	 */
 	private boolean autoPopulateSeriesShape;
-	//
-	// /** The base shape. */
-	// private transient Shape defaultShape;
+
+	/** The base shape. */
+	private transient Shape defaultShape;
 
 	/** Visibility of the item labels PER series. */
 	private BooleanList itemLabelsVisibleList;
@@ -369,20 +371,20 @@ public abstract class AbstractRenderer implements Cloneable, Serializable {
 	 */
 	private boolean defaultCreateEntities;
 
-	// /**
-	// * The per-series legend shape settings.
-	// *
-	// * @since 1.0.11
-	// */
-	// private ShapeList legendShapeList;
-	//
-	// /**
-	// * The base shape for legend items. If this is <code>null</code>, the
-	// * series shape will be used.
-	// *
-	// * @since 1.0.11
-	// */
-	// private transient Shape defaultLegendShape;
+	/**
+	 * The per-series legend shape settings.
+	 *
+	 * @since 1.0.11
+	 */
+	private ShapeList legendShapeList;
+
+	/**
+	 * The base shape for legend items. If this is <code>null</code>, the series
+	 * shape will be used.
+	 *
+	 * @since 1.0.11
+	 */
+	private transient Shape defaultLegendShape;
 
 	/**
 	 * A special flag that, if true, will cause the getLegendItem() method to
@@ -470,9 +472,8 @@ public abstract class AbstractRenderer implements Cloneable, Serializable {
 		// this.defaultOutlineStroke = DEFAULT_OUTLINE_STROKE;
 		this.autoPopulateSeriesOutlineStroke = false;
 
-		// JAVAFX
-		// this.shapeList = new ShapeList();
-		// this.defaultShape = DEFAULT_SHAPE;
+		this.shapeList = new ShapeList();
+		this.defaultShape = DEFAULT_SHAPE;
 		this.autoPopulateSeriesShape = true;
 
 		this.itemLabelsVisibleList = new BooleanList();
@@ -480,14 +481,14 @@ public abstract class AbstractRenderer implements Cloneable, Serializable {
 
 		this.itemLabelFontMap = new HashMap<Integer, Font>();
 		this.defaultItemLabelFont = Font.font("SansSerif", FontWeight.NORMAL, FontPosture.REGULAR, 10);
-		//
+
 		this.itemLabelPaintMap = new HashMap<Integer, Paint>();
 		this.defaultItemLabelPaint = Color.BLACK;
-		//
+
 		this.positiveItemLabelPositionMap = new HashMap<Integer, ItemLabelPosition>();
 		this.defaultPositiveItemLabelPosition = new ItemLabelPosition(
 				ItemLabelAnchor.OUTSIDE12, TextAnchor.BOTTOM_CENTER);
-		//
+
 		this.negativeItemLabelPositionMap = new HashMap<Integer, ItemLabelPosition>();
 		this.defaultNegativeItemLabelPosition = new ItemLabelPosition(
 				ItemLabelAnchor.OUTSIDE6, TextAnchor.TOP_CENTER);
@@ -497,9 +498,8 @@ public abstract class AbstractRenderer implements Cloneable, Serializable {
 
 		this.defaultEntityRadius = 3;
 
-		// JAVAFX
-		// this.legendShapeList = new ShapeList();
-		// this.defaultLegendShape = null;
+		this.legendShapeList = new ShapeList();
+		this.defaultLegendShape = null;
 
 		this.treatLegendShapeAsLine = false;
 
@@ -513,13 +513,12 @@ public abstract class AbstractRenderer implements Cloneable, Serializable {
 
 	}
 
-	// JAVAFX
-	// /**
-	// * Returns the drawing supplier from the plot.
-	// *
-	// * @return The drawing supplier.
-	// */
-	// public abstract DrawingSupplier getDrawingSupplier();
+	/**
+	 * Returns the drawing supplier from the plot.
+	 *
+	 * @return The drawing supplier.
+	 */
+	public abstract DrawingSupplier getDrawingSupplier();
 
 	// SETTER FOR ITEM RENDERING STRATEGIES
 
@@ -541,14 +540,16 @@ public abstract class AbstractRenderer implements Cloneable, Serializable {
 		this.paintIRS = paintIRS;
 	}
 
+	/**
+	 * @param shapeIRS
+	 *            {@link #shapeIRS} (<code>null</code> not permitted)
+	 */
+	public void setShapeIRS(ShapeIRS shapeIRS) {
+		ParamChecks.nullNotPermitted(shapeIRS, "shapeIRS");
+		this.shapeIRS = shapeIRS;
+	}
+
 	// JAVAFX
-	// /**
-	// * @param shapeIRS {@link #shapeIRS} (<code>null</code> not permitted)
-	// */
-	// public void setShapeIRS(ShapeIRS shapeIRS) {
-	// ParamChecks.nullNotPermitted(shapeIRS, "shapeIRS");
-	// this.shapeIRS = shapeIRS;
-	// }
 	//
 	// /**
 	// * @param strokeIRS {@link #strokeIRS} (<code>null</code> not permitted)
@@ -866,12 +867,11 @@ public abstract class AbstractRenderer implements Cloneable, Serializable {
 
 		Paint seriesPaint = getSeriesPaint(series);
 		if (seriesPaint == null && this.autoPopulateSeriesPaint) {
-			// JAVAFX
-			// DrawingSupplier supplier = getDrawingSupplier();
-			// if (supplier != null) {
-			// seriesPaint = supplier.getNextPaint();
-			// setSeriesPaint(series, seriesPaint, false);
-			// }
+			DrawingSupplier supplier = getDrawingSupplier();
+			if (supplier != null) {
+				seriesPaint = supplier.getNextPaint();
+				setSeriesPaint(series, seriesPaint, false);
+			}
 		}
 		if (seriesPaint == null) {
 			seriesPaint = this.defaultPaint;
@@ -1054,12 +1054,11 @@ public abstract class AbstractRenderer implements Cloneable, Serializable {
 
 		Paint seriesFillPaint = getSeriesFillPaint(series);
 		if (seriesFillPaint == null && this.autoPopulateSeriesFillPaint) {
-			// JAVAFX
-			// DrawingSupplier supplier = getDrawingSupplier();
-			// if (supplier != null) {
-			// seriesFillPaint = supplier.getNextFillPaint();
-			// setSeriesFillPaint(series, seriesFillPaint, false);
-			// }
+			DrawingSupplier supplier = getDrawingSupplier();
+			if (supplier != null) {
+				seriesFillPaint = supplier.getNextFillPaint();
+				setSeriesFillPaint(series, seriesFillPaint, false);
+			}
 		}
 		if (seriesFillPaint == null) {
 			seriesFillPaint = this.defaultFillPaint;
@@ -1229,12 +1228,11 @@ public abstract class AbstractRenderer implements Cloneable, Serializable {
 
 		Paint seriesOutlinePaint = getSeriesOutlinePaint(series);
 		if (seriesOutlinePaint == null && this.autoPopulateSeriesOutlinePaint) {
-			// JAVAFX
-			// DrawingSupplier supplier = getDrawingSupplier();
-			// if (supplier != null) {
-			// seriesOutlinePaint = supplier.getNextOutlinePaint();
-			// setSeriesOutlinePaint(series, seriesOutlinePaint, false);
-			// }
+			DrawingSupplier supplier = getDrawingSupplier();
+			if (supplier != null) {
+				seriesOutlinePaint = supplier.getNextOutlinePaint();
+				setSeriesOutlinePaint(series, seriesOutlinePaint, false);
+			}
 		}
 		if (seriesOutlinePaint == null) {
 			seriesOutlinePaint = this.defaultOutlinePaint;
@@ -1712,94 +1710,102 @@ public abstract class AbstractRenderer implements Cloneable, Serializable {
 	//
 	// // SHAPE
 	//
-	// /**
-	// * Returns a shape used to represent a data item.
-	// * (this is typically the same for an entire series).
-	// * <p>
-	// * The default implementation passes control to the {@link
-	// DefaultShapeIRS}
-	// * which uses the <code>lookupSeriesShape(row)</code> method. You can
-	// * implement your own {@link ShapeIRS} or override this method if you
-	// * require different behavior.
-	// *
-	// * @param row the row (or series) index (zero-based).
-	// * @param column the column (or category) index (zero-based).
-	// *
-	// * @return The shape (never <code>null</code>).
-	// */
-	// public Shape getItemShape(int row, int column) {
-	// return shapeIRS.getItemShape(row, column);
-	// }
-	//
-	// /**
-	// * Returns a shape used to represent the items in a series.
-	// *
-	// * @param series the series (zero-based index).
-	// *
-	// * @return The shape (never <code>null</code>).
-	// *
-	// * @since 1.0.6
-	// */
-	// public Shape lookupSeriesShape(int series) {
-	//
-	// Shape result = getSeriesShape(series);
-	// if (result == null && this.autoPopulateSeriesShape) {
-	// DrawingSupplier supplier = getDrawingSupplier();
-	// if (supplier != null) {
-	// result = supplier.getNextShape();
-	// setSeriesShape(series, result, false);
-	// }
-	// }
-	// if (result == null) {
-	// result = this.defaultShape;
-	// }
-	// return result;
-	//
-	// }
-	//
-	// /**
-	// * Returns a shape used to represent the items in a series.
-	// *
-	// * @param series the series (zero-based index).
-	// *
-	// * @return The shape (possibly <code>null</code>).
-	// *
-	// * @see #setSeriesShape(int, Shape)
-	// */
-	// public Shape getSeriesShape(int series) {
-	// return this.shapeList.getShape(series);
-	// }
-	//
-	// /**
-	// * Sets the shape used for a series and sends a {@link
-	// RendererChangeEvent}
-	// * to all registered listeners.
-	// *
-	// * @param series the series index (zero-based).
-	// * @param shape the shape (<code>null</code> permitted).
-	// *
-	// * @see #getSeriesShape(int)
-	// */
-	// public void setSeriesShape(int series, Shape shape) {
-	// setSeriesShape(series, shape, true);
-	// }
-	//
-	// /**
-	// * Sets the shape for a series and, if requested, sends a
-	// * {@link RendererChangeEvent} to all registered listeners.
-	// *
-	// * @param series the series index (zero based).
-	// * @param shape the shape (<code>null</code> permitted).
-	// * @param notify notify listeners?
-	// *
-	// * @see #getSeriesShape(int)
-	// */
-	// public void setSeriesShape(int series, Shape shape, boolean notify) {
-	// this.shapeList.setShape(series, shape);
-	// if (notify) {
-	// fireChangeEvent();
-	// }
-	// }
+	/**
+	 * Returns a shape used to represent a data item. (this is typically the
+	 * same for an entire series).
+	 * <p>
+	 * The default implementation passes control to the {@link DefaultShapeIRS}
+	 * which uses the <code>lookupSeriesShape(row)</code> method. You can
+	 * implement your own {@link ShapeIRS} or override this method if you
+	 * require different behavior.
+	 *
+	 * @param row
+	 *            the row (or series) index (zero-based).
+	 * @param column
+	 *            the column (or category) index (zero-based).
+	 *
+	 * @return The shape (never <code>null</code>).
+	 */
+	public Shape getItemShape(int row, int column) {
+		return shapeIRS.getItemShape(row, column);
+	}
+
+	/**
+	 * Returns a shape used to represent the items in a series.
+	 *
+	 * @param series
+	 *            the series (zero-based index).
+	 *
+	 * @return The shape (never <code>null</code>).
+	 *
+	 * @since 1.0.6
+	 */
+	public Shape lookupSeriesShape(int series) {
+
+		Shape result = getSeriesShape(series);
+		if (result == null && this.autoPopulateSeriesShape) {
+			DrawingSupplier supplier = getDrawingSupplier();
+			if (supplier != null) {
+				result = supplier.getNextShape();
+				setSeriesShape(series, result, false);
+			}
+		}
+		if (result == null) {
+			result = this.defaultShape;
+		}
+		return result;
+
+	}
+
+	/**
+	 * Returns a shape used to represent the items in a series.
+	 *
+	 * @param series
+	 *            the series (zero-based index).
+	 *
+	 * @return The shape (possibly <code>null</code>).
+	 *
+	 * @see #setSeriesShape(int, Shape)
+	 */
+	public Shape getSeriesShape(int series) {
+		return this.shapeList.getShape(series);
+	}
+
+	/**
+	 * Sets the shape used for a series and sends a {@link RendererChangeEvent}
+	 * to all registered listeners.
+	 *
+	 * @param series
+	 *            the series index (zero-based).
+	 * @param shape
+	 *            the shape (<code>null</code> permitted).
+	 *
+	 * @see #getSeriesShape(int)
+	 */
+	public void setSeriesShape(int series, Shape shape) {
+		setSeriesShape(series, shape, true);
+	}
+
+	/**
+	 * Sets the shape for a series and, if requested, sends a
+	 * {@link RendererChangeEvent} to all registered listeners.
+	 *
+	 * @param series
+	 *            the series index (zero based).
+	 * @param shape
+	 *            the shape (<code>null</code> permitted).
+	 * @param notify
+	 *            notify listeners?
+	 *
+	 * @see #getSeriesShape(int)
+	 */
+	public void setSeriesShape(int series, Shape shape, boolean notify) {
+		this.shapeList.setShape(series, shape);
+		if (notify) {
+			fireChangeEvent();
+		}
+	}
+
 	//
 	// /**
 	// * Returns the default shape.

@@ -86,7 +86,11 @@ import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.shape.Line;
 
+import com.sun.javafx.geom.Arc2D;
+import com.sun.javafx.geom.Ellipse2D;
+import com.sun.javafx.geom.Path2D;
 import com.sun.javafx.geom.PathIterator;
+import com.sun.javafx.geom.RectBounds;
 import com.sun.javafx.geom.Rectangle;
 import com.sun.javafx.geom.RoundRectangle2D;
 import com.sun.javafx.geom.Shape;
@@ -129,118 +133,106 @@ public class ShapeUtils {
 	// return null;
 	// }
 	//
-	// /**
-	// * Tests two shapes for equality. If both shapes are {@code null},
-	// * this method will return {@code true}.
-	// * <p>
-	// * In the current implementation, the following shapes are supported:
-	// * {@code Ellipse2D}, {@code Line2D} and {@code Rectangle2D}
-	// * (implicit).
-	// *
-	// * @param s1 the first shape ({@code null} permitted).
-	// * @param s2 the second shape ({@code null} permitted).
-	// *
-	// * @return A boolean.
-	// */
-	// public static boolean equal(Shape s1, Shape s2) {
-	// if (s1 instanceof Line2D && s2 instanceof Line2D) {
-	// return equal((Line2D) s1, (Line2D) s2);
-	// }
-	// else if (s1 instanceof Ellipse2D && s2 instanceof Ellipse2D) {
-	// return equal((Ellipse2D) s1, (Ellipse2D) s2);
-	// }
-	// else if (s1 instanceof Arc2D && s2 instanceof Arc2D) {
-	// return equal((Arc2D) s1, (Arc2D) s2);
-	// }
-	// else if (s1 instanceof Polygon && s2 instanceof Polygon) {
-	// return equal((Polygon) s1, (Polygon) s2);
-	// }
-	// else if (s1 instanceof GeneralPath && s2 instanceof GeneralPath) {
-	// return equal((GeneralPath) s1, (GeneralPath) s2);
-	// }
-	// else {
-	// // this will handle Rectangle2D...
-	// return ObjectUtils.equal(s1, s2);
-	// }
-	// }
-	//
-	// /**
-	// * Compares two lines are returns {@code true} if they are equal or
-	// * both {@code null}.
-	// *
-	// * @param l1 the first line ({@code null} permitted).
-	// * @param l2 the second line ({@code null} permitted).
-	// *
-	// * @return A boolean.
-	// */
-	// public static boolean equal(Line2D l1, Line2D l2) {
-	// if (l1 == null) {
-	// return (l2 == null);
-	// }
-	// if (l2 == null) {
-	// return false;
-	// }
-	// if (!l1.getP1().equals(l2.getP1())) {
-	// return false;
-	// }
-	// if (!l1.getP2().equals(l2.getP2())) {
-	// return false;
-	// }
-	// return true;
-	// }
-	//
-	// /**
-	// * Compares two ellipses and returns {@code true} if they are equal or
-	// * both {@code null}.
-	// *
-	// * @param e1 the first ellipse ({@code null} permitted).
-	// * @param e2 the second ellipse ({@code null} permitted).
-	// *
-	// * @return A boolean.
-	// */
-	// public static boolean equal(Ellipse2D e1, Ellipse2D e2) {
-	// if (e1 == null) {
-	// return (e2 == null);
-	// }
-	// if (e2 == null) {
-	// return false;
-	// }
-	// if (!e1.getFrame().equals(e2.getFrame())) {
-	// return false;
-	// }
-	// return true;
-	// }
-	//
-	// /**
-	// * Compares two arcs and returns {@code true} if they are equal or
-	// * both {@code null}.
-	// *
-	// * @param a1 the first arc ({@code null} permitted).
-	// * @param a2 the second arc ({@code null} permitted).
-	// *
-	// * @return A boolean.
-	// */
-	// public static boolean equal(Arc2D a1, Arc2D a2) {
-	// if (a1 == null) {
-	// return (a2 == null);
-	// }
-	// if (a2 == null) {
-	// return false;
-	// }
-	// if (!a1.getFrame().equals(a2.getFrame())) {
-	// return false;
-	// }
-	// if (a1.getAngleStart() != a2.getAngleStart()) {
-	// return false;
-	// }
-	// if (a1.getAngleExtent() != a2.getAngleExtent()) {
-	// return false;
-	// }
-	// if (a1.getArcType() != a2.getArcType()) {
-	// return false;
-	// }
-	// return true;
-	// }
+	/**
+	 * Tests two shapes for equality. If both shapes are {@code null}, this
+	 * method will return {@code true}.
+	 * <p>
+	 * In the current implementation, the following shapes are supported:
+	 * {@code Ellipse2D}, {@code Line2D} and {@code Rectangle2D} (implicit).
+	 *
+	 * @param s1
+	 *            the first shape ({@code null} permitted).
+	 * @param s2
+	 *            the second shape ({@code null} permitted).
+	 *
+	 * @return A boolean.
+	 */
+	public static boolean equal(Shape s1, Shape s2) {
+		if (s1 instanceof com.sun.javafx.geom.Line2D && s2 instanceof com.sun.javafx.geom.Line2D) {
+			return equal((com.sun.javafx.geom.Line2D) s1, (com.sun.javafx.geom.Line2D) s2);
+		}
+		else if (s1 instanceof Ellipse2D && s2 instanceof Ellipse2D) {
+			return equal((Ellipse2D) s1, (Ellipse2D) s2);
+		}
+		else if (s1 instanceof Arc2D && s2 instanceof Arc2D) {
+			return equal((Arc2D) s1, (Arc2D) s2);
+		}
+		// JAVAFX
+		// else if (s1 instanceof Polygon && s2 instanceof Polygon) {
+		// return equal((Polygon) s1, (Polygon) s2);
+		// }
+		else if (s1 instanceof Path2D && s2 instanceof Path2D) {
+			return equal((Path2D) s1, (Path2D) s2);
+		}
+		else {
+			// this will handle Rectangle2D...
+			return ObjectUtils.equal(s1, s2);
+		}
+	}
+
+	/**
+	 * Compares two lines are returns {@code true} if they are equal or both
+	 * {@code null}.
+	 *
+	 * @param l1
+	 *            the first line ({@code null} permitted).
+	 * @param l2
+	 *            the second line ({@code null} permitted).
+	 *
+	 * @return A boolean.
+	 */
+	public static boolean equal(com.sun.javafx.geom.Line2D l1, com.sun.javafx.geom.Line2D l2) {
+		if (l1 == null) {
+			return (l2 == null);
+		}
+		if (l2 == null) {
+			return false;
+		}
+		return l1.equals(l2);
+	}
+
+	/**
+	 * Compares two ellipses and returns {@code true} if they are equal or both
+	 * {@code null}.
+	 *
+	 * @param e1
+	 *            the first ellipse ({@code null} permitted).
+	 * @param e2
+	 *            the second ellipse ({@code null} permitted).
+	 *
+	 * @return A boolean.
+	 */
+	public static boolean equal(Ellipse2D e1, Ellipse2D e2) {
+		if (e1 == null) {
+			return (e2 == null);
+		}
+		if (e2 == null) {
+			return false;
+		}
+		return e1.equals(e2);
+	}
+
+	/**
+	 * Compares two arcs and returns {@code true} if they are equal or both
+	 * {@code null}.
+	 *
+	 * @param a1
+	 *            the first arc ({@code null} permitted).
+	 * @param a2
+	 *            the second arc ({@code null} permitted).
+	 *
+	 * @return A boolean.
+	 */
+	public static boolean equal(Arc2D a1, Arc2D a2) {
+		if (a1 == null) {
+			return (a2 == null);
+		}
+		if (a2 == null) {
+			return false;
+		}
+		return a1.equals(a2);
+	}
+
 	//
 	// /**
 	// * Tests two polygons for equality. If both are {@code null} this
@@ -270,49 +262,27 @@ public class ShapeUtils {
 	// return true;
 	// }
 	//
-	// /**
-	// * Tests two polygons for equality. If both are {@code null} this
-	// * method returns {@code true}.
-	// *
-	// * @param p1 path 1 ({@code null} permitted).
-	// * @param p2 path 2 ({@code null} permitted).
-	// *
-	// * @return A boolean.
-	// */
-	// public static boolean equal(GeneralPath p1, GeneralPath p2) {
-	// if (p1 == null) {
-	// return (p2 == null);
-	// }
-	// if (p2 == null) {
-	// return false;
-	// }
-	// if (p1.getWindingRule() != p2.getWindingRule()) {
-	// return false;
-	// }
-	// PathIterator iterator1 = p1.getPathIterator(null);
-	// PathIterator iterator2 = p2.getPathIterator(null);
-	// double[] d1 = new double[6];
-	// double[] d2 = new double[6];
-	// boolean done = iterator1.isDone() && iterator2.isDone();
-	// while (!done) {
-	// if (iterator1.isDone() != iterator2.isDone()) {
-	// return false;
-	// }
-	// int seg1 = iterator1.currentSegment(d1);
-	// int seg2 = iterator2.currentSegment(d2);
-	// if (seg1 != seg2) {
-	// return false;
-	// }
-	// if (!Arrays.equals(d1, d2)) {
-	// return false;
-	// }
-	// iterator1.next();
-	// iterator2.next();
-	// done = iterator1.isDone() && iterator2.isDone();
-	// }
-	// return true;
-	// }
-	//
+	/**
+	 * Tests two polygons for equality. If both are {@code null} this method
+	 * returns {@code true}.
+	 *
+	 * @param p1
+	 *            path 1 ({@code null} permitted).
+	 * @param p2
+	 *            path 2 ({@code null} permitted).
+	 *
+	 * @return A boolean.
+	 */
+	public static boolean equal(Path2D p1, Path2D p2) {
+		if (p1 == null) {
+			return (p2 == null);
+		}
+		if (p2 == null) {
+			return false;
+		}
+		return p1.equals(p2);
+	}
+
 	/**
 	 * Creates and returns a translated shape.
 	 *
@@ -641,6 +611,14 @@ public class ShapeUtils {
 				(float) line.getY2());
 	}
 
+	public static RectBounds asRectBounds(Rectangle2D rectangle) {
+		return new RectBounds(
+				(float) rectangle.getMinX(),
+				(float) rectangle.getMinY(),
+				(float) rectangle.getMaxX(),
+				(float) rectangle.getMaxY());
+	}
+
 	public static void outlineShape(GraphicsContext context, Shape shape) {
 		ParamChecks.nullNotPermitted(shape, "shape");
 		ParamChecks.nullNotPermitted(context, "context");
@@ -687,5 +665,22 @@ public class ShapeUtils {
 			}
 			iterator.next();
 		}
+	}
+
+	public static Shape newPolygon(float[] xPoints, float[] yPoints) {
+		if (xPoints.length != yPoints.length) {
+			throw new IllegalArgumentException("arrays should have equals length");
+		}
+		if (xPoints.length < 3) {
+			throw new IllegalArgumentException("polygon must have at least three points");
+		}
+		Path2D polygon = new Path2D();
+		polygon.moveTo(xPoints[0], yPoints[0]);
+		for (int i = 1; i < xPoints.length; i++) {
+			polygon.lineTo(xPoints[i], yPoints[i]);
+		}
+		polygon.closePath();
+		return polygon;
+
 	}
 }

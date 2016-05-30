@@ -174,7 +174,7 @@ import org.jfree.chart.labels.XYItemLabelGenerator;
 import org.jfree.chart.labels.XYSeriesLabelGenerator;
 import org.jfree.chart.labels.XYToolTipGenerator;
 import org.jfree.chart.plot.CrosshairState;
-//import org.jfree.chart.plot.DrawingSupplier;
+import org.jfree.chart.plot.DrawingSupplier;
 import org.jfree.chart.plot.IntervalMarker;
 import org.jfree.chart.plot.Marker;
 import org.jfree.chart.plot.PlotOrientation;
@@ -1792,21 +1792,20 @@ public abstract class AbstractXYItemRenderer extends AbstractRenderer
 		return super.equals(obj);
 	}
 
-	// JAVAFX
-	// /**
-	// * Returns the drawing supplier from the plot.
-	// *
-	// * @return The drawing supplier (possibly {@code null}).
-	// */
-	// @Override
-	// public DrawingSupplier getDrawingSupplier() {
-	// DrawingSupplier result = null;
-	// XYPlot p = getPlot();
-	// if (p != null) {
-	// result = p.getDrawingSupplier();
-	// }
-	// return result;
-	// }
+	/**
+	 * Returns the drawing supplier from the plot.
+	 *
+	 * @return The drawing supplier (possibly {@code null}).
+	 */
+	@Override
+	public DrawingSupplier getDrawingSupplier() {
+		DrawingSupplier result = null;
+		XYPlot p = getPlot();
+		if (p != null) {
+			result = p.getDrawingSupplier();
+		}
+		return result;
+	}
 
 	/**
 	 * Considers the current (x, y) coordinate and updates the crosshair point
