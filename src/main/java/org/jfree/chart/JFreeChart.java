@@ -1115,7 +1115,7 @@ public class JFreeChart implements Drawable,
 		//
 		// // draw the title and subtitles...
 		Rectangle2D nonTitleArea = chartArea;
-		// this.padding.trim(nonTitleArea);
+		this.padding.trim(nonTitleArea);
 		//
 		// if (this.title != null && this.title.isVisible()) {
 		// EntityCollection e = drawTitle(this.title, g2, nonTitleArea,

@@ -703,6 +703,7 @@ public abstract class ValueAxis extends Axis
 		for (ValueTick tick : ticks) {
 			if (isTickLabelsVisible()) {
 				g2.setFill(getTickLabelPaint());
+				g2.setStroke(getTickLabelPaint());
 				float[] anchorPoint = calculateAnchorPoint(tick, cursor,
 						dataArea, edge);
 				if (tick instanceof LogTick) {

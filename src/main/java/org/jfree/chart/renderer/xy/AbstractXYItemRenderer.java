@@ -1892,6 +1892,7 @@ public abstract class AbstractXYItemRenderer extends AbstractRenderer
 			Paint paint = getItemLabelPaint(series, item);
 			g2.setFont(labelFont);
 			g2.setFill(paint);
+			g2.setStroke(paint);
 			String label = generator.generateLabel(dataset, series, item);
 
 			// get the label position..

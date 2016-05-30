@@ -170,7 +170,9 @@ import org.jfree.data.general.DatasetUtilities;
 import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.paint.Paint;
 import javafx.scene.shape.Line;
+import javafx.scene.text.Font;
 
 /**
  * An abstract base class that you can use to implement a new
@@ -1568,10 +1570,11 @@ public abstract class AbstractCategoryItemRenderer extends AbstractRenderer
 				column);
 		if (generator != null) {
 			// JAVAFX paint, stroke
-			// Font labelFont = getItemLabelFont(row, column);
-			// Paint paint = getItemLabelPaint(row, column);
-			// g2.setFont(labelFont);
-			// g2.setPaint(paint);
+			Font labelFont = getItemLabelFont(row, column);
+			Paint paint = getItemLabelPaint(row, column);
+			g2.setFont(labelFont);
+			g2.setFill(paint);
+			g2.setStroke(paint);
 			String label = generator.generateLabel(dataset, row, column);
 			ItemLabelPosition position;
 			if (!negative) {

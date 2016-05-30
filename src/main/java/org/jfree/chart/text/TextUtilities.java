@@ -60,6 +60,8 @@ package org.jfree.chart.text;
 
 import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.paint.Paint;
+import javafx.scene.text.Font;
 
 // 
 // import java.awt.Font;
@@ -77,6 +79,9 @@ import java.text.BreakIterator;
 
 import org.jfree.chart.ui.TextAnchor;
 import org.jfree.chart.util.ParamChecks;
+
+import com.sun.javafx.tk.FontMetrics;
+import com.sun.javafx.tk.Toolkit;
 
 /**
  * Some utility methods for working with text.
@@ -172,147 +177,164 @@ public class TextUtilities {
 	// measurer);
 	// }
 	//
-	// /**
-	// * Creates a new text block from the given string, breaking the
-	// * text into lines so that the {@code maxWidth} value is respected.
-	// *
-	// * @param text the text.
-	// * @param font the font.
-	// * @param paint the paint.
-	// * @param maxWidth the maximum width for each line.
-	// * @param maxLines the maximum number of lines.
-	// * @param measurer the text measurer.
-	// *
-	// * @return A text block.
-	// */
-	// public static TextBlock createTextBlock(String text, Font font,
-	// Paint paint, float maxWidth, int maxLines, TextMeasurer measurer) {
-	//
-	// TextBlock result = new TextBlock();
-	// BreakIterator iterator = BreakIterator.getLineInstance();
-	// iterator.setText(text);
-	// int current = 0;
-	// int lines = 0;
-	// int length = text.length();
-	// while (current < length && lines < maxLines) {
-	// int next = nextLineBreak(text, current, maxWidth, iterator,
-	// measurer);
-	// if (next == BreakIterator.DONE) {
-	// result.addLine(text.substring(current), font, paint);
-	// return result;
-	// } else if (next == current) {
-	// next++; // we must take one more character or we'll loop forever
-	// }
-	// result.addLine(text.substring(current, next), font, paint);
-	// lines++;
-	// current = next;
-	// while (current < text.length()&& text.charAt(current) == '\n') {
-	// current++;
-	// }
-	// }
-	// if (current < length) {
-	// TextLine lastLine = result.getLastLine();
-	// TextFragment lastFragment = lastLine.getLastTextFragment();
-	// String oldStr = lastFragment.getText();
-	// String newStr = "...";
-	// if (oldStr.length() > 3) {
-	// newStr = oldStr.substring(0, oldStr.length() - 3) + "...";
-	// }
-	//
-	// lastLine.removeFragment(lastFragment);
-	// TextFragment newFragment = new TextFragment(newStr,
-	// lastFragment.getFont(), lastFragment.getPaint());
-	// lastLine.addFragment(newFragment);
-	// }
-	// return result;
-	// }
-	//
-	// /**
-	// * Returns the character index of the next line break. If the next
-	// * character is wider than {@code width} this method will return
-	// * {@code start} - the caller should check for this case.
-	// *
-	// * @param text the text ({@code null} not permitted).
-	// * @param start the start index.
-	// * @param width the target display width.
-	// * @param iterator the word break iterator.
-	// * @param measurer the text measurer.
-	// *
-	// * @return The index of the next line break.
-	// */
-	// private static int nextLineBreak(String text, int start, float width,
-	// BreakIterator iterator, TextMeasurer measurer) {
-	//
-	// // this method is (loosely) based on code in JFreeReport's
-	// // TextParagraph class
-	// int current = start;
-	// int end;
-	// float x = 0.0f;
-	// boolean firstWord = true;
-	// int newline = text.indexOf('\n', start);
-	// if (newline < 0) {
-	// newline = Integer.MAX_VALUE;
-	// }
-	// while (((end = iterator.following(current)) != BreakIterator.DONE)) {
-	// x += measurer.getStringWidth(text, current, end);
-	// if (x > width) {
-	// if (firstWord) {
-	// while (measurer.getStringWidth(text, start, end) > width) {
-	// end--;
-	// if (end <= start) {
-	// return end;
-	// }
-	// }
-	// return end;
-	// }
-	// else {
-	// end = iterator.previous();
-	// return end;
-	// }
-	// }
-	// else {
-	// if (end > newline) {
-	// return newline;
-	// }
-	// }
-	// // we found at least one word that fits ...
-	// firstWord = false;
-	// current = end;
-	// }
-	// return BreakIterator.DONE;
-	// }
-	//
-	// /**
-	// * Returns the bounds for the specified text.
-	// *
-	// * @param text the text ({@code null} permitted).
-	// * @param g2 the graphics context (not {@code null}).
-	// * @param fm the font metrics (not {@code null}).
-	// *
-	// * @return The text bounds ({@code null} if the {@code text} argument is
-	// * {@code null}).
-	// */
-	// public static Rectangle2D getTextBounds(String text, Graphics2D g2,
-	// FontMetrics fm) {
-	//
-	// Rectangle2D bounds;
-	// if (TextUtilities.useFontMetricsGetStringBounds) { // default FALSE
-	// bounds = fm.getStringBounds(text, g2);
-	// // getStringBounds() can return incorrect height for some Unicode
-	// // characters...see bug parade 6183356, let's replace it with
-	// // something correct
-	// LineMetrics lm = fm.getFont().getLineMetrics(text,
-	// g2.getFontRenderContext());
-	// bounds.setRect(bounds.getX(), bounds.getY(), bounds.getWidth(),
-	// lm.getHeight());
-	// } else {
-	// double width = fm.stringWidth(text);
-	// double height = fm.getHeight();
-	// bounds = new Rectangle2D.Double(0.0, -fm.getAscent(), width,
-	// height);
-	// }
-	// return bounds;
-	// }
+	/**
+	 * Creates a new text block from the given string, breaking the text into
+	 * lines so that the {@code maxWidth} value is respected.
+	 *
+	 * @param text
+	 *            the text.
+	 * @param font
+	 *            the font.
+	 * @param paint
+	 *            the paint.
+	 * @param maxWidth
+	 *            the maximum width for each line.
+	 * @param maxLines
+	 *            the maximum number of lines.
+	 * @param measurer
+	 *            the text measurer.
+	 *
+	 * @return A text block.
+	 */
+	public static TextBlock createTextBlock(String text, Font font,
+			Paint paint, float maxWidth, int maxLines, TextMeasurer measurer) {
+
+		TextBlock result = new TextBlock();
+		BreakIterator iterator = BreakIterator.getLineInstance();
+		iterator.setText(text);
+		int current = 0;
+		int lines = 0;
+		int length = text.length();
+		while (current < length && lines < maxLines) {
+			int next = nextLineBreak(text, current, maxWidth, iterator,
+					measurer);
+			if (next == BreakIterator.DONE) {
+				result.addLine(text.substring(current), font, paint);
+				return result;
+			} else if (next == current) {
+				next++; // we must take one more character or we'll loop forever
+			}
+			result.addLine(text.substring(current, next), font, paint);
+			lines++;
+			current = next;
+			while (current < text.length() && text.charAt(current) == '\n') {
+				current++;
+			}
+		}
+		if (current < length) {
+			TextLine lastLine = result.getLastLine();
+			TextFragment lastFragment = lastLine.getLastTextFragment();
+			String oldStr = lastFragment.getText();
+			String newStr = "...";
+			if (oldStr.length() > 3) {
+				newStr = oldStr.substring(0, oldStr.length() - 3) + "...";
+			}
+
+			lastLine.removeFragment(lastFragment);
+			TextFragment newFragment = new TextFragment(newStr,
+					lastFragment.getFont(), lastFragment.getPaint());
+			lastLine.addFragment(newFragment);
+		}
+		return result;
+	}
+
+	/**
+	 * Returns the character index of the next line break. If the next character
+	 * is wider than {@code width} this method will return {@code start} - the
+	 * caller should check for this case.
+	 *
+	 * @param text
+	 *            the text ({@code null} not permitted).
+	 * @param start
+	 *            the start index.
+	 * @param width
+	 *            the target display width.
+	 * @param iterator
+	 *            the word break iterator.
+	 * @param measurer
+	 *            the text measurer.
+	 *
+	 * @return The index of the next line break.
+	 */
+	private static int nextLineBreak(String text, int start, float width,
+			BreakIterator iterator, TextMeasurer measurer) {
+
+		// this method is (loosely) based on code in JFreeReport's
+		// TextParagraph class
+		int current = start;
+		int end;
+		float x = 0.0f;
+		boolean firstWord = true;
+		int newline = text.indexOf('\n', start);
+		if (newline < 0) {
+			newline = Integer.MAX_VALUE;
+		}
+		while (((end = iterator.following(current)) != BreakIterator.DONE)) {
+			x += measurer.getStringWidth(text, current, end);
+			if (x > width) {
+				if (firstWord) {
+					while (measurer.getStringWidth(text, start, end) > width) {
+						end--;
+						if (end <= start) {
+							return end;
+						}
+					}
+					return end;
+				}
+				else {
+					end = iterator.previous();
+					return end;
+				}
+			}
+			else {
+				if (end > newline) {
+					return newline;
+				}
+			}
+			// we found at least one word that fits ...
+			firstWord = false;
+			current = end;
+		}
+		return BreakIterator.DONE;
+	}
+
+	/**
+	 * Returns the bounds for the specified text.
+	 *
+	 * @param text
+	 *            the text ({@code null} permitted).
+	 * @param g2
+	 *            the graphics context (not {@code null}).
+	 * @param fm
+	 *            the font metrics (not {@code null}).
+	 *
+	 * @return The text bounds ({@code null} if the {@code text} argument is
+	 *         {@code null}).
+	 */
+	public static Rectangle2D getTextBounds(String text, GraphicsContext g2,
+			Font font) {
+
+		FontMetrics fm = getFontMetrics(font);
+		Rectangle2D bounds;
+		// JAVAFX - porting probably not needed
+		// if (TextUtilities.useFontMetricsGetStringBounds) { // default FALSE
+		// bounds = fm.getStringBounds(text, g2);
+		// // getStringBounds() can return incorrect height for some Unicode
+		// // characters...see bug parade 6183356, let's replace it with
+		// // something correct
+		// LineMetrics lm = fm.getFont().getLineMetrics(text,
+		// g2.getFontRenderContext());
+		// bounds.setRect(bounds.getX(), bounds.getY(), bounds.getWidth(),
+		// lm.getHeight());
+		// } else {
+		double width = fm.computeStringWidth(text);
+		double height = fm.getLineHeight();
+		bounds = new Rectangle2D(0.0, -fm.getAscent(), width,
+				height);
+		// }
+		return bounds;
+	}
+
 	//
 	// /**
 	// * Returns the bounds for the attributed string.
@@ -349,16 +371,15 @@ public class TextUtilities {
 	public static Rectangle2D drawAlignedString(String text, GraphicsContext g2,
 			float x, float y, TextAnchor anchor) {
 
-		Rectangle2D textBounds = new Rectangle2D(0, 0, 0, 0);
+		Rectangle2D textBounds = TextUtilities.getTextBounds(text, g2, g2.getFont());
+		float[] adjust = deriveTextBoundsAnchorOffsets(g2, text, anchor);
+		// adjust text bounds to match string position
+		textBounds = new Rectangle2D(x + adjust[0], y + adjust[1] +
+				adjust[2],
+				textBounds.getWidth(), textBounds.getHeight());
 		// JAVAFX
-		// float[] adjust = deriveTextBoundsAnchorOffsets(g2, text, anchor,
-		// textBounds);
-		// // adjust text bounds to match string position
-		// textBounds = new Rectangle2D(x + adjust[0], y + adjust[1] +
-		// adjust[2],
-		// textBounds.getWidth(), textBounds.getHeight());
 		// if (!drawStringsWithFontAttributes) {
-		// g2.strokeText(text, x + adjust[0], y + adjust[1]);
+		g2.strokeText(text, x + adjust[0], y + adjust[1]);
 		// } else {
 		// AttributedString as = new AttributedString(text,
 		// g2.getFont().getAttributes());
@@ -417,47 +438,92 @@ public class TextUtilities {
 	 */
 	private static float[] deriveTextBoundsAnchorOffsets(GraphicsContext g2,
 			String text, TextAnchor anchor, Rectangle2D textBounds) {
-		// JAVAFX in javafx Rectangle2D is immutable!!!!
+		if (textBounds != null) {
 
+			// JAVAFX rectangle is immutable
+			// textBounds.setRect(bounds);
+			throw new IllegalStateException(
+					"JAVAFX Rectangle2D is immutable. Use TextUtilities.getTextBounds to calculate bounds outside of this method");
+		}
+
+		return deriveTextBoundsAnchorOffsets(g2, text, anchor);
+	}
+
+	/**
+	 * A utility method that calculates the anchor offsets for a string.
+	 * Normally, the (x, y) coordinate for drawing text is a point on the
+	 * baseline at the left of the text string. If you add these offsets to (x,
+	 * y) and draw the string, then the anchor point should coincide with the
+	 * (x, y) point.
+	 *
+	 * @param g2
+	 *            the graphics device (not {@code null}).
+	 * @param text
+	 *            the text.
+	 * @param anchor
+	 *            the anchor point.
+	 * @return The offsets.
+	 */
+	private static float[] deriveTextBoundsAnchorOffsets(
+			GraphicsContext g2, String text, TextAnchor anchor) {
 		float[] result = new float[3];
+
 		// JAVAFX
 		// FontRenderContext frc = g2.getFontRenderContext();
-		// Font f = g2.getFont();
-		// FontMetrics fm = g2.getFontMetrics(f);
-		// Rectangle2D bounds = TextUtilities.getTextBounds(text, g2, fm);
+		FontMetrics fontMetrics = getFontMetrics(g2);
+		Rectangle2D bounds = TextUtilities.getTextBounds(text, g2, g2.getFont());
 		// LineMetrics metrics = f.getLineMetrics(text, frc);
-		// float ascent = metrics.getAscent();
-		// result[2] = -ascent;
-		// float halfAscent = ascent / 2.0f;
-		// float descent = metrics.getDescent();
-		// float leading = metrics.getLeading();
+		float ascent = fontMetrics.getAscent();
+		result[2] = -ascent;
+		float halfAscent = ascent / 2.0f;
+		float descent = fontMetrics.getDescent();
+		float leading = fontMetrics.getLeading();
 		float xAdj = 0.0f;
 		float yAdj = 0.0f;
 
-		// JAVAFX
-		// if (anchor.isHorizontalCenter()) {
-		// xAdj = (float) -bounds.getWidth() / 2.0f;
-		// } else if (anchor.isHorizontalRight()) {
-		// xAdj = (float) -bounds.getWidth();
-		// }
-		//
-		// if (anchor.isTop()) {
-		// yAdj = -descent - leading + (float) bounds.getHeight();
-		// } else if (anchor.isHalfAscent()) {
-		// yAdj = halfAscent;
-		// } else if (anchor.isHalfHeight()) {
-		// yAdj = -descent - leading + (float) (bounds.getHeight() / 2.0);
-		// } else if (anchor.isBaseline()) {
-		// yAdj = 0.0f;
-		// } else if (anchor.isBottom()) {
-		// yAdj = -descent - leading;
-		// }
-		// if (textBounds != null) {
-		// textBounds.setRect(bounds);
-		// }
+		if (anchor.isHorizontalCenter()) {
+			xAdj = (float) -bounds.getWidth() / 2.0f;
+		} else if (anchor.isHorizontalRight()) {
+			xAdj = (float) -bounds.getWidth();
+		}
+
+		if (anchor.isTop()) {
+			yAdj = -descent - leading + (float) bounds.getHeight();
+		} else if (anchor.isHalfAscent()) {
+			yAdj = halfAscent;
+		} else if (anchor.isHalfHeight()) {
+			yAdj = -descent - leading + (float) (bounds.getHeight() / 2.0);
+		} else if (anchor.isBaseline()) {
+			yAdj = 0.0f;
+		} else if (anchor.isBottom()) {
+			yAdj = -descent - leading;
+		}
 		result[0] = xAdj;
 		result[1] = yAdj;
 		return result;
+	}
+
+	/**
+	 * Returns font metrics for current font set in graphics context.
+	 * 
+	 * @param g2
+	 *            the graphics device.
+	 * @return FontMetrics
+	 */
+	private static FontMetrics getFontMetrics(GraphicsContext g2) {
+		Font font = g2.getFont();
+		return getFontMetrics(font);
+	}
+
+	/**
+	 * Returns font metrics for specified font.
+	 * 
+	 * @param g2
+	 *            the graphics device.
+	 * @return FontMetrics
+	 */
+	public static FontMetrics getFontMetrics(Font font) {
+		return Toolkit.getToolkit().getFontLoader().getFontMetrics(font);
 	}
 
 	/**
@@ -508,16 +574,17 @@ public class TextUtilities {
 			float rotateY) {
 
 		ParamChecks.nullNotPermitted(text, "text");
-		// JAVAFX
-		// if (angle == 0.0) {
-		// drawAlignedString(text, g2, textY, textY, TextAnchor.BASELINE_LEFT);
-		// return;
-		// }
+		if (angle == 0.0) {
+			drawAlignedString(text, g2, textY, textY, TextAnchor.BASELINE_LEFT);
+			return;
+		}
+		// JAVAFX rotation
 		// AffineTransform saved = g2.getTransform();
 		// AffineTransform rotate = AffineTransform.getRotateInstance(angle,
 		// rotateX, rotateY);
 		// g2.transform(rotate);
-		//
+
+		// JAVAFX
 		// if (useDrawRotatedStringWorkaround) {
 		// // workaround for JDC bug ID 4312117 and others...
 		// TextLayout tl = new TextLayout(text, g2.getFont(),
@@ -525,7 +592,9 @@ public class TextUtilities {
 		// tl.draw(g2, textX, textY);
 		// } else {
 		// if (!drawStringsWithFontAttributes) {
-		// g2.drawString(text, textX, textY);
+		g2.strokeText(text, textX, textY);
+
+		// JAVAFX
 		// } else {
 		// AttributedString as = new AttributedString(text,
 		// g2.getFont().getAttributes());
