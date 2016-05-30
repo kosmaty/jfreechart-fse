@@ -3162,7 +3162,7 @@ public class XYPlot extends Plot implements ValueAxisPlot, Pannable, Zoomable,
 			Rectangle2D plotArea) {
 		AxisSpace space = new AxisSpace();
 		space = calculateRangeAxisSpace(g2, plotArea, space);
-		Rectangle2D revPlotArea = space.shrink(plotArea, null);
+		Rectangle2D revPlotArea = space.shrink(plotArea);
 		space = calculateDomainAxisSpace(g2, revPlotArea, space);
 		return space;
 	}

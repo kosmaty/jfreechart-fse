@@ -73,6 +73,7 @@
 package org.jfree.chart.renderer.xy;
 
 import static org.jfree.geometry.GeometryUtils.newLine;
+import static org.jfree.geometry.GeometryUtils.strokeLine;
 
 // import java.awt.Graphics2D;
 // import java.awt.Paint;
@@ -102,6 +103,11 @@ import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.util.LineUtils;
 import org.jfree.chart.util.SerialUtils;
 import org.jfree.data.xy.XYDataset;
+import org.jfree.geometry.DrawableShape;
+import org.jfree.geometry.DrawableShapes;
+import org.jfree.geometry.Line2D;
+
+import com.sun.javafx.geom.Shape;
 
 import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.GraphicsContext;
@@ -945,31 +951,32 @@ public class XYLineAndShapeRenderer extends AbstractXYItemRenderer
 		// JAVAFX
 		// visible = LineUtils.clipLine(state.workingLine, dataArea);
 		// if (visible) {
-		// drawFirstPassShape(g2, pass, series, item, state.workingLine);
+		drawFirstPassShape(g2, pass, series, item, DrawableShapes.from(state.workingLine));
 		// }
 	}
 
-	// JAVAFX
-	// /**
-	// * Draws the first pass shape.
-	// *
-	// * @param g2
-	// * the graphics device.
-	// * @param pass
-	// * the pass.
-	// * @param series
-	// * the series index.
-	// * @param item
-	// * the item index.
-	// * @param shape
-	// * the shape.
-	// */
-	// protected void drawFirstPassShape(Graphics2D g2, int pass, int series,
-	// int item, Shape shape) {
-	// g2.setStroke(getItemStroke(series, item));
-	// g2.setPaint(getItemPaint(series, item));
-	// g2.draw(shape);
-	// }
+	/**
+	 * Draws the first pass shape.
+	 *
+	 * @param g2
+	 *            the graphics device.
+	 * @param pass
+	 *            the pass.
+	 * @param series
+	 *            the series index.
+	 * @param item
+	 *            the item index.
+	 * @param shape
+	 *            the shape.
+	 */
+	protected void drawFirstPassShape(GraphicsContext g2, int pass, int series,
+			int item, DrawableShape shape) {
+		// JAVAFX stroke
+		// g2.setStroke(getItemStroke(series, item));
+		g2.setFill(getItemPaint(series, item));
+		g2.setStroke(getItemPaint(series, item));
+		shape.draw(g2);
+	}
 
 	/**
 	 * Draws the item (first pass). This method draws the lines connecting the
@@ -1086,24 +1093,24 @@ public class XYLineAndShapeRenderer extends AbstractXYItemRenderer
 			CrosshairState crosshairState,
 			EntityCollection entities) {
 
-		// JAVAFX shape
-		// Shape entityArea = null;
-		//
-		// // get the data point...
-		// double x1 = dataset.getXValue(series, item);
-		// double y1 = dataset.getYValue(series, item);
-		// if (Double.isNaN(y1) || Double.isNaN(x1)) {
-		// return;
-		// }
-		//
-		// PlotOrientation orientation = plot.getOrientation();
-		// RectangleEdge xAxisLocation = plot.getDomainAxisEdge();
-		// RectangleEdge yAxisLocation = plot.getRangeAxisEdge();
-		// double transX1 = domainAxis.valueToJava2D(x1, dataArea,
-		// xAxisLocation);
-		// double transY1 = rangeAxis.valueToJava2D(y1, dataArea,
-		// yAxisLocation);
-		//
+		Shape entityArea = null;
+
+		// get the data point...
+		double x1 = dataset.getXValue(series, item);
+		double y1 = dataset.getYValue(series, item);
+		if (Double.isNaN(y1) || Double.isNaN(x1)) {
+			return;
+		}
+
+		PlotOrientation orientation = plot.getOrientation();
+		RectangleEdge xAxisLocation = plot.getDomainAxisEdge();
+		RectangleEdge yAxisLocation = plot.getRangeAxisEdge();
+		double transX1 = domainAxis.valueToJava2D(x1, dataArea,
+				xAxisLocation);
+		double transY1 = rangeAxis.valueToJava2D(y1, dataArea,
+				yAxisLocation);
+
+		// JAVAFX
 		// if (getItemShapeVisible(series, item)) {
 		// Shape shape = getItemShape(series, item);
 		// if (orientation == PlotOrientation.HORIZONTAL) {
@@ -1117,44 +1124,50 @@ public class XYLineAndShapeRenderer extends AbstractXYItemRenderer
 		// if (shape.intersects(dataArea)) {
 		// if (getItemShapeFilled(series, item)) {
 		// if (this.useFillPaint) {
-		// g2.setPaint(getItemFillPaint(series, item));
+		// g2.setFill(getItemFillPaint(series, item));
+		// g2.setStroke(getItemFillPaint(series, item));
 		// }
 		// else {
-		// g2.setPaint(getItemPaint(series, item));
+		// g2.setFill(getItemPaint(series, item));
+		// g2.setStroke(getItemPaint(series, item));
 		// }
-		// g2.fill(shape);
+		// ShapeUtils.fillShape(g2, shape);
 		// }
 		// if (this.drawOutlines) {
 		// if (getUseOutlinePaint()) {
-		// g2.setPaint(getItemOutlinePaint(series, item));
+		// g2.setFill(getItemOutlinePaint(series, item));
+		// g2.setStroke(getItemOutlinePaint(series, item));
 		// }
 		// else {
-		// g2.setPaint(getItemPaint(series, item));
+		// g2.setFill(getItemPaint(series, item));
+		// g2.setStroke(getItemPaint(series, item));
 		// }
-		// g2.setStroke(getItemOutlineStroke(series, item));
-		// g2.draw(shape);
+		// // JAVAFX stroke
+		// // g2.setStroke(getItemOutlineStroke(series, item));
+		// ShapeUtils.drawShape(g2, shape);
 		// }
 		// }
 		// }
-		//
-		// double xx = transX1;
-		// double yy = transY1;
-		// if (orientation == PlotOrientation.HORIZONTAL) {
-		// xx = transY1;
-		// yy = transX1;
-		// }
-		//
-		// // draw the item label if there is one...
-		// if (isItemLabelVisible(series, item)) {
-		// drawItemLabel(g2, orientation, dataset, series, item, xx, yy,
-		// (y1 < 0.0));
-		// }
-		//
-		// int domainAxisIndex = plot.getDomainAxisIndex(domainAxis);
-		// int rangeAxisIndex = plot.getRangeAxisIndex(rangeAxis);
-		// updateCrosshairValues(crosshairState, x1, y1, domainAxisIndex,
-		// rangeAxisIndex, transX1, transY1, orientation);
-		//
+
+		double xx = transX1;
+		double yy = transY1;
+		if (orientation == PlotOrientation.HORIZONTAL) {
+			xx = transY1;
+			yy = transX1;
+		}
+
+		// draw the item label if there is one...
+		if (isItemLabelVisible(series, item)) {
+			drawItemLabel(g2, orientation, dataset, series, item, xx, yy,
+					(y1 < 0.0));
+		}
+
+		int domainAxisIndex = plot.getDomainAxisIndex(domainAxis);
+		int rangeAxisIndex = plot.getRangeAxisIndex(rangeAxis);
+		updateCrosshairValues(crosshairState, x1, y1, domainAxisIndex,
+				rangeAxisIndex, transX1, transY1, orientation);
+
+		// JAVAFX
 		// // add an entity for the item, but only if it falls within the data
 		// // area...
 		// if (entities != null && ShapeUtils.isPointInRect(dataArea, xx, yy)) {

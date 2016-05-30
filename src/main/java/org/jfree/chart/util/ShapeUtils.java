@@ -60,6 +60,8 @@
 
 package org.jfree.chart.util;
 
+import org.jfree.geometry.Line2D;
+
 // 
 // import java.awt.Graphics2D;
 // import java.awt.Polygon;
@@ -78,6 +80,8 @@ package org.jfree.chart.util;
 
 import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
+import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
 
@@ -85,12 +89,13 @@ import javafx.scene.shape.Shape;
  * Utility methods for {@link Shape} objects.
  */
 public class ShapeUtils {
-	//
-	// /**
-	// * Prevents instantiation.
-	// */
-	// private ShapeUtils() {
-	// }
+
+	/**
+	 * Prevents instantiation.
+	 */
+	private ShapeUtils() {
+	}
+
 	//
 	// /**
 	// * Returns a clone of the specified shape, or {@code null}. At the
@@ -302,24 +307,30 @@ public class ShapeUtils {
 	// return true;
 	// }
 	//
-	// /**
-	// * Creates and returns a translated shape.
-	// *
-	// * @param shape the shape ({@code null} not permitted).
-	// * @param transX the x translation (in Java2D space).
-	// * @param transY the y translation (in Java2D space).
-	// *
-	// * @return The translated shape.
-	// */
-	// public static Shape createTranslatedShape(Shape shape, double transX,
-	// double transY) {
-	// if (shape == null) {
-	// throw new IllegalArgumentException("Null 'shape' argument.");
-	// }
-	// AffineTransform transform = AffineTransform.getTranslateInstance(
-	// transX, transY);
-	// return transform.createTransformedShape(shape);
-	// }
+	/**
+	 * Creates and returns a translated shape.
+	 *
+	 * @param shape
+	 *            the shape ({@code null} not permitted).
+	 * @param transX
+	 *            the x translation (in Java2D space).
+	 * @param transY
+	 *            the y translation (in Java2D space).
+	 *
+	 * @return The translated shape.
+	 */
+	public static com.sun.javafx.geom.Shape createTranslatedShape(com.sun.javafx.geom.Shape shape, double transX,
+			double transY) {
+		// JAVAFX
+		// if (shape == null) {
+		// throw new IllegalArgumentException("Null 'shape' argument.");
+		// }
+		// AffineTransform transform = AffineTransform.getTranslateInstance(
+		// transX, transY);
+		// return transform.createTransformedShape(shape);
+		return shape; // JAVAFX fake result
+	}
+
 	//
 	// /**
 	// * Translates a shape to a new location such that the anchor point
@@ -612,5 +623,41 @@ public class ShapeUtils {
 
 	public static Shape asShape(Rectangle2D rectangle) {
 		return new Rectangle(rectangle.getMinX(), rectangle.getMinY(), rectangle.getWidth(), rectangle.getHeight());
+	}
+
+	public static Shape asShape(Line2D line) {
+		return new Line(line.getX1(), line.getY1(), line.getX2(), line.getY2());
+	}
+
+	public static void outlineShape(GraphicsContext context, Shape shape) {
+		ParamChecks.nullNotPermitted(shape, "shape");
+		ParamChecks.nullNotPermitted(context, "context");
+		if (shape instanceof Line) {
+			Line line = (Line) shape;
+			context.strokeLine(line.getStartX(), line.getStartY(), line.getEndX(), line.getEndY());
+		}
+		else if (shape instanceof Rectangle) {
+			Rectangle r = (Rectangle) shape;
+			context.strokeRect(r.getX(), r.getY(), r.getWidth(), r.getHeight());
+		}
+		else {
+			throw new IllegalArgumentException("Unsupported shape type: " + shape.getClass().getName());
+		}
+	}
+
+	public static void fillShape(GraphicsContext context, Shape shape) {
+		ParamChecks.nullNotPermitted(shape, "shape");
+		ParamChecks.nullNotPermitted(context, "context");
+		if (shape instanceof Line) {
+			Line line = (Line) shape;
+			context.strokeLine(line.getStartX(), line.getStartY(), line.getEndX(), line.getEndY());
+		}
+		else if (shape instanceof Rectangle) {
+			Rectangle r = (Rectangle) shape;
+			context.fillRect(r.getX(), r.getY(), r.getWidth(), r.getHeight());
+		}
+		else {
+			throw new IllegalArgumentException("Unsupported shape type: " + shape.getClass().getName());
+		}
 	}
 }

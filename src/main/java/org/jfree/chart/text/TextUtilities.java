@@ -116,67 +116,74 @@ public class TextUtilities {
 	private TextUtilities() {
 	}
 
-	//
-	// /**
-	// * Creates a {@link TextBlock} from a {@code String}. Line breaks
-	// * are added where the {@code String} contains '\n' characters.
-	// *
-	// * @param text the text ({@code null} not permitted).
-	// * @param font the font.
-	// * @param paint the paint.
-	// *
-	// * @return A text block.
-	// */
-	// public static TextBlock createTextBlock(String text, Font font,
-	// Paint paint) {
-	// ParamChecks.nullNotPermitted(text, "text");
-	// TextBlock result = new TextBlock();
-	// String input = text;
-	// boolean moreInputToProcess = (text.length() > 0);
-	// int start = 0;
-	// while (moreInputToProcess) {
-	// int index = input.indexOf("\n");
-	// if (index > start) {
-	// String line = input.substring(start, index);
-	// if (index < input.length() - 1) {
-	// result.addLine(line, font, paint);
-	// input = input.substring(index + 1);
-	// } else {
-	// moreInputToProcess = false;
-	// }
-	// } else if (index == start) {
-	// if (index < input.length() - 1) {
-	// input = input.substring(index + 1);
-	// } else {
-	// moreInputToProcess = false;
-	// }
-	// } else {
-	// result.addLine(input, font, paint);
-	// moreInputToProcess = false;
-	// }
-	// }
-	// return result;
-	// }
-	//
-	// /**
-	// * Creates a new text block from the given string, breaking the
-	// * text into lines so that the {@code maxWidth} value is respected.
-	// *
-	// * @param text the text.
-	// * @param font the font.
-	// * @param paint the paint.
-	// * @param maxWidth the maximum width for each line.
-	// * @param measurer the text measurer.
-	// *
-	// * @return A text block.
-	// */
-	// public static TextBlock createTextBlock(String text, Font font, Paint
-	// paint,
-	// float maxWidth, TextMeasurer measurer) {
-	// return createTextBlock(text, font, paint, maxWidth, Integer.MAX_VALUE,
-	// measurer);
-	// }
-	//
+	/**
+	 * Creates a {@link TextBlock} from a {@code String}. Line breaks are added
+	 * where the {@code String} contains '\n' characters.
+	 *
+	 * @param text
+	 *            the text ({@code null} not permitted).
+	 * @param font
+	 *            the font.
+	 * @param paint
+	 *            the paint.
+	 *
+	 * @return A text block.
+	 */
+	public static TextBlock createTextBlock(String text, Font font,
+			Paint paint) {
+		ParamChecks.nullNotPermitted(text, "text");
+		TextBlock result = new TextBlock();
+		String input = text;
+		boolean moreInputToProcess = (text.length() > 0);
+		int start = 0;
+		while (moreInputToProcess) {
+			int index = input.indexOf("\n");
+			if (index > start) {
+				String line = input.substring(start, index);
+				if (index < input.length() - 1) {
+					result.addLine(line, font, paint);
+					input = input.substring(index + 1);
+				} else {
+					moreInputToProcess = false;
+				}
+			} else if (index == start) {
+				if (index < input.length() - 1) {
+					input = input.substring(index + 1);
+				} else {
+					moreInputToProcess = false;
+				}
+			} else {
+				result.addLine(input, font, paint);
+				moreInputToProcess = false;
+			}
+		}
+		return result;
+	}
+
+	/**
+	 * Creates a new text block from the given string, breaking the text into
+	 * lines so that the {@code maxWidth} value is respected.
+	 *
+	 * @param text
+	 *            the text.
+	 * @param font
+	 *            the font.
+	 * @param paint
+	 *            the paint.
+	 * @param maxWidth
+	 *            the maximum width for each line.
+	 * @param measurer
+	 *            the text measurer.
+	 *
+	 * @return A text block.
+	 */
+	public static TextBlock createTextBlock(String text, Font font, Paint
+			paint,
+			float maxWidth, TextMeasurer measurer) {
+		return createTextBlock(text, font, paint, maxWidth, Integer.MAX_VALUE,
+				measurer);
+	}
+
 	/**
 	 * Creates a new text block from the given string, breaking the text into
 	 * lines so that the {@code maxWidth} value is respected.

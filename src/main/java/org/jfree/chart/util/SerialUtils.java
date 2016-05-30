@@ -121,6 +121,7 @@ public class SerialUtils {
 		boolean isNull = stream.readBoolean();
 		if (!isNull) {
 			Class c = (Class) stream.readObject();
+			new IllegalStateException("JAVAFX - to be done").printStackTrace();
 			// JAVAFX paint, serialization
 			// if (isSerializable(c)) {
 			// result = (Paint) stream.readObject();
@@ -157,6 +158,7 @@ public class SerialUtils {
 		if (paint != null) {
 			stream.writeBoolean(false);
 			stream.writeObject(paint.getClass());
+			new IllegalStateException("JAVAFX - to be done").printStackTrace();
 			// JAVAFX paint, serialization
 			// if (paint instanceof Serializable) {
 			// stream.writeObject(paint);
