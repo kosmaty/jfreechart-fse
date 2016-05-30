@@ -153,6 +153,9 @@
 
 package org.jfree.chart;
 
+import static org.jfree.geometry.GeometryUtils.getCenterX;
+import static org.jfree.geometry.GeometryUtils.getCenterY;
+
 // 
 // import java.awt.AlphaComposite;
 // import java.awt.Color;
@@ -170,15 +173,16 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 // import javax.swing.event.EventListenerList;
 // 
-// import org.jfree.chart.block.BlockParams;
-// import org.jfree.chart.block.EntityBlockResult;
-// import org.jfree.chart.block.LengthConstraintType;
-// import org.jfree.chart.block.RectangleConstraint;
+import org.jfree.chart.block.BlockParams;
+import org.jfree.chart.block.EntityBlockResult;
+import org.jfree.chart.block.LengthConstraintType;
+import org.jfree.chart.block.RectangleConstraint;
 // import org.jfree.chart.drawable.BorderPainter;
-// import org.jfree.chart.ui.Align;
+import org.jfree.chart.ui.Align;
 // import org.jfree.chart.drawable.ColorPainter;
 import org.jfree.chart.drawable.Drawable;
 
@@ -186,6 +190,9 @@ import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontPosture;
+import javafx.scene.text.FontWeight;
 
 import org.jfree.chart.ui.HorizontalAlignment;
 import org.jfree.chart.ui.RectangleEdge;
@@ -201,14 +208,14 @@ import org.jfree.chart.event.ChartProgressEvent;
 import org.jfree.chart.event.ChartProgressListener;
 import org.jfree.chart.event.PlotChangeEvent;
 import org.jfree.chart.event.PlotChangeListener;
-// import org.jfree.chart.event.TitleChangeEvent;
-// import org.jfree.chart.event.TitleChangeListener;
+import org.jfree.chart.event.TitleChangeEvent;
+import org.jfree.chart.event.TitleChangeListener;
 import org.jfree.chart.plot.Plot;
 import org.jfree.chart.plot.PlotRenderingInfo;
 // import org.jfree.chart.renderer.category.StandardBarPainter;
-// import org.jfree.chart.title.LegendTitle;
-// import org.jfree.chart.title.TextTitle;
-// import org.jfree.chart.title.Title;
+import org.jfree.chart.title.LegendTitle;
+import org.jfree.chart.title.TextTitle;
+import org.jfree.chart.title.Title;
 import org.jfree.chart.util.ParamChecks;
 import org.jfree.data.Range;
 import org.jfree.event.EventListenerList;
@@ -235,30 +242,32 @@ import org.jfree.event.EventListenerList;
  * @see Plot
  */
 public class JFreeChart implements Drawable,
-		// TitleChangeListener,
+		TitleChangeListener,
 		PlotChangeListener,
 		Serializable, Cloneable
 {
 
 	/** For serialization. */
 	private static final long serialVersionUID = -3470703747817429120L;
-	//
-	// /** The default font for titles. */
-	// public static final Font DEFAULT_TITLE_FONT
-	// = new Font("SansSerif", Font.BOLD, 18);
-	//
-	// /** The default font for titles. */
-	// public static final Font DEFAULT_SUBTITLE_FONT
-	// = new Font("SansSerif", Font.PLAIN, 12);
+
+	/** The default font for titles. */
+	public static final Font DEFAULT_TITLE_FONT = Font.font("SansSerif", FontWeight.BOLD, FontPosture.REGULAR, 18);
+
+	/** The default font for titles. */
+	public static final Font DEFAULT_SUBTITLE_FONT = Font.font("SansSerif", FontWeight.NORMAL, FontPosture.REGULAR, 12);
+
+	// JAVAFX
 	//
 	// /** The default background image. */
 	// public static final Image DEFAULT_BACKGROUND_IMAGE = null;
-	//
-	// /** The default background image alignment. */
-	// public static final int DEFAULT_BACKGROUND_IMAGE_ALIGNMENT = Align.FIT;
+
+	/** The default background image alignment. */
+	public static final int DEFAULT_BACKGROUND_IMAGE_ALIGNMENT = Align.FIT;
 
 	/** The default background image alpha. */
 	public static final float DEFAULT_BACKGROUND_IMAGE_ALPHA = 0.5f;
+
+	// JAVAFX
 	//
 	// /**
 	// * The key for a rendering hint that can suppress the generation of a
@@ -291,16 +300,16 @@ public class JFreeChart implements Drawable,
 
 	/** The padding between the chart border and the chart drawing area. */
 	private RectangleInsets padding;
-	//
-	// /** The chart title (optional). */
-	// private TextTitle title;
-	//
-	// /**
-	// * The chart subtitles (zero, one or many). This field should never be
-	// * <code>null</code>.
-	// */
-	// private List<Title> subtitles;
-	//
+
+	/** The chart title (optional). */
+	private TextTitle title;
+
+	/**
+	 * The chart subtitles (zero, one or many). This field should never be
+	 * <code>null</code>.
+	 */
+	private List<Title> subtitles;
+
 	/**
 	 * Draws the visual representation of the data (cannot be null, it is
 	 * required in the constructor).
@@ -310,13 +319,13 @@ public class JFreeChart implements Drawable,
 	//
 	// /** An optional background image for the chart. */
 	// private transient Image backgroundImage; // todo: not serialized yet
-	//
-	// /** The alignment for the background image. */
-	// private int backgroundImageAlignment = Align.FIT;
-	//
-	// /** The alpha transparency for the background image. */
-	// private float backgroundImageAlpha = 0.5f;
-	//
+
+	/** The alignment for the background image. */
+	private int backgroundImageAlignment = Align.FIT;
+
+	/** The alpha transparency for the background image. */
+	private float backgroundImageAlpha = 0.5f;
+
 	/** Storage for registered change listeners. */
 	private transient EventListenerList changeListeners;
 
@@ -329,22 +338,22 @@ public class JFreeChart implements Drawable,
 	 */
 	private boolean notify;
 
-	//
-	// /**
-	// * Creates a new chart based on the supplied plot. The chart will have
-	// * a legend added automatically, but no title (although you can easily add
-	// * one later).
-	// * <br><br>
-	// * Note that the {@link ChartFactory} class contains a range
-	// * of static methods that will return ready-made charts, and often this
-	// * is a more convenient way to create charts than using this constructor.
-	// *
-	// * @param plot the plot (<code>null</code> not permitted).
-	// */
-	// public JFreeChart(Plot plot) {
-	// this(null, null, plot, true);
-	// }
-	//
+	/**
+	 * Creates a new chart based on the supplied plot. The chart will have a
+	 * legend added automatically, but no title (although you can easily add one
+	 * later). <br>
+	 * <br>
+	 * Note that the {@link ChartFactory} class contains a range of static
+	 * methods that will return ready-made charts, and often this is a more
+	 * convenient way to create charts than using this constructor.
+	 *
+	 * @param plot
+	 *            the plot (<code>null</code> not permitted).
+	 */
+	public JFreeChart(Plot plot) {
+		this(null, null, plot, true);
+	}
+
 	/**
 	 * Creates a new chart with the given title and plot. A default font (
 	 * {@link #DEFAULT_TITLE_FONT}) is used for the title, and the chart will
@@ -360,7 +369,7 @@ public class JFreeChart implements Drawable,
 	 *            the plot (<code>null</code> not permitted).
 	 */
 	public JFreeChart(String title, Plot plot) {
-		this(title, /* JAVAFX JFreeChart.DEFAULT_TITLE_FONT, */plot, true);
+		this(title, JFreeChart.DEFAULT_TITLE_FONT, plot, true);
 	}
 
 	/**
@@ -384,7 +393,7 @@ public class JFreeChart implements Drawable,
 	 *            a flag indicating whether or not a legend should be created
 	 *            for the chart.
 	 */
-	public JFreeChart(String title, /* JAVAFX Font titleFont, */Plot plot,
+	public JFreeChart(String title, Font titleFont, Plot plot,
 			boolean createLegend) {
 
 		ParamChecks.nullNotPermitted(plot, "plot");
@@ -411,8 +420,9 @@ public class JFreeChart implements Drawable,
 		this.plot = plot;
 		plot.addChangeListener(this);
 
+		this.subtitles = new ArrayList<Title>();
+
 		// JAVAFX
-		// this.subtitles = new ArrayList<Title>();
 		//
 		// // create a legend, if requested...
 		// if (createLegend) {
@@ -425,20 +435,22 @@ public class JFreeChart implements Drawable,
 		// legend.addChangeListener(this);
 		// }
 		//
-		// // add the chart title, if one has been specified...
-		// if (title != null) {
-		// if (titleFont == null) {
-		// titleFont = DEFAULT_TITLE_FONT;
-		// }
-		// this.title = new TextTitle(title, titleFont);
-		// this.title.addChangeListener(this);
-		// }
+		// add the chart title, if one has been specified...
+		if (title != null) {
+			if (titleFont == null) {
+				titleFont = DEFAULT_TITLE_FONT;
+			}
+			this.title = new TextTitle(title, titleFont);
+			this.title.addChangeListener(this);
+		}
+		// JAVAFX
 		//
 		// this.backgroundImage = DEFAULT_BACKGROUND_IMAGE;
 		// this.backgroundImageAlignment = DEFAULT_BACKGROUND_IMAGE_ALIGNMENT;
 		// this.backgroundImageAlpha = DEFAULT_BACKGROUND_IMAGE_ALPHA;
 	}
 
+	// JAVAFX
 	//
 	// /**
 	// * Returns the collection of rendering hints for the chart.
@@ -519,92 +531,96 @@ public class JFreeChart implements Drawable,
 	// fireChartChanged();
 	// }
 	//
-	// /**
-	// * Returns the padding between the chart border and the chart drawing
-	// area.
-	// *
-	// * @return The padding (never <code>null</code>).
-	// *
-	// * @see #setPadding(RectangleInsets)
-	// */
-	// public RectangleInsets getPadding() {
-	// return this.padding;
-	// }
-	//
-	// /**
-	// * Sets the padding between the chart border and the chart drawing area,
-	// * and sends a {@link ChartChangeEvent} to all registered listeners.
-	// *
-	// * @param padding the padding (<code>null</code> not permitted).
-	// *
-	// * @see #getPadding()
-	// */
-	// public void setPadding(RectangleInsets padding) {
-	// ParamChecks.nullNotPermitted(padding, "padding");
-	// this.padding = padding;
-	// notifyListeners(new ChartChangeEvent(this));
-	// }
-	//
-	// /**
-	// * Returns the main chart title. Very often a chart will have just one
-	// * title, so we make this case simple by providing accessor methods for
-	// * the main title. However, multiple titles are supported - see the
-	// * {@link #addSubtitle(Title)} method.
-	// *
-	// * @return The chart title (possibly <code>null</code>).
-	// *
-	// * @see #setTitle(TextTitle)
-	// */
-	// public TextTitle getTitle() {
-	// return this.title;
-	// }
-	//
-	// /**
-	// * Sets the main title for the chart and sends a {@link ChartChangeEvent}
-	// * to all registered listeners. If you do not want a title for the
-	// * chart, set it to <code>null</code>. If you want more than one title on
-	// * a chart, use the {@link #addSubtitle(Title)} method.
-	// *
-	// * @param title the title (<code>null</code> permitted).
-	// *
-	// * @see #getTitle()
-	// */
-	// public void setTitle(TextTitle title) {
-	// if (this.title != null) {
-	// this.title.removeChangeListener(this);
-	// }
-	// this.title = title;
-	// if (title != null) {
-	// title.addChangeListener(this);
-	// }
-	// fireChartChanged();
-	// }
-	//
-	// /**
-	// * Sets the chart title and sends a {@link ChartChangeEvent} to all
-	// * registered listeners. This is a convenience method that ends up calling
-	// * the {@link #setTitle(TextTitle)} method. If there is an existing title,
-	// * its text is updated, otherwise a new title using the default font is
-	// * added to the chart. If <code>text</code> is <code>null</code> the chart
-	// * title is set to <code>null</code>.
-	// *
-	// * @param text the title text (<code>null</code> permitted).
-	// *
-	// * @see #getTitle()
-	// */
-	// public void setTitle(String text) {
-	// if (text != null) {
-	// if (this.title == null) {
-	// setTitle(new TextTitle(text, JFreeChart.DEFAULT_TITLE_FONT));
-	// }
-	// else {
-	// this.title.setText(text);
-	// }
-	// }
-	// else {
-	// setTitle((TextTitle) null);
-	// }
-	// }
+	/**
+	 * Returns the padding between the chart border and the chart drawing area.
+	 *
+	 * @return The padding (never <code>null</code>).
+	 *
+	 * @see #setPadding(RectangleInsets)
+	 */
+	public RectangleInsets getPadding() {
+		return this.padding;
+	}
+
+	/**
+	 * Sets the padding between the chart border and the chart drawing area, and
+	 * sends a {@link ChartChangeEvent} to all registered listeners.
+	 *
+	 * @param padding
+	 *            the padding (<code>null</code> not permitted).
+	 *
+	 * @see #getPadding()
+	 */
+	public void setPadding(RectangleInsets padding) {
+		ParamChecks.nullNotPermitted(padding, "padding");
+		this.padding = padding;
+		notifyListeners(new ChartChangeEvent(this));
+	}
+
+	/**
+	 * Returns the main chart title. Very often a chart will have just one
+	 * title, so we make this case simple by providing accessor methods for the
+	 * main title. However, multiple titles are supported - see the
+	 * {@link #addSubtitle(Title)} method.
+	 *
+	 * @return The chart title (possibly <code>null</code>).
+	 *
+	 * @see #setTitle(TextTitle)
+	 */
+	public TextTitle getTitle() {
+		return this.title;
+	}
+
+	/**
+	 * Sets the main title for the chart and sends a {@link ChartChangeEvent} to
+	 * all registered listeners. If you do not want a title for the chart, set
+	 * it to <code>null</code>. If you want more than one title on a chart, use
+	 * the {@link #addSubtitle(Title)} method.
+	 *
+	 * @param title
+	 *            the title (<code>null</code> permitted).
+	 *
+	 * @see #getTitle()
+	 */
+	public void setTitle(TextTitle title) {
+		if (this.title != null) {
+			this.title.removeChangeListener(this);
+		}
+		this.title = title;
+		if (title != null) {
+			title.addChangeListener(this);
+		}
+		fireChartChanged();
+	}
+
+	/**
+	 * Sets the chart title and sends a {@link ChartChangeEvent} to all
+	 * registered listeners. This is a convenience method that ends up calling
+	 * the {@link #setTitle(TextTitle)} method. If there is an existing title,
+	 * its text is updated, otherwise a new title using the default font is
+	 * added to the chart. If <code>text</code> is <code>null</code> the chart
+	 * title is set to <code>null</code>.
+	 *
+	 * @param text
+	 *            the title text (<code>null</code> permitted).
+	 *
+	 * @see #getTitle()
+	 */
+	public void setTitle(String text) {
+		if (text != null) {
+			if (this.title == null) {
+				setTitle(new TextTitle(text, JFreeChart.DEFAULT_TITLE_FONT));
+			}
+			else {
+				this.title.setText(text);
+			}
+		}
+		else {
+			setTitle((TextTitle) null);
+		}
+	}
+
+	// JAVAFX
 	//
 	// /**
 	// * Adds a legend to the plot and sends a {@link ChartChangeEvent} to all
@@ -663,143 +679,145 @@ public class JFreeChart implements Drawable,
 	// removeSubtitle(getLegend());
 	// }
 	//
-	// /**
-	// * Returns the list of subtitles for the chart.
-	// *
-	// * @return The subtitle list (possibly empty, but never
-	// <code>null</code>).
-	// *
-	// * @see #setSubtitles(List)
-	// */
-	// public List<Title> getSubtitles() {
-	// return new ArrayList<Title>(this.subtitles);
-	// }
-	//
-	// /**
-	// * Sets the title list for the chart (completely replaces any existing
-	// * titles) and sends a {@link ChartChangeEvent} to all registered
-	// * listeners.
-	// *
-	// * @param subtitles the new list of subtitles (<code>null</code> not
-	// * permitted).
-	// *
-	// * @see #getSubtitles()
-	// */
-	// public void setSubtitles(List<? extends Title> subtitles) {
-	// if (subtitles == null) {
-	// throw new NullPointerException("Null 'subtitles' argument.");
-	// }
-	// setNotify(false);
-	// clearSubtitles();
-	// for (Title t : subtitles) {
-	// if (t != null) {
-	// addSubtitle(t);
-	// }
-	// }
-	// setNotify(true); // this fires a ChartChangeEvent
-	// }
-	//
-	// /**
-	// * Returns the number of titles for the chart.
-	// *
-	// * @return The number of titles for the chart.
-	// *
-	// * @see #getSubtitles()
-	// */
-	// public int getSubtitleCount() {
-	// return this.subtitles.size();
-	// }
-	//
-	// /**
-	// * Returns a chart subtitle.
-	// *
-	// * @param index the index of the chart subtitle (zero based).
-	// *
-	// * @return A chart subtitle.
-	// *
-	// * @see #addSubtitle(Title)
-	// */
-	// public Title getSubtitle(int index) {
-	// if ((index < 0) || (index >= getSubtitleCount())) {
-	// throw new IllegalArgumentException("Index out of range.");
-	// }
-	// return this.subtitles.get(index);
-	// }
-	//
-	// /**
-	// * Adds a subtitle to the chart and sends a change event to all
-	// * registered listeners.
-	// *
-	// * @param subtitle the subtitle (<code>null</code> not permitted).
-	// */
-	// public void addSubtitle(String subtitle) {
-	// addSubtitle(new TextTitle(subtitle, DEFAULT_SUBTITLE_FONT));
-	// }
-	//
-	// /**
-	// * Adds a chart subtitle, and notifies registered listeners that the chart
-	// * has been modified.
-	// *
-	// * @param subtitle the subtitle (<code>null</code> not permitted).
-	// *
-	// * @see #getSubtitle(int)
-	// */
-	// public void addSubtitle(Title subtitle) {
-	// ParamChecks.nullNotPermitted(subtitle, "subtitle");
-	// this.subtitles.add(subtitle);
-	// subtitle.addChangeListener(this);
-	// fireChartChanged();
-	// }
-	//
-	// /**
-	// * Adds a subtitle at a particular position in the subtitle list, and
-	// sends
-	// * a {@link ChartChangeEvent} to all registered listeners.
-	// *
-	// * @param index the index (in the range 0 to {@link #getSubtitleCount()}).
-	// * @param subtitle the subtitle to add (<code>null</code> not permitted).
-	// *
-	// * @since 1.0.6
-	// */
-	// public void addSubtitle(int index, Title subtitle) {
-	// if (index < 0 || index > getSubtitleCount()) {
-	// throw new IllegalArgumentException(
-	// "The 'index' argument is out of range.");
-	// }
-	// ParamChecks.nullNotPermitted(subtitle, "subtitle");
-	// this.subtitles.add(index, subtitle);
-	// subtitle.addChangeListener(this);
-	// fireChartChanged();
-	// }
-	//
-	// /**
-	// * Clears all subtitles from the chart and sends a {@link
-	// ChartChangeEvent}
-	// * to all registered listeners.
-	// *
-	// * @see #addSubtitle(Title)
-	// */
-	// public void clearSubtitles() {
-	// for (Title t : this.subtitles) {
-	// t.removeChangeListener(this);
-	// }
-	// this.subtitles.clear();
-	// fireChartChanged();
-	// }
-	//
-	// /**
-	// * Removes the specified subtitle and sends a {@link ChartChangeEvent} to
-	// * all registered listeners.
-	// *
-	// * @param title the title.
-	// *
-	// * @see #addSubtitle(Title)
-	// */
-	// public void removeSubtitle(Title title) {
-	// this.subtitles.remove(title);
-	// fireChartChanged();
-	// }
-	//
+	/**
+	 * Returns the list of subtitles for the chart.
+	 *
+	 * @return The subtitle list (possibly empty, but never <code>null</code>).
+	 *
+	 * @see #setSubtitles(List)
+	 */
+	public List<Title> getSubtitles() {
+		return new ArrayList<Title>(this.subtitles);
+	}
+
+	/**
+	 * Sets the title list for the chart (completely replaces any existing
+	 * titles) and sends a {@link ChartChangeEvent} to all registered listeners.
+	 *
+	 * @param subtitles
+	 *            the new list of subtitles (<code>null</code> not permitted).
+	 *
+	 * @see #getSubtitles()
+	 */
+	public void setSubtitles(List<? extends Title> subtitles) {
+		if (subtitles == null) {
+			throw new NullPointerException("Null 'subtitles' argument.");
+		}
+		setNotify(false);
+		clearSubtitles();
+		for (Title t : subtitles) {
+			if (t != null) {
+				addSubtitle(t);
+			}
+		}
+		setNotify(true); // this fires a ChartChangeEvent
+	}
+
+	/**
+	 * Returns the number of titles for the chart.
+	 *
+	 * @return The number of titles for the chart.
+	 *
+	 * @see #getSubtitles()
+	 */
+	public int getSubtitleCount() {
+		return this.subtitles.size();
+	}
+
+	/**
+	 * Returns a chart subtitle.
+	 *
+	 * @param index
+	 *            the index of the chart subtitle (zero based).
+	 *
+	 * @return A chart subtitle.
+	 *
+	 * @see #addSubtitle(Title)
+	 */
+	public Title getSubtitle(int index) {
+		if ((index < 0) || (index >= getSubtitleCount())) {
+			throw new IllegalArgumentException("Index out of range.");
+		}
+		return this.subtitles.get(index);
+	}
+
+	/**
+	 * Adds a subtitle to the chart and sends a change event to all registered
+	 * listeners.
+	 *
+	 * @param subtitle
+	 *            the subtitle (<code>null</code> not permitted).
+	 */
+	public void addSubtitle(String subtitle) {
+		addSubtitle(new TextTitle(subtitle, DEFAULT_SUBTITLE_FONT));
+	}
+
+	/**
+	 * Adds a chart subtitle, and notifies registered listeners that the chart
+	 * has been modified.
+	 *
+	 * @param subtitle
+	 *            the subtitle (<code>null</code> not permitted).
+	 *
+	 * @see #getSubtitle(int)
+	 */
+	public void addSubtitle(Title subtitle) {
+		ParamChecks.nullNotPermitted(subtitle, "subtitle");
+		this.subtitles.add(subtitle);
+		subtitle.addChangeListener(this);
+		fireChartChanged();
+	}
+
+	/**
+	 * Adds a subtitle at a particular position in the subtitle list, and sends
+	 * a {@link ChartChangeEvent} to all registered listeners.
+	 *
+	 * @param index
+	 *            the index (in the range 0 to {@link #getSubtitleCount()}).
+	 * @param subtitle
+	 *            the subtitle to add (<code>null</code> not permitted).
+	 *
+	 * @since 1.0.6
+	 */
+	public void addSubtitle(int index, Title subtitle) {
+		if (index < 0 || index > getSubtitleCount()) {
+			throw new IllegalArgumentException(
+					"The 'index' argument is out of range.");
+		}
+		ParamChecks.nullNotPermitted(subtitle, "subtitle");
+		this.subtitles.add(index, subtitle);
+		subtitle.addChangeListener(this);
+		fireChartChanged();
+	}
+
+	/**
+	 * Clears all subtitles from the chart and sends a {@link ChartChangeEvent}
+	 * to all registered listeners.
+	 *
+	 * @see #addSubtitle(Title)
+	 */
+	public void clearSubtitles() {
+		for (Title t : this.subtitles) {
+			t.removeChangeListener(this);
+		}
+		this.subtitles.clear();
+		fireChartChanged();
+	}
+
+	/**
+	 * Removes the specified subtitle and sends a {@link ChartChangeEvent} to
+	 * all registered listeners.
+	 *
+	 * @param title
+	 *            the title.
+	 *
+	 * @see #addSubtitle(Title)
+	 */
+	public void removeSubtitle(Title title) {
+		this.subtitles.remove(title);
+		fireChartChanged();
+	}
+
 	/**
 	 * Returns the plot for the chart. The plot is a class responsible for
 	 * coordinating the visual representation of the data, including the axes
@@ -813,6 +831,7 @@ public class JFreeChart implements Drawable,
 		return this.plot;
 	}
 
+	// JAVAFX
 	//
 	// /**
 	// * Returns a flag that indicates whether or not anti-aliasing is used when
@@ -935,89 +954,92 @@ public class JFreeChart implements Drawable,
 	// }
 	//
 	// }
-	//
-	// /**
-	// * Returns the background image alignment. Alignment constants are defined
-	// * in the <code>org.jfree.chart.ui.Align</code> class in the JCommon class
-	// * library.
-	// *
-	// * @return The alignment.
-	// *
-	// * @see #setBackgroundImageAlignment(int)
-	// */
-	// public int getBackgroundImageAlignment() {
-	// return this.backgroundImageAlignment;
-	// }
-	//
-	// /**
-	// * Sets the background alignment. Alignment options are defined by the
-	// * {@link org.jfree.chart.ui.Align} class.
-	// *
-	// * @param alignment the alignment.
-	// *
-	// * @see #getBackgroundImageAlignment()
-	// */
-	// public void setBackgroundImageAlignment(int alignment) {
-	// if (this.backgroundImageAlignment != alignment) {
-	// this.backgroundImageAlignment = alignment;
-	// fireChartChanged();
-	// }
-	// }
-	//
-	// /**
-	// * Returns the alpha-transparency for the chart's background image.
-	// *
-	// * @return The alpha-transparency.
-	// *
-	// * @see #setBackgroundImageAlpha(float)
-	// */
-	// public float getBackgroundImageAlpha() {
-	// return this.backgroundImageAlpha;
-	// }
-	//
-	// /**
-	// * Sets the alpha-transparency for the chart's background image.
-	// * Registered listeners are notified that the chart has been changed.
-	// *
-	// * @param alpha the alpha value.
-	// *
-	// * @see #getBackgroundImageAlpha()
-	// */
-	// public void setBackgroundImageAlpha(float alpha) {
-	// if (this.backgroundImageAlpha != alpha) {
-	// this.backgroundImageAlpha = alpha;
-	// fireChartChanged();
-	// }
-	// }
-	//
-	// /**
-	// * Returns a flag that controls whether or not change events are sent to
-	// * registered listeners.
-	// *
-	// * @return A boolean.
-	// *
-	// * @see #setNotify(boolean)
-	// */
-	// public boolean isNotify() {
-	// return this.notify;
-	// }
-	//
-	// /**
-	// * Sets a flag that controls whether or not listeners receive
-	// * {@link ChartChangeEvent} notifications.
-	// *
-	// * @param notify a boolean.
-	// *
-	// * @see #isNotify()
-	// */
-	// public void setNotify(boolean notify) {
-	// this.notify = notify;
-	// // if the flag is being set to true, there may be queued up changes...
-	// if (notify) {
-	// notifyListeners(new ChartChangeEvent(this));
-	// }
-	// }
-	//
+
+	/**
+	 * Returns the background image alignment. Alignment constants are defined
+	 * in the <code>org.jfree.chart.ui.Align</code> class in the JCommon class
+	 * library.
+	 *
+	 * @return The alignment.
+	 *
+	 * @see #setBackgroundImageAlignment(int)
+	 */
+	public int getBackgroundImageAlignment() {
+		return this.backgroundImageAlignment;
+	}
+
+	/**
+	 * Sets the background alignment. Alignment options are defined by the
+	 * {@link org.jfree.chart.ui.Align} class.
+	 *
+	 * @param alignment
+	 *            the alignment.
+	 *
+	 * @see #getBackgroundImageAlignment()
+	 */
+	public void setBackgroundImageAlignment(int alignment) {
+		if (this.backgroundImageAlignment != alignment) {
+			this.backgroundImageAlignment = alignment;
+			fireChartChanged();
+		}
+	}
+
+	/**
+	 * Returns the alpha-transparency for the chart's background image.
+	 *
+	 * @return The alpha-transparency.
+	 *
+	 * @see #setBackgroundImageAlpha(float)
+	 */
+	public float getBackgroundImageAlpha() {
+		return this.backgroundImageAlpha;
+	}
+
+	/**
+	 * Sets the alpha-transparency for the chart's background image. Registered
+	 * listeners are notified that the chart has been changed.
+	 *
+	 * @param alpha
+	 *            the alpha value.
+	 *
+	 * @see #getBackgroundImageAlpha()
+	 */
+	public void setBackgroundImageAlpha(float alpha) {
+		if (this.backgroundImageAlpha != alpha) {
+			this.backgroundImageAlpha = alpha;
+			fireChartChanged();
+		}
+	}
+
+	/**
+	 * Returns a flag that controls whether or not change events are sent to
+	 * registered listeners.
+	 *
+	 * @return A boolean.
+	 *
+	 * @see #setNotify(boolean)
+	 */
+	public boolean isNotify() {
+		return this.notify;
+	}
+
+	/**
+	 * Sets a flag that controls whether or not listeners receive
+	 * {@link ChartChangeEvent} notifications.
+	 *
+	 * @param notify
+	 *            a boolean.
+	 *
+	 * @see #isNotify()
+	 */
+	public void setNotify(boolean notify) {
+		this.notify = notify;
+		// if the flag is being set to true, there may be queued up changes...
+		if (notify) {
+			notifyListeners(new ChartChangeEvent(this));
+		}
+	}
+
 	/**
 	 * Draws the chart on a Java 2D graphics device (such as the screen or a
 	 * printer). This method is the focal point of the entire JFreeChart
@@ -1064,7 +1086,7 @@ public class JFreeChart implements Drawable,
 	 * @param info
 	 *            records info about the drawing (null means collect no info).
 	 */
-	public void draw(GraphicsContext graphicsContext, Rectangle2D chartArea, Point2D anchor,
+	public void draw(GraphicsContext g2, Rectangle2D chartArea, Point2D anchor,
 			ChartRenderingInfo info) {
 
 		notifyListeners(new ChartProgressEvent(this, this,
@@ -1115,38 +1137,40 @@ public class JFreeChart implements Drawable,
 		//
 		// // draw the title and subtitles...
 		Rectangle2D nonTitleArea = chartArea;
-		this.padding.trim(nonTitleArea);
-		//
-		// if (this.title != null && this.title.isVisible()) {
-		// EntityCollection e = drawTitle(this.title, g2, nonTitleArea,
-		// (entities != null));
-		// if (e != null && entities != null) {
-		// entities.addAll(e);
-		// }
-		// }
-		//
-		// // the legend is the first item drawn that requires a lookup of
-		// // series or item colors for the chart, and it is drawn as a chart
-		// // title...
-		//
-		// for (Title currentTitle : this.subtitles) {
-		// if (currentTitle.isVisible()) {
-		// EntityCollection e = drawTitle(currentTitle, g2, nonTitleArea,
-		// (entities != null));
-		// if (e != null && entities != null) {
-		// entities.addAll(e);
-		// }
-		// }
-		// }
-		//
+		nonTitleArea = this.padding.trim2(nonTitleArea);
+
+		if (this.title != null && this.title.isVisible()) {
+			EntityCollection e = drawTitle2(this.title, g2, nonTitleArea,
+					(entities != null));
+			if (e != null && entities != null) {
+				entities.addAll(e);
+			}
+			nonTitleArea = calculateNonTitleArea(this.title, g2, nonTitleArea);
+		}
+
+		// the legend is the first item drawn that requires a lookup of
+		// series or item colors for the chart, and it is drawn as a chart
+		// title...
+
+		for (Title currentTitle : this.subtitles) {
+			if (currentTitle.isVisible()) {
+				EntityCollection e = drawTitle2(currentTitle, g2, nonTitleArea,
+						(entities != null));
+				if (e != null && entities != null) {
+					entities.addAll(e);
+				}
+				nonTitleArea = calculateNonTitleArea(currentTitle, g2, nonTitleArea);
+			}
+		}
+
 		Rectangle2D plotArea = nonTitleArea;
-		//
-		// // draw the plot (axes and data visualisation)
+
+		// draw the plot (axes and data visualisation)
 		PlotRenderingInfo plotInfo = null;
-		// if (info != null) {
-		// plotInfo = info.getPlotInfo();
-		// }
-		this.plot.draw(graphicsContext, plotArea, anchor, null, plotInfo);
+		if (info != null) {
+			plotInfo = info.getPlotInfo();
+		}
+		this.plot.draw(g2, plotArea, anchor, null, plotInfo);
 		//
 		// g2.setClip(savedClip);
 		//
@@ -1154,125 +1178,184 @@ public class JFreeChart implements Drawable,
 				ChartProgressEvent.DRAWING_FINISHED, 100));
 	}
 
-	//
-	// /**
-	// * Creates a rectangle that is aligned to the frame.
-	// *
-	// * @param dimensions the dimensions for the rectangle.
-	// * @param frame the frame to align to.
-	// * @param hAlign the horizontal alignment.
-	// * @param vAlign the vertical alignment.
-	// *
-	// * @return A rectangle.
-	// */
-	// private Rectangle2D createAlignedRectangle2D(Size2D dimensions,
-	// Rectangle2D frame, HorizontalAlignment hAlign,
-	// VerticalAlignment vAlign) {
-	// double x = Double.NaN;
-	// double y = Double.NaN;
-	// if (hAlign == HorizontalAlignment.LEFT) {
-	// x = frame.getX();
-	// }
-	// else if (hAlign == HorizontalAlignment.CENTER) {
-	// x = frame.getCenterX() - (dimensions.width / 2.0);
-	// }
-	// else if (hAlign == HorizontalAlignment.RIGHT) {
-	// x = frame.getMaxX() - dimensions.width;
-	// }
-	// if (vAlign == VerticalAlignment.TOP) {
-	// y = frame.getY();
-	// }
-	// else if (vAlign == VerticalAlignment.CENTER) {
-	// y = frame.getCenterY() - (dimensions.height / 2.0);
-	// }
-	// else if (vAlign == VerticalAlignment.BOTTOM) {
-	// y = frame.getMaxY() - dimensions.height;
-	// }
-	//
-	// return new Rectangle2D.Double(x, y, dimensions.width,
-	// dimensions.height);
-	// }
-	//
-	// /**
-	// * Draws a title. The title should be drawn at the top, bottom, left or
-	// * right of the specified area, and the area should be updated to reflect
-	// * the amount of space used by the title.
-	// *
-	// * @param t the title (<code>null</code> not permitted).
-	// * @param g2 the graphics device (<code>null</code> not permitted).
-	// * @param area the chart area, excluding any existing titles
-	// * (<code>null</code> not permitted).
-	// * @param entities a flag that controls whether or not an entity
-	// * collection is returned for the title.
-	// *
-	// * @return An entity collection for the title (possibly
-	// <code>null</code>).
-	// */
-	// protected EntityCollection drawTitle(Title t, Graphics2D g2,
-	// Rectangle2D area, boolean entities) {
-	//
-	// ParamChecks.nullNotPermitted(t, "t");
-	// ParamChecks.nullNotPermitted(area, "area");
-	// Rectangle2D titleArea;
-	// RectangleEdge position = t.getPosition();
-	// double ww = area.getWidth();
-	// if (ww <= 0.0) {
-	// return null;
-	// }
-	// double hh = area.getHeight();
-	// if (hh <= 0.0) {
-	// return null;
-	// }
-	// RectangleConstraint constraint = new RectangleConstraint(ww,
-	// new Range(0.0, ww), LengthConstraintType.RANGE, hh,
-	// new Range(0.0, hh), LengthConstraintType.RANGE);
-	// Object retValue;
-	// BlockParams p = new BlockParams();
-	// p.setGenerateEntities(entities);
-	// if (position == RectangleEdge.TOP) {
-	// Size2D size = t.arrange(g2, constraint);
-	// titleArea = createAlignedRectangle2D(size, area,
-	// t.getHorizontalAlignment(), VerticalAlignment.TOP);
-	// retValue = t.draw(g2, titleArea, p);
-	// area.setRect(area.getX(), Math.min(area.getY() + size.height,
-	// area.getMaxY()), area.getWidth(), Math.max(area.getHeight()
-	// - size.height, 0));
-	// }
-	// else if (position == RectangleEdge.BOTTOM) {
-	// Size2D size = t.arrange(g2, constraint);
-	// titleArea = createAlignedRectangle2D(size, area,
-	// t.getHorizontalAlignment(), VerticalAlignment.BOTTOM);
-	// retValue = t.draw(g2, titleArea, p);
-	// area.setRect(area.getX(), area.getY(), area.getWidth(),
-	// area.getHeight() - size.height);
-	// }
-	// else if (position == RectangleEdge.RIGHT) {
-	// Size2D size = t.arrange(g2, constraint);
-	// titleArea = createAlignedRectangle2D(size, area,
-	// HorizontalAlignment.RIGHT, t.getVerticalAlignment());
-	// retValue = t.draw(g2, titleArea, p);
-	// area.setRect(area.getX(), area.getY(), area.getWidth()
-	// - size.width, area.getHeight());
-	// }
-	//
-	// else if (position == RectangleEdge.LEFT) {
-	// Size2D size = t.arrange(g2, constraint);
-	// titleArea = createAlignedRectangle2D(size, area,
-	// HorizontalAlignment.LEFT, t.getVerticalAlignment());
-	// retValue = t.draw(g2, titleArea, p);
-	// area.setRect(area.getX() + size.width, area.getY(), area.getWidth()
-	// - size.width, area.getHeight());
-	// }
-	// else {
-	// throw new RuntimeException("Unrecognised title position.");
-	// }
-	// EntityCollection result = null;
-	// if (retValue instanceof EntityBlockResult) {
-	// EntityBlockResult ebr = (EntityBlockResult) retValue;
-	// result = ebr.getEntityCollection();
-	// }
-	// return result;
-	// }
+	/**
+	 * Creates a rectangle that is aligned to the frame.
+	 *
+	 * @param dimensions
+	 *            the dimensions for the rectangle.
+	 * @param frame
+	 *            the frame to align to.
+	 * @param hAlign
+	 *            the horizontal alignment.
+	 * @param vAlign
+	 *            the vertical alignment.
+	 *
+	 * @return A rectangle.
+	 */
+	private Rectangle2D createAlignedRectangle2D(Size2D dimensions,
+			Rectangle2D frame, HorizontalAlignment hAlign,
+			VerticalAlignment vAlign) {
+		double x = Double.NaN;
+		double y = Double.NaN;
+		if (hAlign == HorizontalAlignment.LEFT) {
+			x = frame.getMinX();
+		}
+		else if (hAlign == HorizontalAlignment.CENTER) {
+			x = getCenterX(frame) - (dimensions.width / 2.0);
+		}
+		else if (hAlign == HorizontalAlignment.RIGHT) {
+			x = frame.getMaxX() - dimensions.width;
+		}
+		if (vAlign == VerticalAlignment.TOP) {
+			y = frame.getMinY();
+		}
+		else if (vAlign == VerticalAlignment.CENTER) {
+			y = getCenterY(frame) - (dimensions.height / 2.0);
+		}
+		else if (vAlign == VerticalAlignment.BOTTOM) {
+			y = frame.getMaxY() - dimensions.height;
+		}
+
+		return new Rectangle2D(x, y, dimensions.width,
+				dimensions.height);
+	}
+
+	/**
+	 * Draws a title. The title should be drawn at the top, bottom, left or
+	 * right of the specified area, and the area should be updated to reflect
+	 * the amount of space used by the title.
+	 *
+	 * @param t
+	 *            the title (<code>null</code> not permitted).
+	 * @param g2
+	 *            the graphics device (<code>null</code> not permitted).
+	 * @param area
+	 *            the chart area, excluding any existing titles (
+	 *            <code>null</code> not permitted).
+	 * @param entities
+	 *            a flag that controls whether or not an entity collection is
+	 *            returned for the title.
+	 *
+	 * @return An entity collection for the title (possibly <code>null</code>).
+	 */
+	protected EntityCollection drawTitle2(Title t, GraphicsContext g2,
+			Rectangle2D area, boolean entities) {
+		// changed method name, because area is now immutable
+
+		ParamChecks.nullNotPermitted(t, "t");
+		ParamChecks.nullNotPermitted(area, "area");
+		Rectangle2D titleArea;
+		RectangleEdge position = t.getPosition();
+		double ww = area.getWidth();
+		if (ww <= 0.0) {
+			return null;
+		}
+		double hh = area.getHeight();
+		if (hh <= 0.0) {
+			return null;
+		}
+		RectangleConstraint constraint = new RectangleConstraint(ww,
+				new Range(0.0, ww), LengthConstraintType.RANGE, hh,
+				new Range(0.0, hh), LengthConstraintType.RANGE);
+		Object retValue;
+		BlockParams p = new BlockParams();
+		p.setGenerateEntities(entities);
+		if (position == RectangleEdge.TOP) {
+			Size2D size = t.arrange(g2, constraint);
+			titleArea = createAlignedRectangle2D(size, area,
+					t.getHorizontalAlignment(), VerticalAlignment.TOP);
+			retValue = t.draw(g2, titleArea, p);
+		}
+		else if (position == RectangleEdge.BOTTOM) {
+			Size2D size = t.arrange(g2, constraint);
+			titleArea = createAlignedRectangle2D(size, area,
+					t.getHorizontalAlignment(), VerticalAlignment.BOTTOM);
+			retValue = t.draw(g2, titleArea, p);
+		}
+		else if (position == RectangleEdge.RIGHT) {
+			Size2D size = t.arrange(g2, constraint);
+			titleArea = createAlignedRectangle2D(size, area,
+					HorizontalAlignment.RIGHT, t.getVerticalAlignment());
+			retValue = t.draw(g2, titleArea, p);
+		}
+
+		else if (position == RectangleEdge.LEFT) {
+			Size2D size = t.arrange(g2, constraint);
+			titleArea = createAlignedRectangle2D(size, area,
+					HorizontalAlignment.LEFT, t.getVerticalAlignment());
+			retValue = t.draw(g2, titleArea, p);
+		}
+		else {
+			throw new RuntimeException("Unrecognised title position.");
+		}
+		EntityCollection result = null;
+		if (retValue instanceof EntityBlockResult) {
+			EntityBlockResult ebr = (EntityBlockResult) retValue;
+			result = ebr.getEntityCollection();
+		}
+		return result;
+	}
+
+	/**
+	 * Calculates area that will be available for drawing non-title content
+	 * 
+	 * @param t
+	 *            the title (<code>null</code> not permitted).
+	 * @param g2
+	 *            the graphics device (<code>null</code> not permitted).
+	 * @param area
+	 *            the chart area, excluding any existing titles (
+	 *            <code>null</code> not permitted).
+	 * @param entities
+	 * @return
+	 */
+	protected Rectangle2D calculateNonTitleArea(Title t, GraphicsContext g2,
+			Rectangle2D area) {
+
+		ParamChecks.nullNotPermitted(t, "t");
+		ParamChecks.nullNotPermitted(area, "area");
+		RectangleEdge position = t.getPosition();
+
+		EnumSet<RectangleEdge> acceptedTitlePositions = EnumSet.of(
+				RectangleEdge.TOP, RectangleEdge.BOTTOM, RectangleEdge.LEFT, RectangleEdge.RIGHT);
+		if (!acceptedTitlePositions.contains(position)) {
+			throw new RuntimeException("Unrecognised title position.");
+		}
+
+		double ww = area.getWidth();
+		if (ww <= 0.0) {
+			return null;
+		}
+		double hh = area.getHeight();
+		if (hh <= 0.0) {
+			return null;
+		}
+		RectangleConstraint constraint = new RectangleConstraint(ww,
+				new Range(0.0, ww), LengthConstraintType.RANGE, hh,
+				new Range(0.0, hh), LengthConstraintType.RANGE);
+		Rectangle2D titleArea = Rectangle2D.EMPTY;
+		Size2D size = t.arrange(g2, constraint);
+		if (position == RectangleEdge.TOP) {
+			titleArea = new Rectangle2D(area.getMinX(), Math.min(area.getMinY() + size.height,
+					area.getMaxY()), area.getWidth(), Math.max(area.getHeight()
+					- size.height, 0));
+		}
+		else if (position == RectangleEdge.BOTTOM) {
+			titleArea = new Rectangle2D(area.getMinX(), area.getMinY(), area.getWidth(),
+					area.getHeight() - size.height);
+		}
+		else if (position == RectangleEdge.RIGHT) {
+			titleArea = new Rectangle2D(area.getMinX(), area.getMinY(), area.getWidth()
+					- size.width, area.getHeight());
+		}
+
+		else if (position == RectangleEdge.LEFT) {
+			titleArea = new Rectangle2D(area.getMinX() + size.width, area.getMinY(), area.getWidth()
+					- size.width, area.getHeight());
+		}
+		return titleArea;
+	}
+
 	//
 	// /**
 	// * Creates and returns a buffered image into which the chart has been
@@ -1477,19 +1560,18 @@ public class JFreeChart implements Drawable,
 
 	}
 
-	// JAVAFX
-	//
-	// /**
-	// * Receives notification that a chart title has changed, and passes this
-	// * on to registered listeners.
-	// *
-	// * @param event information about the chart title change.
-	// */
-	// @Override
-	// public void titleChanged(TitleChangeEvent event) {
-	// event.setChart(this);
-	// notifyListeners(event);
-	// }
+	/**
+	 * Receives notification that a chart title has changed, and passes this on
+	 * to registered listeners.
+	 *
+	 * @param event
+	 *            information about the chart title change.
+	 */
+	@Override
+	public void titleChanged(TitleChangeEvent event) {
+		event.setChart(this);
+		notifyListeners(event);
+	}
 
 	/**
 	 * Receives notification that the plot has changed, and passes this on to

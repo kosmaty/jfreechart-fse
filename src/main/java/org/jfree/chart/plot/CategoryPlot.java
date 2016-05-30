@@ -3677,12 +3677,12 @@ public class CategoryPlot extends Plot implements
 
 		// adjust the drawing area for the plot insets (if any)...
 		RectangleInsets insets = getInsets();
-		area = insets.trim(area);
+		area = insets.trim2(area);
 
 		// calculate the data area...
 		AxisSpace space = calculateAxisSpace(g2, area);
 		Rectangle2D dataArea = space.shrink(area);
-		this.axisOffset.trim(dataArea);
+		dataArea = this.axisOffset.trim2(dataArea);
 		dataArea = integerise(dataArea);
 		if (ShapeUtils.isEmpty(dataArea)) {
 			return;

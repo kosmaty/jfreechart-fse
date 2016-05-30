@@ -253,25 +253,24 @@ public class TextBlock implements Serializable {
 			TextBlockAnchor anchor, float rotateX, float rotateY,
 			double angle) {
 
-		// JAVAFX
-		// Size2D d = calculateDimensions(g2);
-		// float[] offsets = calculateOffsets(anchor, d.getWidth(),
-		// d.getHeight());
-		// float yCursor = 0.0f;
-		// for (TextLine line : this.lines) {
-		// Size2D dimension = line.calculateDimensions(g2);
-		// float lineOffset = 0.0f;
-		// if (this.lineAlignment == HorizontalAlignment.CENTER) {
-		// lineOffset = (float) (d.getWidth() - dimension.getWidth())
-		// / 2.0f;
-		// } else if (this.lineAlignment == HorizontalAlignment.RIGHT) {
-		// lineOffset = (float) (d.getWidth() - dimension.getWidth());
-		// }
-		// line.draw(g2, anchorX + offsets[0] + lineOffset,
-		// anchorY + offsets[1] + yCursor, TextAnchor.TOP_LEFT,
-		// rotateX, rotateY, angle);
-		// yCursor = yCursor + (float) dimension.getHeight();
-		// }
+		Size2D d = calculateDimensions(g2);
+		float[] offsets = calculateOffsets(anchor, d.getWidth(),
+				d.getHeight());
+		float yCursor = 0.0f;
+		for (TextLine line : this.lines) {
+			Size2D dimension = line.calculateDimensions(g2);
+			float lineOffset = 0.0f;
+			if (this.lineAlignment == HorizontalAlignment.CENTER) {
+				lineOffset = (float) (d.getWidth() - dimension.getWidth())
+						/ 2.0f;
+			} else if (this.lineAlignment == HorizontalAlignment.RIGHT) {
+				lineOffset = (float) (d.getWidth() - dimension.getWidth());
+			}
+			line.draw(g2, anchorX + offsets[0] + lineOffset,
+					anchorY + offsets[1] + yCursor, TextAnchor.TOP_LEFT,
+					rotateX, rotateY, angle);
+			yCursor = yCursor + (float) dimension.getHeight();
+		}
 
 	}
 

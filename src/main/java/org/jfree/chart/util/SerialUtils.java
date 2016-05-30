@@ -72,6 +72,9 @@ import java.util.Map;
 
 import javafx.geometry.Point2D;
 import javafx.scene.paint.Paint;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontPosture;
+import javafx.scene.text.FontWeight;
 
 /**
  * A class containing useful utility methods relating to serialization.
@@ -167,6 +170,97 @@ public class SerialUtils {
 			// stream.writeObject(gp.getColor2());
 			// stream.writeBoolean(gp.isCyclic());
 			// }
+		} else {
+			stream.writeBoolean(true);
+		}
+	}
+
+	public static Font readFont(ObjectInputStream stream)
+			throws IOException, ClassNotFoundException {
+		ParamChecks.nullNotPermitted(stream, "stream");
+		Font result = null;
+		boolean isNull = stream.readBoolean();
+		if (!isNull) {
+			String family = (String) stream.readObject();
+			FontWeight weight = readFontWeight(stream);
+			FontPosture posture = readFontPosture(stream);
+			double size = stream.readDouble();
+
+			result = Font.font(family, weight, posture, size);
+		}
+		return result;
+
+	}
+
+	private static FontWeight readFontWeight(ObjectInputStream stream) throws IOException, ClassNotFoundException {
+		FontWeight weight = null;
+		boolean fontWeightIsNull = stream.readBoolean();
+		if (!fontWeightIsNull) {
+			weight = (FontWeight) stream.readObject();
+		}
+		return weight;
+	}
+
+	private static FontPosture readFontPosture(ObjectInputStream stream) throws IOException, ClassNotFoundException {
+		FontPosture posture = null;
+		boolean fontPostureIsNull = stream.readBoolean();
+		if (!fontPostureIsNull) {
+			posture = (FontPosture) stream.readObject();
+		}
+		return posture;
+	}
+
+	public static void writeFont(Font font, ObjectOutputStream stream)
+			throws IOException {
+
+		ParamChecks.nullNotPermitted(stream, "stream");
+		if (font != null) {
+			stream.writeBoolean(false);
+			stream.writeObject(font.getFamily());
+
+			String[] fontStyles = font.getStyle().split(" ");
+			writeFontWeight(fontStyles, stream);
+			writeFontPosture(fontStyles, stream);
+
+			stream.writeDouble(font.getSize());
+
+		} else {
+			stream.writeBoolean(true);
+		}
+	}
+
+	private static void writeFontWeight(String[] fontStyles, ObjectOutputStream stream) throws IOException {
+		FontWeight weight = null;
+		for (String style : fontStyles)
+		{
+			weight = FontWeight.findByName(style.toLowerCase());
+			if (weight != null)
+			{
+				break;
+			}
+		}
+		if (weight != null) {
+			stream.writeBoolean(false);
+			stream.writeObject(weight);
+		} else {
+			stream.writeBoolean(true);
+		}
+	}
+
+	private static void writeFontPosture(String[] fontStyles, ObjectOutputStream stream) throws IOException {
+
+		FontPosture posture = null;
+		for (String style : fontStyles)
+		{
+			posture = FontPosture.findByName(style.toLowerCase());
+			if (posture != null)
+			{
+				break;
+			}
+		}
+		if (posture != null) {
+			stream.writeBoolean(false);
+			stream.writeObject(posture);
 		} else {
 			stream.writeBoolean(true);
 		}

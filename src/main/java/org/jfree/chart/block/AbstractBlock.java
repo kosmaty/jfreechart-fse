@@ -528,8 +528,7 @@ public class AbstractBlock implements Cloneable, Serializable {
 	 */
 	protected Rectangle2D trimMargin(Rectangle2D area) {
 		// defer argument checking...
-		this.margin.trim(area);
-		return area;
+		return this.margin.trim2(area);
 	}
 
 	/**
@@ -542,8 +541,7 @@ public class AbstractBlock implements Cloneable, Serializable {
 	 */
 	protected Rectangle2D trimBorder(Rectangle2D area) {
 		// defer argument checking...
-		this.frame.getInsets().trim(area);
-		return area;
+		return this.frame.getInsets().trim2(area);
 	}
 
 	/**
@@ -557,8 +555,7 @@ public class AbstractBlock implements Cloneable, Serializable {
 	 */
 	protected Rectangle2D trimPadding(Rectangle2D area) {
 		// defer argument checking...
-		this.padding.trim(area);
-		return area;
+		return this.padding.trim2(area);
 	}
 
 	/**

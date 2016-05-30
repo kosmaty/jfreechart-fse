@@ -3314,11 +3314,11 @@ public class XYPlot extends Plot implements ValueAxisPlot, Pannable, Zoomable,
 
 		// adjust the drawing area for the plot insets (if any)...
 		RectangleInsets insets = getInsets();
-		area = insets.trim(area);
+		area = insets.trim2(area);
 
 		AxisSpace space = calculateAxisSpace(g2, area);
 		Rectangle2D dataArea = space.shrink(area);
-		dataArea = this.axisOffset.trim(dataArea);
+		dataArea = this.axisOffset.trim2(dataArea);
 
 		dataArea = integerise(dataArea);
 		if (isEmpty(dataArea)) {

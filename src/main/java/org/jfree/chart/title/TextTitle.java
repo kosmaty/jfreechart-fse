@@ -153,7 +153,7 @@ public class TextTitle extends Title implements Serializable, Cloneable,
 	private String text;
 
 	/** The font used to display the title. */
-	private Font font;
+	private transient Font font;
 
 	/** The text alignment. */
 	private HorizontalAlignment textAlignment;
@@ -764,6 +764,7 @@ public class TextTitle extends Title implements Serializable, Cloneable,
 		Rectangle2D titleArea = area;
 		g2.setFont(this.font);
 		g2.setFill(this.paint);
+		g2.setStroke(this.paint);
 		TextBlockAnchor anchor = null;
 		float x = 0.0f;
 		HorizontalAlignment horizontalAlignment = getHorizontalAlignment();
@@ -936,6 +937,7 @@ public class TextTitle extends Title implements Serializable, Cloneable,
 		stream.defaultWriteObject();
 		SerialUtils.writePaint(this.paint, stream);
 		SerialUtils.writePaint(this.backgroundPaint, stream);
+		SerialUtils.writeFont(this.font, stream);
 	}
 
 	/**
@@ -954,6 +956,7 @@ public class TextTitle extends Title implements Serializable, Cloneable,
 		stream.defaultReadObject();
 		this.paint = SerialUtils.readPaint(stream);
 		this.backgroundPaint = SerialUtils.readPaint(stream);
+		this.font = SerialUtils.readFont(stream);
 	}
 
 }

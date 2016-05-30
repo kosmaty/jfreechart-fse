@@ -379,7 +379,7 @@ public class TextUtilities {
 				textBounds.getWidth(), textBounds.getHeight());
 		// JAVAFX
 		// if (!drawStringsWithFontAttributes) {
-		g2.strokeText(text, x + adjust[0], y + adjust[1]);
+		g2.fillText(text, x + adjust[0], y + adjust[1]);
 		// } else {
 		// AttributedString as = new AttributedString(text,
 		// g2.getFont().getAttributes());
@@ -592,7 +592,7 @@ public class TextUtilities {
 		// tl.draw(g2, textX, textY);
 		// } else {
 		// if (!drawStringsWithFontAttributes) {
-		g2.strokeText(text, textX, textY);
+		g2.fillText(text, textX, textY);
 
 		// JAVAFX
 		// } else {
