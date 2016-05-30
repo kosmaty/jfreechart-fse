@@ -152,7 +152,7 @@ public class StandardEntityCollection implements EntityCollection,
 		int entityCount = this.entities.size();
 		for (int i = entityCount - 1; i >= 0; i--) {
 			ChartEntity entity = this.entities.get(i);
-			if (entity.getArea().contains(x, y)) {
+			if (entity.getArea().contains((float) x, (float) y)) {
 				return entity;
 			}
 		}

@@ -62,6 +62,9 @@ package org.jfree.chart.util;
 
 import org.jfree.geometry.Line2D;
 
+import com.sun.javafx.geom.transform.AffineBase;
+import com.sun.javafx.geom.transform.BaseTransform;
+
 // 
 // import java.awt.Graphics2D;
 // import java.awt.Polygon;
@@ -82,8 +85,11 @@ import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.shape.Line;
-import javafx.scene.shape.Rectangle;
-import javafx.scene.shape.Shape;
+
+import com.sun.javafx.geom.PathIterator;
+import com.sun.javafx.geom.Rectangle;
+import com.sun.javafx.geom.RoundRectangle2D;
+import com.sun.javafx.geom.Shape;
 
 /**
  * Utility methods for {@link Shape} objects.
@@ -319,16 +325,14 @@ public class ShapeUtils {
 	 *
 	 * @return The translated shape.
 	 */
-	public static com.sun.javafx.geom.Shape createTranslatedShape(com.sun.javafx.geom.Shape shape, double transX,
+	public static Shape createTranslatedShape(Shape shape, double transX,
 			double transY) {
-		// JAVAFX
-		// if (shape == null) {
-		// throw new IllegalArgumentException("Null 'shape' argument.");
-		// }
-		// AffineTransform transform = AffineTransform.getTranslateInstance(
-		// transX, transY);
-		// return transform.createTransformedShape(shape);
-		return shape; // JAVAFX fake result
+		if (shape == null) {
+			throw new IllegalArgumentException("Null 'shape' argument.");
+		}
+		BaseTransform transform = BaseTransform.getTranslateInstance(
+				transX, transY);
+		return transform.createTransformedShape(shape);
 	}
 
 	//
@@ -622,42 +626,66 @@ public class ShapeUtils {
 	}
 
 	public static Shape asShape(Rectangle2D rectangle) {
-		return new Rectangle(rectangle.getMinX(), rectangle.getMinY(), rectangle.getWidth(), rectangle.getHeight());
+		return new RoundRectangle2D(
+				(float) rectangle.getMinX(),
+				(float) rectangle.getMinY(),
+				(float) rectangle.getWidth(),
+				(float) rectangle.getHeight(), 0f, 0f);
 	}
 
 	public static Shape asShape(Line2D line) {
-		return new Line(line.getX1(), line.getY1(), line.getX2(), line.getY2());
+		return new com.sun.javafx.geom.Line2D(
+				(float) line.getX1(),
+				(float) line.getY1(),
+				(float) line.getX2(),
+				(float) line.getY2());
 	}
 
 	public static void outlineShape(GraphicsContext context, Shape shape) {
 		ParamChecks.nullNotPermitted(shape, "shape");
 		ParamChecks.nullNotPermitted(context, "context");
-		if (shape instanceof Line) {
-			Line line = (Line) shape;
-			context.strokeLine(line.getStartX(), line.getStartY(), line.getEndX(), line.getEndY());
-		}
-		else if (shape instanceof Rectangle) {
-			Rectangle r = (Rectangle) shape;
-			context.strokeRect(r.getX(), r.getY(), r.getWidth(), r.getHeight());
-		}
-		else {
-			throw new IllegalArgumentException("Unsupported shape type: " + shape.getClass().getName());
-		}
+
+		createPathOnGraphicsContext(context, shape);
+		context.stroke();
 	}
 
 	public static void fillShape(GraphicsContext context, Shape shape) {
 		ParamChecks.nullNotPermitted(shape, "shape");
 		ParamChecks.nullNotPermitted(context, "context");
-		if (shape instanceof Line) {
-			Line line = (Line) shape;
-			context.strokeLine(line.getStartX(), line.getStartY(), line.getEndX(), line.getEndY());
-		}
-		else if (shape instanceof Rectangle) {
-			Rectangle r = (Rectangle) shape;
-			context.fillRect(r.getX(), r.getY(), r.getWidth(), r.getHeight());
-		}
-		else {
-			throw new IllegalArgumentException("Unsupported shape type: " + shape.getClass().getName());
+		createPathOnGraphicsContext(context, shape);
+		context.fill();
+
+	}
+
+	private static void createPathOnGraphicsContext(GraphicsContext context, Shape shape) {
+		float coords[] = new float[6];
+		context.beginPath();
+		PathIterator iterator = shape.getPathIterator(null);
+		while (!iterator.isDone()) {
+			int segType = iterator.currentSegment(coords);
+			switch (segType) {
+			case PathIterator.SEG_MOVETO:
+				context.moveTo(coords[0], coords[1]);
+				break;
+			case PathIterator.SEG_LINETO:
+				context.lineTo(coords[0], coords[1]);
+				break;
+			case PathIterator.SEG_QUADTO:
+				context.quadraticCurveTo(coords[0], coords[1], coords[2],
+						coords[3]);
+				break;
+			case PathIterator.SEG_CUBICTO:
+				context.bezierCurveTo(coords[0], coords[1], coords[2],
+						coords[3], coords[4], coords[5]);
+				break;
+			case PathIterator.SEG_CLOSE:
+				context.closePath();
+				break;
+			default:
+				throw new RuntimeException("Unrecognised segment type "
+						+ segType);
+			}
+			iterator.next();
 		}
 	}
 }

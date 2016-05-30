@@ -57,7 +57,7 @@ import org.jfree.data.extension.impl.XYCursor;
 import org.jfree.data.general.Dataset;
 import org.jfree.data.xy.XYDataset;
 
-import javafx.scene.shape.Shape;
+import com.sun.javafx.geom.Shape;
 
 /**
  * A chart entity that represents one item within an

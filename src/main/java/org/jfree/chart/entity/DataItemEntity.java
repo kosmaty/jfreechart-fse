@@ -44,7 +44,7 @@ package org.jfree.chart.entity;
 import org.jfree.data.extension.DatasetCursor;
 import org.jfree.data.general.Dataset;
 
-import javafx.scene.shape.Shape;
+import com.sun.javafx.geom.Shape;
 
 /**
  * Super class of all entities, that encapsulate the shapes and meta information

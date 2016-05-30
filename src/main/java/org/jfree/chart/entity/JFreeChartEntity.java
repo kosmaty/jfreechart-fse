@@ -50,7 +50,7 @@ import org.jfree.chart.JFreeChart;
 import org.jfree.chart.util.ObjectUtils;
 import org.jfree.chart.util.SerialUtils;
 
-import javafx.scene.shape.Shape;
+import com.sun.javafx.geom.Shape;
 
 /**
  * A class that captures information about an entire chart.

@@ -217,6 +217,7 @@ import org.jfree.chart.title.LegendTitle;
 import org.jfree.chart.title.TextTitle;
 import org.jfree.chart.title.Title;
 import org.jfree.chart.util.ParamChecks;
+import org.jfree.chart.util.ShapeUtils;
 import org.jfree.data.Range;
 import org.jfree.event.EventListenerList;
 
@@ -1101,7 +1102,7 @@ public class JFreeChart implements Drawable,
 		}
 		if (entities != null) {
 			entities.add(new JFreeChartEntity(
-					new Rectangle(chartArea.getWidth(), chartArea.getHeight()),
+					ShapeUtils.asShape(chartArea),
 					this));
 		}
 

@@ -86,8 +86,7 @@ import org.jfree.chart.imagemap.ToolTipTagFragmentGenerator;
 import org.jfree.chart.imagemap.URLTagFragmentGenerator;
 import org.jfree.chart.util.SerialUtils;
 
-import javafx.scene.shape.Rectangle;
-import javafx.scene.shape.Shape;
+import com.sun.javafx.geom.Shape;
 
 /**
  * A class that captures information about some component of a chart (a bar,
@@ -227,12 +226,13 @@ public class ChartEntity implements Cloneable, PublicCloneable, Serializable {
 	 * @return The shape type (never <code>null</code>).
 	 */
 	public String getShapeType() {
-		if (this.area instanceof Rectangle) {
-			return "rect";
-		}
-		else {
-			return "poly";
-		}
+		// JAVAFX
+		// if (this.area instanceof Rectangle) {
+		// return "rect";
+		// }
+		// else {
+		return "poly";
+		// }
 	}
 
 	/**
@@ -241,41 +241,44 @@ public class ChartEntity implements Cloneable, PublicCloneable, Serializable {
 	 * @return The shape coordinates (never <code>null</code>).
 	 */
 	public String getShapeCoords() {
-		if (this.area instanceof Rectangle) {
-			return getRectCoords((Rectangle) this.area);
-		}
-		else {
-			return getPolyCoords(this.area);
-		}
+		// JAVAFX
+		// if (this.area instanceof Rectangle) {
+		// return getRectCoords((Rectangle) this.area);
+		// }
+		// else {
+		return getPolyCoords(this.area);
+		// }
 	}
 
-	/**
-	 * Returns a string containing the coordinates (x1, y1, x2, y2) for a given
-	 * rectangle. This string is intended for use in an image map.
-	 *
-	 * @param rectangle
-	 *            the rectangle (<code>null</code> not permitted).
-	 *
-	 * @return Upper left and lower right corner of a rectangle.
-	 */
-	private String getRectCoords(Rectangle rectangle) {
-		if (rectangle == null) {
-			throw new IllegalArgumentException("Null 'rectangle' argument.");
-		}
-		int x1 = (int) rectangle.getX();
-		int y1 = (int) rectangle.getY();
-		int x2 = x1 + (int) rectangle.getWidth();
-		int y2 = y1 + (int) rectangle.getHeight();
-		// fix by rfuller
-		if (x2 == x1) {
-			x2++;
-		}
-		if (y2 == y1) {
-			y2++;
-		}
-		// end fix by rfuller
-		return x1 + "," + y1 + "," + x2 + "," + y2;
-	}
+	// JAVAFX
+	// /**
+	// * Returns a string containing the coordinates (x1, y1, x2, y2) for a
+	// given
+	// * rectangle. This string is intended for use in an image map.
+	// *
+	// * @param rectangle
+	// * the rectangle (<code>null</code> not permitted).
+	// *
+	// * @return Upper left and lower right corner of a rectangle.
+	// */
+	// private String getRectCoords(Rectangle rectangle) {
+	// if (rectangle == null) {
+	// throw new IllegalArgumentException("Null 'rectangle' argument.");
+	// }
+	// int x1 = (int) rectangle.getX();
+	// int y1 = (int) rectangle.getY();
+	// int x2 = x1 + (int) rectangle.getWidth();
+	// int y2 = y1 + (int) rectangle.getHeight();
+	// // fix by rfuller
+	// if (x2 == x1) {
+	// x2++;
+	// }
+	// if (y2 == y1) {
+	// y2++;
+	// }
+	// // end fix by rfuller
+	// return x1 + "," + y1 + "," + x2 + "," + y2;
+	// }
 
 	/**
 	 * Returns a string containing the coordinates for a given shape. This
