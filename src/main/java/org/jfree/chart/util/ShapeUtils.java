@@ -65,6 +65,7 @@ import org.jfree.geometry.Line2D;
 import com.sun.javafx.geom.transform.AffineBase;
 import com.sun.javafx.geom.transform.BaseTransform;
 
+import java.awt.RenderingHints;
 import java.util.Arrays;
 
 import org.jfree.chart.ui.RectangleAnchor;
@@ -72,6 +73,7 @@ import org.jfree.chart.ui.RectangleAnchor;
 import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.shape.ArcType;
 import javafx.scene.shape.Line;
 
 import com.sun.javafx.geom.Arc2D;
@@ -620,16 +622,60 @@ public class ShapeUtils {
 	public static void outlineShape(GraphicsContext context, Shape shape) {
 		ParamChecks.nullNotPermitted(shape, "shape");
 		ParamChecks.nullNotPermitted(context, "context");
+		if (shape instanceof com.sun.javafx.geom.Line2D) {
+			// new Throwable("drawing line").printStackTrace();
+			com.sun.javafx.geom.Line2D l = (com.sun.javafx.geom.Line2D) shape;
+			context.strokeLine(l.x1, l.y1, l.x2, l.y2);
+		} else if (shape instanceof RoundRectangle2D) {
+			RoundRectangle2D rr = (RoundRectangle2D) shape;
+			context.strokeRoundRect(rr.getX(), rr.getY(), rr.getWidth(),
+					rr.getHeight(), rr.arcWidth, rr.arcHeight);
+		} else if (shape instanceof Ellipse2D) {
+			Ellipse2D e = (Ellipse2D) shape;
+			context.strokeOval(e.getX(), e.getY(), e.getWidth(), e.getHeight());
+		} else if (shape instanceof Arc2D) {
+			Arc2D a = (Arc2D) shape;
+			context.strokeArc(a.getX(), a.getY(), a.getWidth(), a.getHeight(),
+					a.start, a.extent,
+					intToArcType(a.getArcType()));
+		} else {
 
-		createPathOnGraphicsContext(context, shape);
-		context.stroke();
+			createPathOnGraphicsContext(context, shape);
+			context.stroke();
+		}
+	}
+
+	private static ArcType intToArcType(int t) {
+		if (t == Arc2D.CHORD) {
+			return ArcType.CHORD;
+		} else if (t == Arc2D.OPEN) {
+			return ArcType.OPEN;
+		} else if (t == Arc2D.PIE) {
+			return ArcType.ROUND;
+		}
+		throw new IllegalArgumentException("Unrecognised t: " + t);
 	}
 
 	public static void fillShape(GraphicsContext context, Shape shape) {
 		ParamChecks.nullNotPermitted(shape, "shape");
 		ParamChecks.nullNotPermitted(context, "context");
-		createPathOnGraphicsContext(context, shape);
-		context.fill();
+
+		if (shape instanceof RoundRectangle2D) {
+			RoundRectangle2D rr = (RoundRectangle2D) shape;
+			context.fillRoundRect(rr.getX(), rr.getY(), rr.getWidth(),
+					rr.getHeight(), rr.arcWidth, rr.arcHeight);
+		} else if (shape instanceof Ellipse2D) {
+			Ellipse2D e = (Ellipse2D) shape;
+			context.fillOval(e.getX(), e.getY(), e.getWidth(), e.getHeight());
+		} else if (shape instanceof Arc2D) {
+			Arc2D a = (Arc2D) shape;
+			context.fillArc(a.getX(), a.getY(), a.getWidth(), a.getHeight(),
+					a.start, a.extent,
+					intToArcType(a.getArcType()));
+		} else {
+			createPathOnGraphicsContext(context, shape);
+			context.fill();
+		}
 
 	}
 
