@@ -65,21 +65,9 @@ import org.jfree.geometry.Line2D;
 import com.sun.javafx.geom.transform.AffineBase;
 import com.sun.javafx.geom.transform.BaseTransform;
 
-// 
-// import java.awt.Graphics2D;
-// import java.awt.Polygon;
-// import java.awt.Shape;
-// import java.awt.geom.AffineTransform;
-// import java.awt.geom.Arc2D;
-// import java.awt.geom.Ellipse2D;
-// import java.awt.geom.GeneralPath;
-// import java.awt.geom.Line2D;
-// import java.awt.geom.PathIterator;
-// import java.awt.geom.Point2D;
-// import java.awt.geom.Rectangle2D;
-// import java.util.Arrays;
-// 
-// import org.jfree.chart.ui.RectangleAnchor;
+import java.util.Arrays;
+
+import org.jfree.chart.ui.RectangleAnchor;
 
 import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
@@ -305,30 +293,32 @@ public class ShapeUtils {
 		return transform.createTransformedShape(shape);
 	}
 
-	//
-	// /**
-	// * Translates a shape to a new location such that the anchor point
-	// * (relative to the rectangular bounds of the shape) aligns with the
-	// * specified (x, y) coordinate in Java2D space.
-	// *
-	// * @param shape the shape ({@code null} not permitted).
-	// * @param anchor the anchor ({@code null} not permitted).
-	// * @param locationX the x-coordinate (in Java2D space).
-	// * @param locationY the y-coordinate (in Java2D space).
-	// *
-	// * @return A new and translated shape.
-	// */
-	// public static Shape createTranslatedShape(Shape shape,
-	// RectangleAnchor anchor, double locationX, double locationY) {
-	// ParamChecks.nullNotPermitted(shape, "shape");
-	// ParamChecks.nullNotPermitted(anchor, "anchor");
-	// Point2D anchorPoint = RectangleAnchor.coordinates(
-	// shape.getBounds2D(), anchor);
-	// AffineTransform transform = AffineTransform.getTranslateInstance(
-	// locationX - anchorPoint.getX(), locationY - anchorPoint.getY());
-	// return transform.createTransformedShape(shape);
-	// }
-	//
+	/**
+	 * Translates a shape to a new location such that the anchor point (relative
+	 * to the rectangular bounds of the shape) aligns with the specified (x, y)
+	 * coordinate in Java2D space.
+	 *
+	 * @param shape
+	 *            the shape ({@code null} not permitted).
+	 * @param anchor
+	 *            the anchor ({@code null} not permitted).
+	 * @param locationX
+	 *            the x-coordinate (in Java2D space).
+	 * @param locationY
+	 *            the y-coordinate (in Java2D space).
+	 *
+	 * @return A new and translated shape.
+	 */
+	public static Shape createTranslatedShape(Shape shape,
+			RectangleAnchor anchor, double locationX, double locationY) {
+		ParamChecks.nullNotPermitted(shape, "shape");
+		ParamChecks.nullNotPermitted(anchor, "anchor");
+		Point2D anchorPoint = anchor.getAnchorPoint(asRectangle2D(shape.getBounds()));
+		BaseTransform transform = BaseTransform.getTranslateInstance(
+				locationX - anchorPoint.getX(), locationY - anchorPoint.getY());
+		return transform.createTransformedShape(shape);
+	}
+
 	/**
 	 * Rotates a shape about the specified coordinates.
 	 *
@@ -621,6 +611,10 @@ public class ShapeUtils {
 				(float) rectangle.getMinY(),
 				(float) rectangle.getMaxX(),
 				(float) rectangle.getMaxY());
+	}
+
+	public static Rectangle2D asRectangle2D(RectBounds bounds) {
+		return new Rectangle2D(bounds.getMinX(), bounds.getMinY(), bounds.getWidth(), bounds.getHeight());
 	}
 
 	public static void outlineShape(GraphicsContext context, Shape shape) {

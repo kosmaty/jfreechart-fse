@@ -4053,30 +4053,32 @@ public class XYPlot extends Plot implements ValueAxisPlot, Pannable, Zoomable,
 
 		// draw the domain grid lines, if any...
 		if (isDomainGridlinesVisible() || isDomainMinorGridlinesVisible()) {
-			// JAVAFX
+			// JAVAFX stroke
 			// Stroke gridStroke = null;
-			// Paint gridPaint = null;
-			// boolean paintLine;
-			// for (ValueTick tick : ticks) {
-			// paintLine = false;
-			// if ((tick.getTickType() == TickType.MINOR)
-			// && isDomainMinorGridlinesVisible()) {
-			// gridStroke = getDomainMinorGridlineStroke();
-			// gridPaint = getDomainMinorGridlinePaint();
-			// paintLine = true;
-			// } else if ((tick.getTickType() == TickType.MAJOR)
-			// && isDomainGridlinesVisible()) {
-			// gridStroke = getDomainGridlineStroke();
-			// gridPaint = getDomainGridlinePaint();
-			// paintLine = true;
-			// }
-			// XYItemRenderer r = getRenderer();
-			// if ((r instanceof AbstractXYItemRenderer) && paintLine) {
-			// ((AbstractXYItemRenderer) r).drawDomainLine(g2, this,
-			// getDomainAxis(), dataArea, tick.getValue(),
-			// gridPaint, gridStroke);
-			// }
-			// }
+			Paint gridPaint = null;
+			boolean paintLine;
+			for (ValueTick tick : ticks) {
+				paintLine = false;
+				if ((tick.getTickType() == TickType.MINOR)
+						&& isDomainMinorGridlinesVisible()) {
+					// JAVAFX stroke
+					// gridStroke = getDomainMinorGridlineStroke();
+					gridPaint = getDomainMinorGridlinePaint();
+					paintLine = true;
+				} else if ((tick.getTickType() == TickType.MAJOR)
+						&& isDomainGridlinesVisible()) {
+					// JAVAFX stroke
+					// gridStroke = getDomainGridlineStroke();
+					gridPaint = getDomainGridlinePaint();
+					paintLine = true;
+				}
+				XYItemRenderer r = getRenderer();
+				if ((r instanceof AbstractXYItemRenderer) && paintLine) {
+					((AbstractXYItemRenderer) r).drawDomainLine(g2, this,
+							getDomainAxis(), dataArea, tick.getValue(),
+							gridPaint /* JAVAFX, gridStroke */);
+				}
+			}
 		}
 	}
 

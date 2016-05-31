@@ -84,11 +84,11 @@ import org.jfree.chart.block.BlockContainer;
 import org.jfree.chart.block.BlockFrame;
 import org.jfree.chart.block.BlockResult;
 import org.jfree.chart.block.BorderArrangement;
-//import org.jfree.chart.block.CenterArrangement;
+import org.jfree.chart.block.CenterArrangement;
 import org.jfree.chart.block.ColumnArrangement;
 import org.jfree.chart.block.EntityBlockParams;
 import org.jfree.chart.block.FlowArrangement;
-//import org.jfree.chart.block.LabelBlock;
+import org.jfree.chart.block.LabelBlock;
 import org.jfree.chart.block.RectangleConstraint;
 import org.jfree.chart.ui.RectangleAnchor;
 import org.jfree.chart.ui.RectangleEdge;
@@ -502,49 +502,50 @@ public class LegendTitle extends Title
 	 * @return The block.
 	 */
 	protected Block createLegendItemBlock(LegendItem item) {
+		BlockContainer result;
+		LegendGraphic lg = new LegendGraphic(item.getShape(),
+				item.getFillPaint());
 		// JAVAFX
-		// BlockContainer result;
-		// LegendGraphic lg = new LegendGraphic(item.getShape(),
-		// item.getFillPaint());
 		// lg.setFillPaintTransformer(item.getFillPaintTransformer());
-		// lg.setShapeFilled(item.isShapeFilled());
-		// lg.setLine(item.getLine());
+		lg.setShapeFilled(item.isShapeFilled());
+		lg.setLine(item.getLine());
+		// JAVAFX stroke
 		// lg.setLineStroke(item.getLineStroke());
-		// lg.setLinePaint(item.getLinePaint());
-		// lg.setLineVisible(item.isLineVisible());
-		// lg.setShapeVisible(item.isShapeVisible());
-		// lg.setShapeOutlineVisible(item.isShapeOutlineVisible());
-		// lg.setOutlinePaint(item.getOutlinePaint());
+		lg.setLinePaint(item.getLinePaint());
+		lg.setLineVisible(item.isLineVisible());
+		lg.setShapeVisible(item.isShapeVisible());
+		lg.setShapeOutlineVisible(item.isShapeOutlineVisible());
+		lg.setOutlinePaint(item.getOutlinePaint());
+		// JAVAFX stroke
 		// lg.setOutlineStroke(item.getOutlineStroke());
-		// lg.setPadding(this.legendItemGraphicPadding);
-		//
-		// LegendItemBlockContainer legendItem = new LegendItemBlockContainer(
-		// new BorderArrangement(), item.getDataset(),
-		// item.getSeriesKey());
-		// lg.setShapeAnchor(getLegendItemGraphicAnchor());
-		// lg.setShapeLocation(getLegendItemGraphicLocation());
-		// legendItem.add(lg, this.legendItemGraphicEdge);
-		// Font textFont = item.getLabelFont();
-		// if (textFont == null) {
-		// textFont = this.itemFont;
-		// }
-		// Paint textPaint = item.getLabelPaint();
-		// if (textPaint == null) {
-		// textPaint = this.itemPaint;
-		// }
-		// LabelBlock labelBlock = new LabelBlock(item.getLabel(), textFont,
-		// textPaint);
-		// labelBlock.setPadding(this.itemLabelPadding);
-		// legendItem.add(labelBlock);
-		// legendItem.setToolTipText(item.getToolTipText());
-		// legendItem.setURLText(item.getURLText());
-		//
-		// result = new BlockContainer(new CenterArrangement());
-		// result.add(legendItem);
-		//
-		// return result;
+		lg.setPadding(this.legendItemGraphicPadding);
 
-		return new BlockContainer(); // JAVAFX fake return
+		LegendItemBlockContainer legendItem = new LegendItemBlockContainer(
+				new BorderArrangement(), item.getDataset(),
+				item.getSeriesKey());
+		lg.setShapeAnchor(getLegendItemGraphicAnchor());
+		lg.setShapeLocation(getLegendItemGraphicLocation());
+		legendItem.add(lg, this.legendItemGraphicEdge);
+		Font textFont = item.getLabelFont();
+		if (textFont == null) {
+			textFont = this.itemFont;
+		}
+		Paint textPaint = item.getLabelPaint();
+		if (textPaint == null) {
+			textPaint = this.itemPaint;
+		}
+		LabelBlock labelBlock = new LabelBlock(item.getLabel(), textFont,
+				textPaint);
+		labelBlock.setPadding(this.itemLabelPadding);
+		legendItem.add(labelBlock);
+		legendItem.setToolTipText(item.getToolTipText());
+		legendItem.setURLText(item.getURLText());
+
+		result = new BlockContainer(new CenterArrangement());
+		result.add(legendItem);
+
+		return result;
+
 	}
 
 	/**

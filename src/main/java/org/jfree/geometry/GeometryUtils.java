@@ -16,6 +16,15 @@ public class GeometryUtils {
 		return rectangle.getWidth() <= 0.0 || rectangle.getHeight() <= 0.0;
 	}
 
+	public static Rectangle2D union(Rectangle2D r1, Rectangle2D r2) {
+		double minX = Math.min(r1.getMinX(), r2.getMinX());
+		double minY = Math.min(r1.getMinY(), r2.getMinY());
+		double maxX = Math.max(r1.getMaxX(), r2.getMaxX());
+		double maxY = Math.max(r1.getMaxY(), r2.getMaxY());
+		return new Rectangle2D(minX, minY, maxX - minX, maxY - minY);
+
+	}
+
 	public static Line2D newLine(double startX, double startY, double endX, double endY) {
 		return new Line2D(startX, startY, endX, endY);
 	}

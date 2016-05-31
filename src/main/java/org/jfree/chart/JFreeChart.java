@@ -175,20 +175,20 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
-// import javax.swing.event.EventListenerList;
-// 
+
 import org.jfree.chart.block.BlockParams;
 import org.jfree.chart.block.EntityBlockResult;
 import org.jfree.chart.block.LengthConstraintType;
 import org.jfree.chart.block.RectangleConstraint;
 // import org.jfree.chart.drawable.BorderPainter;
 import org.jfree.chart.ui.Align;
-// import org.jfree.chart.drawable.ColorPainter;
+import org.jfree.chart.drawable.ColorPainter;
 import org.jfree.chart.drawable.Drawable;
 
 import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
@@ -415,27 +415,24 @@ public class JFreeChart implements Drawable,
 		// RenderingHints.VALUE_STROKE_PURE);
 
 		this.borderPainter = null;
-		// JAVAFX
-		// this.backgroundPainter = new ColorPainter();
+		this.backgroundPainter = new ColorPainter();
 		this.padding = new RectangleInsets(4, 4, 4, 4);
 		this.plot = plot;
 		plot.addChangeListener(this);
 
 		this.subtitles = new ArrayList<Title>();
 
-		// JAVAFX
-		//
-		// // create a legend, if requested...
-		// if (createLegend) {
-		// LegendTitle legend = new LegendTitle(this.plot);
-		// legend.setMargin(new RectangleInsets(1.0, 1.0, 1.0, 1.0));
-		// legend.setHorizontalAlignment(HorizontalAlignment.RIGHT);
-		// legend.setBackgroundPaint(Color.WHITE);
-		// legend.setPosition(RectangleEdge.BOTTOM);
-		// this.subtitles.add(legend);
-		// legend.addChangeListener(this);
-		// }
-		//
+		// create a legend, if requested...
+		if (createLegend) {
+			LegendTitle legend = new LegendTitle(this.plot);
+			legend.setMargin(new RectangleInsets(1.0, 1.0, 1.0, 1.0));
+			legend.setHorizontalAlignment(HorizontalAlignment.RIGHT);
+			legend.setBackgroundPaint(Color.WHITE);
+			legend.setPosition(RectangleEdge.BOTTOM);
+			this.subtitles.add(legend);
+			legend.addChangeListener(this);
+		}
+
 		// add the chart title, if one has been specified...
 		if (title != null) {
 			if (titleFont == null) {
@@ -444,11 +441,11 @@ public class JFreeChart implements Drawable,
 			this.title = new TextTitle(title, titleFont);
 			this.title.addChangeListener(this);
 		}
+
 		// JAVAFX
-		//
 		// this.backgroundImage = DEFAULT_BACKGROUND_IMAGE;
-		// this.backgroundImageAlignment = DEFAULT_BACKGROUND_IMAGE_ALIGNMENT;
-		// this.backgroundImageAlpha = DEFAULT_BACKGROUND_IMAGE_ALPHA;
+		this.backgroundImageAlignment = DEFAULT_BACKGROUND_IMAGE_ALIGNMENT;
+		this.backgroundImageAlpha = DEFAULT_BACKGROUND_IMAGE_ALPHA;
 	}
 
 	// JAVAFX
@@ -505,33 +502,33 @@ public class JFreeChart implements Drawable,
 	// fireChartChanged();
 	// }
 	//
-	// /**
-	// * Returns the background painter. The default value is an instance of
-	// * {@link StandardBarPainter} (created via the default constructor).
-	// *
-	// * @return The background painter (possibly <code>null</code>).
-	// */
-	// public Drawable getBackgroundPainter() {
-	// return this.backgroundPainter;
-	// }
-	//
-	// /**
-	// * Sets the background painter and sends a change event to all registered
-	// * listeners. If you set this to <code>null</code>, no background will
-	// * be drawn for the chart. The border painter can be any implementation of
-	// * the {@link Drawable} interface, for example
-	// * {@link ColorPainter}.
-	// * <br><br>
-	// * Note that for cloning, it is <em>assumed</em> that the painter is
-	// * immutable (in other words, the painter will not be cloned).
-	// *
-	// * @param painter the new painter (<code>null</code> permitted).
-	// */
-	// public void setBackgroundPainter(Drawable painter) {
-	// this.backgroundPainter = painter;
-	// fireChartChanged();
-	// }
-	//
+	/**
+	 * Returns the background painter. The default value is an instance of
+	 * {@link StandardBarPainter} (created via the default constructor).
+	 *
+	 * @return The background painter (possibly <code>null</code>).
+	 */
+	public Drawable getBackgroundPainter() {
+		return this.backgroundPainter;
+	}
+
+	/**
+	 * Sets the background painter and sends a change event to all registered
+	 * listeners. If you set this to <code>null</code>, no background will be
+	 * drawn for the chart. The border painter can be any implementation of the
+	 * {@link Drawable} interface, for example {@link ColorPainter}. <br>
+	 * <br>
+	 * Note that for cloning, it is <em>assumed</em> that the painter is
+	 * immutable (in other words, the painter will not be cloned).
+	 *
+	 * @param painter
+	 *            the new painter (<code>null</code> permitted).
+	 */
+	public void setBackgroundPainter(Drawable painter) {
+		this.backgroundPainter = painter;
+		fireChartChanged();
+	}
+
 	/**
 	 * Returns the padding between the chart border and the chart drawing area.
 	 *
@@ -621,65 +618,65 @@ public class JFreeChart implements Drawable,
 		}
 	}
 
-	// JAVAFX
-	//
-	// /**
-	// * Adds a legend to the plot and sends a {@link ChartChangeEvent} to all
-	// * registered listeners.
-	// *
-	// * @param legend the legend (<code>null</code> not permitted).
-	// *
-	// * @see #removeLegend()
-	// */
-	// public void addLegend(LegendTitle legend) {
-	// addSubtitle(legend);
-	// }
-	//
-	// /**
-	// * Returns the legend for the chart, if there is one. Note that a chart
-	// * can have more than one legend - this method returns the first.
-	// *
-	// * @return The legend (possibly <code>null</code>).
-	// *
-	// * @see #getLegend(int)
-	// */
-	// public LegendTitle getLegend() {
-	// return getLegend(0);
-	// }
-	//
-	// /**
-	// * Returns the nth legend for a chart, or <code>null</code>.
-	// *
-	// * @param index the legend index (zero-based).
-	// *
-	// * @return The legend (possibly <code>null</code>).
-	// *
-	// * @see #addLegend(LegendTitle)
-	// */
-	// public LegendTitle getLegend(int index) {
-	// int seen = 0;
-	// for (Title subtitle : this.subtitles) {
-	// if (subtitle instanceof LegendTitle) {
-	// if (seen == index) {
-	// return (LegendTitle) subtitle;
-	// } else {
-	// seen++;
-	// }
-	// }
-	// }
-	// return null;
-	// }
-	//
-	// /**
-	// * Removes the first legend in the chart and sends a
-	// * {@link ChartChangeEvent} to all registered listeners.
-	// *
-	// * @see #getLegend()
-	// */
-	// public void removeLegend() {
-	// removeSubtitle(getLegend());
-	// }
-	//
+	/**
+	 * Adds a legend to the plot and sends a {@link ChartChangeEvent} to all
+	 * registered listeners.
+	 *
+	 * @param legend
+	 *            the legend (<code>null</code> not permitted).
+	 *
+	 * @see #removeLegend()
+	 */
+	public void addLegend(LegendTitle legend) {
+		addSubtitle(legend);
+	}
+
+	/**
+	 * Returns the legend for the chart, if there is one. Note that a chart can
+	 * have more than one legend - this method returns the first.
+	 *
+	 * @return The legend (possibly <code>null</code>).
+	 *
+	 * @see #getLegend(int)
+	 */
+	public LegendTitle getLegend() {
+		return getLegend(0);
+	}
+
+	/**
+	 * Returns the nth legend for a chart, or <code>null</code>.
+	 *
+	 * @param index
+	 *            the legend index (zero-based).
+	 *
+	 * @return The legend (possibly <code>null</code>).
+	 *
+	 * @see #addLegend(LegendTitle)
+	 */
+	public LegendTitle getLegend(int index) {
+		int seen = 0;
+		for (Title subtitle : this.subtitles) {
+			if (subtitle instanceof LegendTitle) {
+				if (seen == index) {
+					return (LegendTitle) subtitle;
+				} else {
+					seen++;
+				}
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Removes the first legend in the chart and sends a
+	 * {@link ChartChangeEvent} to all registered listeners.
+	 *
+	 * @see #getLegend()
+	 */
+	public void removeLegend() {
+		removeSubtitle(getLegend());
+	}
+
 	/**
 	 * Returns the list of subtitles for the chart.
 	 *
@@ -832,7 +829,7 @@ public class JFreeChart implements Drawable,
 		return this.plot;
 	}
 
-	// JAVAFX
+	// JAVAFX rendering hints
 	//
 	// /**
 	// * Returns a flag that indicates whether or not anti-aliasing is used when
@@ -919,6 +916,8 @@ public class JFreeChart implements Drawable,
 	// notifyListeners(new ChartChangeEvent(this));
 	// }
 	//
+
+	// JAVAFX image
 	// /**
 	// * Returns the background image for the chart, or <code>null</code> if
 	// * there is no image.
@@ -1114,10 +1113,10 @@ public class JFreeChart implements Drawable,
 		// g2.addRenderingHints(this.renderingHints);
 		//
 		// //draw the chart background...
-		// if (this.backgroundPainter != null) {
-		// this.backgroundPainter.draw(g2, chartArea);
-		// }
-		//
+		if (this.backgroundPainter != null) {
+			this.backgroundPainter.draw(g2, chartArea);
+		}
+		// JAVAFX
 		// if (this.backgroundImage != null) {
 		// Composite originalComposite = g2.getComposite();
 		// g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER,
