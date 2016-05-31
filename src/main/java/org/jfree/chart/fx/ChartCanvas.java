@@ -63,8 +63,8 @@ import org.jfree.chart.JFreeChart;
 import org.jfree.chart.entity.ChartEntity;
 import org.jfree.chart.event.ChartChangeEvent;
 import org.jfree.chart.event.ChartChangeListener;
-// import org.jfree.chart.event.OverlayChangeEvent;
-// import org.jfree.chart.event.OverlayChangeListener;
+import org.jfree.chart.event.OverlayChangeEvent;
+import org.jfree.chart.event.OverlayChangeListener;
 import org.jfree.chart.fx.interaction.AnchorHandlerFX;
 import org.jfree.chart.fx.interaction.DispatchHandlerFX;
 import org.jfree.chart.fx.interaction.ChartMouseEventFX;
@@ -73,7 +73,7 @@ import org.jfree.chart.fx.interaction.TooltipHandlerFX;
 import org.jfree.chart.fx.interaction.ScrollHandlerFX;
 import org.jfree.chart.fx.interaction.PanHandlerFX;
 import org.jfree.chart.fx.interaction.MouseHandlerFX;
-//import org.jfree.chart.fx.overlay.OverlayFX;
+import org.jfree.chart.fx.overlay.OverlayFX;
 import org.jfree.chart.plot.PlotRenderingInfo;
 import org.jfree.chart.util.ParamChecks;
 import org.jfree.fx.FXGraphics2D;
@@ -102,7 +102,7 @@ import org.jfree.fx.FXGraphics2D;
  * @since 1.0.18
  */
 public class ChartCanvas extends Canvas implements ChartChangeListener
-// , OverlayChangeListener
+		, OverlayChangeListener
 {
 
 	/** The chart being displayed in the canvas (never null). */
@@ -146,8 +146,7 @@ public class ChartCanvas extends Canvas implements ChartChangeListener
 	/** The auxiliary mouse handlers (can be empty but not null). */
 	private List<MouseHandlerFX> auxiliaryMouseHandlers;
 
-	// JAVAFX
-	// private ObservableList<OverlayFX> overlays;
+	private ObservableList<OverlayFX> overlays;
 
 	/**
 	 * A flag that can be used to override the plot setting for domain (x) axis
@@ -195,8 +194,7 @@ public class ChartCanvas extends Canvas implements ChartChangeListener
 		this.auxiliaryMouseHandlers.add(new ScrollHandlerFX("scroll"));
 		this.auxiliaryMouseHandlers.add(new AnchorHandlerFX("anchor"));
 		this.auxiliaryMouseHandlers.add(new DispatchHandlerFX("dispatch"));
-		// JAVAFX
-		// this.overlays = FXCollections.observableArrayList();
+		this.overlays = FXCollections.observableArrayList();
 
 		setOnMouseMoved(e -> handleMouseMoved(e));
 		setOnMouseClicked(e -> handleMouseClicked(e));
@@ -327,51 +325,50 @@ public class ChartCanvas extends Canvas implements ChartChangeListener
 		}
 	}
 
-	// JAVAFX
-	// /**
-	// * Add an overlay to the canvas.
-	// *
-	// * @param overlay
-	// * the overlay ({@code null} not permitted).
-	// *
-	// * @since 1.0.20
-	// */
-	// public void addOverlay(OverlayFX overlay) {
-	// ParamChecks.nullNotPermitted(overlay, "overlay");
-	// this.overlays.add(overlay);
-	// overlay.addChangeListener(this);
-	// draw();
-	// }
-	//
-	// /**
-	// * Removes an overlay from the canvas.
-	// *
-	// * @param overlay
-	// * the overlay to remove ({@code null} not permitted).
-	// *
-	// * @since 1.0.20
-	// */
-	// public void removeOverlay(OverlayFX overlay) {
-	// ParamChecks.nullNotPermitted(overlay, "overlay");
-	// boolean removed = this.overlays.remove(overlay);
-	// if (removed) {
-	// overlay.removeChangeListener(this);
-	// draw();
-	// }
-	// }
-	//
-	// /**
-	// * Handles a change to an overlay by repainting the chart canvas.
-	// *
-	// * @param event
-	// * the event.
-	// *
-	// * @since 1.0.20
-	// */
-	// @Override
-	// public void overlayChanged(OverlayChangeEvent event) {
-	// draw();
-	// }
+	/**
+	 * Add an overlay to the canvas.
+	 *
+	 * @param overlay
+	 *            the overlay ({@code null} not permitted).
+	 *
+	 * @since 1.0.20
+	 */
+	public void addOverlay(OverlayFX overlay) {
+		ParamChecks.nullNotPermitted(overlay, "overlay");
+		this.overlays.add(overlay);
+		overlay.addChangeListener(this);
+		draw();
+	}
+
+	/**
+	 * Removes an overlay from the canvas.
+	 *
+	 * @param overlay
+	 *            the overlay to remove ({@code null} not permitted).
+	 *
+	 * @since 1.0.20
+	 */
+	public void removeOverlay(OverlayFX overlay) {
+		ParamChecks.nullNotPermitted(overlay, "overlay");
+		boolean removed = this.overlays.remove(overlay);
+		if (removed) {
+			overlay.removeChangeListener(this);
+			draw();
+		}
+	}
+
+	/**
+	 * Handles a change to an overlay by repainting the chart canvas.
+	 *
+	 * @param event
+	 *            the event.
+	 *
+	 * @since 1.0.20
+	 */
+	@Override
+	public void overlayChanged(OverlayChangeEvent event) {
+		draw();
+	}
 
 	/**
 	 * Registers a listener to receive {@link ChartMouseEvent} notifications.
@@ -496,10 +493,9 @@ public class ChartCanvas extends Canvas implements ChartChangeListener
 			}
 		}
 		ctx.restore();
-		// JAVAFX
-		// for (OverlayFX overlay : this.overlays) {
-		// overlay.paintOverlay(g2, this);
-		// }
+		for (OverlayFX overlay : this.overlays) {
+			overlay.paintOverlay(ctx, this);
+		}
 		this.anchor = null;
 	}
 
