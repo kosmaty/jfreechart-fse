@@ -100,6 +100,11 @@
 
 package org.jfree.chart.axis;
 
+import static org.jfree.chart.util.ShapeUtils.asShape;
+import static org.jfree.geometry.GeometryUtils.emptyLine;
+import static org.jfree.geometry.GeometryUtils.newLine;
+import static org.jfree.geometry.GeometryUtils.strokeLine;
+
 // 
 // import java.awt.Font;
 // import java.awt.Graphics2D;
@@ -123,24 +128,28 @@ import org.jfree.chart.ui.RectangleEdge;
 import org.jfree.chart.ui.RectangleInsets;
 import org.jfree.chart.ui.Size2D;
 import org.jfree.chart.util.ObjectUtils;
-// import org.jfree.chart.util.PaintUtils;
-// import org.jfree.chart.entity.CategoryLabelEntity;
+import org.jfree.chart.util.PaintUtils;
+import org.jfree.chart.entity.CategoryLabelEntity;
 import org.jfree.chart.entity.EntityCollection;
 import org.jfree.chart.event.AxisChangeEvent;
 import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.plot.Plot;
 import org.jfree.chart.plot.PlotRenderingInfo;
-// import org.jfree.chart.text.G2TextMeasurer;
+import org.jfree.chart.text.G2TextMeasurer;
 import org.jfree.chart.text.TextBlock;
 import org.jfree.chart.text.TextUtilities;
 import org.jfree.chart.util.ParamChecks;
 import org.jfree.chart.util.SerialUtils;
 import org.jfree.chart.util.ShapeUtils;
 import org.jfree.data.category.CategoryDataset;
+import org.jfree.geometry.Line2D;
+
+import com.sun.javafx.geom.Shape;
 
 import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.paint.Paint;
 import javafx.scene.text.Font;
 
 /**
@@ -191,9 +200,9 @@ public class CategoryAxis extends Axis implements Cloneable, Serializable {
 
 	/** Storage for tick label font overrides (if any). */
 	private Map<Comparable, Font> tickLabelFontMap;
-	//
-	// /** Storage for tick label paint overrides (if any). */
-	// private transient Map<Comparable, Paint> tickLabelPaintMap;
+
+	/** Storage for tick label paint overrides (if any). */
+	private transient Map<Comparable, Paint> tickLabelPaintMap;
 
 	/** Storage for the category label tooltips (if any). */
 	private Map<Comparable, String> categoryLabelToolTips;
@@ -224,8 +233,7 @@ public class CategoryAxis extends Axis implements Cloneable, Serializable {
 		this.categoryLabelPositionOffset = 4;
 		this.categoryLabelPositions = CategoryLabelPositions.STANDARD;
 		this.tickLabelFontMap = new HashMap<Comparable, Font>();
-		// JAVAFX
-		// this.tickLabelPaintMap = new HashMap<Comparable, Paint>();
+		this.tickLabelPaintMap = new HashMap<Comparable, Paint>();
 		this.categoryLabelToolTips = new HashMap<Comparable, String>();
 		this.categoryLabelURLs = new HashMap<Comparable, String>();
 	}
@@ -457,46 +465,48 @@ public class CategoryAxis extends Axis implements Cloneable, Serializable {
 		fireChangeEvent();
 	}
 
-	//
-	// /**
-	// * Returns the paint for the tick label for the given category.
-	// *
-	// * @param category the category (<code>null</code> not permitted).
-	// *
-	// * @return The paint (never <code>null</code>).
-	// *
-	// * @see #setTickLabelPaint(Paint)
-	// */
-	// public Paint getTickLabelPaint(Comparable category) {
-	// ParamChecks.nullNotPermitted(category, "category");
-	// Paint result = this.tickLabelPaintMap.get(category);
-	// // if there is no specific paint, use the general one...
-	// if (result == null) {
-	// result = getTickLabelPaint();
-	// }
-	// return result;
-	// }
-	//
-	// /**
-	// * Sets the paint for the tick label for the specified category and sends
-	// * an {@link AxisChangeEvent} to all registered listeners.
-	// *
-	// * @param category the category (<code>null</code> not permitted).
-	// * @param paint the paint (<code>null</code> permitted).
-	// *
-	// * @see #getTickLabelPaint(Comparable)
-	// */
-	// public void setTickLabelPaint(Comparable category, Paint paint) {
-	// ParamChecks.nullNotPermitted(category, "category");
-	// if (paint == null) {
-	// this.tickLabelPaintMap.remove(category);
-	// }
-	// else {
-	// this.tickLabelPaintMap.put(category, paint);
-	// }
-	// fireChangeEvent();
-	// }
-	//
+	/**
+	 * Returns the paint for the tick label for the given category.
+	 *
+	 * @param category
+	 *            the category (<code>null</code> not permitted).
+	 *
+	 * @return The paint (never <code>null</code>).
+	 *
+	 * @see #setTickLabelPaint(Paint)
+	 */
+	public Paint getTickLabelPaint(Comparable category) {
+		ParamChecks.nullNotPermitted(category, "category");
+		Paint result = this.tickLabelPaintMap.get(category);
+		// if there is no specific paint, use the general one...
+		if (result == null) {
+			result = getTickLabelPaint();
+		}
+		return result;
+	}
+
+	/**
+	 * Sets the paint for the tick label for the specified category and sends an
+	 * {@link AxisChangeEvent} to all registered listeners.
+	 *
+	 * @param category
+	 *            the category (<code>null</code> not permitted).
+	 * @param paint
+	 *            the paint (<code>null</code> permitted).
+	 *
+	 * @see #getTickLabelPaint(Comparable)
+	 */
+	public void setTickLabelPaint(Comparable category, Paint paint) {
+		ParamChecks.nullNotPermitted(category, "category");
+		if (paint == null) {
+			this.tickLabelPaintMap.remove(category);
+		}
+		else {
+			this.tickLabelPaintMap.put(category, paint);
+		}
+		fireChangeEvent();
+	}
+
 	/**
 	 * Adds a tooltip to the specified category and sends an
 	 * {@link AxisChangeEvent} to all registered listeners.
@@ -1101,8 +1111,7 @@ public class CategoryAxis extends Axis implements Cloneable, Serializable {
 		for (CategoryTick tick : ticks) {
 
 			g2.setFont(getTickLabelFont(tick.getCategory()));
-			// JAVAFX paint
-			// g2.setPaint(getTickLabelPaint(tick.getCategory()));
+			g2.setFill(getTickLabelPaint(tick.getCategory()));
 
 			CategoryLabelPosition position = this.categoryLabelPositions.getLabelPosition(edge);
 			double x0 = 0.0;
@@ -1147,22 +1156,21 @@ public class CategoryAxis extends Axis implements Cloneable, Serializable {
 					(float) anchorPoint.getY(), position.getLabelAnchor(),
 					(float) anchorPoint.getX(), (float) anchorPoint.getY(),
 					position.getAngle());
-			// JAVAFX
-			// Shape bounds = block.calculateBounds(g2,
-			// (float) anchorPoint.getX(), (float) anchorPoint.getY(),
-			// position.getLabelAnchor(), (float) anchorPoint.getX(),
-			// (float) anchorPoint.getY(), position.getAngle());
-			// if (plotState != null && plotState.getOwner() != null) {
-			// EntityCollection entities =
-			// plotState.getOwner().getEntityCollection();
-			// if (entities != null) {
-			// String tooltip = getCategoryLabelToolTip(
-			// tick.getCategory());
-			// String url = getCategoryLabelURL(tick.getCategory());
-			// entities.add(new CategoryLabelEntity(tick.getCategory(),
-			// bounds, tooltip, url));
-			// }
-			// }
+			Shape bounds = block.calculateBounds(g2,
+					(float) anchorPoint.getX(), (float) anchorPoint.getY(),
+					position.getLabelAnchor(), (float) anchorPoint.getX(),
+					(float) anchorPoint.getY(), position.getAngle());
+			if (plotState != null && plotState.getOwner() != null) {
+				EntityCollection entities =
+						plotState.getOwner().getEntityCollection();
+				if (entities != null) {
+					String tooltip = getCategoryLabelToolTip(
+							tick.getCategory());
+					String url = getCategoryLabelURL(tick.getCategory());
+					entities.add(new CategoryLabelEntity(tick.getCategory(),
+							bounds, tooltip, url));
+				}
+			}
 			categoryIndex++;
 		}
 
@@ -1284,55 +1292,56 @@ public class CategoryAxis extends Axis implements Cloneable, Serializable {
 		CategoryPlot plot = (CategoryPlot) p;
 		double il = getTickMarkInsideLength();
 		double ol = getTickMarkOutsideLength();
-		// JAVAFX
-		// Line2D line = new Line2D.Double();
-		// List<Comparable> categories = plot.getCategoriesForAxis(this);
-		// g2.setPaint(getTickMarkPaint());
+		Line2D line = emptyLine();
+		List<Comparable> categories = plot.getCategoriesForAxis(this);
+		g2.setStroke(getTickMarkPaint());
+		// JAVAFX stroke
 		// g2.setStroke(getTickMarkStroke());
 		// Object saved =
 		// g2.getRenderingHint(RenderingHints.KEY_STROKE_CONTROL);
 		// g2.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL,
 		// RenderingHints.VALUE_STROKE_NORMALIZE);
-		// if (edge.equals(RectangleEdge.TOP)) {
-		// for (Comparable key : categories) {
-		// double x = getCategoryMiddle(key, categories, dataArea, edge);
-		// line.setLine(x, cursor, x, cursor + il);
-		// g2.draw(line);
-		// line.setLine(x, cursor, x, cursor - ol);
-		// g2.draw(line);
-		// }
-		// state.cursorUp(ol);
-		// }
-		// else if (edge.equals(RectangleEdge.BOTTOM)) {
-		// for (Comparable key : categories) {
-		// double x = getCategoryMiddle(key, categories, dataArea, edge);
-		// line.setLine(x, cursor, x, cursor - il);
-		// g2.draw(line);
-		// line.setLine(x, cursor, x, cursor + ol);
-		// g2.draw(line);
-		// }
-		// state.cursorDown(ol);
-		// }
-		// else if (edge.equals(RectangleEdge.LEFT)) {
-		// for (Comparable key : categories) {
-		// double y = getCategoryMiddle(key, categories, dataArea, edge);
-		// line.setLine(cursor, y, cursor + il, y);
-		// g2.draw(line);
-		// line.setLine(cursor, y, cursor - ol, y);
-		// g2.draw(line);
-		// }
-		// state.cursorLeft(ol);
-		// }
-		// else if (edge.equals(RectangleEdge.RIGHT)) {
-		// for (Comparable key : categories) {
-		// double y = getCategoryMiddle(key, categories, dataArea, edge);
-		// line.setLine(cursor, y, cursor - il, y);
-		// g2.draw(line);
-		// line.setLine(cursor, y, cursor + ol, y);
-		// g2.draw(line);
-		// }
-		// state.cursorRight(ol);
-		// }
+		if (edge.equals(RectangleEdge.TOP)) {
+			for (Comparable key : categories) {
+				double x = getCategoryMiddle(key, categories, dataArea, edge);
+				line = newLine(x, cursor, x, cursor + il);
+				strokeLine(g2, line);
+				line = newLine(x, cursor, x, cursor - ol);
+				strokeLine(g2, line);
+			}
+			state.cursorUp(ol);
+		}
+		else if (edge.equals(RectangleEdge.BOTTOM)) {
+			for (Comparable key : categories) {
+				double x = getCategoryMiddle(key, categories, dataArea, edge);
+				line = newLine(x, cursor, x, cursor - il);
+				strokeLine(g2, line);
+				line = newLine(x, cursor, x, cursor + ol);
+				strokeLine(g2, line);
+			}
+			state.cursorDown(ol);
+		}
+		else if (edge.equals(RectangleEdge.LEFT)) {
+			for (Comparable key : categories) {
+				double y = getCategoryMiddle(key, categories, dataArea, edge);
+				line = newLine(cursor, y, cursor + il, y);
+				strokeLine(g2, line);
+				line = newLine(cursor, y, cursor - ol, y);
+				strokeLine(g2, line);
+			}
+			state.cursorLeft(ol);
+		}
+		else if (edge.equals(RectangleEdge.RIGHT)) {
+			for (Comparable key : categories) {
+				double y = getCategoryMiddle(key, categories, dataArea, edge);
+				line = newLine(cursor, y, cursor - il, y);
+				strokeLine(g2, line);
+				line = newLine(cursor, y, cursor + ol, y);
+				strokeLine(g2, line);
+			}
+			state.cursorRight(ol);
+		}
+		// JAVAFX
 		// g2.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, saved);
 	}
 
@@ -1352,12 +1361,10 @@ public class CategoryAxis extends Axis implements Cloneable, Serializable {
 	 */
 	protected TextBlock createLabel(Comparable category, float width,
 			RectangleEdge edge, GraphicsContext g2) {
-		// JAVAFX
-		// TextBlock label = TextUtilities.createTextBlock(category.toString(),
-		// getTickLabelFont(category), getTickLabelPaint(category), width,
-		// this.maximumCategoryLabelLines, new G2TextMeasurer(g2));
-		// return label;
-		return new TextBlock(); // JAVAFX - fake return
+		TextBlock label = TextUtilities.createTextBlock(category.toString(),
+				getTickLabelFont(category), getTickLabelPaint(category), width,
+				this.maximumCategoryLabelLines, new G2TextMeasurer(g2));
+		return label;
 	}
 
 	/**
@@ -1375,15 +1382,14 @@ public class CategoryAxis extends Axis implements Cloneable, Serializable {
 	protected double calculateTextBlockWidth(TextBlock block,
 			CategoryLabelPosition position, GraphicsContext g2) {
 		RectangleInsets insets = getTickLabelInsets();
-		// Size2D size = block.calculateDimensions(g2);
-		// Rectangle2D box = new Rectangle2D.Double(0.0, 0.0, size.getWidth(),
-		// size.getHeight());
-		// Shape rotatedBox = ShapeUtils.rotateShape(box, position.getAngle(),
-		// 0.0f, 0.0f);
-		// double w = rotatedBox.getBounds2D().getWidth() + insets.getLeft()
-		// + insets.getRight();
-		// return w;
-		return 0.0; // JAVAFX - fake return
+		Size2D size = block.calculateDimensions(g2);
+		Rectangle2D box = new Rectangle2D(0.0, 0.0, size.getWidth(),
+				size.getHeight());
+		Shape rotatedBox = ShapeUtils.rotateShape(
+				ShapeUtils.asShape(box), position.getAngle(), 0.0f, 0.0f);
+		double w = rotatedBox.getBounds().getWidth() + insets.getLeft()
+				+ insets.getRight();
+		return w;
 	}
 
 	/**
@@ -1401,215 +1407,222 @@ public class CategoryAxis extends Axis implements Cloneable, Serializable {
 	protected double calculateTextBlockHeight(TextBlock block,
 			CategoryLabelPosition position, GraphicsContext g2) {
 		RectangleInsets insets = getTickLabelInsets();
-		// JAVAFX
-		// Size2D size = block.calculateDimensions(g2);
-		// Rectangle2D box = new Rectangle2D.Double(0.0, 0.0, size.getWidth(),
-		// size.getHeight());
-		// Shape rotatedBox = ShapeUtils.rotateShape(box, position.getAngle(),
-		// 0.0f, 0.0f);
-		// double h = rotatedBox.getBounds2D().getHeight()
-		// + insets.getTop() + insets.getBottom();
-		// return h;
-		return 0.0; // JAVAFX - fake return
+		Size2D size = block.calculateDimensions(g2);
+		Rectangle2D box = new Rectangle2D(0.0, 0.0, size.getWidth(),
+				size.getHeight());
+		Shape rotatedBox = ShapeUtils.rotateShape(
+				asShape(box), position.getAngle(), 0.0f, 0.0f);
+		double h = rotatedBox.getBounds().getHeight() + insets.getTop() + insets.getBottom();
+		return h;
 	}
+
 	//
-	// /**
-	// * Creates a clone of the axis.
-	// *
-	// * @return A clone.
-	// *
-	// * @throws CloneNotSupportedException if some component of the axis does
-	// * not support cloning.
-	// */
-	// @Override
-	// public Object clone() throws CloneNotSupportedException {
-	// CategoryAxis clone = (CategoryAxis) super.clone();
-	// clone.tickLabelFontMap = new HashMap<Comparable,
-	// Font>(this.tickLabelFontMap);
-	// clone.tickLabelPaintMap = new HashMap<Comparable,
-	// Paint>(this.tickLabelPaintMap);
-	// clone.categoryLabelToolTips = new HashMap<Comparable,
-	// String>(this.categoryLabelToolTips);
-	// clone.categoryLabelURLs = new HashMap<Comparable,
-	// String>(this.categoryLabelToolTips);
-	// return clone;
-	// }
-	//
-	// /**
-	// * Tests this axis for equality with an arbitrary object.
-	// *
-	// * @param obj the object (<code>null</code> permitted).
-	// *
-	// * @return A boolean.
-	// */
-	// @Override
-	// public boolean equals(Object obj) {
-	// if (obj == this) {
-	// return true;
-	// }
-	// if (!(obj instanceof CategoryAxis)) {
-	// return false;
-	// }
-	// if (!super.equals(obj)) {
-	// return false;
-	// }
-	// CategoryAxis that = (CategoryAxis) obj;
-	// if (that.lowerMargin != this.lowerMargin) {
-	// return false;
-	// }
-	// if (that.upperMargin != this.upperMargin) {
-	// return false;
-	// }
-	// if (that.categoryMargin != this.categoryMargin) {
-	// return false;
-	// }
-	// if (that.maximumCategoryLabelWidthRatio
-	// != this.maximumCategoryLabelWidthRatio) {
-	// return false;
-	// }
-	// if (that.categoryLabelPositionOffset
-	// != this.categoryLabelPositionOffset) {
-	// return false;
-	// }
-	// if (!ObjectUtils.equal(that.categoryLabelPositions,
-	// this.categoryLabelPositions)) {
-	// return false;
-	// }
-	// if (!ObjectUtils.equal(that.categoryLabelToolTips,
-	// this.categoryLabelToolTips)) {
-	// return false;
-	// }
-	// if (!ObjectUtils.equal(this.categoryLabelURLs,
-	// that.categoryLabelURLs)) {
-	// return false;
-	// }
-	// if (!ObjectUtils.equal(this.tickLabelFontMap,
-	// that.tickLabelFontMap)) {
-	// return false;
-	// }
-	// if (!equalPaintMaps(this.tickLabelPaintMap, that.tickLabelPaintMap)) {
-	// return false;
-	// }
-	// return true;
-	// }
-	//
-	// /**
-	// * Returns a hash code for this object.
-	// *
-	// * @return A hash code.
-	// */
-	// @Override
-	// public int hashCode() {
-	// return super.hashCode();
-	// }
-	//
-	// /**
-	// * Provides serialization support.
-	// *
-	// * @param stream the output stream.
-	// *
-	// * @throws IOException if there is an I/O error.
-	// */
-	// private void writeObject(ObjectOutputStream stream) throws IOException {
-	// stream.defaultWriteObject();
-	// writePaintMap(this.tickLabelPaintMap, stream);
-	// }
-	//
-	// /**
-	// * Provides serialization support.
-	// *
-	// * @param stream the input stream.
-	// *
-	// * @throws IOException if there is an I/O error.
-	// * @throws ClassNotFoundException if there is a classpath problem.
-	// */
-	// private void readObject(ObjectInputStream stream)
-	// throws IOException, ClassNotFoundException {
-	// stream.defaultReadObject();
-	// this.tickLabelPaintMap = readPaintMap(stream);
-	// }
-	//
-	// /**
-	// * Reads a <code>Map</code> of (<code>Comparable</code>,
-	// <code>Paint</code>)
-	// * elements from a stream.
-	// *
-	// * @param in the input stream.
-	// *
-	// * @return The map.
-	// *
-	// * @throws IOException
-	// * @throws ClassNotFoundException
-	// *
-	// * @see #writePaintMap(Map, ObjectOutputStream)
-	// */
-	// private Map<Comparable, Paint> readPaintMap(ObjectInputStream in)
-	// throws IOException, ClassNotFoundException {
-	// boolean isNull = in.readBoolean();
-	// if (isNull) {
-	// return null;
-	// }
-	// Map<Comparable, Paint> result = new HashMap<Comparable, Paint>();
-	// int count = in.readInt();
-	// for (int i = 0; i < count; i++) {
-	// Comparable category = (Comparable) in.readObject();
-	// Paint paint = SerialUtils.readPaint(in);
-	// result.put(category, paint);
-	// }
-	// return result;
-	// }
-	//
-	// /**
-	// * Writes a map of (<code>Comparable</code>, <code>Paint</code>)
-	// * elements to a stream.
-	// *
-	// * @param map the map (<code>null</code> permitted).
-	// *
-	// * @param out
-	// * @throws IOException
-	// *
-	// * @see #readPaintMap(ObjectInputStream)
-	// */
-	// private void writePaintMap(Map<Comparable, Paint> map, ObjectOutputStream
-	// out)
-	// throws IOException {
-	// if (map == null) {
-	// out.writeBoolean(true);
-	// }
-	// else {
-	// out.writeBoolean(false);
-	// Set<Comparable> keys = map.keySet();
-	// int count = keys.size();
-	// out.writeInt(count);
-	// for (Comparable key : keys) {
-	// out.writeObject(key);
-	// SerialUtils.writePaint(map.get(key), out);
-	// }
-	// }
-	// }
-	//
-	// /**
-	// * Tests two maps containing (<code>Comparable</code>, <code>Paint</code>)
-	// * elements for equality.
-	// *
-	// * @param map1 the first map (<code>null</code> not permitted).
-	// * @param map2 the second map (<code>null</code> not permitted).
-	// *
-	// * @return A boolean.
-	// */
-	// private boolean equalPaintMaps(Map<Comparable, Paint> map1,
-	// Map<Comparable, Paint> map2) {
-	// if (map1.size() != map2.size()) {
-	// return false;
-	// }
-	// for (Map.Entry<Comparable, Paint> entry : map1.entrySet()) {
-	// Paint p1 = entry.getValue();
-	// Paint p2 = map2.get(entry.getKey());
-	// if (!PaintUtils.equal(p1, p2)) {
-	// return false;
-	// }
-	// }
-	// return true;
-	// }
-	//
+	/**
+	 * Creates a clone of the axis.
+	 *
+	 * @return A clone.
+	 *
+	 * @throws CloneNotSupportedException
+	 *             if some component of the axis does not support cloning.
+	 */
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+		CategoryAxis clone = (CategoryAxis) super.clone();
+		clone.tickLabelFontMap = new HashMap<Comparable,
+				Font>(this.tickLabelFontMap);
+		clone.tickLabelPaintMap = new HashMap<Comparable,
+				Paint>(this.tickLabelPaintMap);
+		clone.categoryLabelToolTips = new HashMap<Comparable,
+				String>(this.categoryLabelToolTips);
+		clone.categoryLabelURLs = new HashMap<Comparable,
+				String>(this.categoryLabelToolTips);
+		return clone;
+	}
+
+	/**
+	 * Tests this axis for equality with an arbitrary object.
+	 *
+	 * @param obj
+	 *            the object (<code>null</code> permitted).
+	 *
+	 * @return A boolean.
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == this) {
+			return true;
+		}
+		if (!(obj instanceof CategoryAxis)) {
+			return false;
+		}
+		if (!super.equals(obj)) {
+			return false;
+		}
+		CategoryAxis that = (CategoryAxis) obj;
+		if (that.lowerMargin != this.lowerMargin) {
+			return false;
+		}
+		if (that.upperMargin != this.upperMargin) {
+			return false;
+		}
+		if (that.categoryMargin != this.categoryMargin) {
+			return false;
+		}
+		if (that.maximumCategoryLabelWidthRatio
+				!= this.maximumCategoryLabelWidthRatio) {
+			return false;
+		}
+		if (that.categoryLabelPositionOffset
+				!= this.categoryLabelPositionOffset) {
+			return false;
+		}
+		if (!ObjectUtils.equal(that.categoryLabelPositions,
+				this.categoryLabelPositions)) {
+			return false;
+		}
+		if (!ObjectUtils.equal(that.categoryLabelToolTips,
+				this.categoryLabelToolTips)) {
+			return false;
+		}
+		if (!ObjectUtils.equal(this.categoryLabelURLs,
+				that.categoryLabelURLs)) {
+			return false;
+		}
+		if (!ObjectUtils.equal(this.tickLabelFontMap,
+				that.tickLabelFontMap)) {
+			return false;
+		}
+		if (!equalPaintMaps(this.tickLabelPaintMap, that.tickLabelPaintMap)) {
+			return false;
+		}
+		return true;
+	}
+
+	/**
+	 * Returns a hash code for this object.
+	 *
+	 * @return A hash code.
+	 */
+	@Override
+	public int hashCode() {
+		return super.hashCode();
+	}
+
+	/**
+	 * Provides serialization support.
+	 *
+	 * @param stream
+	 *            the output stream.
+	 *
+	 * @throws IOException
+	 *             if there is an I/O error.
+	 */
+	private void writeObject(ObjectOutputStream stream) throws IOException {
+		stream.defaultWriteObject();
+		writePaintMap(this.tickLabelPaintMap, stream);
+	}
+
+	/**
+	 * Provides serialization support.
+	 *
+	 * @param stream
+	 *            the input stream.
+	 *
+	 * @throws IOException
+	 *             if there is an I/O error.
+	 * @throws ClassNotFoundException
+	 *             if there is a classpath problem.
+	 */
+	private void readObject(ObjectInputStream stream)
+			throws IOException, ClassNotFoundException {
+		stream.defaultReadObject();
+		this.tickLabelPaintMap = readPaintMap(stream);
+	}
+
+	/**
+	 * Reads a <code>Map</code> of (<code>Comparable</code>, <code>Paint</code>)
+	 * elements from a stream.
+	 *
+	 * @param in
+	 *            the input stream.
+	 *
+	 * @return The map.
+	 *
+	 * @throws IOException
+	 * @throws ClassNotFoundException
+	 *
+	 * @see #writePaintMap(Map, ObjectOutputStream)
+	 */
+	private Map<Comparable, Paint> readPaintMap(ObjectInputStream in)
+			throws IOException, ClassNotFoundException {
+		boolean isNull = in.readBoolean();
+		if (isNull) {
+			return null;
+		}
+		Map<Comparable, Paint> result = new HashMap<Comparable, Paint>();
+		int count = in.readInt();
+		for (int i = 0; i < count; i++) {
+			Comparable category = (Comparable) in.readObject();
+			Paint paint = SerialUtils.readPaint(in);
+			result.put(category, paint);
+		}
+		return result;
+	}
+
+	/**
+	 * Writes a map of (<code>Comparable</code>, <code>Paint</code>) elements to
+	 * a stream.
+	 *
+	 * @param map
+	 *            the map (<code>null</code> permitted).
+	 *
+	 * @param out
+	 * @throws IOException
+	 *
+	 * @see #readPaintMap(ObjectInputStream)
+	 */
+	private void writePaintMap(Map<Comparable, Paint> map, ObjectOutputStream
+			out)
+			throws IOException {
+		if (map == null) {
+			out.writeBoolean(true);
+		}
+		else {
+			out.writeBoolean(false);
+			Set<Comparable> keys = map.keySet();
+			int count = keys.size();
+			out.writeInt(count);
+			for (Comparable key : keys) {
+				out.writeObject(key);
+				SerialUtils.writePaint(map.get(key), out);
+			}
+		}
+	}
+
+	/**
+	 * Tests two maps containing (<code>Comparable</code>, <code>Paint</code>)
+	 * elements for equality.
+	 *
+	 * @param map1
+	 *            the first map (<code>null</code> not permitted).
+	 * @param map2
+	 *            the second map (<code>null</code> not permitted).
+	 *
+	 * @return A boolean.
+	 */
+	private boolean equalPaintMaps(Map<Comparable, Paint> map1,
+			Map<Comparable, Paint> map2) {
+		if (map1.size() != map2.size()) {
+			return false;
+		}
+		for (Map.Entry<Comparable, Paint> entry : map1.entrySet()) {
+			Paint p1 = entry.getValue();
+			Paint p2 = map2.get(entry.getKey());
+			if (!PaintUtils.equal(p1, p2)) {
+				return false;
+			}
+		}
+		return true;
+	}
+
 }

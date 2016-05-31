@@ -95,6 +95,11 @@
 
 package org.jfree.chart.renderer.category;
 
+import static org.jfree.chart.util.ShapeUtils.asShape;
+import static org.jfree.chart.util.ShapeUtils.fillShape;
+import static org.jfree.chart.util.ShapeUtils.outlineShape;
+import static org.jfree.geometry.GeometryUtils.newLine;
+
 import java.io.Serializable;
 
 import org.jfree.chart.LegendItem;
@@ -110,8 +115,11 @@ import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.data.category.CategoryDataset;
 
+import com.sun.javafx.geom.Shape;
+
 import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.paint.Paint;
 
 /**
  * A renderer that draws shapes for each data item, and lines between data items
@@ -655,67 +663,70 @@ public class LineAndShapeRenderer extends AbstractCategoryItemRenderer
 		fireChangeEvent();
 	}
 
-	//
-	// /**
-	// * Returns a legend item for a series.
-	// *
-	// * @param datasetIndex the dataset index (zero-based).
-	// * @param series the series index (zero-based).
-	// *
-	// * @return The legend item.
-	// */
-	// @Override
-	// public LegendItem getLegendItem(int datasetIndex, int series) {
-	//
-	// CategoryPlot cp = getPlot();
-	// if (cp == null) {
-	// return null;
-	// }
-	//
-	// if (isSeriesVisible(series) && isSeriesVisibleInLegend(series)) {
-	// CategoryDataset dataset = cp.getDataset(datasetIndex);
-	// String label = getLegendItemLabelGenerator().generateLabel(
-	// dataset, series);
-	// String description = label;
-	// String toolTipText = null;
-	// if (getLegendItemToolTipGenerator() != null) {
-	// toolTipText = getLegendItemToolTipGenerator().generateLabel(
-	// dataset, series);
-	// }
-	// String urlText = null;
-	// if (getLegendItemURLGenerator() != null) {
-	// urlText = getLegendItemURLGenerator().generateLabel(
-	// dataset, series);
-	// }
-	// Shape shape = lookupLegendShape(series);
-	// Paint paint = lookupSeriesPaint(series);
-	// Paint fillPaint = (this.useFillPaint
-	// ? getItemFillPaint(series, 0) : paint);
-	// boolean shapeOutlineVisible = this.drawOutlines;
-	// Paint outlinePaint = (this.useOutlinePaint
-	// ? getItemOutlinePaint(series, 0) : paint);
-	// Stroke outlineStroke = lookupSeriesOutlineStroke(series);
-	// boolean lineVisible = getItemLineVisible(series, 0);
-	// boolean shapeVisible = getItemShapeVisible(series, 0);
-	// LegendItem result = new LegendItem(label, description, toolTipText,
-	// urlText, shapeVisible, shape, getItemShapeFilled(series, 0),
-	// fillPaint, shapeOutlineVisible, outlinePaint, outlineStroke,
-	// lineVisible, new Line2D.Double(-7.0, 0.0, 7.0, 0.0),
-	// getItemStroke(series, 0), getItemPaint(series, 0));
-	// result.setLabelFont(lookupLegendTextFont(series));
-	// Paint labelPaint = lookupLegendTextPaint(series);
-	// if (labelPaint != null) {
-	// result.setLabelPaint(labelPaint);
-	// }
-	// result.setDataset(dataset);
-	// result.setDatasetIndex(datasetIndex);
-	// result.setSeriesKey(dataset.getRowKey(series));
-	// result.setSeriesIndex(series);
-	// return result;
-	// }
-	// return null;
-	//
-	// }
+	/**
+	 * Returns a legend item for a series.
+	 *
+	 * @param datasetIndex
+	 *            the dataset index (zero-based).
+	 * @param series
+	 *            the series index (zero-based).
+	 *
+	 * @return The legend item.
+	 */
+	@Override
+	public LegendItem getLegendItem(int datasetIndex, int series) {
+
+		CategoryPlot cp = getPlot();
+		if (cp == null) {
+			return null;
+		}
+
+		if (isSeriesVisible(series) && isSeriesVisibleInLegend(series)) {
+			CategoryDataset dataset = cp.getDataset(datasetIndex);
+			String label = getLegendItemLabelGenerator().generateLabel(
+					dataset, series);
+			String description = label;
+			String toolTipText = null;
+			if (getLegendItemToolTipGenerator() != null) {
+				toolTipText = getLegendItemToolTipGenerator().generateLabel(
+						dataset, series);
+			}
+			String urlText = null;
+			if (getLegendItemURLGenerator() != null) {
+				urlText = getLegendItemURLGenerator().generateLabel(
+						dataset, series);
+			}
+			Shape shape = lookupLegendShape(series);
+			Paint paint = lookupSeriesPaint(series);
+			Paint fillPaint = (this.useFillPaint
+					? getItemFillPaint(series, 0) : paint);
+			boolean shapeOutlineVisible = this.drawOutlines;
+			Paint outlinePaint = (this.useOutlinePaint
+					? getItemOutlinePaint(series, 0) : paint);
+			// JAVAFX stroke
+			// Stroke outlineStroke = lookupSeriesOutlineStroke(series);
+			boolean lineVisible = getItemLineVisible(series, 0);
+			boolean shapeVisible = getItemShapeVisible(series, 0);
+			LegendItem result = new LegendItem(label, description, toolTipText,
+					urlText, shapeVisible, shape, getItemShapeFilled(series, 0),
+					fillPaint, shapeOutlineVisible, outlinePaint,
+					/* JAVAFX outlineStroke, */
+					lineVisible, asShape(newLine(-7.0, 0.0, 7.0, 0.0)),
+					/* JAVAFX getItemStroke(series, 0), */getItemPaint(series, 0));
+			result.setLabelFont(lookupLegendTextFont(series));
+			Paint labelPaint = lookupLegendTextPaint(series);
+			if (labelPaint != null) {
+				result.setLabelPaint(labelPaint);
+			}
+			result.setDataset(dataset);
+			result.setDatasetIndex(datasetIndex);
+			result.setSeriesKey(dataset.getRowKey(series));
+			result.setSeriesIndex(series);
+			return result;
+		}
+		return null;
+
+	}
 
 	/**
 	 * This renderer uses two passes to draw the data.
@@ -836,8 +847,8 @@ public class LineAndShapeRenderer extends AbstractCategoryItemRenderer
 						endX = x1;
 						endY = y1;
 					}
-					// JAVAFX paint, stroke
-					// g2.setPaint(getItemPaint(row, column));
+					// JAVAFX stroke
+					g2.setStroke(getItemPaint(row, column));
 					// g2.setStroke(getItemStroke(row, column));
 					g2.strokeLine(startX, startY, endX, endY);
 				}
@@ -845,56 +856,56 @@ public class LineAndShapeRenderer extends AbstractCategoryItemRenderer
 		}
 
 		if (pass == 1) {
-			// JAVAFX
-			// Shape shape = getItemShape(row, column);
-			// if (orientation == PlotOrientation.HORIZONTAL) {
-			// shape = ShapeUtils.createTranslatedShape(shape, y1, x1);
-			// } else if (orientation == PlotOrientation.VERTICAL) {
-			// shape = ShapeUtils.createTranslatedShape(shape, x1, y1);
-			// }
-			//
-			// if (getItemShapeVisible(row, column)) {
-			// if (getItemShapeFilled(row, column)) {
-			// if (this.useFillPaint) {
-			// g2.setPaint(getItemFillPaint(row, column));
-			// } else {
-			// g2.setPaint(getItemPaint(row, column));
-			// }
-			// g2.fill(shape);
-			// }
-			// if (this.drawOutlines) {
-			// if (this.useOutlinePaint) {
-			// g2.setPaint(getItemOutlinePaint(row, column));
-			// } else {
-			// g2.setPaint(getItemPaint(row, column));
-			// }
-			// g2.setStroke(getItemOutlineStroke(row, column));
-			// g2.draw(shape);
-			// }
-			// }
-			//
-			// // draw the item label if there is one...
-			// if (isItemLabelVisible(row, column)) {
-			// if (orientation == PlotOrientation.HORIZONTAL) {
-			// drawItemLabel(g2, orientation, dataset, row, column, y1,
-			// x1, (value < 0.0));
-			// } else if (orientation == PlotOrientation.VERTICAL) {
-			// drawItemLabel(g2, orientation, dataset, row, column, x1,
-			// y1, (value < 0.0));
-			// }
-			// }
-			//
-			// // submit the current data point as a crosshair candidate
-			// int datasetIndex = plot.findDatasetIndex(dataset);
-			// updateCrosshairValues(state.getCrosshairState(),
-			// dataset.getRowKey(row), dataset.getColumnKey(column),
-			// value, datasetIndex, x1, y1, orientation);
-			//
-			// // add an item entity, if this information is being collected
-			// EntityCollection entities = state.getEntityCollection();
-			// if (entities != null) {
-			// addItemEntity(entities, dataset, row, column, shape);
-			// }
+			Shape shape = getItemShape(row, column);
+			if (orientation == PlotOrientation.HORIZONTAL) {
+				shape = ShapeUtils.createTranslatedShape(shape, y1, x1);
+			} else if (orientation == PlotOrientation.VERTICAL) {
+				shape = ShapeUtils.createTranslatedShape(shape, x1, y1);
+			}
+
+			if (getItemShapeVisible(row, column)) {
+				if (getItemShapeFilled(row, column)) {
+					if (this.useFillPaint) {
+						g2.setFill(getItemFillPaint(row, column));
+					} else {
+						g2.setFill(getItemPaint(row, column));
+					}
+					fillShape(g2, shape);
+				}
+				if (this.drawOutlines) {
+					if (this.useOutlinePaint) {
+						g2.setStroke(getItemOutlinePaint(row, column));
+					} else {
+						g2.setStroke(getItemPaint(row, column));
+					}
+					// JAVAFX stroke
+					// g2.setStroke(getItemOutlineStroke(row, column));
+					outlineShape(g2, shape);
+				}
+			}
+
+			// draw the item label if there is one...
+			if (isItemLabelVisible(row, column)) {
+				if (orientation == PlotOrientation.HORIZONTAL) {
+					drawItemLabel(g2, orientation, dataset, row, column, y1,
+							x1, (value < 0.0));
+				} else if (orientation == PlotOrientation.VERTICAL) {
+					drawItemLabel(g2, orientation, dataset, row, column, x1,
+							y1, (value < 0.0));
+				}
+			}
+
+			// submit the current data point as a crosshair candidate
+			int datasetIndex = plot.findDatasetIndex(dataset);
+			updateCrosshairValues(state.getCrosshairState(),
+					dataset.getRowKey(row), dataset.getColumnKey(column),
+					value, datasetIndex, x1, y1, orientation);
+
+			// add an item entity, if this information is being collected
+			EntityCollection entities = state.getEntityCollection();
+			if (entities != null) {
+				addItemEntity(entities, dataset, row, column, shape);
+			}
 		}
 
 	}

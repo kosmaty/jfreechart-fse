@@ -72,6 +72,7 @@
 
 package org.jfree.chart.renderer.xy;
 
+import static org.jfree.chart.util.ShapeUtils.asShape;
 import static org.jfree.geometry.GeometryUtils.newLine;
 import static org.jfree.geometry.GeometryUtils.strokeLine;
 
@@ -109,6 +110,7 @@ import com.sun.javafx.geom.Shape;
 
 import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.paint.Paint;
 
 /**
  * A renderer that connects data points with lines and/or draws shapes at each
@@ -136,9 +138,8 @@ public class XYLineAndShapeRenderer extends AbstractXYItemRenderer
 	/** The default value returned by the getLinesVisible() method. */
 	private boolean baseLinesVisible;
 
-	// JAVAFX shape
-	// /** The shape that is used to represent a line in the legend. */
-	// private transient Shape legendLine;
+	/** The shape that is used to represent a line in the legend. */
+	private transient Shape legendLine;
 
 	/**
 	 * A table of flags that control (per series) whether or not shapes are
@@ -197,8 +198,7 @@ public class XYLineAndShapeRenderer extends AbstractXYItemRenderer
 
 		this.seriesLinesVisible = new BooleanList();
 		this.baseLinesVisible = lines;
-		// JAVAFX shape
-		// this.legendLine = new Line2D.Double(-7.0, 0.0, 7.0, 0.0);
+		this.legendLine = asShape(newLine(-7.0, 0.0, 7.0, 0.0));
 
 		this.seriesShapesVisible = new BooleanList();
 		this.baseShapesVisible = shapes;
@@ -347,34 +347,33 @@ public class XYLineAndShapeRenderer extends AbstractXYItemRenderer
 		fireChangeEvent();
 	}
 
-	// JAVAFX shape
-	// /**
-	// * Returns the shape used to represent a line in the legend.
-	// *
-	// * @return The legend line (never {@code null}).
-	// *
-	// * @see #setLegendLine(Shape)
-	// */
-	// public Shape getLegendLine() {
-	// return this.legendLine;
-	// }
-	//
-	// /**
-	// * Sets the shape used as a line in each legend item and sends a
-	// * {@link RendererChangeEvent} to all registered listeners.
-	// *
-	// * @param line
-	// * the line ({@code null} not permitted).
-	// *
-	// * @see #getLegendLine()
-	// */
-	// public void setLegendLine(Shape line) {
-	// if (line == null) {
-	// throw new IllegalArgumentException("Null 'line' argument.");
-	// }
-	// this.legendLine = line;
-	// fireChangeEvent();
-	// }
+	/**
+	 * Returns the shape used to represent a line in the legend.
+	 *
+	 * @return The legend line (never {@code null}).
+	 *
+	 * @see #setLegendLine(Shape)
+	 */
+	public Shape getLegendLine() {
+		return this.legendLine;
+	}
+
+	/**
+	 * Sets the shape used as a line in each legend item and sends a
+	 * {@link RendererChangeEvent} to all registered listeners.
+	 *
+	 * @param line
+	 *            the line ({@code null} not permitted).
+	 *
+	 * @see #getLegendLine()
+	 */
+	public void setLegendLine(Shape line) {
+		if (line == null) {
+			throw new IllegalArgumentException("Null 'line' argument.");
+		}
+		this.legendLine = line;
+		fireChangeEvent();
+	}
 
 	// SHAPES VISIBLE
 
@@ -1206,35 +1205,35 @@ public class XYLineAndShapeRenderer extends AbstractXYItemRenderer
 					series);
 		}
 		boolean shapeIsVisible = getItemShapeVisible(series, 0);
-		// JAVAFX
-		// Shape shape = lookupLegendShape(series);
-		// boolean shapeIsFilled = getItemShapeFilled(series, 0);
-		// Paint fillPaint = (this.useFillPaint ? lookupSeriesFillPaint(series)
-		// : lookupSeriesPaint(series));
-		// boolean shapeOutlineVisible = this.drawOutlines;
-		// Paint outlinePaint = (this.useOutlinePaint ?
-		// lookupSeriesOutlinePaint(
-		// series) : lookupSeriesPaint(series));
+		Shape shape = lookupLegendShape(series);
+		boolean shapeIsFilled = getItemShapeFilled(series, 0);
+		Paint fillPaint = (this.useFillPaint ? lookupSeriesFillPaint(series)
+				: lookupSeriesPaint(series));
+		boolean shapeOutlineVisible = this.drawOutlines;
+		Paint outlinePaint = (this.useOutlinePaint ?
+				lookupSeriesOutlinePaint(
+				series) : lookupSeriesPaint(series));
+		// JAVAFX stroke
 		// Stroke outlineStroke = lookupSeriesOutlineStroke(series);
-		// boolean lineVisible = getItemLineVisible(series, 0);
+		boolean lineVisible = getItemLineVisible(series, 0);
+		// JAVAFX stroke
 		// Stroke lineStroke = lookupSeriesStroke(series);
-		// Paint linePaint = lookupSeriesPaint(series);
-		// LegendItem result = new LegendItem(label, description, toolTipText,
-		// urlText, shapeIsVisible, shape, shapeIsFilled, fillPaint,
-		// shapeOutlineVisible, outlinePaint, outlineStroke, lineVisible,
-		// this.legendLine, lineStroke, linePaint);
-		// result.setLabelFont(lookupLegendTextFont(series));
-		// Paint labelPaint = lookupLegendTextPaint(series);
-		// if (labelPaint != null) {
-		// result.setLabelPaint(labelPaint);
-		// }
-		// result.setSeriesKey(dataset.getSeriesKey(series));
-		// result.setSeriesIndex(series);
-		// result.setDataset(dataset);
-		// result.setDatasetIndex(datasetIndex);
-		//
-		// return result;
-		return new LegendItem(); // JAVAFX fake return
+		Paint linePaint = lookupSeriesPaint(series);
+		LegendItem result = new LegendItem(label, description, toolTipText,
+				urlText, shapeIsVisible, shape, shapeIsFilled, fillPaint,
+				shapeOutlineVisible, outlinePaint, /* JAVAFX outlineStroke, */lineVisible,
+				this.legendLine, /* JAVAFX lineStroke, */linePaint);
+		result.setLabelFont(lookupLegendTextFont(series));
+		Paint labelPaint = lookupLegendTextPaint(series);
+		if (labelPaint != null) {
+			result.setLabelPaint(labelPaint);
+		}
+		result.setSeriesKey(dataset.getSeriesKey(series));
+		result.setSeriesIndex(series);
+		result.setDataset(dataset);
+		result.setDatasetIndex(datasetIndex);
+
+		return result;
 
 	}
 
@@ -1286,10 +1285,9 @@ public class XYLineAndShapeRenderer extends AbstractXYItemRenderer
 		if (this.baseLinesVisible != that.baseLinesVisible) {
 			return false;
 		}
-		// JAVAFX
-		// if (!ShapeUtils.equal(this.legendLine, that.legendLine)) {
-		// return false;
-		// }
+		if (!ShapeUtils.equal(this.legendLine, that.legendLine)) {
+			return false;
+		}
 		if (!ObjectUtils.equal(this.seriesShapesVisible,
 				that.seriesShapesVisible)) {
 			return false;
@@ -1333,7 +1331,7 @@ public class XYLineAndShapeRenderer extends AbstractXYItemRenderer
 	private void readObject(ObjectInputStream stream)
 			throws IOException, ClassNotFoundException {
 		stream.defaultReadObject();
-		// JAVAFX
+		// JAVAFX serialization
 		// this.legendLine = SerialUtils.readShape(stream);
 	}
 
@@ -1348,7 +1346,7 @@ public class XYLineAndShapeRenderer extends AbstractXYItemRenderer
 	 */
 	private void writeObject(ObjectOutputStream stream) throws IOException {
 		stream.defaultWriteObject();
-		// JAVAFX
+		// JAVAFX serialization
 		// SerialUtils.writeShape(this.legendLine, stream);
 	}
 

@@ -1943,7 +1943,7 @@ public class CategoryPlot extends Plot implements
 		fireChangeEvent();
 	}
 
-	// JAVAFX stroke, paint
+	// JAVAFX stroke
 	//
 	// /**
 	// * Returns the stroke used to draw grid-lines against the domain axis.

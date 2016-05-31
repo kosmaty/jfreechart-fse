@@ -50,11 +50,6 @@
 package org.jfree.chart.text;
 
 // 
-// import java.awt.Font;
-// import java.awt.Graphics2D;
-// import java.awt.Paint;
-// import java.awt.Shape;
-// import java.awt.geom.Rectangle2D;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
@@ -64,6 +59,8 @@ import org.jfree.chart.ui.Size2D;
 import org.jfree.chart.ui.TextAnchor;
 import org.jfree.chart.util.ParamChecks;
 import org.jfree.chart.util.ShapeUtils;
+
+import com.sun.javafx.geom.Shape;
 
 import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.GraphicsContext;
@@ -180,37 +177,37 @@ public class TextBlock implements Serializable {
 		return new Size2D(width, height);
 	}
 
-	// /**
-	// * Returns the bounds of the text block.
-	// *
-	// * @param g2
-	// * the graphics device (<code>null</code> not permitted).
-	// * @param anchorX
-	// * the x-coordinate for the anchor point.
-	// * @param anchorY
-	// * the y-coordinate for the anchor point.
-	// * @param anchor
-	// * the text block anchor (<code>null</code> not permitted).
-	// * @param rotateX
-	// * the x-coordinate for the rotation point.
-	// * @param rotateY
-	// * the y-coordinate for the rotation point.
-	// * @param angle
-	// * the rotation angle.
-	// *
-	// * @return The bounds.
-	// */
-	// public Shape calculateBounds(Graphics2D g2, float anchorX, float anchorY,
-	// TextBlockAnchor anchor, float rotateX, float rotateY,
-	// double angle) {
-	// Size2D d = calculateDimensions(g2);
-	// float[] offsets = calculateOffsets(anchor, d.getWidth(), d.getHeight());
-	// Rectangle2D bounds = new Rectangle2D(anchorX + offsets[0],
-	// anchorY + offsets[1], d.getWidth(), d.getHeight());
-	// Shape rotatedBounds = ShapeUtils.rotateShape(bounds, angle,
-	// rotateX, rotateY);
-	// return rotatedBounds;
-	// }
+	/**
+	 * Returns the bounds of the text block.
+	 *
+	 * @param g2
+	 *            the graphics device (<code>null</code> not permitted).
+	 * @param anchorX
+	 *            the x-coordinate for the anchor point.
+	 * @param anchorY
+	 *            the y-coordinate for the anchor point.
+	 * @param anchor
+	 *            the text block anchor (<code>null</code> not permitted).
+	 * @param rotateX
+	 *            the x-coordinate for the rotation point.
+	 * @param rotateY
+	 *            the y-coordinate for the rotation point.
+	 * @param angle
+	 *            the rotation angle.
+	 *
+	 * @return The bounds.
+	 */
+	public Shape calculateBounds(GraphicsContext g2, float anchorX, float anchorY,
+			TextBlockAnchor anchor, float rotateX, float rotateY,
+			double angle) {
+		Size2D d = calculateDimensions(g2);
+		float[] offsets = calculateOffsets(anchor, d.getWidth(), d.getHeight());
+		Rectangle2D bounds = new Rectangle2D(anchorX + offsets[0],
+				anchorY + offsets[1], d.getWidth(), d.getHeight());
+		Shape rotatedBounds = ShapeUtils.rotateShape(ShapeUtils.asShape(bounds), angle,
+				rotateX, rotateY);
+		return rotatedBounds;
+	}
 
 	/**
 	 * Draws the text block at a specific location.

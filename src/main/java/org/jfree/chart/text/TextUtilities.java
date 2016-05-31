@@ -79,7 +79,10 @@ import java.text.BreakIterator;
 
 import org.jfree.chart.ui.TextAnchor;
 import org.jfree.chart.util.ParamChecks;
+import org.jfree.chart.util.ShapeUtils;
 
+import com.sun.javafx.geom.Shape;
+import com.sun.javafx.geom.transform.BaseTransform;
 import com.sun.javafx.tk.FontMetrics;
 import com.sun.javafx.tk.Toolkit;
 
@@ -322,6 +325,25 @@ public class TextUtilities {
 			Font font) {
 
 		FontMetrics fm = getFontMetrics(font);
+		return getTextBounds(text, g2, fm);
+	}
+
+	/**
+	 * Returns the bounds for the specified text.
+	 *
+	 * @param text
+	 *            the text ({@code null} permitted).
+	 * @param g2
+	 *            the graphics context (not {@code null}).
+	 * @param fm
+	 *            the font metrics (not {@code null}).
+	 *
+	 * @return The text bounds ({@code null} if the {@code text} argument is
+	 *         {@code null}).
+	 */
+	public static Rectangle2D getTextBounds(String text, GraphicsContext g2,
+			FontMetrics fm) {
+
 		Rectangle2D bounds;
 		// JAVAFX - porting probably not needed
 		// if (TextUtilities.useFontMetricsGetStringBounds) { // default FALSE
@@ -688,40 +710,45 @@ public class TextUtilities {
 
 	}
 
-	//
-	// /**
-	// * Returns a shape that represents the bounds of the string after the
-	// * specified rotation has been applied.
-	// *
-	// * @param text the text ({@code null} permitted).
-	// * @param g2 the graphics device.
-	// * @param x the x coordinate for the anchor point.
-	// * @param y the y coordinate for the anchor point.
-	// * @param textAnchor the text anchor.
-	// * @param angle the angle.
-	// * @param rotationAnchor the rotation anchor.
-	// *
-	// * @return The bounds (possibly {@code null}).
-	// */
-	// public static Shape calculateRotatedStringBounds(String text, Graphics2D
-	// g2,
-	// float x, float y, TextAnchor textAnchor, double angle,
-	// TextAnchor rotationAnchor) {
-	//
-	// if (text == null || text.equals("")) {
-	// return null;
-	// }
-	// float[] textAdj = deriveTextBoundsAnchorOffsets(g2, text, textAnchor,
-	// null);
-	// float[] rotateAdj = deriveRotationAnchorOffsets(g2, text,
-	// rotationAnchor);
-	// Shape result = calculateRotatedStringBounds(text, g2,
-	// x + textAdj[0], y + textAdj[1], angle,
-	// x + textAdj[0] + rotateAdj[0], y + textAdj[1] + rotateAdj[1]);
-	// return result;
-	//
-	// }
-	//
+	/**
+	 * Returns a shape that represents the bounds of the string after the
+	 * specified rotation has been applied.
+	 *
+	 * @param text
+	 *            the text ({@code null} permitted).
+	 * @param g2
+	 *            the graphics device.
+	 * @param x
+	 *            the x coordinate for the anchor point.
+	 * @param y
+	 *            the y coordinate for the anchor point.
+	 * @param textAnchor
+	 *            the text anchor.
+	 * @param angle
+	 *            the angle.
+	 * @param rotationAnchor
+	 *            the rotation anchor.
+	 *
+	 * @return The bounds (possibly {@code null}).
+	 */
+	public static Shape calculateRotatedStringBounds(String text, GraphicsContext g2,
+			float x, float y, TextAnchor textAnchor, double angle,
+			TextAnchor rotationAnchor) {
+
+		if (text == null || text.equals("")) {
+			return null;
+		}
+		float[] textAdj = deriveTextBoundsAnchorOffsets(g2, text, textAnchor,
+				null);
+		float[] rotateAdj = deriveRotationAnchorOffsets(g2, text,
+				rotationAnchor);
+		Shape result = calculateRotatedStringBounds(text, g2,
+				x + textAdj[0], y + textAdj[1], angle,
+				x + textAdj[0] + rotateAdj[0], y + textAdj[1] + rotateAdj[1]);
+		return result;
+
+	}
+
 	/**
 	 * A utility method that calculates the rotation anchor offsets for a
 	 * string. These offsets are relative to the text starting coordinate (
@@ -777,41 +804,47 @@ public class TextUtilities {
 		return result;
 	}
 
-	//
-	// /**
-	// * Returns a shape that represents the bounds of the string after the
-	// * specified rotation has been applied.
-	// *
-	// * @param text the text ({@code null} permitted).
-	// * @param g2 the graphics device.
-	// * @param textX the x coordinate for the text.
-	// * @param textY the y coordinate for the text.
-	// * @param angle the angle.
-	// * @param rotateX the x coordinate for the rotation point.
-	// * @param rotateY the y coordinate for the rotation point.
-	// *
-	// * @return The bounds ({@code null} if {@code text} is {@code null} or has
-	// * zero length).
-	// */
-	// public static Shape calculateRotatedStringBounds(String text, Graphics2D
-	// g2,
-	// float textX, float textY, double angle, float rotateX,
-	// float rotateY) {
-	//
-	// if ((text == null) || (text.equals(""))) {
-	// return null;
-	// }
-	// FontMetrics fm = g2.getFontMetrics();
-	// Rectangle2D bounds = TextUtilities.getTextBounds(text, g2, fm);
-	// AffineTransform translate = AffineTransform.getTranslateInstance(
-	// textX, textY);
-	// Shape translatedBounds = translate.createTransformedShape(bounds);
-	// AffineTransform rotate = AffineTransform.getRotateInstance(angle,
-	// rotateX, rotateY);
-	// Shape result = rotate.createTransformedShape(translatedBounds);
-	// return result;
-	//
-	// }
+	/**
+	 * Returns a shape that represents the bounds of the string after the
+	 * specified rotation has been applied.
+	 *
+	 * @param text
+	 *            the text ({@code null} permitted).
+	 * @param g2
+	 *            the graphics device.
+	 * @param textX
+	 *            the x coordinate for the text.
+	 * @param textY
+	 *            the y coordinate for the text.
+	 * @param angle
+	 *            the angle.
+	 * @param rotateX
+	 *            the x coordinate for the rotation point.
+	 * @param rotateY
+	 *            the y coordinate for the rotation point.
+	 *
+	 * @return The bounds ({@code null} if {@code text} is {@code null} or has
+	 *         zero length).
+	 */
+	public static Shape calculateRotatedStringBounds(String text, GraphicsContext g2,
+			float textX, float textY, double angle, float rotateX,
+			float rotateY) {
+
+		if ((text == null) || (text.equals(""))) {
+			return null;
+		}
+		FontMetrics fm = getFontMetrics(g2);
+		Rectangle2D bounds = TextUtilities.getTextBounds(text, g2, fm);
+		BaseTransform translate = BaseTransform.getTranslateInstance(
+				textX, textY);
+		Shape translatedBounds = translate.createTransformedShape(ShapeUtils.asShape(bounds));
+		BaseTransform rotate = BaseTransform.getRotateInstance(angle,
+				rotateX, rotateY);
+		Shape result = rotate.createTransformedShape(translatedBounds);
+		return result;
+
+	}
+
 	//
 	// /**
 	// * Returns the flag that controls whether the

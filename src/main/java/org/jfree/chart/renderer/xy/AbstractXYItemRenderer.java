@@ -191,6 +191,8 @@ import org.jfree.data.general.DatasetUtilities;
 import org.jfree.data.xy.XYDataset;
 import org.jfree.geometry.Line2D;
 
+import com.sun.javafx.geom.Shape;
+
 import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.GraphicsContext;
@@ -978,36 +980,36 @@ public abstract class AbstractXYItemRenderer extends AbstractRenderer
 			urlText = getLegendItemURLGenerator().generateLabel(dataset,
 					series);
 		}
-		// JAVAFX
-		// Shape shape = lookupLegendShape(series);
-		// Paint paint = lookupSeriesPaint(series);
-		// LegendItem item = new LegendItem(label, paint);
-		// item.setToolTipText(toolTipText);
-		// item.setURLText(urlText);
-		// item.setLabelFont(lookupLegendTextFont(series));
-		// Paint labelPaint = lookupLegendTextPaint(series);
-		// if (labelPaint != null) {
-		// item.setLabelPaint(labelPaint);
-		// }
-		// item.setSeriesKey(dataset.getSeriesKey(series));
-		// item.setSeriesIndex(series);
-		// item.setDataset(dataset);
-		// item.setDatasetIndex(datasetIndex);
-		//
-		// if (getTreatLegendShapeAsLine()) {
-		// item.setLineVisible(true);
-		// item.setLine(shape);
-		// item.setLinePaint(paint);
-		// item.setShapeVisible(false);
-		// }
-		// else {
-		// Paint outlinePaint = lookupSeriesOutlinePaint(series);
-		// Stroke outlineStroke = lookupSeriesOutlineStroke(series);
-		// item.setOutlinePaint(outlinePaint);
-		// item.setOutlineStroke(outlineStroke);
-		// }
-		// return item;
-		return new LegendItem(); // JAVAFX fake return
+		Shape shape = lookupLegendShape(series);
+		Paint paint = lookupSeriesPaint(series);
+		LegendItem item = new LegendItem(label, paint);
+		item.setToolTipText(toolTipText);
+		item.setURLText(urlText);
+		item.setLabelFont(lookupLegendTextFont(series));
+		Paint labelPaint = lookupLegendTextPaint(series);
+		if (labelPaint != null) {
+			item.setLabelPaint(labelPaint);
+		}
+		item.setSeriesKey(dataset.getSeriesKey(series));
+		item.setSeriesIndex(series);
+		item.setDataset(dataset);
+		item.setDatasetIndex(datasetIndex);
+
+		if (getTreatLegendShapeAsLine()) {
+			item.setLineVisible(true);
+			item.setLine(shape);
+			item.setLinePaint(paint);
+			item.setShapeVisible(false);
+		}
+		else {
+			Paint outlinePaint = lookupSeriesOutlinePaint(series);
+			// JAVAFX stroke
+			// Stroke outlineStroke = lookupSeriesOutlineStroke(series);
+			item.setOutlinePaint(outlinePaint);
+			// JAVAFX stroke
+			// item.setOutlineStroke(outlineStroke);
+		}
+		return item;
 	}
 
 	/**

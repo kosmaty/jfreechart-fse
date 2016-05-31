@@ -491,11 +491,11 @@ public class ChartCanvas extends Canvas implements ChartChangeListener
 				this.chart.draw(getGraphicsContext2D(), new Rectangle2D(0, 0, width,
 						height), this.anchor, this.info);
 			}
+			for (OverlayFX overlay : this.overlays) {
+				overlay.paintOverlay(ctx, this);
+			}
 		}
 		ctx.restore();
-		for (OverlayFX overlay : this.overlays) {
-			overlay.paintOverlay(ctx, this);
-		}
 		this.anchor = null;
 	}
 

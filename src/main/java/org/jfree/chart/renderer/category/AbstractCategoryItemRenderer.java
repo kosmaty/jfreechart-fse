@@ -1389,8 +1389,7 @@ public abstract class AbstractCategoryItemRenderer extends AbstractRenderer
 	 *
 	 * @see #getLegendItems()
 	 */
-	// JAVAFX
-	// @Override
+	@Override
 	public LegendItem getLegendItem(int datasetIndex, int series) {
 
 		CategoryPlot p = getPlot();
@@ -1422,20 +1421,19 @@ public abstract class AbstractCategoryItemRenderer extends AbstractRenderer
 		Paint outlinePaint = lookupSeriesOutlinePaint(series);
 		// JAVAFX stroke
 		// Stroke outlineStroke = lookupSeriesOutlineStroke(series);
-		//
-		// LegendItem item = new LegendItem(label, description, toolTipText,
-		// urlText, shape, paint, outlineStroke, outlinePaint);
-		// item.setLabelFont(lookupLegendTextFont(series));
-		// Paint labelPaint = lookupLegendTextPaint(series);
-		// if (labelPaint != null) {
-		// item.setLabelPaint(labelPaint);
-		// }
-		// item.setSeriesKey(dataset.getRowKey(series));
-		// item.setSeriesIndex(series);
-		// item.setDataset(dataset);
-		// item.setDatasetIndex(datasetIndex);
-		// return item;
-		return new LegendItem();
+
+		LegendItem item = new LegendItem(label, description, toolTipText,
+				urlText, shape, paint, /* JAVAFX outlineStroke, */outlinePaint);
+		item.setLabelFont(lookupLegendTextFont(series));
+		Paint labelPaint = lookupLegendTextPaint(series);
+		if (labelPaint != null) {
+			item.setLabelPaint(labelPaint);
+		}
+		item.setSeriesKey(dataset.getRowKey(series));
+		item.setSeriesIndex(series);
+		item.setDataset(dataset);
+		item.setDatasetIndex(datasetIndex);
+		return item;
 	}
 
 	/**
@@ -1776,43 +1774,43 @@ public abstract class AbstractCategoryItemRenderer extends AbstractRenderer
 		return result;
 	}
 
-	//
-	// /**
-	// * Returns the legend item label generator.
-	// *
-	// * @return The label generator (never {@code null}).
-	// *
-	// * @see #setLegendItemLabelGenerator(CategorySeriesLabelGenerator)
-	// */
-	// public CategorySeriesLabelGenerator getLegendItemLabelGenerator() {
-	// return this.legendItemLabelGenerator;
-	// }
-	//
-	// /**
-	// * Sets the legend item label generator and sends a
-	// * {@link RendererChangeEvent} to all registered listeners.
-	// *
-	// * @param generator the generator ({@code null} not permitted).
-	// *
-	// * @see #getLegendItemLabelGenerator()
-	// */
-	// public void setLegendItemLabelGenerator(
-	// CategorySeriesLabelGenerator generator) {
-	// ParamChecks.nullNotPermitted(generator, "generator");
-	// this.legendItemLabelGenerator = generator;
-	// fireChangeEvent();
-	// }
-	//
-	// /**
-	// * Returns the legend item tool tip generator.
-	// *
-	// * @return The tool tip generator (possibly {@code null}).
-	// *
-	// * @see #setLegendItemToolTipGenerator(CategorySeriesLabelGenerator)
-	// */
-	// public CategorySeriesLabelGenerator getLegendItemToolTipGenerator() {
-	// return this.legendItemToolTipGenerator;
-	// }
+	/**
+	 * Returns the legend item label generator.
+	 *
+	 * @return The label generator (never {@code null}).
+	 *
+	 * @see #setLegendItemLabelGenerator(CategorySeriesLabelGenerator)
+	 */
+	public CategorySeriesLabelGenerator getLegendItemLabelGenerator() {
+		return this.legendItemLabelGenerator;
+	}
+
+	/**
+	 * Sets the legend item label generator and sends a
+	 * {@link RendererChangeEvent} to all registered listeners.
+	 *
+	 * @param generator
+	 *            the generator ({@code null} not permitted).
+	 *
+	 * @see #getLegendItemLabelGenerator()
+	 */
+	public void setLegendItemLabelGenerator(
+			CategorySeriesLabelGenerator generator) {
+		ParamChecks.nullNotPermitted(generator, "generator");
+		this.legendItemLabelGenerator = generator;
+		fireChangeEvent();
+	}
+
+	/**
+	 * Returns the legend item tool tip generator.
+	 *
+	 * @return The tool tip generator (possibly {@code null}).
+	 *
+	 * @see #setLegendItemToolTipGenerator(CategorySeriesLabelGenerator)
+	 */
+	public CategorySeriesLabelGenerator getLegendItemToolTipGenerator() {
+		return this.legendItemToolTipGenerator;
+	}
 
 	/**
 	 * Sets the legend item tool tip generator and sends a

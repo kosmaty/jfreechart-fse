@@ -329,26 +329,30 @@ public class ShapeUtils {
 	// return transform.createTransformedShape(shape);
 	// }
 	//
-	// /**
-	// * Rotates a shape about the specified coordinates.
-	// *
-	// * @param base the shape ({@code null} permitted, returns
-	// * {@code null}).
-	// * @param angle the angle (in radians).
-	// * @param x the x coordinate for the rotation point (in Java2D space).
-	// * @param y the y coordinate for the rotation point (in Java2D space).
-	// *
-	// * @return the rotated shape.
-	// */
-	// public static Shape rotateShape(Shape base, double angle, float x,
-	// float y) {
-	// if (base == null) {
-	// return null;
-	// }
-	// AffineTransform rotate = AffineTransform.getRotateInstance(angle, x, y);
-	// Shape result = rotate.createTransformedShape(base);
-	// return result;
-	// }
+	/**
+	 * Rotates a shape about the specified coordinates.
+	 *
+	 * @param base
+	 *            the shape ({@code null} permitted, returns {@code null}).
+	 * @param angle
+	 *            the angle (in radians).
+	 * @param x
+	 *            the x coordinate for the rotation point (in Java2D space).
+	 * @param y
+	 *            the y coordinate for the rotation point (in Java2D space).
+	 *
+	 * @return the rotated shape.
+	 */
+	public static Shape rotateShape(Shape base, double angle, float x,
+			float y) {
+		if (base == null) {
+			return null;
+		}
+		BaseTransform rotate = BaseTransform.getRotateInstance(angle, x, y);
+		Shape result = rotate.createTransformedShape(base);
+		return result;
+	}
+
 	//
 	// /**
 	// * Draws a shape with the specified rotation about {@code (x, y)}.
