@@ -101,13 +101,6 @@
 
 package org.jfree.chart.axis;
 
-// 
-// import java.awt.Font;
-// import java.awt.FontMetrics;
-// import java.awt.Graphics2D;
-// import java.awt.font.FontRenderContext;
-// import java.awt.font.LineMetrics;
-// import java.awt.geom.Rectangle2D;
 import java.io.Serializable;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -122,9 +115,12 @@ import org.jfree.chart.event.AxisChangeEvent;
 import org.jfree.chart.plot.Plot;
 import org.jfree.chart.plot.PlotRenderingInfo;
 import org.jfree.chart.plot.ValueAxisPlot;
+import org.jfree.chart.text.TextUtilities;
 import org.jfree.chart.util.ParamChecks;
 import org.jfree.data.Range;
 import org.jfree.data.RangeType;
+
+import com.sun.javafx.tk.FontMetrics;
 
 import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.GraphicsContext;
@@ -185,8 +181,8 @@ public class NumberAxis extends ValueAxis implements Cloneable, Serializable {
 	/** The override number format. */
 	private NumberFormat numberFormatOverride;
 
-	// /** An optional band for marking regions on the axis. */
-	// private MarkerAxisBand markerBand;
+	/** An optional band for marking regions on the axis. */
+	private MarkerAxisBand markerBand;
 
 	/**
 	 * Default constructor.
@@ -208,8 +204,7 @@ public class NumberAxis extends ValueAxis implements Cloneable, Serializable {
 		this.autoRangeStickyZero = DEFAULT_AUTO_RANGE_STICKY_ZERO;
 		this.tickUnit = DEFAULT_TICK_UNIT;
 		this.numberFormatOverride = null;
-		// JAVAFX
-		// this.markerBand = null;
+		this.markerBand = null;
 	}
 
 	/**
@@ -389,34 +384,33 @@ public class NumberAxis extends ValueAxis implements Cloneable, Serializable {
 		notifyListeners(new AxisChangeEvent(this));
 	}
 
-	// JAVAFX
-	//
-	// /**
-	// * Returns the (optional) marker band for the axis.
-	// *
-	// * @return The marker band (possibly {@code null}).
-	// *
-	// * @see #setMarkerBand(MarkerAxisBand)
-	// */
-	// public MarkerAxisBand getMarkerBand() {
-	// return this.markerBand;
-	// }
-	//
-	// /**
-	// * Sets the marker band for the axis.
-	// * <P>
-	// * The marker band is optional, leave it set to {@code null} if you
-	// * don't require it.
-	// *
-	// * @param band the new band ({@code null} permitted).
-	// *
-	// * @see #getMarkerBand()
-	// */
-	// public void setMarkerBand(MarkerAxisBand band) {
-	// this.markerBand = band;
-	// notifyListeners(new AxisChangeEvent(this));
-	// }
-	//
+	/**
+	 * Returns the (optional) marker band for the axis.
+	 *
+	 * @return The marker band (possibly {@code null}).
+	 *
+	 * @see #setMarkerBand(MarkerAxisBand)
+	 */
+	public MarkerAxisBand getMarkerBand() {
+		return this.markerBand;
+	}
+
+	/**
+	 * Sets the marker band for the axis.
+	 * <P>
+	 * The marker band is optional, leave it set to {@code null} if you don't
+	 * require it.
+	 *
+	 * @param band
+	 *            the new band ({@code null} permitted).
+	 *
+	 * @see #getMarkerBand()
+	 */
+	public void setMarkerBand(MarkerAxisBand band) {
+		this.markerBand = band;
+		notifyListeners(new AxisChangeEvent(this));
+	}
+
 	/**
 	 * Configures the axis to work with the specified plot. If the axis has
 	 * auto-scaling, then sets the maximum and minimum values.
@@ -770,9 +764,7 @@ public class NumberAxis extends ValueAxis implements Cloneable, Serializable {
 		double result = tickLabelInsets.getTop() + tickLabelInsets.getBottom();
 
 		Font tickLabelFont = getTickLabelFont();
-		// JAVAFX
-		// FontRenderContext frc = g2.getFontRenderContext();
-		// result += tickLabelFont.getLineMetrics("123", frc).getHeight();
+		result += TextUtilities.getFontMetrics(tickLabelFont).getLineHeight();
 		return result;
 	}
 
@@ -797,33 +789,30 @@ public class NumberAxis extends ValueAxis implements Cloneable, Serializable {
 		RectangleInsets tickLabelInsets = getTickLabelInsets();
 		double result = tickLabelInsets.getLeft() + tickLabelInsets.getRight();
 
-		// JAVAFX
-		// if (isVerticalTickLabels()) {
-		// // all tick labels have the same width (equal to the height of the
-		// // font)...
-		// FontRenderContext frc = g2.getFontRenderContext();
-		// LineMetrics lm = getTickLabelFont().getLineMetrics("0", frc);
-		// result += lm.getHeight();
-		// } else {
-		// // look at lower and upper bounds...
-		// FontMetrics fm = g2.getFontMetrics(getTickLabelFont());
-		// Range range = getRange();
-		// double lower = range.getLowerBound();
-		// double upper = range.getUpperBound();
-		// String lowerStr;
-		// String upperStr;
-		// NumberFormat formatter = getNumberFormatOverride();
-		// if (formatter != null) {
-		// lowerStr = formatter.format(lower);
-		// upperStr = formatter.format(upper);
-		// } else {
-		// lowerStr = unit.valueToString(lower);
-		// upperStr = unit.valueToString(upper);
-		// }
-		// double w1 = fm.stringWidth(lowerStr);
-		// double w2 = fm.stringWidth(upperStr);
-		// result += Math.max(w1, w2);
-		// }
+		if (isVerticalTickLabels()) {
+			// all tick labels have the same width (equal to the height of the
+			// font)...
+			result += TextUtilities.getFontMetrics(getTickLabelFont()).getLineHeight();
+		} else {
+			// look at lower and upper bounds...
+			FontMetrics fm = TextUtilities.getFontMetrics(getTickLabelFont());
+			Range range = getRange();
+			double lower = range.getLowerBound();
+			double upper = range.getUpperBound();
+			String lowerStr;
+			String upperStr;
+			NumberFormat formatter = getNumberFormatOverride();
+			if (formatter != null) {
+				lowerStr = formatter.format(lower);
+				upperStr = formatter.format(upper);
+			} else {
+				lowerStr = unit.valueToString(lower);
+				upperStr = unit.valueToString(upper);
+			}
+			double w1 = fm.computeStringWidth(lowerStr);
+			double w2 = fm.computeStringWidth(upperStr);
+			result += Math.max(w1, w2);
+		}
 		return result;
 	}
 

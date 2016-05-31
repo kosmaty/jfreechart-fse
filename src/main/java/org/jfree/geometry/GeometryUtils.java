@@ -40,4 +40,8 @@ public class GeometryUtils {
 	public static void fillRectangle(GraphicsContext context, Rectangle2D rectangle) {
 		context.fillRect(rectangle.getMinX(), rectangle.getMinY(), rectangle.getWidth(), rectangle.getHeight());
 	}
+
+	public static void strokeRectangle(GraphicsContext context, Rectangle2D rectangle) {
+		context.strokeRect(rectangle.getMinX(), rectangle.getMinY(), rectangle.getWidth(), rectangle.getHeight());
+	}
 }
