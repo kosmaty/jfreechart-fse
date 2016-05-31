@@ -249,6 +249,12 @@ import org.jfree.chart.util.PublicCloneable;
 import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontPosture;
+import javafx.scene.text.FontWeight;
+
 import org.jfree.chart.util.ResourceBundleWrapper;
 import org.jfree.chart.util.SerialUtils;
 // import org.jfree.chart.util.ShadowGenerator;
@@ -293,13 +299,13 @@ public class CategoryPlot extends Plot implements
 	// BasicStroke(0.5f,
 	// BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0.0f, new float[]
 	// {2.0f, 2.0f}, 0.0f);
-	//
-	// /** The default grid line paint. */
-	// public static final Paint DEFAULT_GRIDLINE_PAINT = Color.LIGHT_GRAY;
-	//
-	// /** The default value label font. */
-	// public static final Font DEFAULT_VALUE_LABEL_FONT = new Font("SansSerif",
-	// Font.PLAIN, 10);
+
+	/** The default grid line paint. */
+	public static final Paint DEFAULT_GRIDLINE_PAINT = Color.LIGHTGRAY;
+
+	/** The default value label font. */
+	public static final Font DEFAULT_VALUE_LABEL_FONT = Font.font("SansSerif",
+			FontWeight.NORMAL, FontPosture.REGULAR, 10);
 
 	/**
 	 * The default crosshair visibility.
@@ -316,13 +322,13 @@ public class CategoryPlot extends Plot implements
 	// public static final Stroke DEFAULT_CROSSHAIR_STROKE
 	// = DEFAULT_GRIDLINE_STROKE;
 	//
-	// /**
-	// * The default crosshair paint.
-	// *
-	// * @since 1.0.5
-	// */
-	// public static final Paint DEFAULT_CROSSHAIR_PAINT = Color.BLUE;
-	//
+	/**
+	 * The default crosshair paint.
+	 *
+	 * @since 1.0.5
+	 */
+	public static final Paint DEFAULT_CROSSHAIR_PAINT = Color.BLUE;
+
 	/** The resourceBundle for the localization. */
 	protected static ResourceBundle localizationResources = ResourceBundleWrapper.getBundle(
 			"org.jfree.chart.plot.LocalizationBundle");
@@ -386,13 +392,15 @@ public class CategoryPlot extends Plot implements
 
 	/** The position of the domain gridlines relative to the category. */
 	private CategoryAnchor domainGridlinePosition;
+
+	// JAVAFX stroke
 	//
 	// /** The stroke used to draw the domain grid-lines. */
 	// private transient Stroke domainGridlineStroke;
-	//
-	// /** The paint used to draw the domain grid-lines. */
-	// private transient Paint domainGridlinePaint;
-	//
+
+	/** The paint used to draw the domain grid-lines. */
+	private transient Paint domainGridlinePaint;
+
 	/**
 	 * A flag that controls whether or not the zero baseline against the range
 	 * axis is visible.
@@ -400,32 +408,33 @@ public class CategoryPlot extends Plot implements
 	 * @since 1.0.13
 	 */
 	private boolean rangeZeroBaselineVisible;
-	//
+	// JAVAFX stroke
 	// /**
 	// * The stroke used for the zero baseline against the range axis.
 	// *
 	// * @since 1.0.13
 	// */
 	// private transient Stroke rangeZeroBaselineStroke;
-	//
-	// /**
-	// * The paint used for the zero baseline against the range axis.
-	// *
-	// * @since 1.0.13
-	// */
-	// private transient Paint rangeZeroBaselinePaint;
-	//
+
+	/**
+	 * The paint used for the zero baseline against the range axis.
+	 *
+	 * @since 1.0.13
+	 */
+	private transient Paint rangeZeroBaselinePaint;
+
 	/**
 	 * A flag that controls whether the grid-lines for the range axis are
 	 * visible.
 	 */
 	private boolean rangeGridlinesVisible;
-	//
+
+	// JAVAFX stroke
 	// /** The stroke used to draw the range axis grid-lines. */
 	// private transient Stroke rangeGridlineStroke;
-	//
-	// /** The paint used to draw the range axis grid-lines. */
-	// private transient Paint rangeGridlinePaint;
+
+	/** The paint used to draw the range axis grid-lines. */
+	private transient Paint rangeGridlinePaint;
 
 	/**
 	 * A flag that controls whether or not gridlines are shown for the minor
@@ -434,20 +443,21 @@ public class CategoryPlot extends Plot implements
 	 * @since 1.0.13
 	 */
 	private boolean rangeMinorGridlinesVisible;
-	//
+
+	// JAVAFX stroke
 	// /**
 	// * The stroke used to draw the range minor grid-lines.
 	// *
 	// * @since 1.0.13
 	// */
 	// private transient Stroke rangeMinorGridlineStroke;
-	//
-	// /**
-	// * The paint used to draw the range minor grid-lines.
-	// *
-	// * @since 1.0.13
-	// */
-	// private transient Paint rangeMinorGridlinePaint;
+
+	/**
+	 * The paint used to draw the range minor grid-lines.
+	 *
+	 * @since 1.0.13
+	 */
+	private transient Paint rangeMinorGridlinePaint;
 
 	/** The anchor value. */
 	private double anchorValue;
@@ -481,31 +491,33 @@ public class CategoryPlot extends Plot implements
 	 */
 	private Comparable domainCrosshairColumnKey;
 
+	// JAVAFX stroke
 	// /**
 	// * The stroke used to draw the domain crosshair if it is visible.
 	// *
 	// * @since 1.0.11
 	// */
 	// private transient Stroke domainCrosshairStroke;
-	//
-	// /**
-	// * The paint used to draw the domain crosshair if it is visible.
-	// *
-	// * @since 1.0.11
-	// */
-	// private transient Paint domainCrosshairPaint;
+
+	/**
+	 * The paint used to draw the domain crosshair if it is visible.
+	 *
+	 * @since 1.0.11
+	 */
+	private transient Paint domainCrosshairPaint;
 
 	/** A flag that controls whether or not a range crosshair is drawn. */
 	private boolean rangeCrosshairVisible;
 
 	/** The range crosshair value. */
 	private double rangeCrosshairValue;
-	//
+
+	// JAVAFX stroke
 	// /** The pen/brush used to draw the crosshair (if any). */
 	// private transient Stroke rangeCrosshairStroke;
-	//
-	// /** The color used to draw the crosshair (if any). */
-	// private transient Paint rangeCrosshairPaint;
+
+	/** The color used to draw the crosshair (if any). */
+	private transient Paint rangeCrosshairPaint;
 
 	/**
 	 * A flag that controls whether or not the crosshair locks onto actual data
@@ -557,7 +569,7 @@ public class CategoryPlot extends Plot implements
 	 */
 	private boolean rangePannable;
 
-	//
+	// JAVAFX
 	// /**
 	// * The shadow generator for the plot (<code>null</code> permitted).
 	// *
@@ -640,24 +652,24 @@ public class CategoryPlot extends Plot implements
 
 		this.domainGridlinesVisible = DEFAULT_DOMAIN_GRIDLINES_VISIBLE;
 		this.domainGridlinePosition = CategoryAnchor.MIDDLE;
-		// JAVAFX paint, stroke
+		// JAVAFX stroke
 		// this.domainGridlineStroke = DEFAULT_GRIDLINE_STROKE;
-		// this.domainGridlinePaint = DEFAULT_GRIDLINE_PAINT;
+		this.domainGridlinePaint = DEFAULT_GRIDLINE_PAINT;
 
 		this.rangeZeroBaselineVisible = false;
-		// JAVAFX paint, stroke
-		// this.rangeZeroBaselinePaint = Color.BLACK;
+		this.rangeZeroBaselinePaint = Color.BLACK;
+		// JAVAFX stroke
 		// this.rangeZeroBaselineStroke = new BasicStroke(0.5f);
 
 		this.rangeGridlinesVisible = DEFAULT_RANGE_GRIDLINES_VISIBLE;
-		// JAVAFX paint, stroke
+		// JAVAFX stroke
 		// this.rangeGridlineStroke = DEFAULT_GRIDLINE_STROKE;
-		// this.rangeGridlinePaint = DEFAULT_GRIDLINE_PAINT;
+		this.rangeGridlinePaint = DEFAULT_GRIDLINE_PAINT;
 
 		this.rangeMinorGridlinesVisible = false;
-		// JAVAFX paint, stroke
+		// JAVAFX stroke
 		// this.rangeMinorGridlineStroke = DEFAULT_GRIDLINE_STROKE;
-		// this.rangeMinorGridlinePaint = Color.WHITE;
+		this.rangeMinorGridlinePaint = Color.WHITE;
 
 		this.foregroundDomainMarkers = new HashMap<Integer,
 				Collection<Marker>>();
@@ -671,15 +683,15 @@ public class CategoryPlot extends Plot implements
 		this.anchorValue = 0.0;
 
 		this.domainCrosshairVisible = false;
-		// JAVAFX paint, stroke
+		// JAVAFX stroke
 		// this.domainCrosshairStroke = DEFAULT_CROSSHAIR_STROKE;
-		// this.domainCrosshairPaint = DEFAULT_CROSSHAIR_PAINT;
+		this.domainCrosshairPaint = DEFAULT_CROSSHAIR_PAINT;
 
 		this.rangeCrosshairVisible = DEFAULT_CROSSHAIR_VISIBLE;
 		this.rangeCrosshairValue = 0.0;
-		// JAVAFX paint, stroke
+		// JAVAFX stroke
 		// this.rangeCrosshairStroke = DEFAULT_CROSSHAIR_STROKE;
-		// this.rangeCrosshairPaint = DEFAULT_CROSSHAIR_PAINT;
+		this.rangeCrosshairPaint = DEFAULT_CROSSHAIR_PAINT;
 
 		this.annotations = new java.util.ArrayList<CategoryAnnotation>();
 
@@ -1957,31 +1969,32 @@ public class CategoryPlot extends Plot implements
 	// this.domainGridlineStroke = stroke;
 	// fireChangeEvent();
 	// }
-	//
-	// /**
-	// * Returns the paint used to draw grid-lines against the domain axis.
-	// *
-	// * @return The paint (never <code>null</code>).
-	// *
-	// * @see #setDomainGridlinePaint(Paint)
-	// */
-	// public Paint getDomainGridlinePaint() {
-	// return this.domainGridlinePaint;
-	// }
-	//
-	// /**
-	// * Sets the paint used to draw the grid-lines (if any) against the domain
-	// * axis and sends a {@link PlotChangeEvent} to all registered listeners.
-	// *
-	// * @param paint the paint (<code>null</code> not permitted).
-	// *
-	// * @see #getDomainGridlinePaint()
-	// */
-	// public void setDomainGridlinePaint(Paint paint) {
-	// ParamChecks.nullNotPermitted(paint, "paint");
-	// this.domainGridlinePaint = paint;
-	// fireChangeEvent();
-	// }
+
+	/**
+	 * Returns the paint used to draw grid-lines against the domain axis.
+	 *
+	 * @return The paint (never <code>null</code>).
+	 *
+	 * @see #setDomainGridlinePaint(Paint)
+	 */
+	public Paint getDomainGridlinePaint() {
+		return this.domainGridlinePaint;
+	}
+
+	/**
+	 * Sets the paint used to draw the grid-lines (if any) against the domain
+	 * axis and sends a {@link PlotChangeEvent} to all registered listeners.
+	 *
+	 * @param paint
+	 *            the paint (<code>null</code> not permitted).
+	 *
+	 * @see #getDomainGridlinePaint()
+	 */
+	public void setDomainGridlinePaint(Paint paint) {
+		ParamChecks.nullNotPermitted(paint, "paint");
+		this.domainGridlinePaint = paint;
+		fireChangeEvent();
+	}
 
 	/**
 	 * Returns a flag that controls whether or not a zero baseline is displayed
@@ -2014,7 +2027,7 @@ public class CategoryPlot extends Plot implements
 		fireChangeEvent();
 	}
 
-	// JAVAFX stroke, paint
+	// JAVAFX stroke
 	//
 	// /**
 	// * Returns the stroke used for the zero baseline against the range axis.
@@ -2044,37 +2057,38 @@ public class CategoryPlot extends Plot implements
 	// this.rangeZeroBaselineStroke = stroke;
 	// fireChangeEvent();
 	// }
-	//
-	// /**
-	// * Returns the paint for the zero baseline (if any) plotted against the
-	// * range axis.
-	// *
-	// * @return The paint (never <code>null</code>).
-	// *
-	// * @see #setRangeZeroBaselinePaint(Paint)
-	// *
-	// * @since 1.0.13
-	// */
-	// public Paint getRangeZeroBaselinePaint() {
-	// return this.rangeZeroBaselinePaint;
-	// }
-	//
-	// /**
-	// * Sets the paint for the zero baseline plotted against the range axis and
-	// * sends a {@link PlotChangeEvent} to all registered listeners.
-	// *
-	// * @param paint the paint (<code>null</code> not permitted).
-	// *
-	// * @see #getRangeZeroBaselinePaint()
-	// *
-	// * @since 1.0.13
-	// */
-	// public void setRangeZeroBaselinePaint(Paint paint) {
-	// ParamChecks.nullNotPermitted(paint, "paint");
-	// this.rangeZeroBaselinePaint = paint;
-	// fireChangeEvent();
-	// }
-	//
+
+	/**
+	 * Returns the paint for the zero baseline (if any) plotted against the
+	 * range axis.
+	 *
+	 * @return The paint (never <code>null</code>).
+	 *
+	 * @see #setRangeZeroBaselinePaint(Paint)
+	 *
+	 * @since 1.0.13
+	 */
+	public Paint getRangeZeroBaselinePaint() {
+		return this.rangeZeroBaselinePaint;
+	}
+
+	/**
+	 * Sets the paint for the zero baseline plotted against the range axis and
+	 * sends a {@link PlotChangeEvent} to all registered listeners.
+	 *
+	 * @param paint
+	 *            the paint (<code>null</code> not permitted).
+	 *
+	 * @see #getRangeZeroBaselinePaint()
+	 *
+	 * @since 1.0.13
+	 */
+	public void setRangeZeroBaselinePaint(Paint paint) {
+		ParamChecks.nullNotPermitted(paint, "paint");
+		this.rangeZeroBaselinePaint = paint;
+		fireChangeEvent();
+	}
+
 	/**
 	 * Returns the flag that controls whether the range grid-lines are visible.
 	 *
@@ -2103,7 +2117,7 @@ public class CategoryPlot extends Plot implements
 		}
 	}
 
-	// JAVAFX stroke, paint
+	// JAVAFX stroke
 	//
 	// /**
 	// * Returns the stroke used to draw the grid-lines against the range axis.
@@ -2130,30 +2144,31 @@ public class CategoryPlot extends Plot implements
 	// fireChangeEvent();
 	// }
 	//
-	// /**
-	// * Returns the paint used to draw the grid-lines against the range axis.
-	// *
-	// * @return The paint (never <code>null</code>).
-	// *
-	// * @see #setRangeGridlinePaint(Paint)
-	// */
-	// public Paint getRangeGridlinePaint() {
-	// return this.rangeGridlinePaint;
-	// }
-	//
-	// /**
-	// * Sets the paint used to draw the grid lines against the range axis and
-	// * sends a {@link PlotChangeEvent} to all registered listeners.
-	// *
-	// * @param paint the paint (<code>null</code> not permitted).
-	// *
-	// * @see #getRangeGridlinePaint()
-	// */
-	// public void setRangeGridlinePaint(Paint paint) {
-	// ParamChecks.nullNotPermitted(paint, "paint");
-	// this.rangeGridlinePaint = paint;
-	// fireChangeEvent();
-	// }
+	/**
+	 * Returns the paint used to draw the grid-lines against the range axis.
+	 *
+	 * @return The paint (never <code>null</code>).
+	 *
+	 * @see #setRangeGridlinePaint(Paint)
+	 */
+	public Paint getRangeGridlinePaint() {
+		return this.rangeGridlinePaint;
+	}
+
+	/**
+	 * Sets the paint used to draw the grid lines against the range axis and
+	 * sends a {@link PlotChangeEvent} to all registered listeners.
+	 *
+	 * @param paint
+	 *            the paint (<code>null</code> not permitted).
+	 *
+	 * @see #getRangeGridlinePaint()
+	 */
+	public void setRangeGridlinePaint(Paint paint) {
+		ParamChecks.nullNotPermitted(paint, "paint");
+		this.rangeGridlinePaint = paint;
+		fireChangeEvent();
+	}
 
 	/**
 	 * Returns <code>true</code> if the range axis minor grid is visible, and
@@ -2190,7 +2205,7 @@ public class CategoryPlot extends Plot implements
 		}
 	}
 
-	// JAVAFX stroke, paint
+	// JAVAFX stroke
 	//
 	// /**
 	// * Returns the stroke for the minor grid lines (if any) plotted against
@@ -2224,36 +2239,37 @@ public class CategoryPlot extends Plot implements
 	// fireChangeEvent();
 	// }
 	//
-	// /**
-	// * Returns the paint for the minor grid lines (if any) plotted against the
-	// * range axis.
-	// *
-	// * @return The paint (never <code>null</code>).
-	// *
-	// * @see #setRangeMinorGridlinePaint(Paint)
-	// *
-	// * @since 1.0.13
-	// */
-	// public Paint getRangeMinorGridlinePaint() {
-	// return this.rangeMinorGridlinePaint;
-	// }
-	//
-	// /**
-	// * Sets the paint for the minor grid lines plotted against the range axis
-	// * and sends a {@link PlotChangeEvent} to all registered listeners.
-	// *
-	// * @param paint the paint (<code>null</code> not permitted).
-	// *
-	// * @see #getRangeMinorGridlinePaint()
-	// *
-	// * @since 1.0.13
-	// */
-	// public void setRangeMinorGridlinePaint(Paint paint) {
-	// ParamChecks.nullNotPermitted(paint, "paint");
-	// this.rangeMinorGridlinePaint = paint;
-	// fireChangeEvent();
-	// }
-	//
+	/**
+	 * Returns the paint for the minor grid lines (if any) plotted against the
+	 * range axis.
+	 *
+	 * @return The paint (never <code>null</code>).
+	 *
+	 * @see #setRangeMinorGridlinePaint(Paint)
+	 *
+	 * @since 1.0.13
+	 */
+	public Paint getRangeMinorGridlinePaint() {
+		return this.rangeMinorGridlinePaint;
+	}
+
+	/**
+	 * Sets the paint for the minor grid lines plotted against the range axis
+	 * and sends a {@link PlotChangeEvent} to all registered listeners.
+	 *
+	 * @param paint
+	 *            the paint (<code>null</code> not permitted).
+	 *
+	 * @see #getRangeMinorGridlinePaint()
+	 *
+	 * @since 1.0.13
+	 */
+	public void setRangeMinorGridlinePaint(Paint paint) {
+		ParamChecks.nullNotPermitted(paint, "paint");
+		this.rangeMinorGridlinePaint = paint;
+		fireChangeEvent();
+	}
+
 	/**
 	 * Returns the fixed legend items, if any.
 	 *
@@ -2307,38 +2323,40 @@ public class CategoryPlot extends Plot implements
 		return result;
 	}
 
-	//
-	// /**
-	// * Handles a 'click' on the plot by updating the anchor value.
-	// *
-	// * @param x x-coordinate of the click (in Java2D space).
-	// * @param y y-coordinate of the click (in Java2D space).
-	// * @param info information about the plot's dimensions.
-	// *
-	// */
-	// @Override
-	// public void handleClick(int x, int y, PlotRenderingInfo info) {
-	//
-	// Rectangle2D dataArea = info.getDataArea();
-	// if (dataArea.contains(x, y)) {
-	// // set the anchor value for the range axis...
-	// double java2D = 0.0;
-	// if (this.orientation == PlotOrientation.HORIZONTAL) {
-	// java2D = x;
-	// }
-	// else if (this.orientation == PlotOrientation.VERTICAL) {
-	// java2D = y;
-	// }
-	// RectangleEdge edge = Plot.resolveRangeAxisLocation(
-	// getRangeAxisLocation(), this.orientation);
-	// double value = getRangeAxis().java2DToValue(
-	// java2D, info.getDataArea(), edge);
-	// setAnchorValue(value);
-	// setRangeCrosshairValue(value);
-	// }
-	//
-	// }
-	//
+	/**
+	 * Handles a 'click' on the plot by updating the anchor value.
+	 *
+	 * @param x
+	 *            x-coordinate of the click (in Java2D space).
+	 * @param y
+	 *            y-coordinate of the click (in Java2D space).
+	 * @param info
+	 *            information about the plot's dimensions.
+	 *
+	 */
+	@Override
+	public void handleClick(int x, int y, PlotRenderingInfo info) {
+
+		Rectangle2D dataArea = info.getDataArea();
+		if (dataArea.contains(x, y)) {
+			// set the anchor value for the range axis...
+			double java2D = 0.0;
+			if (this.orientation == PlotOrientation.HORIZONTAL) {
+				java2D = x;
+			}
+			else if (this.orientation == PlotOrientation.VERTICAL) {
+				java2D = y;
+			}
+			RectangleEdge edge = Plot.resolveRangeAxisLocation(
+					getRangeAxisLocation(), this.orientation);
+			double value = getRangeAxis().java2DToValue(
+					java2D, info.getDataArea(), edge);
+			setAnchorValue(value);
+			setRangeCrosshairValue(value);
+		}
+
+	}
+
 	/**
 	 * Zooms (in or out) on the plot's value axis.
 	 * <p>
@@ -2434,129 +2452,134 @@ public class CategoryPlot extends Plot implements
 		}
 	}
 
-	//
-	// /**
-	// * Adds a marker for display (in the foreground) against the domain axis
-	// and
-	// * sends a {@link PlotChangeEvent} to all registered listeners. Typically
-	// a
-	// * marker will be drawn by the renderer as a line perpendicular to the
-	// * domain axis, however this is entirely up to the renderer.
-	// *
-	// * @param marker the marker (<code>null</code> not permitted).
-	// *
-	// * @see #removeDomainMarker(Marker)
-	// */
-	// public void addDomainMarker(CategoryMarker marker) {
-	// addDomainMarker(marker, Layer.FOREGROUND);
-	// }
-	//
-	// /**
-	// * Adds a marker for display against the domain axis and sends a
-	// * {@link PlotChangeEvent} to all registered listeners. Typically a marker
-	// * will be drawn by the renderer as a line perpendicular to the domain
-	// * axis, however this is entirely up to the renderer.
-	// *
-	// * @param marker the marker (<code>null</code> not permitted).
-	// * @param layer the layer (foreground or background) (<code>null</code>
-	// * not permitted).
-	// *
-	// * @see #removeDomainMarker(Marker, Layer)
-	// */
-	// public void addDomainMarker(CategoryMarker marker, Layer layer) {
-	// addDomainMarker(0, marker, layer);
-	// }
-	//
-	// /**
-	// * Adds a marker for display by a particular renderer and sends a
-	// * {@link PlotChangeEvent} to all registered listeners.
-	// * <P>
-	// * Typically a marker will be drawn by the renderer as a line
-	// perpendicular
-	// * to a domain axis, however this is entirely up to the renderer.
-	// *
-	// * @param index the renderer index.
-	// * @param marker the marker (<code>null</code> not permitted).
-	// * @param layer the layer (<code>null</code> not permitted).
-	// *
-	// * @see #removeDomainMarker(int, Marker, Layer)
-	// */
-	// public void addDomainMarker(int index, CategoryMarker marker, Layer
-	// layer) {
-	// addDomainMarker(index, marker, layer, true);
-	// }
-	//
-	// /**
-	// * Adds a marker for display by a particular renderer and, if requested,
-	// * sends a {@link PlotChangeEvent} to all registered listeners.
-	// * <P>
-	// * Typically a marker will be drawn by the renderer as a line
-	// perpendicular
-	// * to a domain axis, however this is entirely up to the renderer.
-	// *
-	// * @param index the renderer index.
-	// * @param marker the marker (<code>null</code> not permitted).
-	// * @param layer the layer (<code>null</code> not permitted).
-	// * @param notify notify listeners?
-	// *
-	// * @since 1.0.10
-	// *
-	// * @see #removeDomainMarker(int, Marker, Layer, boolean)
-	// */
-	// public void addDomainMarker(int index, CategoryMarker marker, Layer
-	// layer,
-	// boolean notify) {
-	// ParamChecks.nullNotPermitted(marker, "marker");
-	// ParamChecks.nullNotPermitted(layer, "layer");
-	// Collection<Marker> markers;
-	// if (layer == Layer.FOREGROUND) {
-	// markers = this.foregroundDomainMarkers.get(
-	// index);
-	// if (markers == null) {
-	// markers = new java.util.ArrayList<Marker>();
-	// this.foregroundDomainMarkers.put(index, markers);
-	// }
-	// markers.add(marker);
-	// }
-	// else if (layer == Layer.BACKGROUND) {
-	// markers = this.backgroundDomainMarkers.get(
-	// index);
-	// if (markers == null) {
-	// markers = new java.util.ArrayList<Marker>();
-	// this.backgroundDomainMarkers.put(index, markers);
-	// }
-	// markers.add(marker);
-	// }
-	// marker.addChangeListener(this);
-	// if (notify) {
-	// fireChangeEvent();
-	// }
-	// }
-	//
-	// /**
-	// * Clears all the domain markers for the plot and sends a
-	// * {@link PlotChangeEvent} to all registered listeners.
-	// *
-	// * @see #clearRangeMarkers()
-	// */
-	// public void clearDomainMarkers() {
-	// if (this.backgroundDomainMarkers != null) {
-	// Set<Integer> keys = this.backgroundDomainMarkers.keySet();
-	// for (Integer key : keys) {
-	// clearDomainMarkers(key);
-	// }
-	// this.backgroundDomainMarkers.clear();
-	// }
-	// if (this.foregroundDomainMarkers != null) {
-	// Set<Integer> keys = this.foregroundDomainMarkers.keySet();
-	// for (Integer key : keys) {
-	// clearDomainMarkers(key);
-	// }
-	// this.foregroundDomainMarkers.clear();
-	// }
-	// fireChangeEvent();
-	// }
-	//
+	/**
+	 * Adds a marker for display (in the foreground) against the domain axis and
+	 * sends a {@link PlotChangeEvent} to all registered listeners. Typically a
+	 * marker will be drawn by the renderer as a line perpendicular to the
+	 * domain axis, however this is entirely up to the renderer.
+	 *
+	 * @param marker
+	 *            the marker (<code>null</code> not permitted).
+	 *
+	 * @see #removeDomainMarker(Marker)
+	 */
+	public void addDomainMarker(CategoryMarker marker) {
+		addDomainMarker(marker, Layer.FOREGROUND);
+	}
+
+	/**
+	 * Adds a marker for display against the domain axis and sends a
+	 * {@link PlotChangeEvent} to all registered listeners. Typically a marker
+	 * will be drawn by the renderer as a line perpendicular to the domain axis,
+	 * however this is entirely up to the renderer.
+	 *
+	 * @param marker
+	 *            the marker (<code>null</code> not permitted).
+	 * @param layer
+	 *            the layer (foreground or background) (<code>null</code> not
+	 *            permitted).
+	 *
+	 * @see #removeDomainMarker(Marker, Layer)
+	 */
+	public void addDomainMarker(CategoryMarker marker, Layer layer) {
+		addDomainMarker(0, marker, layer);
+	}
+
+	/**
+	 * Adds a marker for display by a particular renderer and sends a
+	 * {@link PlotChangeEvent} to all registered listeners.
+	 * <P>
+	 * Typically a marker will be drawn by the renderer as a line perpendicular
+	 * to a domain axis, however this is entirely up to the renderer.
+	 *
+	 * @param index
+	 *            the renderer index.
+	 * @param marker
+	 *            the marker (<code>null</code> not permitted).
+	 * @param layer
+	 *            the layer (<code>null</code> not permitted).
+	 *
+	 * @see #removeDomainMarker(int, Marker, Layer)
+	 */
+	public void addDomainMarker(int index, CategoryMarker marker, Layer
+			layer) {
+		addDomainMarker(index, marker, layer, true);
+	}
+
+	/**
+	 * Adds a marker for display by a particular renderer and, if requested,
+	 * sends a {@link PlotChangeEvent} to all registered listeners.
+	 * <P>
+	 * Typically a marker will be drawn by the renderer as a line perpendicular
+	 * to a domain axis, however this is entirely up to the renderer.
+	 *
+	 * @param index
+	 *            the renderer index.
+	 * @param marker
+	 *            the marker (<code>null</code> not permitted).
+	 * @param layer
+	 *            the layer (<code>null</code> not permitted).
+	 * @param notify
+	 *            notify listeners?
+	 *
+	 * @since 1.0.10
+	 *
+	 * @see #removeDomainMarker(int, Marker, Layer, boolean)
+	 */
+	public void addDomainMarker(int index, CategoryMarker marker, Layer
+			layer,
+			boolean notify) {
+		ParamChecks.nullNotPermitted(marker, "marker");
+		ParamChecks.nullNotPermitted(layer, "layer");
+		Collection<Marker> markers;
+		if (layer == Layer.FOREGROUND) {
+			markers = this.foregroundDomainMarkers.get(
+					index);
+			if (markers == null) {
+				markers = new java.util.ArrayList<Marker>();
+				this.foregroundDomainMarkers.put(index, markers);
+			}
+			markers.add(marker);
+		}
+		else if (layer == Layer.BACKGROUND) {
+			markers = this.backgroundDomainMarkers.get(
+					index);
+			if (markers == null) {
+				markers = new java.util.ArrayList<Marker>();
+				this.backgroundDomainMarkers.put(index, markers);
+			}
+			markers.add(marker);
+		}
+		marker.addChangeListener(this);
+		if (notify) {
+			fireChangeEvent();
+		}
+	}
+
+	/**
+	 * Clears all the domain markers for the plot and sends a
+	 * {@link PlotChangeEvent} to all registered listeners.
+	 *
+	 * @see #clearRangeMarkers()
+	 */
+	public void clearDomainMarkers() {
+		if (this.backgroundDomainMarkers != null) {
+			Set<Integer> keys = this.backgroundDomainMarkers.keySet();
+			for (Integer key : keys) {
+				clearDomainMarkers(key);
+			}
+			this.backgroundDomainMarkers.clear();
+		}
+		if (this.foregroundDomainMarkers != null) {
+			Set<Integer> keys = this.foregroundDomainMarkers.keySet();
+			for (Integer key : keys) {
+				clearDomainMarkers(key);
+			}
+			this.foregroundDomainMarkers.clear();
+		}
+		fireChangeEvent();
+	}
+
 	/**
 	 * Returns the list of domain markers (read only) for the specified layer.
 	 *
@@ -2624,209 +2647,222 @@ public class CategoryPlot extends Plot implements
 		fireChangeEvent();
 	}
 
-	//
-	// /**
-	// * Removes a marker for the domain axis and sends a {@link
-	// PlotChangeEvent}
-	// * to all registered listeners.
-	// *
-	// * @param marker the marker.
-	// *
-	// * @return A boolean indicating whether or not the marker was actually
-	// * removed.
-	// *
-	// * @since 1.0.7
-	// */
-	// public boolean removeDomainMarker(Marker marker) {
-	// return removeDomainMarker(marker, Layer.FOREGROUND);
-	// }
-	//
-	// /**
-	// * Removes a marker for the domain axis in the specified layer and sends a
-	// * {@link PlotChangeEvent} to all registered listeners.
-	// *
-	// * @param marker the marker (<code>null</code> not permitted).
-	// * @param layer the layer (foreground or background).
-	// *
-	// * @return A boolean indicating whether or not the marker was actually
-	// * removed.
-	// *
-	// * @since 1.0.7
-	// */
-	// public boolean removeDomainMarker(Marker marker, Layer layer) {
-	// return removeDomainMarker(0, marker, layer);
-	// }
-	//
-	// /**
-	// * Removes a marker for a specific dataset/renderer and sends a
-	// * {@link PlotChangeEvent} to all registered listeners.
-	// *
-	// * @param index the dataset/renderer index.
-	// * @param marker the marker.
-	// * @param layer the layer (foreground or background).
-	// *
-	// * @return A boolean indicating whether or not the marker was actually
-	// * removed.
-	// *
-	// * @since 1.0.7
-	// */
-	// public boolean removeDomainMarker(int index, Marker marker, Layer layer)
-	// {
-	// return removeDomainMarker(index, marker, layer, true);
-	// }
-	//
-	// /**
-	// * Removes a marker for a specific dataset/renderer and, if requested,
-	// * sends a {@link PlotChangeEvent} to all registered listeners.
-	// *
-	// * @param index the dataset/renderer index.
-	// * @param marker the marker.
-	// * @param layer the layer (foreground or background).
-	// * @param notify notify listeners?
-	// *
-	// * @return A boolean indicating whether or not the marker was actually
-	// * removed.
-	// *
-	// * @since 1.0.10
-	// */
-	// public boolean removeDomainMarker(int index, Marker marker, Layer layer,
-	// boolean notify) {
-	// Collection<Marker> markers;
-	// if (layer == Layer.FOREGROUND) {
-	// markers = this.foregroundDomainMarkers.get(index);
-	// }
-	// else {
-	// markers = this.backgroundDomainMarkers.get(index);
-	// }
-	// if (markers == null) {
-	// return false;
-	// }
-	// boolean removed = markers.remove(marker);
-	// if (removed && notify) {
-	// fireChangeEvent();
-	// }
-	// return removed;
-	// }
-	//
-	// /**
-	// * Adds a marker for display (in the foreground) against the range axis
-	// and
-	// * sends a {@link PlotChangeEvent} to all registered listeners. Typically
-	// a
-	// * marker will be drawn by the renderer as a line perpendicular to the
-	// * range axis, however this is entirely up to the renderer.
-	// *
-	// * @param marker the marker (<code>null</code> not permitted).
-	// *
-	// * @see #removeRangeMarker(Marker)
-	// */
-	// public void addRangeMarker(Marker marker) {
-	// addRangeMarker(marker, Layer.FOREGROUND);
-	// }
-	//
-	// /**
-	// * Adds a marker for display against the range axis and sends a
-	// * {@link PlotChangeEvent} to all registered listeners. Typically a marker
-	// * will be drawn by the renderer as a line perpendicular to the range
-	// axis,
-	// * however this is entirely up to the renderer.
-	// *
-	// * @param marker the marker (<code>null</code> not permitted).
-	// * @param layer the layer (foreground or background) (<code>null</code>
-	// * not permitted).
-	// *
-	// * @see #removeRangeMarker(Marker, Layer)
-	// */
-	// public void addRangeMarker(Marker marker, Layer layer) {
-	// addRangeMarker(0, marker, layer);
-	// }
-	//
-	// /**
-	// * Adds a marker for display by a particular renderer and sends a
-	// * {@link PlotChangeEvent} to all registered listeners.
-	// * <P>
-	// * Typically a marker will be drawn by the renderer as a line
-	// perpendicular
-	// * to a range axis, however this is entirely up to the renderer.
-	// *
-	// * @param index the renderer index.
-	// * @param marker the marker.
-	// * @param layer the layer.
-	// *
-	// * @see #removeRangeMarker(int, Marker, Layer)
-	// */
-	// public void addRangeMarker(int index, Marker marker, Layer layer) {
-	// addRangeMarker(index, marker, layer, true);
-	// }
-	//
-	// /**
-	// * Adds a marker for display by a particular renderer and sends a
-	// * {@link PlotChangeEvent} to all registered listeners.
-	// * <P>
-	// * Typically a marker will be drawn by the renderer as a line
-	// perpendicular
-	// * to a range axis, however this is entirely up to the renderer.
-	// *
-	// * @param index the renderer index.
-	// * @param marker the marker.
-	// * @param layer the layer.
-	// * @param notify notify listeners?
-	// *
-	// * @since 1.0.10
-	// *
-	// * @see #removeRangeMarker(int, Marker, Layer, boolean)
-	// */
-	// public void addRangeMarker(int index, Marker marker, Layer layer,
-	// boolean notify) {
-	// Collection<Marker> markers;
-	// if (layer == Layer.FOREGROUND) {
-	// markers = this.foregroundRangeMarkers.get(
-	// index);
-	// if (markers == null) {
-	// markers = new java.util.ArrayList<Marker>();
-	// this.foregroundRangeMarkers.put(index, markers);
-	// }
-	// markers.add(marker);
-	// }
-	// else if (layer == Layer.BACKGROUND) {
-	// markers = this.backgroundRangeMarkers.get(
-	// index);
-	// if (markers == null) {
-	// markers = new java.util.ArrayList<Marker>();
-	// this.backgroundRangeMarkers.put(index, markers);
-	// }
-	// markers.add(marker);
-	// }
-	// marker.addChangeListener(this);
-	// if (notify) {
-	// fireChangeEvent();
-	// }
-	// }
-	//
-	// /**
-	// * Clears all the range markers for the plot and sends a
-	// * {@link PlotChangeEvent} to all registered listeners.
-	// *
-	// * @see #clearDomainMarkers()
-	// */
-	// public void clearRangeMarkers() {
-	// if (this.backgroundRangeMarkers != null) {
-	// Set<Integer> keys = this.backgroundRangeMarkers.keySet();
-	// for (Integer key : keys) {
-	// clearRangeMarkers(key);
-	// }
-	// this.backgroundRangeMarkers.clear();
-	// }
-	// if (this.foregroundRangeMarkers != null) {
-	// Set<Integer> keys = this.foregroundRangeMarkers.keySet();
-	// for (Integer key : keys) {
-	// clearRangeMarkers(key);
-	// }
-	// this.foregroundRangeMarkers.clear();
-	// }
-	// fireChangeEvent();
-	// }
-	//
+	/**
+	 * Removes a marker for the domain axis and sends a {@link PlotChangeEvent}
+	 * to all registered listeners.
+	 *
+	 * @param marker
+	 *            the marker.
+	 *
+	 * @return A boolean indicating whether or not the marker was actually
+	 *         removed.
+	 *
+	 * @since 1.0.7
+	 */
+	public boolean removeDomainMarker(Marker marker) {
+		return removeDomainMarker(marker, Layer.FOREGROUND);
+	}
+
+	/**
+	 * Removes a marker for the domain axis in the specified layer and sends a
+	 * {@link PlotChangeEvent} to all registered listeners.
+	 *
+	 * @param marker
+	 *            the marker (<code>null</code> not permitted).
+	 * @param layer
+	 *            the layer (foreground or background).
+	 *
+	 * @return A boolean indicating whether or not the marker was actually
+	 *         removed.
+	 *
+	 * @since 1.0.7
+	 */
+	public boolean removeDomainMarker(Marker marker, Layer layer) {
+		return removeDomainMarker(0, marker, layer);
+	}
+
+	/**
+	 * Removes a marker for a specific dataset/renderer and sends a
+	 * {@link PlotChangeEvent} to all registered listeners.
+	 *
+	 * @param index
+	 *            the dataset/renderer index.
+	 * @param marker
+	 *            the marker.
+	 * @param layer
+	 *            the layer (foreground or background).
+	 *
+	 * @return A boolean indicating whether or not the marker was actually
+	 *         removed.
+	 *
+	 * @since 1.0.7
+	 */
+	public boolean removeDomainMarker(int index, Marker marker, Layer layer)
+	{
+		return removeDomainMarker(index, marker, layer, true);
+	}
+
+	/**
+	 * Removes a marker for a specific dataset/renderer and, if requested, sends
+	 * a {@link PlotChangeEvent} to all registered listeners.
+	 *
+	 * @param index
+	 *            the dataset/renderer index.
+	 * @param marker
+	 *            the marker.
+	 * @param layer
+	 *            the layer (foreground or background).
+	 * @param notify
+	 *            notify listeners?
+	 *
+	 * @return A boolean indicating whether or not the marker was actually
+	 *         removed.
+	 *
+	 * @since 1.0.10
+	 */
+	public boolean removeDomainMarker(int index, Marker marker, Layer layer,
+			boolean notify) {
+		Collection<Marker> markers;
+		if (layer == Layer.FOREGROUND) {
+			markers = this.foregroundDomainMarkers.get(index);
+		}
+		else {
+			markers = this.backgroundDomainMarkers.get(index);
+		}
+		if (markers == null) {
+			return false;
+		}
+		boolean removed = markers.remove(marker);
+		if (removed && notify) {
+			fireChangeEvent();
+		}
+		return removed;
+	}
+
+	/**
+	 * Adds a marker for display (in the foreground) against the range axis and
+	 * sends a {@link PlotChangeEvent} to all registered listeners. Typically a
+	 * marker will be drawn by the renderer as a line perpendicular to the range
+	 * axis, however this is entirely up to the renderer.
+	 *
+	 * @param marker
+	 *            the marker (<code>null</code> not permitted).
+	 *
+	 * @see #removeRangeMarker(Marker)
+	 */
+	public void addRangeMarker(Marker marker) {
+		addRangeMarker(marker, Layer.FOREGROUND);
+	}
+
+	/**
+	 * Adds a marker for display against the range axis and sends a
+	 * {@link PlotChangeEvent} to all registered listeners. Typically a marker
+	 * will be drawn by the renderer as a line perpendicular to the range axis,
+	 * however this is entirely up to the renderer.
+	 *
+	 * @param marker
+	 *            the marker (<code>null</code> not permitted).
+	 * @param layer
+	 *            the layer (foreground or background) (<code>null</code> not
+	 *            permitted).
+	 *
+	 * @see #removeRangeMarker(Marker, Layer)
+	 */
+	public void addRangeMarker(Marker marker, Layer layer) {
+		addRangeMarker(0, marker, layer);
+	}
+
+	/**
+	 * Adds a marker for display by a particular renderer and sends a
+	 * {@link PlotChangeEvent} to all registered listeners.
+	 * <P>
+	 * Typically a marker will be drawn by the renderer as a line perpendicular
+	 * to a range axis, however this is entirely up to the renderer.
+	 *
+	 * @param index
+	 *            the renderer index.
+	 * @param marker
+	 *            the marker.
+	 * @param layer
+	 *            the layer.
+	 *
+	 * @see #removeRangeMarker(int, Marker, Layer)
+	 */
+	public void addRangeMarker(int index, Marker marker, Layer layer) {
+		addRangeMarker(index, marker, layer, true);
+	}
+
+	/**
+	 * Adds a marker for display by a particular renderer and sends a
+	 * {@link PlotChangeEvent} to all registered listeners.
+	 * <P>
+	 * Typically a marker will be drawn by the renderer as a line perpendicular
+	 * to a range axis, however this is entirely up to the renderer.
+	 *
+	 * @param index
+	 *            the renderer index.
+	 * @param marker
+	 *            the marker.
+	 * @param layer
+	 *            the layer.
+	 * @param notify
+	 *            notify listeners?
+	 *
+	 * @since 1.0.10
+	 *
+	 * @see #removeRangeMarker(int, Marker, Layer, boolean)
+	 */
+	public void addRangeMarker(int index, Marker marker, Layer layer,
+			boolean notify) {
+		Collection<Marker> markers;
+		if (layer == Layer.FOREGROUND) {
+			markers = this.foregroundRangeMarkers.get(
+					index);
+			if (markers == null) {
+				markers = new java.util.ArrayList<Marker>();
+				this.foregroundRangeMarkers.put(index, markers);
+			}
+			markers.add(marker);
+		}
+		else if (layer == Layer.BACKGROUND) {
+			markers = this.backgroundRangeMarkers.get(
+					index);
+			if (markers == null) {
+				markers = new java.util.ArrayList<Marker>();
+				this.backgroundRangeMarkers.put(index, markers);
+			}
+			markers.add(marker);
+		}
+		marker.addChangeListener(this);
+		if (notify) {
+			fireChangeEvent();
+		}
+	}
+
+	/**
+	 * Clears all the range markers for the plot and sends a
+	 * {@link PlotChangeEvent} to all registered listeners.
+	 *
+	 * @see #clearDomainMarkers()
+	 */
+	public void clearRangeMarkers() {
+		if (this.backgroundRangeMarkers != null) {
+			Set<Integer> keys = this.backgroundRangeMarkers.keySet();
+			for (Integer key : keys) {
+				clearRangeMarkers(key);
+			}
+			this.backgroundRangeMarkers.clear();
+		}
+		if (this.foregroundRangeMarkers != null) {
+			Set<Integer> keys = this.foregroundRangeMarkers.keySet();
+			for (Integer key : keys) {
+				clearRangeMarkers(key);
+			}
+			this.foregroundRangeMarkers.clear();
+		}
+		fireChangeEvent();
+	}
+
 	/**
 	 * Returns the list of range markers (read only) for the specified layer.
 	 *
@@ -3158,36 +3194,37 @@ public class CategoryPlot extends Plot implements
 		}
 	}
 
-	//
-	// /**
-	// * Returns the paint used to draw the domain crosshair.
-	// *
-	// * @return The paint (never <code>null</code>).
-	// *
-	// * @since 1.0.11
-	// *
-	// * @see #setDomainCrosshairPaint(Paint)
-	// * @see #getDomainCrosshairStroke()
-	// */
-	// public Paint getDomainCrosshairPaint() {
-	// return this.domainCrosshairPaint;
-	// }
-	//
-	// /**
-	// * Sets the paint used to draw the domain crosshair.
-	// *
-	// * @param paint the paint (<code>null</code> not permitted).
-	// *
-	// * @since 1.0.11
-	// *
-	// * @see #getDomainCrosshairPaint()
-	// */
-	// public void setDomainCrosshairPaint(Paint paint) {
-	// ParamChecks.nullNotPermitted(paint, "paint");
-	// this.domainCrosshairPaint = paint;
-	// fireChangeEvent();
-	// }
-	//
+	/**
+	 * Returns the paint used to draw the domain crosshair.
+	 *
+	 * @return The paint (never <code>null</code>).
+	 *
+	 * @since 1.0.11
+	 *
+	 * @see #setDomainCrosshairPaint(Paint)
+	 * @see #getDomainCrosshairStroke()
+	 */
+	public Paint getDomainCrosshairPaint() {
+		return this.domainCrosshairPaint;
+	}
+
+	/**
+	 * Sets the paint used to draw the domain crosshair.
+	 *
+	 * @param paint
+	 *            the paint (<code>null</code> not permitted).
+	 *
+	 * @since 1.0.11
+	 *
+	 * @see #getDomainCrosshairPaint()
+	 */
+	public void setDomainCrosshairPaint(Paint paint) {
+		ParamChecks.nullNotPermitted(paint, "paint");
+		this.domainCrosshairPaint = paint;
+		fireChangeEvent();
+	}
+
+	// JAVAFX stroke
 	// /**
 	// * Returns the stroke used to draw the domain crosshair.
 	// *
@@ -3315,7 +3352,7 @@ public class CategoryPlot extends Plot implements
 		}
 	}
 
-	//
+	// JAVAFX stroke
 	// /**
 	// * Returns the pen-style (<code>Stroke</code>) used to draw the crosshair
 	// * (if visible).
@@ -3346,33 +3383,34 @@ public class CategoryPlot extends Plot implements
 	// fireChangeEvent();
 	// }
 	//
-	// /**
-	// * Returns the paint used to draw the range crosshair.
-	// *
-	// * @return The paint (never <code>null</code>).
-	// *
-	// * @see #setRangeCrosshairPaint(Paint)
-	// * @see #isRangeCrosshairVisible()
-	// * @see #getRangeCrosshairStroke()
-	// */
-	// public Paint getRangeCrosshairPaint() {
-	// return this.rangeCrosshairPaint;
-	// }
-	//
-	// /**
-	// * Sets the paint used to draw the range crosshair (if visible) and
-	// * sends a {@link PlotChangeEvent} to all registered listeners.
-	// *
-	// * @param paint the paint (<code>null</code> not permitted).
-	// *
-	// * @see #getRangeCrosshairPaint()
-	// */
-	// public void setRangeCrosshairPaint(Paint paint) {
-	// ParamChecks.nullNotPermitted(paint, "paint");
-	// this.rangeCrosshairPaint = paint;
-	// fireChangeEvent();
-	// }
-	//
+	/**
+	 * Returns the paint used to draw the range crosshair.
+	 *
+	 * @return The paint (never <code>null</code>).
+	 *
+	 * @see #setRangeCrosshairPaint(Paint)
+	 * @see #isRangeCrosshairVisible()
+	 * @see #getRangeCrosshairStroke()
+	 */
+	public Paint getRangeCrosshairPaint() {
+		return this.rangeCrosshairPaint;
+	}
+
+	/**
+	 * Sets the paint used to draw the range crosshair (if visible) and sends a
+	 * {@link PlotChangeEvent} to all registered listeners.
+	 *
+	 * @param paint
+	 *            the paint (<code>null</code> not permitted).
+	 *
+	 * @see #getRangeCrosshairPaint()
+	 */
+	public void setRangeCrosshairPaint(Paint paint) {
+		ParamChecks.nullNotPermitted(paint, "paint");
+		this.rangeCrosshairPaint = paint;
+		fireChangeEvent();
+	}
+
 	/**
 	 * Returns the list of annotations.
 	 *
@@ -3385,89 +3423,92 @@ public class CategoryPlot extends Plot implements
 		return this.annotations;
 	}
 
-	//
-	// /**
-	// * Adds an annotation to the plot and sends a {@link PlotChangeEvent} to
-	// all
-	// * registered listeners.
-	// *
-	// * @param annotation the annotation (<code>null</code> not permitted).
-	// *
-	// * @see #removeAnnotation(CategoryAnnotation)
-	// */
-	// public void addAnnotation(CategoryAnnotation annotation) {
-	// addAnnotation(annotation, true);
-	// }
-	//
-	// /**
-	// * Adds an annotation to the plot and, if requested, sends a
-	// * {@link PlotChangeEvent} to all registered listeners.
-	// *
-	// * @param annotation the annotation (<code>null</code> not permitted).
-	// * @param notify notify listeners?
-	// *
-	// * @since 1.0.10
-	// */
-	// public void addAnnotation(CategoryAnnotation annotation, boolean notify)
-	// {
-	// ParamChecks.nullNotPermitted(annotation, "annotation");
-	// this.annotations.add(annotation);
-	// annotation.addChangeListener(this);
-	// if (notify) {
-	// fireChangeEvent();
-	// }
-	// }
-	//
-	// /**
-	// * Removes an annotation from the plot and sends a {@link PlotChangeEvent}
-	// * to all registered listeners.
-	// *
-	// * @param annotation the annotation (<code>null</code> not permitted).
-	// *
-	// * @return A boolean (indicates whether or not the annotation was
-	// removed).
-	// *
-	// * @see #addAnnotation(CategoryAnnotation)
-	// */
-	// public boolean removeAnnotation(CategoryAnnotation annotation) {
-	// return removeAnnotation(annotation, true);
-	// }
-	//
-	// /**
-	// * Removes an annotation from the plot and, if requested, sends a
-	// * {@link PlotChangeEvent} to all registered listeners.
-	// *
-	// * @param annotation the annotation (<code>null</code> not permitted).
-	// * @param notify notify listeners?
-	// *
-	// * @return A boolean (indicates whether or not the annotation was
-	// removed).
-	// *
-	// * @since 1.0.10
-	// */
-	// public boolean removeAnnotation(CategoryAnnotation annotation,
-	// boolean notify) {
-	// ParamChecks.nullNotPermitted(annotation, "annotation");
-	// boolean removed = this.annotations.remove(annotation);
-	// annotation.removeChangeListener(this);
-	// if (removed && notify) {
-	// fireChangeEvent();
-	// }
-	// return removed;
-	// }
-	//
-	// /**
-	// * Clears all the annotations and sends a {@link PlotChangeEvent} to all
-	// * registered listeners.
-	// */
-	// public void clearAnnotations() {
-	// for (CategoryAnnotation annotation : this.annotations) {
-	// annotation.removeChangeListener(this);
-	// }
-	// this.annotations.clear();
-	// fireChangeEvent();
-	// }
-	//
+	/**
+	 * Adds an annotation to the plot and sends a {@link PlotChangeEvent} to all
+	 * registered listeners.
+	 *
+	 * @param annotation
+	 *            the annotation (<code>null</code> not permitted).
+	 *
+	 * @see #removeAnnotation(CategoryAnnotation)
+	 */
+	public void addAnnotation(CategoryAnnotation annotation) {
+		addAnnotation(annotation, true);
+	}
+
+	/**
+	 * Adds an annotation to the plot and, if requested, sends a
+	 * {@link PlotChangeEvent} to all registered listeners.
+	 *
+	 * @param annotation
+	 *            the annotation (<code>null</code> not permitted).
+	 * @param notify
+	 *            notify listeners?
+	 *
+	 * @since 1.0.10
+	 */
+	public void addAnnotation(CategoryAnnotation annotation, boolean notify)
+	{
+		ParamChecks.nullNotPermitted(annotation, "annotation");
+		this.annotations.add(annotation);
+		annotation.addChangeListener(this);
+		if (notify) {
+			fireChangeEvent();
+		}
+	}
+
+	/**
+	 * Removes an annotation from the plot and sends a {@link PlotChangeEvent}
+	 * to all registered listeners.
+	 *
+	 * @param annotation
+	 *            the annotation (<code>null</code> not permitted).
+	 *
+	 * @return A boolean (indicates whether or not the annotation was removed).
+	 *
+	 * @see #addAnnotation(CategoryAnnotation)
+	 */
+	public boolean removeAnnotation(CategoryAnnotation annotation) {
+		return removeAnnotation(annotation, true);
+	}
+
+	/**
+	 * Removes an annotation from the plot and, if requested, sends a
+	 * {@link PlotChangeEvent} to all registered listeners.
+	 *
+	 * @param annotation
+	 *            the annotation (<code>null</code> not permitted).
+	 * @param notify
+	 *            notify listeners?
+	 *
+	 * @return A boolean (indicates whether or not the annotation was removed).
+	 *
+	 * @since 1.0.10
+	 */
+	public boolean removeAnnotation(CategoryAnnotation annotation,
+			boolean notify) {
+		ParamChecks.nullNotPermitted(annotation, "annotation");
+		boolean removed = this.annotations.remove(annotation);
+		annotation.removeChangeListener(this);
+		if (removed && notify) {
+			fireChangeEvent();
+		}
+		return removed;
+	}
+
+	/**
+	 * Clears all the annotations and sends a {@link PlotChangeEvent} to all
+	 * registered listeners.
+	 */
+	public void clearAnnotations() {
+		for (CategoryAnnotation annotation : this.annotations) {
+			annotation.removeChangeListener(this);
+		}
+		this.annotations.clear();
+		fireChangeEvent();
+	}
+
+	// JAVAFX
 	// /**
 	// * Returns the shadow generator for the plot, if any.
 	// *
@@ -3491,7 +3532,7 @@ public class CategoryPlot extends Plot implements
 	// this.shadowGenerator = generator;
 	// fireChangeEvent();
 	// }
-	//
+
 	/**
 	 * Calculates the space required for the domain axis/axes.
 	 *
@@ -3526,23 +3567,22 @@ public class CategoryPlot extends Plot implements
 						RectangleEdge.BOTTOM);
 			}
 		} else {
-			// JAVAFX
-			// // reserve space for the primary domain axis...
-			// RectangleEdge domainEdge = Plot.resolveDomainAxisLocation(
-			// getDomainAxisLocation(), this.orientation);
-			// if (this.drawSharedDomainAxis) {
-			// space = getDomainAxis().reserveSpace(g2, this, plotArea,
-			// domainEdge, space);
-			// }
-			//
-			// // reserve space for any domain axes...
-			// for (CategoryAxis xAxis : this.domainAxes.values()) {
-			// if (xAxis != null) {
-			// int i = getDomainAxisIndex(xAxis);
-			// RectangleEdge edge = getDomainAxisEdge(i);
-			// space = xAxis.reserveSpace(g2, this, plotArea, edge, space);
-			// }
-			// }
+			// reserve space for the primary domain axis...
+			RectangleEdge domainEdge = Plot.resolveDomainAxisLocation(
+					getDomainAxisLocation(), this.orientation);
+			if (this.drawSharedDomainAxis) {
+				space = getDomainAxis().reserveSpace(g2, this, plotArea,
+						domainEdge, space);
+			}
+
+			// reserve space for any domain axes...
+			for (CategoryAxis xAxis : this.domainAxes.values()) {
+				if (xAxis != null) {
+					int i = getDomainAxisIndex(xAxis);
+					RectangleEdge edge = getDomainAxisEdge(i);
+					space = xAxis.reserveSpace(g2, this, plotArea, edge, space);
+				}
+			}
 		}
 
 		return space;
@@ -3587,11 +3627,10 @@ public class CategoryPlot extends Plot implements
 			// reserve space for the range axes (if any)...
 			for (ValueAxis yAxis : this.rangeAxes.values()) {
 				if (yAxis != null) {
-					// JAVAFX
-					// int i = findRangeAxisIndex(yAxis);
-					// RectangleEdge edge = getRangeAxisEdge(i);
-					// space = yAxis.reserveSpace(g2, this, plotArea, edge,
-					// space);
+					int i = findRangeAxisIndex(yAxis);
+					RectangleEdge edge = getRangeAxisEdge(i);
+					space = yAxis.reserveSpace(g2, this, plotArea, edge,
+							space);
 				}
 			}
 		}
@@ -3719,17 +3758,16 @@ public class CategoryPlot extends Plot implements
 		if (anchor != null) {
 			ValueAxis rangeAxis = getRangeAxis();
 			if (rangeAxis != null) {
-				// JAVAFX
-				// double y;
-				// if (getOrientation() == PlotOrientation.VERTICAL) {
-				// y = rangeAxis.java2DToValue(anchor.getY(), dataArea,
-				// getRangeAxisEdge());
-				// }
-				// else {
-				// y = rangeAxis.java2DToValue(anchor.getX(), dataArea,
-				// getRangeAxisEdge());
-				// }
-				// crosshairState.setAnchorY(y);
+				double y;
+				if (getOrientation() == PlotOrientation.VERTICAL) {
+					y = rangeAxis.java2DToValue(anchor.getY(), dataArea,
+							getRangeAxisEdge());
+				}
+				else {
+					y = rangeAxis.java2DToValue(anchor.getX(), dataArea,
+							getRangeAxisEdge());
+				}
+				crosshairState.setAnchorY(y);
 			}
 		}
 		crosshairState.setRowKey(getDomainCrosshairRowKey());
@@ -3834,8 +3872,8 @@ public class CategoryPlot extends Plot implements
 		setDomainCrosshairRowKey(rowKey, false);
 		setDomainCrosshairColumnKey(columnKey, false);
 		if (isDomainCrosshairVisible() && columnKey != null) {
-			// JAVAFX stroke, paint
-			// Paint paint = getDomainCrosshairPaint();
+			Paint paint = getDomainCrosshairPaint();
+			// JAVAFX stroke
 			// Stroke stroke = getDomainCrosshairStroke();
 			// drawDomainCrosshair(g2, dataArea, this.orientation,
 			// datasetIndex, rowKey, columnKey, stroke, paint);
@@ -3845,21 +3883,20 @@ public class CategoryPlot extends Plot implements
 		ValueAxis yAxis = getRangeAxisForDataset(datasetIndex);
 		RectangleEdge yAxisEdge = getRangeAxisEdge();
 		if (!this.rangeCrosshairLockedOnData && anchor != null) {
-			// JAVAFX
-			// double yy;
-			// if (getOrientation() == PlotOrientation.VERTICAL) {
-			// yy = yAxis.java2DToValue(anchor.getY(), dataArea, yAxisEdge);
-			// }
-			// else {
-			// yy = yAxis.java2DToValue(anchor.getX(), dataArea, yAxisEdge);
-			// }
-			// crosshairState.setCrosshairY(yy);
+			double yy;
+			if (getOrientation() == PlotOrientation.VERTICAL) {
+				yy = yAxis.java2DToValue(anchor.getY(), dataArea, yAxisEdge);
+			}
+			else {
+				yy = yAxis.java2DToValue(anchor.getX(), dataArea, yAxisEdge);
+			}
+			crosshairState.setCrosshairY(yy);
 		}
 		setRangeCrosshairValue(crosshairState.getCrosshairY(), false);
 		if (isRangeCrosshairVisible()) {
 			double y = getRangeCrosshairValue();
-			// JAVAFX paint, stroke
-			// Paint paint = getRangeCrosshairPaint();
+			Paint paint = getRangeCrosshairPaint();
+			// JAVAFX stroke
 			// Stroke stroke = getRangeCrosshairStroke();
 			// drawRangeCrosshair(g2, dataArea, getOrientation(), y, yAxis,
 			// stroke, paint);
@@ -3993,12 +4030,11 @@ public class CategoryPlot extends Plot implements
 				+ this.axisOffset.calculateBottomOutset(dataArea.getHeight());
 		for (Axis axis : axisCollection.getAxesAtBottom()) {
 			if (axis != null) {
-				// JAVAFX axis
-				// AxisState axisState = axis.draw(g2, cursor, plotArea,
-				// dataArea,
-				// RectangleEdge.BOTTOM, plotState);
-				// cursor = axisState.getCursor();
-				// axisStateMap.put(axis, axisState);
+				AxisState axisState = axis.draw(g2, cursor, plotArea,
+						dataArea,
+						RectangleEdge.BOTTOM, plotState);
+				cursor = axisState.getCursor();
+				axisStateMap.put(axis, axisState);
 			}
 		}
 
@@ -4007,12 +4043,11 @@ public class CategoryPlot extends Plot implements
 				- this.axisOffset.calculateLeftOutset(dataArea.getWidth());
 		for (Axis axis : axisCollection.getAxesAtLeft()) {
 			if (axis != null) {
-				// JAVAFX axis
-				// AxisState axisState = axis.draw(g2, cursor, plotArea,
-				// dataArea,
-				// RectangleEdge.LEFT, plotState);
-				// cursor = axisState.getCursor();
-				// axisStateMap.put(axis, axisState);
+				AxisState axisState = axis.draw(g2, cursor, plotArea,
+						dataArea,
+						RectangleEdge.LEFT, plotState);
+				cursor = axisState.getCursor();
+				axisStateMap.put(axis, axisState);
 			}
 		}
 
@@ -4021,12 +4056,11 @@ public class CategoryPlot extends Plot implements
 				+ this.axisOffset.calculateRightOutset(dataArea.getWidth());
 		for (Axis axis : axisCollection.getAxesAtRight()) {
 			if (axis != null) {
-				// JAVAFX axis
-				// AxisState axisState = axis.draw(g2, cursor, plotArea,
-				// dataArea,
-				// RectangleEdge.RIGHT, plotState);
-				// cursor = axisState.getCursor();
-				// axisStateMap.put(axis, axisState);
+				AxisState axisState = axis.draw(g2, cursor, plotArea,
+						dataArea,
+						RectangleEdge.RIGHT, plotState);
+				cursor = axisState.getCursor();
+				axisStateMap.put(axis, axisState);
 			}
 		}
 
@@ -4140,13 +4174,12 @@ public class CategoryPlot extends Plot implements
 		if (axis != null) {
 			int columnCount = dataset.getColumnCount();
 			for (int c = 0; c < columnCount; c++) {
-				// JAVAFX
-				// double xx = axis.getCategoryJava2DCoordinate(anchor, c,
-				// columnCount, dataArea, domainAxisEdge);
-				// CategoryItemRenderer renderer1 = getRenderer();
-				// if (renderer1 != null) {
-				// renderer1.drawDomainGridline(g2, this, dataArea, xx);
-				// }
+				double xx = axis.getCategoryJava2DCoordinate(anchor, c,
+						columnCount, dataArea, domainAxisEdge);
+				CategoryItemRenderer renderer1 = getRenderer();
+				if (renderer1 != null) {
+					renderer1.drawDomainGridline(g2, this, dataArea, xx);
+				}
 			}
 		}
 	}
@@ -4182,8 +4215,7 @@ public class CategoryPlot extends Plot implements
 
 		// JAVAFX stroke
 		// Stroke gridStroke = null;
-		// JAVAFX paint
-		// Paint gridPaint = null;
+		Paint gridPaint = null;
 		boolean paintLine;
 		for (ValueTick tick : ticks) {
 			paintLine = false;
@@ -4191,15 +4223,13 @@ public class CategoryPlot extends Plot implements
 					&& isRangeMinorGridlinesVisible()) {
 				// JAVAFX stroke
 				// gridStroke = getRangeMinorGridlineStroke();
-				// JAVAFX paint
-				// gridPaint = getRangeMinorGridlinePaint();
+				gridPaint = getRangeMinorGridlinePaint();
 				paintLine = true;
 			} else if ((tick.getTickType() == TickType.MAJOR)
 					&& isRangeGridlinesVisible()) {
 				// JAVAFX stroke
 				// gridStroke = getRangeGridlineStroke();
-				// JAVAFX paint
-				// gridPaint = getRangeGridlinePaint();
+				gridPaint = getRangeGridlinePaint();
 				paintLine = true;
 			}
 			if (((tick.getValue() != 0.0)
@@ -4207,7 +4237,7 @@ public class CategoryPlot extends Plot implements
 				// the method we want isn't in the CategoryItemRenderer
 				// interface...
 
-				// JAVAFX
+				// JAVAFX stroke
 				// if (r instanceof AbstractCategoryItemRenderer) {
 				// AbstractCategoryItemRenderer aci =
 				// (AbstractCategoryItemRenderer) r;

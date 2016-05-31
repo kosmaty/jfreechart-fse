@@ -110,6 +110,10 @@
 
 package org.jfree.chart.renderer.category;
 
+import static org.jfree.geometry.GeometryUtils.fillRectangle;
+import static org.jfree.geometry.GeometryUtils.newLine;
+import static org.jfree.geometry.GeometryUtils.strokeLine;
+
 // 
 // import java.awt.AlphaComposite;
 // import java.awt.Composite;
@@ -141,7 +145,7 @@ import org.jfree.chart.ui.RectangleInsets;
 import org.jfree.chart.util.ObjectUtils;
 import org.jfree.chart.util.PublicCloneable;
 import org.jfree.chart.util.SortOrder;
-// import org.jfree.chart.entity.CategoryItemEntity;
+import org.jfree.chart.entity.CategoryItemEntity;
 import org.jfree.chart.entity.EntityCollection;
 import org.jfree.chart.event.RendererChangeEvent;
 import org.jfree.chart.labels.CategoryItemLabelGenerator;
@@ -166,6 +170,10 @@ import org.jfree.chart.util.ParamChecks;
 import org.jfree.data.Range;
 import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.general.DatasetUtilities;
+import org.jfree.geometry.Line2D;
+
+import com.sun.javafx.geom.Ellipse2D;
+import com.sun.javafx.geom.Shape;
 
 import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
@@ -217,15 +225,14 @@ public abstract class AbstractCategoryItemRenderer extends AbstractRenderer
 	/** The default URL generator. */
 	private CategoryURLGenerator defaultURLGenerator;
 
-	//
-	// /** The legend item label generator. */
-	// private CategorySeriesLabelGenerator legendItemLabelGenerator;
-	//
-	// /** The legend item tool tip generator. */
-	// private CategorySeriesLabelGenerator legendItemToolTipGenerator;
-	//
-	// /** The legend item URL generator. */
-	// private CategorySeriesLabelGenerator legendItemURLGenerator;
+	/** The legend item label generator. */
+	private CategorySeriesLabelGenerator legendItemLabelGenerator;
+
+	/** The legend item tool tip generator. */
+	private CategorySeriesLabelGenerator legendItemToolTipGenerator;
+
+	/** The legend item URL generator. */
+	private CategorySeriesLabelGenerator legendItemURLGenerator;
 
 	/** The number of rows in the dataset (temporary record). */
 	private transient int rowCount;
@@ -243,9 +250,7 @@ public abstract class AbstractCategoryItemRenderer extends AbstractRenderer
 		this.itemLabelGeneratorMap = new HashMap<Integer, CategoryItemLabelGenerator>();
 		this.toolTipGeneratorMap = new HashMap<Integer, CategoryToolTipGenerator>();
 		this.urlGeneratorMap = new HashMap<Integer, CategoryURLGenerator>();
-		// JAVAFX
-		// this.legendItemLabelGenerator
-		// = new StandardCategorySeriesLabelGenerator();
+		this.legendItemLabelGenerator = new StandardCategorySeriesLabelGenerator();
 	}
 
 	/**
@@ -892,13 +897,13 @@ public abstract class AbstractCategoryItemRenderer extends AbstractRenderer
 			end = new Point2D(value, dataArea.getMaxY());
 		}
 
-		// JAVAFX paint and stroke
-		// Paint paint = plot.getDomainGridlinePaint();
-		// if (paint == null) {
-		// paint = CategoryPlot.DEFAULT_GRIDLINE_PAINT;
-		// }
-		// g2.setPaint(paint);
-		//
+		Paint paint = plot.getDomainGridlinePaint();
+		if (paint == null) {
+			paint = CategoryPlot.DEFAULT_GRIDLINE_PAINT;
+		}
+		g2.setStroke(paint);
+
+		// JAVAFX stroke
 		// Stroke stroke = plot.getDomainGridlineStroke();
 		// if (stroke == null) {
 		// stroke = CategoryPlot.DEFAULT_GRIDLINE_STROKE;
@@ -955,13 +960,13 @@ public abstract class AbstractCategoryItemRenderer extends AbstractRenderer
 			endY = v;
 		}
 
-		// JAVAFX stroke, paint
-		// Paint paint = plot.getRangeGridlinePaint();
-		// if (paint == null) {
-		// paint = CategoryPlot.DEFAULT_GRIDLINE_PAINT;
-		// }
-		// g2.setPaint(paint);
-		//
+		Paint paint = plot.getRangeGridlinePaint();
+		if (paint == null) {
+			paint = CategoryPlot.DEFAULT_GRIDLINE_PAINT;
+		}
+		g2.setStroke(paint);
+
+		// JAVAFX stroke
 		// Stroke stroke = plot.getRangeGridlineStroke();
 		// if (stroke == null) {
 		// stroke = CategoryPlot.DEFAULT_GRIDLINE_STROKE;
@@ -1053,61 +1058,62 @@ public abstract class AbstractCategoryItemRenderer extends AbstractRenderer
 		// g2.setComposite(AlphaComposite.getInstance(
 		// AlphaComposite.SRC_OVER, marker.getAlpha()));
 		//
-		// PlotOrientation orientation = plot.getOrientation();
-		// Rectangle2D bounds;
-		// if (marker.getDrawAsLine()) {
-		// double v = axis.getCategoryMiddle(columnIndex,
-		// dataset.getColumnCount(), dataArea,
-		// plot.getDomainAxisEdge());
-		// Line2D line;
-		// if (orientation == PlotOrientation.HORIZONTAL) {
-		// line = new Line2D.Double(dataArea.getMinX(), v,
-		// dataArea.getMaxX(), v);
-		// } else if (orientation == PlotOrientation.VERTICAL) {
-		// line = new Line2D.Double(v, dataArea.getMinY(), v,
-		// dataArea.getMaxY());
-		// } else {
-		// throw new IllegalStateException("Unrecognised orientation: "
-		// + orientation);
-		// }
-		// g2.setPaint(marker.getPaint());
-		// g2.setStroke(marker.getStroke());
-		// g2.draw(line);
-		// bounds = line.getBounds2D();
-		// } else {
-		// double v0 = axis.getCategoryStart(columnIndex,
-		// dataset.getColumnCount(), dataArea,
-		// plot.getDomainAxisEdge());
-		// double v1 = axis.getCategoryEnd(columnIndex,
-		// dataset.getColumnCount(), dataArea,
-		// plot.getDomainAxisEdge());
-		// Rectangle2D area = null;
-		// if (orientation == PlotOrientation.HORIZONTAL) {
-		// area = new Rectangle2D.Double(dataArea.getMinX(), v0,
-		// dataArea.getWidth(), (v1 - v0));
-		// }
-		// else if (orientation == PlotOrientation.VERTICAL) {
-		// area = new Rectangle2D.Double(v0, dataArea.getMinY(),
-		// (v1 - v0), dataArea.getHeight());
-		// }
-		// g2.setPaint(marker.getPaint());
-		// g2.fill(area);
-		// bounds = area;
-		// }
-		//
-		// String label = marker.getLabel();
-		// RectangleAnchor anchor = marker.getLabelAnchor();
-		// if (label != null) {
-		// Font labelFont = marker.getLabelFont();
-		// g2.setFont(labelFont);
-		// g2.setPaint(marker.getLabelPaint());
-		// Point2D coords = calculateDomainMarkerTextAnchorPoint(
-		// g2, orientation, dataArea, bounds, marker.getLabelOffset(),
-		// marker.getLabelOffsetType(), anchor);
-		// TextUtilities.drawAlignedString(label, g2,
-		// (float) coords.getX(), (float) coords.getY(),
-		// marker.getLabelTextAnchor());
-		// }
+		PlotOrientation orientation = plot.getOrientation();
+		Rectangle2D bounds;
+		if (marker.getDrawAsLine()) {
+			double v = axis.getCategoryMiddle(columnIndex,
+					dataset.getColumnCount(), dataArea,
+					plot.getDomainAxisEdge());
+			Line2D line;
+			if (orientation == PlotOrientation.HORIZONTAL) {
+				line = newLine(dataArea.getMinX(), v, dataArea.getMaxX(), v);
+			} else if (orientation == PlotOrientation.VERTICAL) {
+				line = newLine(v, dataArea.getMinY(), v, dataArea.getMaxY());
+			} else {
+				throw new IllegalStateException("Unrecognised orientation: "
+						+ orientation);
+			}
+			g2.setStroke(marker.getPaint());
+			// JAVAFX stroke
+			// g2.setStroke(marker.getStroke());
+			strokeLine(g2, line);
+			bounds = line.getBounds2D();
+		} else {
+			double v0 = axis.getCategoryStart(columnIndex,
+					dataset.getColumnCount(), dataArea,
+					plot.getDomainAxisEdge());
+			double v1 = axis.getCategoryEnd(columnIndex,
+					dataset.getColumnCount(), dataArea,
+					plot.getDomainAxisEdge());
+			Rectangle2D area = null;
+			if (orientation == PlotOrientation.HORIZONTAL) {
+				area = new Rectangle2D(dataArea.getMinX(), v0,
+						dataArea.getWidth(), (v1 - v0));
+			}
+			else if (orientation == PlotOrientation.VERTICAL) {
+				area = new Rectangle2D(v0, dataArea.getMinY(),
+						(v1 - v0), dataArea.getHeight());
+			}
+			g2.setFill(marker.getPaint());
+			fillRectangle(g2, area);
+			bounds = area;
+		}
+
+		String label = marker.getLabel();
+		RectangleAnchor anchor = marker.getLabelAnchor();
+		if (label != null) {
+			Font labelFont = marker.getLabelFont();
+			g2.setFont(labelFont);
+			g2.setFill(marker.getLabelPaint());
+			g2.setStroke(marker.getLabelPaint());
+			Point2D coords = calculateDomainMarkerTextAnchorPoint(
+					g2, orientation, dataArea, bounds, marker.getLabelOffset(),
+					marker.getLabelOffsetType(), anchor);
+			TextUtilities.drawAlignedString(label, g2,
+					(float) coords.getX(), (float) coords.getY(),
+					marker.getLabelTextAnchor());
+		}
+		// JAVAFX
 		// g2.setComposite(savedComposite);
 	}
 
@@ -1133,221 +1139,242 @@ public abstract class AbstractCategoryItemRenderer extends AbstractRenderer
 			ValueAxis axis, Marker marker, Rectangle2D dataArea) {
 
 		// JAVAFX
-		// if (marker instanceof ValueMarker) {
-		// ValueMarker vm = (ValueMarker) marker;
-		// double value = vm.getValue();
-		// Range range = axis.getRange();
-		// if (!range.contains(value)) {
-		// return;
-		// }
-		//
-		// final Composite savedComposite = g2.getComposite();
-		// g2.setComposite(AlphaComposite.getInstance(
-		// AlphaComposite.SRC_OVER, marker.getAlpha()));
-		//
-		// PlotOrientation orientation = plot.getOrientation();
-		// double v = axis.valueToJava2D(value, dataArea,
-		// plot.getRangeAxisEdge());
-		// Line2D line = null;
-		// if (orientation == PlotOrientation.HORIZONTAL) {
-		// line = new Line2D.Double(v, dataArea.getMinY(), v,
-		// dataArea.getMaxY());
-		// } else if (orientation == PlotOrientation.VERTICAL) {
-		// line = new Line2D.Double(dataArea.getMinX(), v,
-		// dataArea.getMaxX(), v);
-		// } else {
-		// throw new IllegalStateException("Unrecognised orientation: "
-		// + orientation);
-		// }
-		//
-		// g2.setPaint(marker.getPaint());
-		// g2.setStroke(marker.getStroke());
-		// g2.draw(line);
-		//
-		// String label = marker.getLabel();
-		// if (label != null) {
-		// RectangleAnchor anchor = marker.getLabelAnchor();
-		// Font labelFont = marker.getLabelFont();
-		// g2.setFont(labelFont);
-		// Point2D coords = calculateRangeMarkerTextAnchorPoint(
-		// g2, orientation, dataArea, line.getBounds2D(),
-		// marker.getLabelOffset(), LengthAdjustmentType.EXPAND,
-		// anchor);
-		// Rectangle2D rect = TextUtilities.calcAlignedStringBounds(label,
-		// g2, (float) coords.getX(), (float) coords.getY(),
-		// marker.getLabelTextAnchor());
-		// g2.setPaint(marker.getLabelBackgroundColor());
-		// g2.fill(rect);
-		// g2.setPaint(marker.getLabelPaint());
-		// TextUtilities.drawAlignedString(label, g2,
-		// (float) coords.getX(), (float) coords.getY(),
-		// marker.getLabelTextAnchor());
-		// }
-		// g2.setComposite(savedComposite);
-		// } else if (marker instanceof IntervalMarker) {
-		// IntervalMarker im = (IntervalMarker) marker;
-		// double start = im.getStartValue();
-		// double end = im.getEndValue();
-		// Range range = axis.getRange();
-		// if (!(range.intersects(start, end))) {
-		// return;
-		// }
-		//
-		// final Composite savedComposite = g2.getComposite();
-		// g2.setComposite(AlphaComposite.getInstance(
-		// AlphaComposite.SRC_OVER, marker.getAlpha()));
-		//
-		// double start2d = axis.valueToJava2D(start, dataArea,
-		// plot.getRangeAxisEdge());
-		// double end2d = axis.valueToJava2D(end, dataArea,
-		// plot.getRangeAxisEdge());
-		// double low = Math.min(start2d, end2d);
-		// double high = Math.max(start2d, end2d);
-		//
-		// PlotOrientation orientation = plot.getOrientation();
-		// Rectangle2D rect = null;
-		// if (orientation == PlotOrientation.HORIZONTAL) {
-		// // clip left and right bounds to data area
-		// low = Math.max(low, dataArea.getMinX());
-		// high = Math.min(high, dataArea.getMaxX());
-		// rect = new Rectangle2D.Double(low,
-		// dataArea.getMinY(), high - low,
-		// dataArea.getHeight());
-		// } else if (orientation == PlotOrientation.VERTICAL) {
-		// // clip top and bottom bounds to data area
-		// low = Math.max(low, dataArea.getMinY());
-		// high = Math.min(high, dataArea.getMaxY());
-		// rect = new Rectangle2D.Double(dataArea.getMinX(),
-		// low, dataArea.getWidth(),
-		// high - low);
-		// }
-		// Paint p = marker.getPaint();
-		// if (p instanceof GradientPaint) {
-		// GradientPaint gp = (GradientPaint) p;
-		// GradientPaintTransformer t = im.getGradientPaintTransformer();
-		// if (t != null) {
-		// gp = t.transform(gp, rect);
-		// }
-		// g2.setPaint(gp);
-		// } else {
-		// g2.setPaint(p);
-		// }
-		// g2.fill(rect);
-		//
-		// // now draw the outlines, if visible...
-		// if (im.getOutlinePaint() != null && im.getOutlineStroke() != null) {
-		// if (orientation == PlotOrientation.VERTICAL) {
-		// Line2D line = new Line2D.Double();
-		// double x0 = dataArea.getMinX();
-		// double x1 = dataArea.getMaxX();
-		// g2.setPaint(im.getOutlinePaint());
-		// g2.setStroke(im.getOutlineStroke());
-		// if (range.contains(start)) {
-		// line.setLine(x0, start2d, x1, start2d);
-		// g2.draw(line);
-		// }
-		// if (range.contains(end)) {
-		// line.setLine(x0, end2d, x1, end2d);
-		// g2.draw(line);
-		// }
-		// } else { // PlotOrientation.HORIZONTAL
-		// Line2D line = new Line2D.Double();
-		// double y0 = dataArea.getMinY();
-		// double y1 = dataArea.getMaxY();
-		// g2.setPaint(im.getOutlinePaint());
-		// g2.setStroke(im.getOutlineStroke());
-		// if (range.contains(start)) {
-		// line.setLine(start2d, y0, start2d, y1);
-		// g2.draw(line);
-		// }
-		// if (range.contains(end)) {
-		// line.setLine(end2d, y0, end2d, y1);
-		// g2.draw(line);
-		// }
-		// }
-		// }
-		//
-		// String label = marker.getLabel();
-		// if (label != null) {
-		// RectangleAnchor anchor = marker.getLabelAnchor();
-		// Font labelFont = marker.getLabelFont();
-		// g2.setFont(labelFont);
-		// Point2D coords = calculateRangeMarkerTextAnchorPoint(g2,
-		// orientation, dataArea, rect, marker.getLabelOffset(),
-		// marker.getLabelOffsetType(), anchor);
-		// Rectangle2D r = TextUtilities.calcAlignedStringBounds(label,
-		// g2, (float) coords.getX(), (float) coords.getY(),
-		// marker.getLabelTextAnchor());
-		// g2.setPaint(marker.getLabelBackgroundColor());
-		// g2.fill(r);
-		// g2.setPaint(marker.getLabelPaint());
-		// TextUtilities.drawAlignedString(label, g2,
-		// (float) coords.getX(), (float) coords.getY(),
-		// marker.getLabelTextAnchor());
-		// }
-		// g2.setComposite(savedComposite);
-		// }
+		if (marker instanceof ValueMarker) {
+			ValueMarker vm = (ValueMarker) marker;
+			double value = vm.getValue();
+			Range range = axis.getRange();
+			if (!range.contains(value)) {
+				return;
+			}
+
+			// JAVAFX
+			// final Composite savedComposite = g2.getComposite();
+			// g2.setComposite(AlphaComposite.getInstance(
+			// AlphaComposite.SRC_OVER, marker.getAlpha()));
+
+			PlotOrientation orientation = plot.getOrientation();
+			double v = axis.valueToJava2D(value, dataArea,
+					plot.getRangeAxisEdge());
+			Line2D line = null;
+			if (orientation == PlotOrientation.HORIZONTAL) {
+				line = newLine(v, dataArea.getMinY(), v,
+						dataArea.getMaxY());
+			} else if (orientation == PlotOrientation.VERTICAL) {
+				line = newLine(dataArea.getMinX(), v,
+						dataArea.getMaxX(), v);
+			} else {
+				throw new IllegalStateException("Unrecognised orientation: "
+						+ orientation);
+			}
+
+			g2.setStroke(marker.getPaint());
+			// JAVAFX stroke
+			// g2.setStroke(marker.getStroke());
+			strokeLine(g2, line);
+
+			String label = marker.getLabel();
+			if (label != null) {
+				RectangleAnchor anchor = marker.getLabelAnchor();
+				Font labelFont = marker.getLabelFont();
+				g2.setFont(labelFont);
+				Point2D coords = calculateRangeMarkerTextAnchorPoint(
+						g2, orientation, dataArea, line.getBounds2D(),
+						marker.getLabelOffset(), LengthAdjustmentType.EXPAND,
+						anchor);
+				Rectangle2D rect = TextUtilities.calcAlignedStringBounds(label,
+						g2, (float) coords.getX(), (float) coords.getY(),
+						marker.getLabelTextAnchor());
+				g2.setFill(marker.getLabelBackgroundColor());
+				fillRectangle(g2, rect);
+				g2.setFill(marker.getLabelPaint());
+				TextUtilities.drawAlignedString(label, g2,
+						(float) coords.getX(), (float) coords.getY(),
+						marker.getLabelTextAnchor());
+			}
+			// JAVAFX
+			// g2.setComposite(savedComposite);
+		} else if (marker instanceof IntervalMarker) {
+			IntervalMarker im = (IntervalMarker) marker;
+			double start = im.getStartValue();
+			double end = im.getEndValue();
+			Range range = axis.getRange();
+			if (!(range.intersects(start, end))) {
+				return;
+			}
+
+			// JAVAFX
+			// final Composite savedComposite = g2.getComposite();
+			// g2.setComposite(AlphaComposite.getInstance(
+			// AlphaComposite.SRC_OVER, marker.getAlpha()));
+
+			double start2d = axis.valueToJava2D(start, dataArea,
+					plot.getRangeAxisEdge());
+			double end2d = axis.valueToJava2D(end, dataArea,
+					plot.getRangeAxisEdge());
+			double low = Math.min(start2d, end2d);
+			double high = Math.max(start2d, end2d);
+
+			PlotOrientation orientation = plot.getOrientation();
+			Rectangle2D rect = null;
+			if (orientation == PlotOrientation.HORIZONTAL) {
+				// clip left and right bounds to data area
+				low = Math.max(low, dataArea.getMinX());
+				high = Math.min(high, dataArea.getMaxX());
+				rect = new Rectangle2D(low,
+						dataArea.getMinY(), high - low,
+						dataArea.getHeight());
+			} else if (orientation == PlotOrientation.VERTICAL) {
+				// clip top and bottom bounds to data area
+				low = Math.max(low, dataArea.getMinY());
+				high = Math.min(high, dataArea.getMaxY());
+				rect = new Rectangle2D(dataArea.getMinX(),
+						low, dataArea.getWidth(),
+						high - low);
+			}
+			Paint p = marker.getPaint();
+			// JAVAFX gradient
+			// if (p instanceof GradientPaint) {
+			// GradientPaint gp = (GradientPaint) p;
+			// GradientPaintTransformer t = im.getGradientPaintTransformer();
+			// if (t != null) {
+			// gp = t.transform(gp, rect);
+			// }
+			// g2.setPaint(gp);
+			// } else {
+			g2.setFill(p);
+			// }
+			fillRectangle(g2, rect);
+
+			// JAVAFX stroke
+			// // now draw the outlines, if visible...
+			// if (im.getOutlinePaint() != null && im.getOutlineStroke() !=
+			// null) {
+			// if (orientation == PlotOrientation.VERTICAL) {
+			// Line2D line = new Line2D.Double();
+			// double x0 = dataArea.getMinX();
+			// double x1 = dataArea.getMaxX();
+			// g2.setPaint(im.getOutlinePaint());
+			// g2.setStroke(im.getOutlineStroke());
+			// if (range.contains(start)) {
+			// line.setLine(x0, start2d, x1, start2d);
+			// g2.draw(line);
+			// }
+			// if (range.contains(end)) {
+			// line.setLine(x0, end2d, x1, end2d);
+			// g2.draw(line);
+			// }
+			// } else { // PlotOrientation.HORIZONTAL
+			// Line2D line = new Line2D.Double();
+			// double y0 = dataArea.getMinY();
+			// double y1 = dataArea.getMaxY();
+			// g2.setPaint(im.getOutlinePaint());
+			// g2.setStroke(im.getOutlineStroke());
+			// if (range.contains(start)) {
+			// line.setLine(start2d, y0, start2d, y1);
+			// g2.draw(line);
+			// }
+			// if (range.contains(end)) {
+			// line.setLine(end2d, y0, end2d, y1);
+			// g2.draw(line);
+			// }
+			// }
+			// }
+
+			String label = marker.getLabel();
+			if (label != null) {
+				RectangleAnchor anchor = marker.getLabelAnchor();
+				Font labelFont = marker.getLabelFont();
+				g2.setFont(labelFont);
+				Point2D coords = calculateRangeMarkerTextAnchorPoint(g2,
+						orientation, dataArea, rect, marker.getLabelOffset(),
+						marker.getLabelOffsetType(), anchor);
+				Rectangle2D r = TextUtilities.calcAlignedStringBounds(label,
+						g2, (float) coords.getX(), (float) coords.getY(),
+						marker.getLabelTextAnchor());
+				g2.setFill(marker.getLabelBackgroundColor());
+				fillRectangle(g2, r);
+				g2.setFill(marker.getLabelPaint());
+				TextUtilities.drawAlignedString(label, g2,
+						(float) coords.getX(), (float) coords.getY(),
+						marker.getLabelTextAnchor());
+			}
+			// JAVAFX
+			// g2.setComposite(savedComposite);
+		}
 	}
 
-	//
-	// /**
-	// * Calculates the {@code (x, y)} coordinates for drawing the label for a
-	// * marker on the range axis.
-	// *
-	// * @param g2 the graphics device.
-	// * @param orientation the plot orientation.
-	// * @param dataArea the data area.
-	// * @param markerArea the rectangle surrounding the marker.
-	// * @param markerOffset the marker offset.
-	// * @param labelOffsetType the label offset type.
-	// * @param anchor the label anchor.
-	// *
-	// * @return The coordinates for drawing the marker label.
-	// */
-	// protected Point2D calculateDomainMarkerTextAnchorPoint(Graphics2D g2,
-	// PlotOrientation orientation, Rectangle2D dataArea,
-	// Rectangle2D markerArea, RectangleInsets markerOffset,
-	// LengthAdjustmentType labelOffsetType, RectangleAnchor anchor) {
-	//
-	// Rectangle2D anchorRect = null;
-	// if (orientation == PlotOrientation.HORIZONTAL) {
-	// anchorRect = markerOffset.createAdjustedRectangle(markerArea,
-	// LengthAdjustmentType.CONTRACT, labelOffsetType);
-	// } else if (orientation == PlotOrientation.VERTICAL) {
-	// anchorRect = markerOffset.createAdjustedRectangle(markerArea,
-	// labelOffsetType, LengthAdjustmentType.CONTRACT);
-	// }
-	// return RectangleAnchor.coordinates(anchorRect, anchor);
-	// }
-	//
-	// /**
-	// * Calculates the (x, y) coordinates for drawing a marker label.
-	// *
-	// * @param g2 the graphics device.
-	// * @param orientation the plot orientation.
-	// * @param dataArea the data area.
-	// * @param markerArea the rectangle surrounding the marker.
-	// * @param markerOffset the marker offset.
-	// * @param labelOffsetType the label offset type.
-	// * @param anchor the label anchor.
-	// *
-	// * @return The coordinates for drawing the marker label.
-	// */
-	// protected Point2D calculateRangeMarkerTextAnchorPoint(Graphics2D g2,
-	// PlotOrientation orientation, Rectangle2D dataArea,
-	// Rectangle2D markerArea, RectangleInsets markerOffset,
-	// LengthAdjustmentType labelOffsetType, RectangleAnchor anchor) {
-	// Rectangle2D anchorRect = null;
-	// if (orientation == PlotOrientation.HORIZONTAL) {
-	// anchorRect = markerOffset.createAdjustedRectangle(markerArea,
-	// labelOffsetType, LengthAdjustmentType.CONTRACT);
-	// } else if (orientation == PlotOrientation.VERTICAL) {
-	// anchorRect = markerOffset.createAdjustedRectangle(markerArea,
-	// LengthAdjustmentType.CONTRACT, labelOffsetType);
-	// }
-	// return anchor.getAnchorPoint(anchorRect);
-	// }
-	//
+	/**
+	 * Calculates the {@code (x, y)} coordinates for drawing the label for a
+	 * marker on the range axis.
+	 *
+	 * @param g2
+	 *            the graphics device.
+	 * @param orientation
+	 *            the plot orientation.
+	 * @param dataArea
+	 *            the data area.
+	 * @param markerArea
+	 *            the rectangle surrounding the marker.
+	 * @param markerOffset
+	 *            the marker offset.
+	 * @param labelOffsetType
+	 *            the label offset type.
+	 * @param anchor
+	 *            the label anchor.
+	 *
+	 * @return The coordinates for drawing the marker label.
+	 */
+	protected Point2D calculateDomainMarkerTextAnchorPoint(GraphicsContext g2,
+			PlotOrientation orientation, Rectangle2D dataArea,
+			Rectangle2D markerArea, RectangleInsets markerOffset,
+			LengthAdjustmentType labelOffsetType, RectangleAnchor anchor) {
+
+		Rectangle2D anchorRect = null;
+		if (orientation == PlotOrientation.HORIZONTAL) {
+			anchorRect = markerOffset.createAdjustedRectangle(markerArea,
+					LengthAdjustmentType.CONTRACT, labelOffsetType);
+		} else if (orientation == PlotOrientation.VERTICAL) {
+			anchorRect = markerOffset.createAdjustedRectangle(markerArea,
+					labelOffsetType, LengthAdjustmentType.CONTRACT);
+		}
+		return RectangleAnchor.coordinates(anchorRect, anchor);
+	}
+
+	/**
+	 * Calculates the (x, y) coordinates for drawing a marker label.
+	 *
+	 * @param g2
+	 *            the graphics device.
+	 * @param orientation
+	 *            the plot orientation.
+	 * @param dataArea
+	 *            the data area.
+	 * @param markerArea
+	 *            the rectangle surrounding the marker.
+	 * @param markerOffset
+	 *            the marker offset.
+	 * @param labelOffsetType
+	 *            the label offset type.
+	 * @param anchor
+	 *            the label anchor.
+	 *
+	 * @return The coordinates for drawing the marker label.
+	 */
+	protected Point2D calculateRangeMarkerTextAnchorPoint(GraphicsContext g2,
+			PlotOrientation orientation, Rectangle2D dataArea,
+			Rectangle2D markerArea, RectangleInsets markerOffset,
+			LengthAdjustmentType labelOffsetType, RectangleAnchor anchor) {
+		Rectangle2D anchorRect = null;
+		if (orientation == PlotOrientation.HORIZONTAL) {
+			anchorRect = markerOffset.createAdjustedRectangle(markerArea,
+					labelOffsetType, LengthAdjustmentType.CONTRACT);
+		} else if (orientation == PlotOrientation.VERTICAL) {
+			anchorRect = markerOffset.createAdjustedRectangle(markerArea,
+					LengthAdjustmentType.CONTRACT, labelOffsetType);
+		}
+		return anchor.getAnchorPoint(anchorRect);
+	}
+
 	/**
 	 * Returns a legend item for a series. This default implementation will
 	 * return {@code null} if {@link #isSeriesVisible(int)} or
@@ -1376,24 +1403,24 @@ public abstract class AbstractCategoryItemRenderer extends AbstractRenderer
 			return null;
 		}
 
-		// JAVAFX
-		// CategoryDataset dataset = p.getDataset(datasetIndex);
-		// String label = this.legendItemLabelGenerator.generateLabel(dataset,
-		// series);
-		// String description = label;
-		// String toolTipText = null;
-		// if (this.legendItemToolTipGenerator != null) {
-		// toolTipText = this.legendItemToolTipGenerator.generateLabel(
-		// dataset, series);
-		// }
-		// String urlText = null;
-		// if (this.legendItemURLGenerator != null) {
-		// urlText = this.legendItemURLGenerator.generateLabel(dataset,
-		// series);
-		// }
-		// Shape shape = lookupLegendShape(series);
-		// Paint paint = lookupSeriesPaint(series);
-		// Paint outlinePaint = lookupSeriesOutlinePaint(series);
+		CategoryDataset dataset = p.getDataset(datasetIndex);
+		String label = this.legendItemLabelGenerator.generateLabel(dataset,
+				series);
+		String description = label;
+		String toolTipText = null;
+		if (this.legendItemToolTipGenerator != null) {
+			toolTipText = this.legendItemToolTipGenerator.generateLabel(
+					dataset, series);
+		}
+		String urlText = null;
+		if (this.legendItemURLGenerator != null) {
+			urlText = this.legendItemURLGenerator.generateLabel(dataset,
+					series);
+		}
+		Shape shape = lookupLegendShape(series);
+		Paint paint = lookupSeriesPaint(series);
+		Paint outlinePaint = lookupSeriesOutlinePaint(series);
+		// JAVAFX stroke
 		// Stroke outlineStroke = lookupSeriesOutlineStroke(series);
 		//
 		// LegendItem item = new LegendItem(label, description, toolTipText,
@@ -1748,6 +1775,7 @@ public abstract class AbstractCategoryItemRenderer extends AbstractRenderer
 		}
 		return result;
 	}
+
 	//
 	// /**
 	// * Returns the legend item label generator.
@@ -1785,122 +1813,135 @@ public abstract class AbstractCategoryItemRenderer extends AbstractRenderer
 	// public CategorySeriesLabelGenerator getLegendItemToolTipGenerator() {
 	// return this.legendItemToolTipGenerator;
 	// }
-	//
-	// /**
-	// * Sets the legend item tool tip generator and sends a
-	// * {@link RendererChangeEvent} to all registered listeners.
-	// *
-	// * @param generator the generator ({@code null} permitted).
-	// *
-	// * @see #setLegendItemToolTipGenerator(CategorySeriesLabelGenerator)
-	// */
-	// public void setLegendItemToolTipGenerator(
-	// CategorySeriesLabelGenerator generator) {
-	// this.legendItemToolTipGenerator = generator;
-	// fireChangeEvent();
-	// }
-	//
-	// /**
-	// * Returns the legend item URL generator.
-	// *
-	// * @return The URL generator (possibly {@code null}).
-	// *
-	// * @see #setLegendItemURLGenerator(CategorySeriesLabelGenerator)
-	// */
-	// public CategorySeriesLabelGenerator getLegendItemURLGenerator() {
-	// return this.legendItemURLGenerator;
-	// }
-	//
-	// /**
-	// * Sets the legend item URL generator and sends a
-	// * {@link RendererChangeEvent} to all registered listeners.
-	// *
-	// * @param generator the generator ({@code null} permitted).
-	// *
-	// * @see #getLegendItemURLGenerator()
-	// */
-	// public void setLegendItemURLGenerator(
-	// CategorySeriesLabelGenerator generator) {
-	// this.legendItemURLGenerator = generator;
-	// fireChangeEvent();
-	// }
-	//
-	// /**
-	// * Adds an entity with the specified hotspot.
-	// *
-	// * @param entities the entity collection.
-	// * @param dataset the dataset.
-	// * @param row the row index.
-	// * @param column the column index.
-	// * @param hotspot the hotspot ({@code null} not permitted).
-	// */
-	// protected void addItemEntity(EntityCollection entities,
-	// CategoryDataset dataset, int row, int column, Shape hotspot) {
-	// ParamChecks.nullNotPermitted(hotspot, "hotspot");
-	// if (!getItemCreateEntity(row, column)) {
-	// return;
-	// }
-	// String tip = null;
-	// CategoryToolTipGenerator tipster = getToolTipGenerator(row, column);
-	// if (tipster != null) {
-	// tip = tipster.generateToolTip(dataset, row, column);
-	// }
-	// String url = null;
-	// CategoryURLGenerator urlster = getItemURLGenerator(row, column);
-	// if (urlster != null) {
-	// url = urlster.generateURL(dataset, row, column);
-	// }
-	// CategoryItemEntity entity = new CategoryItemEntity(hotspot, tip, url,
-	// dataset, dataset.getRowKey(row), dataset.getColumnKey(column));
-	// entities.add(entity);
-	// }
-	//
-	// /**
-	// * Adds an entity to the collection.
-	// *
-	// * @param entities the entity collection being populated.
-	// * @param hotspot the entity area (if {@code null} a default will be
-	// * used).
-	// * @param dataset the dataset.
-	// * @param row the series.
-	// * @param column the item.
-	// * @param entityX the entity's center x-coordinate in user space (only
-	// * used if {@code area} is {@code null}).
-	// * @param entityY the entity's center y-coordinate in user space (only
-	// * used if {@code area} is {@code null}).
-	// *
-	// * @since 1.0.13
-	// */
-	// protected void addEntity(EntityCollection entities, Shape hotspot,
-	// CategoryDataset dataset, int row, int column,
-	// double entityX, double entityY) {
-	// if (!getItemCreateEntity(row, column)) {
-	// return;
-	// }
-	// Shape s = hotspot;
-	// if (hotspot == null) {
-	// double r = getDefaultEntityRadius();
-	// double w = r * 2;
-	// if (getPlot().getOrientation() == PlotOrientation.VERTICAL) {
-	// s = new Ellipse2D.Double(entityX - r, entityY - r, w, w);
-	// }
-	// else {
-	// s = new Ellipse2D.Double(entityY - r, entityX - r, w, w);
-	// }
-	// }
-	// String tip = null;
-	// CategoryToolTipGenerator generator = getToolTipGenerator(row, column);
-	// if (generator != null) {
-	// tip = generator.generateToolTip(dataset, row, column);
-	// }
-	// String url = null;
-	// CategoryURLGenerator urlster = getItemURLGenerator(row, column);
-	// if (urlster != null) {
-	// url = urlster.generateURL(dataset, row, column);
-	// }
-	// CategoryItemEntity entity = new CategoryItemEntity(s, tip, url,
-	// dataset, dataset.getRowKey(row), dataset.getColumnKey(column));
-	// entities.add(entity);
-	// }
+
+	/**
+	 * Sets the legend item tool tip generator and sends a
+	 * {@link RendererChangeEvent} to all registered listeners.
+	 *
+	 * @param generator
+	 *            the generator ({@code null} permitted).
+	 *
+	 * @see #setLegendItemToolTipGenerator(CategorySeriesLabelGenerator)
+	 */
+	public void setLegendItemToolTipGenerator(
+			CategorySeriesLabelGenerator generator) {
+		this.legendItemToolTipGenerator = generator;
+		fireChangeEvent();
+	}
+
+	/**
+	 * Returns the legend item URL generator.
+	 *
+	 * @return The URL generator (possibly {@code null}).
+	 *
+	 * @see #setLegendItemURLGenerator(CategorySeriesLabelGenerator)
+	 */
+	public CategorySeriesLabelGenerator getLegendItemURLGenerator() {
+		return this.legendItemURLGenerator;
+	}
+
+	/**
+	 * Sets the legend item URL generator and sends a
+	 * {@link RendererChangeEvent} to all registered listeners.
+	 *
+	 * @param generator
+	 *            the generator ({@code null} permitted).
+	 *
+	 * @see #getLegendItemURLGenerator()
+	 */
+	public void setLegendItemURLGenerator(
+			CategorySeriesLabelGenerator generator) {
+		this.legendItemURLGenerator = generator;
+		fireChangeEvent();
+	}
+
+	/**
+	 * Adds an entity with the specified hotspot.
+	 *
+	 * @param entities
+	 *            the entity collection.
+	 * @param dataset
+	 *            the dataset.
+	 * @param row
+	 *            the row index.
+	 * @param column
+	 *            the column index.
+	 * @param hotspot
+	 *            the hotspot ({@code null} not permitted).
+	 */
+	protected void addItemEntity(EntityCollection entities,
+			CategoryDataset dataset, int row, int column, Shape hotspot) {
+		ParamChecks.nullNotPermitted(hotspot, "hotspot");
+		if (!getItemCreateEntity(row, column)) {
+			return;
+		}
+		String tip = null;
+		CategoryToolTipGenerator tipster = getToolTipGenerator(row, column);
+		if (tipster != null) {
+			tip = tipster.generateToolTip(dataset, row, column);
+		}
+		String url = null;
+		CategoryURLGenerator urlster = getItemURLGenerator(row, column);
+		if (urlster != null) {
+			url = urlster.generateURL(dataset, row, column);
+		}
+		CategoryItemEntity entity = new CategoryItemEntity(hotspot, tip, url,
+				dataset, dataset.getRowKey(row), dataset.getColumnKey(column));
+		entities.add(entity);
+	}
+
+	/**
+	 * Adds an entity to the collection.
+	 *
+	 * @param entities
+	 *            the entity collection being populated.
+	 * @param hotspot
+	 *            the entity area (if {@code null} a default will be used).
+	 * @param dataset
+	 *            the dataset.
+	 * @param row
+	 *            the series.
+	 * @param column
+	 *            the item.
+	 * @param entityX
+	 *            the entity's center x-coordinate in user space (only used if
+	 *            {@code area} is {@code null}).
+	 * @param entityY
+	 *            the entity's center y-coordinate in user space (only used if
+	 *            {@code area} is {@code null}).
+	 *
+	 * @since 1.0.13
+	 */
+	protected void addEntity(EntityCollection entities, Shape hotspot,
+			CategoryDataset dataset, int row, int column,
+			double entityX, double entityY) {
+		if (!getItemCreateEntity(row, column)) {
+			return;
+		}
+		Shape s = hotspot;
+		if (hotspot == null) {
+			double r = getDefaultEntityRadius();
+			double w = r * 2;
+			if (getPlot().getOrientation() == PlotOrientation.VERTICAL) {
+				s = new Ellipse2D((float) (entityX - r), (float) (entityY - r), (float) w, (float) w);
+			}
+			else {
+				s = new Ellipse2D((float) (entityY - r), (float) (entityX - r), (float) w, (float) w);
+			}
+		}
+		String tip = null;
+		CategoryToolTipGenerator generator = getToolTipGenerator(row, column);
+		if (generator != null) {
+			tip = generator.generateToolTip(dataset, row, column);
+		}
+		String url = null;
+		CategoryURLGenerator urlster = getItemURLGenerator(row, column);
+		if (urlster != null) {
+			url = urlster.generateURL(dataset, row, column);
+		}
+		CategoryItemEntity entity = new CategoryItemEntity(s, tip, url,
+				dataset, dataset.getRowKey(row), dataset.getColumnKey(column));
+		entities.add(entity);
+	}
 
 }

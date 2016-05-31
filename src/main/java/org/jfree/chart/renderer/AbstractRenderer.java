@@ -549,7 +549,7 @@ public abstract class AbstractRenderer implements Cloneable, Serializable {
 		this.shapeIRS = shapeIRS;
 	}
 
-	// JAVAFX
+	// JAVAFX stroke
 	//
 	// /**
 	// * @param strokeIRS {@link #strokeIRS} (<code>null</code> not permitted)
@@ -2661,81 +2661,85 @@ public abstract class AbstractRenderer implements Cloneable, Serializable {
 		this.defaultEntityRadius = radius;
 	}
 
-	// JAVAFX shape
-	// /**
-	// * Performs a lookup for the legend shape.
-	// *
-	// * @param series the series index.
-	// *
-	// * @return The shape (possibly <code>null</code>).
-	// *
-	// * @since 1.0.11
-	// */
-	// public Shape lookupLegendShape(int series) {
-	// Shape result = getLegendShape(series);
-	// if (result == null) {
-	// result = this.defaultLegendShape;
-	// }
-	// if (result == null) {
-	// result = lookupSeriesShape(series);
-	// }
-	// return result;
-	// }
-	//
-	// /**
-	// * Returns the legend shape defined for the specified series (possibly
-	// * <code>null</code>).
-	// *
-	// * @param series the series index.
-	// *
-	// * @return The shape (possibly <code>null</code>).
-	// *
-	// * @see #lookupLegendShape(int)
-	// *
-	// * @since 1.0.11
-	// */
-	// public Shape getLegendShape(int series) {
-	// return this.legendShapeList.getShape(series);
-	// }
-	//
-	// /**
-	// * Sets the shape used for the legend item for the specified series, and
-	// * sends a {@link RendererChangeEvent} to all registered listeners.
-	// *
-	// * @param series the series index.
-	// * @param shape the shape (<code>null</code> permitted).
-	// *
-	// * @since 1.0.11
-	// */
-	// public void setLegendShape(int series, Shape shape) {
-	// this.legendShapeList.setShape(series, shape);
-	// fireChangeEvent();
-	// }
-	//
-	// /**
-	// * Returns the default legend shape, which may be <code>null</code>.
-	// *
-	// * @return The default legend shape.
-	// *
-	// * @since 1.0.11
-	// */
-	// public Shape getDefaultLegendShape() {
-	// return this.defaultLegendShape;
-	// }
-	//
-	// /**
-	// * Sets the default legend shape and sends a
-	// * {@link RendererChangeEvent} to all registered listeners.
-	// *
-	// * @param shape the shape (<code>null</code> permitted).
-	// *
-	// * @since 1.0.11
-	// */
-	// public void setDefaultLegendShape(Shape shape) {
-	// this.defaultLegendShape = shape;
-	// fireChangeEvent();
-	// }
-	//
+	/**
+	 * Performs a lookup for the legend shape.
+	 *
+	 * @param series
+	 *            the series index.
+	 *
+	 * @return The shape (possibly <code>null</code>).
+	 *
+	 * @since 1.0.11
+	 */
+	public Shape lookupLegendShape(int series) {
+		Shape result = getLegendShape(series);
+		if (result == null) {
+			result = this.defaultLegendShape;
+		}
+		if (result == null) {
+			result = lookupSeriesShape(series);
+		}
+		return result;
+	}
+
+	/**
+	 * Returns the legend shape defined for the specified series (possibly
+	 * <code>null</code>).
+	 *
+	 * @param series
+	 *            the series index.
+	 *
+	 * @return The shape (possibly <code>null</code>).
+	 *
+	 * @see #lookupLegendShape(int)
+	 *
+	 * @since 1.0.11
+	 */
+	public Shape getLegendShape(int series) {
+		return this.legendShapeList.getShape(series);
+	}
+
+	/**
+	 * Sets the shape used for the legend item for the specified series, and
+	 * sends a {@link RendererChangeEvent} to all registered listeners.
+	 *
+	 * @param series
+	 *            the series index.
+	 * @param shape
+	 *            the shape (<code>null</code> permitted).
+	 *
+	 * @since 1.0.11
+	 */
+	public void setLegendShape(int series, Shape shape) {
+		this.legendShapeList.setShape(series, shape);
+		fireChangeEvent();
+	}
+
+	/**
+	 * Returns the default legend shape, which may be <code>null</code>.
+	 *
+	 * @return The default legend shape.
+	 *
+	 * @since 1.0.11
+	 */
+	public Shape getDefaultLegendShape() {
+		return this.defaultLegendShape;
+	}
+
+	/**
+	 * Sets the default legend shape and sends a {@link RendererChangeEvent} to
+	 * all registered listeners.
+	 *
+	 * @param shape
+	 *            the shape (<code>null</code> permitted).
+	 *
+	 * @since 1.0.11
+	 */
+	public void setDefaultLegendShape(Shape shape) {
+		this.defaultLegendShape = shape;
+		fireChangeEvent();
+	}
+
 	/**
 	 * Returns the flag that controls whether or not the legend shape is treated
 	 * as a line when creating legend items.
