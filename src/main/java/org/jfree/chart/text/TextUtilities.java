@@ -364,7 +364,7 @@ public class TextUtilities {
 		return bounds;
 	}
 
-	//
+	// JAVAFX
 	// /**
 	// * Returns the bounds for the attributed string.
 	// *

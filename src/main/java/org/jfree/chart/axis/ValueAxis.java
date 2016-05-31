@@ -143,6 +143,8 @@ import org.jfree.chart.util.SerialUtils;
 import org.jfree.data.Range;
 import org.jfree.geometry.Line2D;
 
+import com.sun.javafx.tk.FontMetrics;
+
 import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.text.Font;
@@ -949,34 +951,32 @@ public abstract class ValueAxis extends Axis
 		RectangleInsets insets = getTickLabelInsets();
 		Font font = getTickLabelFont();
 		double maxWidth = 0.0;
-		// JAVAFX font metrics
-		// if (!vertical) {
-		// FontMetrics fm = g2.getFontMetrics(font);
-		// for (ValueTick tick : ticks) {
-		// Rectangle2D labelBounds = null;
-		// if (tick instanceof LogTick) {
-		// LogTick lt = (LogTick) tick;
-		// if (lt.getAttributedLabel() != null) {
-		// labelBounds = TextUtilities.getTextBounds(
-		// lt.getAttributedLabel(), g2);
-		// }
-		// } else if (tick.getText() != null) {
-		// labelBounds = TextUtilities.getTextBounds(tick.getText(),
-		// g2, fm);
-		// }
-		// if (labelBounds != null
-		// && labelBounds.getWidth() + insets.getLeft()
-		// + insets.getRight() > maxWidth) {
-		// maxWidth = labelBounds.getWidth()
-		// + insets.getLeft() + insets.getRight();
-		// }
-		// }
-		// } else {
-		// LineMetrics metrics = font.getLineMetrics("ABCxyz",
-		// g2.getFontRenderContext());
-		// maxWidth = metrics.getHeight()
-		// + insets.getTop() + insets.getBottom();
-		// }
+		FontMetrics fm = TextUtilities.getFontMetrics(font);
+		if (!vertical) {
+			for (ValueTick tick : ticks) {
+				Rectangle2D labelBounds = null;
+				if (tick instanceof LogTick) {
+					// JAVAFX
+					// LogTick lt = (LogTick) tick;
+					// if (lt.getAttributedLabel() != null) {
+					// labelBounds = TextUtilities.getTextBounds(
+					// lt.getAttributedLabel(), g2);
+					// }
+				} else if (tick.getText() != null) {
+					labelBounds = TextUtilities.getTextBounds(tick.getText(),
+							g2, fm);
+				}
+				if (labelBounds != null
+						&& labelBounds.getWidth() + insets.getLeft()
+								+ insets.getRight() > maxWidth) {
+					maxWidth = labelBounds.getWidth()
+							+ insets.getLeft() + insets.getRight();
+				}
+			}
+		} else {
+			maxWidth = fm.getLineHeight()
+					+ insets.getTop() + insets.getBottom();
+		}
 		return maxWidth;
 
 	}
