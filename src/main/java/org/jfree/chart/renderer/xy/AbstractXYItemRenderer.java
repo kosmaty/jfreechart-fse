@@ -191,6 +191,8 @@ import org.jfree.data.general.DatasetUtilities;
 import org.jfree.data.xy.XYDataset;
 import org.jfree.geometry.Line2D;
 
+import com.sun.javafx.geom.Ellipse2D;
+import com.sun.javafx.geom.Path2D;
 import com.sun.javafx.geom.Shape;
 
 import javafx.geometry.Point2D;
@@ -1137,12 +1139,14 @@ public abstract class AbstractXYItemRenderer extends AbstractRenderer
 		g2.setStroke(plot.getDomainGridlinePaint());
 		// JAVAFX stroke
 		// g2.setStroke(plot.getDomainGridlineStroke());
+
+		// JAVAFX rendering hints
 		// Object saved =
 		// g2.getRenderingHint(RenderingHints.KEY_STROKE_CONTROL);
 		// g2.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL,
 		// RenderingHints.VALUE_STROKE_NORMALIZE);
 		g2.strokeLine(line.getX1(), line.getY1(), line.getX2(), line.getY2());
-		// JAVAFX
+		// JAVAFX rendering hints
 		// g2.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, saved);
 	}
 
@@ -1191,12 +1195,14 @@ public abstract class AbstractXYItemRenderer extends AbstractRenderer
 		g2.setStroke(paint);
 		// JAVAFX stroke
 		// g2.setStroke(stroke);
+
+		// JAVAFX rendering hints
 		// Object saved =
 		// g2.getRenderingHint(RenderingHints.KEY_STROKE_CONTROL);
 		// g2.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL,
 		// RenderingHints.VALUE_STROKE_NORMALIZE);
 		strokeLine(g2, line);
-		// JAVAFX
+		// JAVAFX rendering hints
 		// g2.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, saved);
 	}
 
@@ -1243,12 +1249,14 @@ public abstract class AbstractXYItemRenderer extends AbstractRenderer
 		g2.setStroke(paint);
 		// JAVAFX stroke
 		// g2.setStroke(stroke);
+
+		// JAVAFX rendering hints
 		// Object saved =
 		// g2.getRenderingHint(RenderingHints.KEY_STROKE_CONTROL);
 		// g2.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL,
 		// RenderingHints.VALUE_STROKE_NORMALIZE);
 		strokeLine(g2, line);
-		// JAVAFX
+		// JAVAFX rendering hints
 		// g2.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, saved);
 	}
 
@@ -1293,7 +1301,7 @@ public abstract class AbstractXYItemRenderer extends AbstractRenderer
 				throw new IllegalStateException("Unrecognised orientation.");
 			}
 
-			// JAVAFX
+			// JAVAFX composite
 			// final Composite originalComposite = g2.getComposite();
 			// g2.setComposite(AlphaComposite.getInstance(
 			// AlphaComposite.SRC_OVER, marker.getAlpha()));
@@ -1321,7 +1329,7 @@ public abstract class AbstractXYItemRenderer extends AbstractRenderer
 						(float) coords.getX(), (float) coords.getY(),
 						marker.getLabelTextAnchor());
 			}
-			// JAVAFX
+			// JAVAFX composite
 			// g2.setComposite(originalComposite);
 		} else if (marker instanceof IntervalMarker) {
 			IntervalMarker im = (IntervalMarker) marker;
@@ -1357,12 +1365,12 @@ public abstract class AbstractXYItemRenderer extends AbstractRenderer
 						dataArea.getHeight());
 			}
 
-			// JAVAFX
+			// JAVAFX composite
 			// final Composite originalComposite = g2.getComposite();
 			// g2.setComposite(AlphaComposite.getInstance(
 			// AlphaComposite.SRC_OVER, marker.getAlpha()));
 			Paint p = marker.getPaint();
-			// JAVAFX
+			// JAVAFX gradient
 			// if (p instanceof GradientPaint) {
 			// GradientPaint gp = (GradientPaint) p;
 			// GradientPaintTransformer t = im.getGradientPaintTransformer();
@@ -1429,7 +1437,7 @@ public abstract class AbstractXYItemRenderer extends AbstractRenderer
 						(float) coords.getX(), (float) coords.getY(),
 						marker.getLabelTextAnchor());
 			}
-			// JAVAFX
+			// JAVAFX composite
 			// g2.setComposite(originalComposite);
 		}
 	}
@@ -1513,7 +1521,7 @@ public abstract class AbstractXYItemRenderer extends AbstractRenderer
 				throw new IllegalStateException("Unrecognised orientation.");
 			}
 
-			// JAVAFX
+			// JAVAFX composite
 			// final Composite originalComposite = g2.getComposite();
 			// g2.setComposite(AlphaComposite.getInstance(
 			// AlphaComposite.SRC_OVER, marker.getAlpha()));
@@ -1541,7 +1549,7 @@ public abstract class AbstractXYItemRenderer extends AbstractRenderer
 						(float) coords.getX(), (float) coords.getY(),
 						marker.getLabelTextAnchor());
 			}
-			// JAVAFX
+			// JAVAFX composite
 			// g2.setComposite(originalComposite);
 		} else if (marker instanceof IntervalMarker) {
 			IntervalMarker im = (IntervalMarker) marker;
@@ -1577,12 +1585,12 @@ public abstract class AbstractXYItemRenderer extends AbstractRenderer
 						high - low);
 			}
 
-			// JAVAFX
+			// JAVAFX composite
 			// final Composite originalComposite = g2.getComposite();
 			// g2.setComposite(AlphaComposite.getInstance(
 			// AlphaComposite.SRC_OVER, marker.getAlpha()));
 			Paint p = marker.getPaint();
-			// JAVAFX
+			// JAVAFX gradient
 			// if (p instanceof GradientPaint) {
 			// GradientPaint gp = (GradientPaint) p;
 			// GradientPaintTransformer t = im.getGradientPaintTransformer();
@@ -1649,7 +1657,7 @@ public abstract class AbstractXYItemRenderer extends AbstractRenderer
 						(float) coords.getX(), (float) coords.getY(),
 						marker.getLabelTextAnchor());
 			}
-			// JAVAFX
+			// JAVAFX composite
 			// g2.setComposite(originalComposite);
 		}
 	}
@@ -1957,92 +1965,91 @@ public abstract class AbstractXYItemRenderer extends AbstractRenderer
 
 	}
 
-	// JAVAFX shape
-	// /**
-	// * Adds an entity to the collection.
-	// *
-	// * @param entities
-	// * the entity collection being populated.
-	// * @param area
-	// * the entity area (if {@code null} a default will be used).
-	// * @param dataset
-	// * the dataset.
-	// * @param series
-	// * the series.
-	// * @param item
-	// * the item.
-	// * @param entityX
-	// * the entity's center x-coordinate in user space (only used if
-	// * {@code area} is {@code null}).
-	// * @param entityY
-	// * the entity's center y-coordinate in user space (only used if
-	// * {@code area} is {@code null}).
-	// */
-	// protected void addEntity(EntityCollection entities, Shape area,
-	// XYDataset dataset, int series, int item,
-	// double entityX, double entityY) {
-	// if (!getItemCreateEntity(series, item)) {
-	// return;
-	// }
-	// Shape hotspot = area;
-	// if (hotspot == null) {
-	// double r = getDefaultEntityRadius();
-	// double w = r * 2;
-	// if (getPlot().getOrientation() == PlotOrientation.VERTICAL) {
-	// hotspot = new Ellipse2D.Double(entityX - r, entityY - r, w, w);
-	// }
-	// else {
-	// hotspot = new Ellipse2D.Double(entityY - r, entityX - r, w, w);
-	// }
-	// }
-	// String tip = null;
-	// XYToolTipGenerator generator = getToolTipGenerator(series, item);
-	// if (generator != null) {
-	// tip = generator.generateToolTip(dataset, series, item);
-	// }
-	// String url = null;
-	// if (getURLGenerator() != null) {
-	// url = getURLGenerator().generateURL(dataset, series, item);
-	// }
-	// XYItemEntity entity = new XYItemEntity(hotspot, dataset, series, item,
-	// tip, url);
-	// entities.add(entity);
-	// }
-	//
-	// /**
-	// * Utility method delegating to {@link GeneralPath#moveTo} taking double
-	// as
-	// * parameters.
-	// *
-	// * @param hotspot
-	// * the region under construction ({@code null} not permitted);
-	// * @param x
-	// * the x coordinate;
-	// * @param y
-	// * the y coordinate;
-	// *
-	// * @since 1.0.14
-	// */
-	// protected static void moveTo(GeneralPath hotspot, double x, double y) {
-	// hotspot.moveTo((float) x, (float) y);
-	// }
-	//
-	// /**
-	// * Utility method delegating to {@link GeneralPath#lineTo} taking double
-	// as
-	// * parameters.
-	// *
-	// * @param hotspot
-	// * the region under construction ({@code null} not permitted);
-	// * @param x
-	// * the x coordinate;
-	// * @param y
-	// * the y coordinate;
-	// *
-	// * @since 1.0.14
-	// */
-	// protected static void lineTo(GeneralPath hotspot, double x, double y) {
-	// hotspot.lineTo((float) x, (float) y);
-	// }
+	/**
+	 * Adds an entity to the collection.
+	 *
+	 * @param entities
+	 *            the entity collection being populated.
+	 * @param area
+	 *            the entity area (if {@code null} a default will be used).
+	 * @param dataset
+	 *            the dataset.
+	 * @param series
+	 *            the series.
+	 * @param item
+	 *            the item.
+	 * @param entityX
+	 *            the entity's center x-coordinate in user space (only used if
+	 *            {@code area} is {@code null}).
+	 * @param entityY
+	 *            the entity's center y-coordinate in user space (only used if
+	 *            {@code area} is {@code null}).
+	 */
+	protected void addEntity(EntityCollection entities, Shape area,
+			XYDataset dataset, int series, int item,
+			double entityX, double entityY) {
+		if (!getItemCreateEntity(series, item)) {
+			return;
+		}
+		Shape hotspot = area;
+		if (hotspot == null) {
+			double r = getDefaultEntityRadius();
+			double w = r * 2;
+			if (getPlot().getOrientation() == PlotOrientation.VERTICAL) {
+				hotspot = new Ellipse2D(
+						(float) (entityX - r), (float) (entityY - r), (float) w, (float) w);
+			}
+			else {
+				hotspot = new Ellipse2D(
+						(float) (entityY - r), (float) (entityX - r), (float) w, (float) w);
+			}
+		}
+		String tip = null;
+		XYToolTipGenerator generator = getToolTipGenerator(series, item);
+		if (generator != null) {
+			tip = generator.generateToolTip(dataset, series, item);
+		}
+		String url = null;
+		if (getURLGenerator() != null) {
+			url = getURLGenerator().generateURL(dataset, series, item);
+		}
+		XYItemEntity entity = new XYItemEntity(hotspot, dataset, series, item,
+				tip, url);
+		entities.add(entity);
+	}
+
+	/**
+	 * Utility method delegating to {@link GeneralPath#moveTo} taking double as
+	 * parameters.
+	 *
+	 * @param hotspot
+	 *            the region under construction ({@code null} not permitted);
+	 * @param x
+	 *            the x coordinate;
+	 * @param y
+	 *            the y coordinate;
+	 *
+	 * @since 1.0.14
+	 */
+	protected static void moveTo(Path2D hotspot, double x, double y) {
+		hotspot.moveTo((float) x, (float) y);
+	}
+
+	/**
+	 * Utility method delegating to {@link GeneralPath#lineTo} taking double as
+	 * parameters.
+	 *
+	 * @param hotspot
+	 *            the region under construction ({@code null} not permitted);
+	 * @param x
+	 *            the x coordinate;
+	 * @param y
+	 *            the y coordinate;
+	 *
+	 * @since 1.0.14
+	 */
+	protected static void lineTo(Path2D hotspot, double x, double y) {
+		hotspot.lineTo((float) x, (float) y);
+	}
 
 }

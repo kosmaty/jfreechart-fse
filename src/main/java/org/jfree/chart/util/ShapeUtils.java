@@ -504,22 +504,25 @@ public class ShapeUtils {
 	// return result;
 	// }
 	//
-	// /**
-	// * Returns {@code true} if the specified point {@code (x, y)} falls within
-	// * or on the boundary of the specified rectangle.
-	// *
-	// * @param rect the rectangle ({@code null} not permitted).
-	// * @param x the x-coordinate.
-	// * @param y the y-coordinate.
-	// *
-	// * @return A boolean.
-	// */
-	// public static boolean isPointInRect(Rectangle2D rect, double x, double y)
-	// {
-	// return (x >= rect.getMinX() && x <= rect.getMaxX()
-	// && y >= rect.getMinY() && y <= rect.getMaxY());
-	// }
-	//
+	/**
+	 * Returns {@code true} if the specified point {@code (x, y)} falls within
+	 * or on the boundary of the specified rectangle.
+	 *
+	 * @param rect
+	 *            the rectangle ({@code null} not permitted).
+	 * @param x
+	 *            the x-coordinate.
+	 * @param y
+	 *            the y-coordinate.
+	 *
+	 * @return A boolean.
+	 */
+	public static boolean isPointInRect(Rectangle2D rect, double x, double y)
+	{
+		return (x >= rect.getMinX() && x <= rect.getMaxX()
+				&& y >= rect.getMinY() && y <= rect.getMaxY());
+	}
+
 	/**
 	 * Returns a point based on (x, y) but constrained to be within the bounds
 	 * of a given rectangle.

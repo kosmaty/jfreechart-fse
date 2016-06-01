@@ -942,7 +942,7 @@ public class XYLineAndShapeRenderer extends AbstractXYItemRenderer
 		else if (orientation == PlotOrientation.VERTICAL) {
 			state.workingLine = newLine(transX0, transY0, transX1, transY1);
 		}
-		// JAVAFX
+		// JAVAFX line clipping
 		// visible = LineUtils.clipLine(state.workingLine, dataArea);
 		// if (visible) {
 		drawFirstPassShape(g2, pass, series, item, ShapeUtils.asShape(state.workingLine));
@@ -1158,12 +1158,11 @@ public class XYLineAndShapeRenderer extends AbstractXYItemRenderer
 		updateCrosshairValues(crosshairState, x1, y1, domainAxisIndex,
 				rangeAxisIndex, transX1, transY1, orientation);
 
-		// JAVAFX
-		// // add an entity for the item, but only if it falls within the data
-		// // area...
-		// if (entities != null && ShapeUtils.isPointInRect(dataArea, xx, yy)) {
-		// addEntity(entities, entityArea, dataset, series, item, xx, yy);
-		// }
+		// add an entity for the item, but only if it falls within the data
+		// area...
+		if (entities != null && ShapeUtils.isPointInRect(dataArea, xx, yy)) {
+			addEntity(entities, entityArea, dataset, series, item, xx, yy);
+		}
 	}
 
 	/**
@@ -1249,7 +1248,7 @@ public class XYLineAndShapeRenderer extends AbstractXYItemRenderer
 	public Object clone() throws CloneNotSupportedException {
 		XYLineAndShapeRenderer clone = (XYLineAndShapeRenderer) super.clone();
 		clone.seriesLinesVisible = (BooleanList) this.seriesLinesVisible.clone();
-		// JAVAFX
+		// JAVAFX cloning shape
 		// if (this.legendLine != null) {
 		// clone.legendLine = ShapeUtils.clone(this.legendLine);
 		// }
