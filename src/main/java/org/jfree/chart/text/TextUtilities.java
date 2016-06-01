@@ -451,39 +451,6 @@ public class TextUtilities {
 		return textBounds;
 	}
 
-	// /**
-	// * A utility method that calculates the anchor offsets for a string.
-	// * Normally, the (x, y) coordinate for drawing text is a point on the
-	// * baseline at the left of the text string. If you add these offsets to
-	// (x,
-	// * y) and draw the string, then the anchor point should coincide with the
-	// * (x, y) point.
-	// *
-	// * @param g2
-	// * the graphics device (not {@code null}).
-	// * @param text
-	// * the text.
-	// * @param anchor
-	// * the anchor point.
-	// * @param textBounds
-	// * the text bounds (if not {@code null}, this object will be
-	// * updated by this method to match the string bounds).
-	// *
-	// * @return The offsets.
-	// */
-	// private static float[] deriveTextBoundsAnchorOffsets(GraphicsContext g2,
-	// String text, TextAnchor anchor, Rectangle2D textBounds) {
-	// if (textBounds != null) {
-	//
-	// // JAVAFX rectangle is immutable
-	// // textBounds.setRect(bounds);
-	// throw new IllegalStateException(
-	// "JAVAFX Rectangle2D is immutable. Use TextUtilities.getTextBounds to calculate bounds outside of this method");
-	// }
-	//
-	// return deriveTextBoundsAnchorOffsets(g2, text, anchor);
-	// }
-
 	/**
 	 * A utility method that calculates the anchor offsets for a string.
 	 * Normally, the (x, y) coordinate for drawing text is a point on the
@@ -840,53 +807,53 @@ public class TextUtilities {
 
 	}
 
-	//
-	// /**
-	// * Returns the flag that controls whether the
-	// FontMetrics.getStringBounds()
-	// * method is used or not. If you are having trouble with label alignment
-	// * or positioning, try changing the value of this flag.
-	// *
-	// * @return A boolean.
-	// */
-	// public static boolean getUseFontMetricsGetStringBounds() {
-	// return useFontMetricsGetStringBounds;
-	// }
-	//
-	// /**
-	// * Sets the flag that controls whether the FontMetrics.getStringBounds()
-	// * method is used or not. If you are having trouble with label alignment
-	// * or positioning, try changing the value of this flag.
-	// *
-	// * @param use the flag.
-	// */
-	// public static void setUseFontMetricsGetStringBounds(boolean use) {
-	// useFontMetricsGetStringBounds = use;
-	// }
-	//
-	// /**
-	// * Returns the flag that controls whether or not a workaround is used for
-	// * drawing rotated strings.
-	// *
-	// * @return A boolean.
-	// */
-	// public static boolean getUseDrawRotatedStringWorkaround() {
-	// return useDrawRotatedStringWorkaround;
-	// }
-	//
-	// /**
-	// * Sets the flag that controls whether or not a workaround is used for
-	// * drawing rotated strings. The related bug is on Sun's bug parade
-	// * (id 4312117) and the workaround involves using a {@code TextLayout}
-	// * instance to draw the text instead of calling the
-	// * {@code drawString()} method in the {@code Graphics2D} class.
-	// *
-	// * @param use the new flag value.
-	// */
-	// public static void setUseDrawRotatedStringWorkaround(boolean use) {
-	// TextUtilities.useDrawRotatedStringWorkaround = use;
-	// }
-	//
+	/**
+	 * Returns the flag that controls whether the FontMetrics.getStringBounds()
+	 * method is used or not. If you are having trouble with label alignment or
+	 * positioning, try changing the value of this flag.
+	 *
+	 * @return A boolean.
+	 */
+	public static boolean getUseFontMetricsGetStringBounds() {
+		return useFontMetricsGetStringBounds;
+	}
+
+	/**
+	 * Sets the flag that controls whether the FontMetrics.getStringBounds()
+	 * method is used or not. If you are having trouble with label alignment or
+	 * positioning, try changing the value of this flag.
+	 *
+	 * @param use
+	 *            the flag.
+	 */
+	public static void setUseFontMetricsGetStringBounds(boolean use) {
+		useFontMetricsGetStringBounds = use;
+	}
+
+	/**
+	 * Returns the flag that controls whether or not a workaround is used for
+	 * drawing rotated strings.
+	 *
+	 * @return A boolean.
+	 */
+	public static boolean getUseDrawRotatedStringWorkaround() {
+		return useDrawRotatedStringWorkaround;
+	}
+
+	/**
+	 * Sets the flag that controls whether or not a workaround is used for
+	 * drawing rotated strings. The related bug is on Sun's bug parade (id
+	 * 4312117) and the workaround involves using a {@code TextLayout} instance
+	 * to draw the text instead of calling the {@code drawString()} method in
+	 * the {@code Graphics2D} class.
+	 *
+	 * @param use
+	 *            the new flag value.
+	 */
+	public static void setUseDrawRotatedStringWorkaround(boolean use) {
+		TextUtilities.useDrawRotatedStringWorkaround = use;
+	}
+
 	/**
 	 * Draws the attributed string at {@code (x, y)}, rotated by the specified
 	 * angle about {@code (x, y)}.
@@ -932,21 +899,13 @@ public class TextUtilities {
 
 		ParamChecks.nullNotPermitted(text, "text");
 
-		// AffineTransform saved = g2.getTransform();
-		// AffineTransform rotate = AffineTransform.getRotateInstance(angle,
-		// rotateX, rotateY);
-		// g2.transform(rotate);
-
-		//
-		// g2.setTransform(saved);
-
-		// JAVAFX this rotation may be unsufficient
-
 		g2.save();
 		g2.translate(rotateX, rotateY);
 		g2.rotate(Math.toDegrees(angle));
 		g2.translate(-rotateX, -rotateY);
+
 		drawString(text, g2, textX, textY);
+
 		g2.restore();
 	}
 
@@ -993,56 +952,46 @@ public class TextUtilities {
 			float x, float y, TextAnchor textAnchor,
 			double angle, TextAnchor rotationAnchor) {
 		ParamChecks.nullNotPermitted(text, "text");
-		float[] textAdj = deriveTextBoundsAnchorOffsets(g2, text, textAnchor,
-				null);
-		float[] rotateAdj = deriveRotationAnchorOffsets(g2, text,
-				rotationAnchor);
+		float[] textAdj = deriveTextBoundsAnchorOffsets(g2, text, textAnchor);
+		float[] rotateAdj = deriveRotationAnchorOffsets(g2, text, rotationAnchor);
 		drawRotatedString(text, g2, x + textAdj[0], y + textAdj[1],
 				angle, x + textAdj[0] + rotateAdj[0],
 				y + textAdj[1] + rotateAdj[1]);
 	}
 
 	private static float[] deriveTextBoundsAnchorOffsets(GraphicsContext g2,
-			AttributedString text, TextAnchor anchor, Rectangle2D textBounds) {
+			AttributedString text, TextAnchor anchor) {
 
-		// JAVAFX
-		// TextLayout layout = new TextLayout(text.getIterator(),
-		// g2.getFontRenderContext());
-		// Rectangle2D bounds = layout.getBounds();
-		//
+		Rectangle2D bounds = getTextBounds(text, g2);
+		FontMetrics metrics = getFontMetrics(g2.getFont());
 		float[] result = new float[3];
-		// JAVAFX
-		// float ascent = layout.getAscent();
-		// result[2] = -ascent;
-		// float halfAscent = ascent / 2.0f;
-		// float descent = layout.getDescent();
-		// float leading = layout.getLeading();
-		// double height = Math.max(bounds.getHeight(),
-		// ascent + descent + leading);
+		float ascent = metrics.getAscent();
+		result[2] = -ascent;
+		float halfAscent = ascent / 2.0f;
+		float descent = metrics.getDescent();
+		float leading = metrics.getLeading();
+		double height = Math.max(bounds.getHeight(),
+				ascent + descent + leading);
 		float xAdj = 0.0f;
 		float yAdj = 0.0f;
 
-		// JAVAFX
-		// if (anchor.isHorizontalCenter()) {
-		// xAdj = (float) -bounds.getWidth() / 2.0f;
-		// } else if (anchor.isHorizontalRight()) {
-		// xAdj = (float) -bounds.getWidth();
-		// }
-		//
-		// if (anchor.isTop()) {
-		// yAdj = -descent - leading + (float) height;
-		// } else if (anchor.isHalfAscent()) {
-		// yAdj = halfAscent;
-		// } else if (anchor.isHalfHeight()) {
-		// yAdj = -descent - leading + (float) (height / 2.0);
-		// } else if (anchor.isBaseline()) {
-		// yAdj = 0.0f;
-		// } else if (anchor.isBottom()) {
-		// yAdj = -descent - leading;
-		// }
-		// if (textBounds != null) {
-		// textBounds.setRect(bounds);
-		// }
+		if (anchor.isHorizontalCenter()) {
+			xAdj = (float) -bounds.getWidth() / 2.0f;
+		} else if (anchor.isHorizontalRight()) {
+			xAdj = (float) -bounds.getWidth();
+		}
+
+		if (anchor.isTop()) {
+			yAdj = -descent - leading + (float) height;
+		} else if (anchor.isHalfAscent()) {
+			yAdj = halfAscent;
+		} else if (anchor.isHalfHeight()) {
+			yAdj = -descent - leading + (float) (height / 2.0);
+		} else if (anchor.isBaseline()) {
+			yAdj = 0.0f;
+		} else if (anchor.isBottom()) {
+			yAdj = -descent - leading;
+		}
 		result[0] = xAdj;
 		result[1] = yAdj;
 		return result;
@@ -1066,67 +1015,65 @@ public class TextUtilities {
 			AttributedString text, TextAnchor anchor) {
 
 		float[] result = new float[2];
-		// JAVAFX
-		// TextLayout layout = new TextLayout(text.getIterator(),
-		// g2.getFontRenderContext());
-		// Rectangle2D bounds = layout.getBounds();
-		// float ascent = layout.getAscent();
-		// float halfAscent = ascent / 2.0f;
-		// float descent = layout.getDescent();
-		// float leading = layout.getLeading();
+		Rectangle2D bounds = getTextBounds(text, g2);
+		FontMetrics metrics = getFontMetrics(g2);
+		float ascent = metrics.getAscent();
+		float halfAscent = ascent / 2.0f;
+		float descent = metrics.getDescent();
+		float leading = metrics.getLeading();
 		float xAdj = 0.0f;
 		float yAdj = 0.0f;
 
-		// JAVAFX
-		// if (anchor.isHorizontalLeft()) {
-		// xAdj = 0.0f;
-		// } else if (anchor.isHorizontalCenter()) {
-		// xAdj = (float) bounds.getWidth() / 2.0f;
-		// } else if (anchor.isHorizontalRight()) {
-		// xAdj = (float) bounds.getWidth();
-		// }
-		//
-		// if (anchor.isTop()) {
-		// yAdj = descent + leading - (float) bounds.getHeight();
-		// } else if (anchor.isHalfHeight()) {
-		// yAdj = descent + leading - (float) (bounds.getHeight() / 2.0);
-		// } else if (anchor.isHalfAscent()) {
-		// yAdj = -halfAscent;
-		// } else if (anchor.isBaseline()) {
-		// yAdj = 0.0f;
-		// } else if (anchor.isBottom()) {
-		// yAdj = descent + leading;
-		// }
+		if (anchor.isHorizontalLeft()) {
+			xAdj = 0.0f;
+		} else if (anchor.isHorizontalCenter()) {
+			xAdj = (float) bounds.getWidth() / 2.0f;
+		} else if (anchor.isHorizontalRight()) {
+			xAdj = (float) bounds.getWidth();
+		}
+
+		if (anchor.isTop()) {
+			yAdj = descent + leading - (float) bounds.getHeight();
+		} else if (anchor.isHalfHeight()) {
+			yAdj = descent + leading - (float) (bounds.getHeight() / 2.0);
+		} else if (anchor.isHalfAscent()) {
+			yAdj = -halfAscent;
+		} else if (anchor.isBaseline()) {
+			yAdj = 0.0f;
+		} else if (anchor.isBottom()) {
+			yAdj = descent + leading;
+		}
 		result[0] = xAdj;
 		result[1] = yAdj;
 		return result;
 	}
-	//
-	// /**
-	// * Returns the flag that controls whether or not strings are drawn using
-	// * the current font attributes (such as underlining, strikethrough etc).
-	// * The default value is {@code false}.
-	// *
-	// * @return A boolean.
-	// *
-	// * @since 1.0.21
-	// */
-	// public static boolean getDrawStringsWithFontAttributes() {
-	// return TextUtilities.drawStringsWithFontAttributes;
-	// }
-	//
-	// /**
-	// * Sets the flag that controls whether or not strings are drawn using the
-	// * current font attributes. This is a hack to allow underlining of titles
-	// * without big changes to the API. See:
-	// * http://www.jfree.org/phpBB2/viewtopic.php?p=45459&amp;highlight=#45459
-	// *
-	// * @param b the new flag value.
-	// *
-	// * @since 1.0.21
-	// */
-	// public static void setDrawStringsWithFontAttributes(boolean b) {
-	// TextUtilities.drawStringsWithFontAttributes = b;
-	// }
-	//
+
+	/**
+	 * Returns the flag that controls whether or not strings are drawn using the
+	 * current font attributes (such as underlining, strikethrough etc). The
+	 * default value is {@code false}.
+	 *
+	 * @return A boolean.
+	 *
+	 * @since 1.0.21
+	 */
+	public static boolean getDrawStringsWithFontAttributes() {
+		return TextUtilities.drawStringsWithFontAttributes;
+	}
+
+	/**
+	 * Sets the flag that controls whether or not strings are drawn using the
+	 * current font attributes. This is a hack to allow underlining of titles
+	 * without big changes to the API. See:
+	 * http://www.jfree.org/phpBB2/viewtopic.php?p=45459&amp;highlight=#45459
+	 *
+	 * @param b
+	 *            the new flag value.
+	 *
+	 * @since 1.0.21
+	 */
+	public static void setDrawStringsWithFontAttributes(boolean b) {
+		TextUtilities.drawStringsWithFontAttributes = b;
+	}
+
 }
