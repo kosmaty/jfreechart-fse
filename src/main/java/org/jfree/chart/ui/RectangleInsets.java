@@ -49,6 +49,8 @@
 
 package org.jfree.chart.ui;
 
+import static org.jfree.geometry.GeometryUtils.newOrEmptyRectangle;
+
 import java.io.Serializable;
 
 import org.jfree.chart.util.UnitType;
@@ -591,7 +593,7 @@ public class RectangleInsets implements Serializable {
 		final double r = calculateRightInset(w);
 		final double t = calculateTopInset(h);
 		final double b = calculateBottomInset(h);
-		return new Rectangle2D(area.getMinX() + l, area.getMinY() + t, w - l - r, h - t - b);
+		return newOrEmptyRectangle(area.getMinX() + l, area.getMinY() + t, w - l - r, h - t - b);
 	}
 
 }

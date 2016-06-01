@@ -25,6 +25,13 @@ public class GeometryUtils {
 
 	}
 
+	public static Rectangle2D newOrEmptyRectangle(double x, double y, double width, double height) {
+		if (width < 0 || height < 0) {
+			return Rectangle2D.EMPTY;
+		}
+		return new Rectangle2D(x, y, width, height);
+	}
+
 	public static Line2D newLine(double startX, double startY, double endX, double endY) {
 		return new Line2D(startX, startY, endX, endY);
 	}

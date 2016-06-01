@@ -47,6 +47,8 @@
 
 package org.jfree.chart.axis;
 
+import static org.jfree.geometry.GeometryUtils.newOrEmptyRectangle;
+
 import java.io.Serializable;
 
 import org.jfree.chart.ui.RectangleEdge;
@@ -256,7 +258,7 @@ public class AxisSpace implements Cloneable, PublicCloneable, Serializable {
 	 * @return The result.
 	 */
 	public Rectangle2D shrink(Rectangle2D area) {
-		Rectangle2D result = new Rectangle2D(
+		Rectangle2D result = newOrEmptyRectangle(
 				area.getMinX() + this.left,
 				area.getMinY() + this.top,
 				area.getWidth() - this.left - this.right,
