@@ -63,6 +63,7 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Paint;
 import javafx.scene.text.Font;
 
+import java.text.AttributedCharacterIterator;
 // 
 // import java.awt.Font;
 // import java.awt.FontMetrics;
@@ -364,22 +365,27 @@ public class TextUtilities {
 		return bounds;
 	}
 
-	// JAVAFX
-	// /**
-	// * Returns the bounds for the attributed string.
-	// *
-	// * @param text the attributed string ({@code null} not permitted).
-	// * @param g2 the graphics target ({@code null} not permitted).
-	// *
-	// * @return The bounds (never {@code null}).
-	// */
-	// public static Rectangle2D getTextBounds(AttributedString text,
-	// Graphics2D g2) {
-	// TextLayout tl = new TextLayout(text.getIterator(),
-	// g2.getFontRenderContext());
-	// return tl.getBounds();
-	// }
-	//
+	/**
+	 * Returns the bounds for the attributed string.
+	 *
+	 * @param text
+	 *            the attributed string ({@code null} not permitted).
+	 * @param g2
+	 *            the graphics target ({@code null} not permitted).
+	 *
+	 * @return The bounds (never {@code null}).
+	 */
+	public static Rectangle2D getTextBounds(AttributedString text,
+			GraphicsContext g2) {
+		// JAVAFX text layout
+		// TextLayout tl = new TextLayout(text.getIterator(),
+		// g2.getFontRenderContext());
+		// return tl.getBounds();
+
+		// FIXME JAVAFX fake result - it calculates bounds for plain text!!!
+		return getTextBounds(toPlainText(text), g2, g2.getFont());
+	}
+
 	/**
 	 * Draws a string such that the specified anchor point is aligned to the
 	 * given (x, y) location.
@@ -406,7 +412,7 @@ public class TextUtilities {
 		textBounds = new Rectangle2D(x + adjust[0], y + adjust[1] +
 				adjust[2],
 				textBounds.getWidth(), textBounds.getHeight());
-		// JAVAFX
+		// JAVAFX font attributes
 		// if (!drawStringsWithFontAttributes) {
 		g2.fillText(text, x + adjust[0], y + adjust[1]);
 		// } else {
@@ -437,46 +443,46 @@ public class TextUtilities {
 	public static Rectangle2D calcAlignedStringBounds(String text,
 			GraphicsContext g2, float x, float y, TextAnchor anchor) {
 
-		Rectangle2D textBounds = Rectangle2D.EMPTY;
-		float[] adjust = deriveTextBoundsAnchorOffsets(g2, text, anchor,
-				textBounds);
+		Rectangle2D textBounds = getTextBounds(text, g2, g2.getFont());
+		float[] adjust = deriveTextBoundsAnchorOffsets(g2, text, anchor);
 		// adjust text bounds to match string position
 		textBounds = new Rectangle2D(x + adjust[0], y + adjust[1] + adjust[2],
 				textBounds.getWidth(), textBounds.getHeight());
 		return textBounds;
 	}
 
-	/**
-	 * A utility method that calculates the anchor offsets for a string.
-	 * Normally, the (x, y) coordinate for drawing text is a point on the
-	 * baseline at the left of the text string. If you add these offsets to (x,
-	 * y) and draw the string, then the anchor point should coincide with the
-	 * (x, y) point.
-	 *
-	 * @param g2
-	 *            the graphics device (not {@code null}).
-	 * @param text
-	 *            the text.
-	 * @param anchor
-	 *            the anchor point.
-	 * @param textBounds
-	 *            the text bounds (if not {@code null}, this object will be
-	 *            updated by this method to match the string bounds).
-	 *
-	 * @return The offsets.
-	 */
-	private static float[] deriveTextBoundsAnchorOffsets(GraphicsContext g2,
-			String text, TextAnchor anchor, Rectangle2D textBounds) {
-		if (textBounds != null) {
-
-			// JAVAFX rectangle is immutable
-			// textBounds.setRect(bounds);
-			throw new IllegalStateException(
-					"JAVAFX Rectangle2D is immutable. Use TextUtilities.getTextBounds to calculate bounds outside of this method");
-		}
-
-		return deriveTextBoundsAnchorOffsets(g2, text, anchor);
-	}
+	// /**
+	// * A utility method that calculates the anchor offsets for a string.
+	// * Normally, the (x, y) coordinate for drawing text is a point on the
+	// * baseline at the left of the text string. If you add these offsets to
+	// (x,
+	// * y) and draw the string, then the anchor point should coincide with the
+	// * (x, y) point.
+	// *
+	// * @param g2
+	// * the graphics device (not {@code null}).
+	// * @param text
+	// * the text.
+	// * @param anchor
+	// * the anchor point.
+	// * @param textBounds
+	// * the text bounds (if not {@code null}, this object will be
+	// * updated by this method to match the string bounds).
+	// *
+	// * @return The offsets.
+	// */
+	// private static float[] deriveTextBoundsAnchorOffsets(GraphicsContext g2,
+	// String text, TextAnchor anchor, Rectangle2D textBounds) {
+	// if (textBounds != null) {
+	//
+	// // JAVAFX rectangle is immutable
+	// // textBounds.setRect(bounds);
+	// throw new IllegalStateException(
+	// "JAVAFX Rectangle2D is immutable. Use TextUtilities.getTextBounds to calculate bounds outside of this method");
+	// }
+	//
+	// return deriveTextBoundsAnchorOffsets(g2, text, anchor);
+	// }
 
 	/**
 	 * A utility method that calculates the anchor offsets for a string.
@@ -497,11 +503,8 @@ public class TextUtilities {
 			GraphicsContext g2, String text, TextAnchor anchor) {
 		float[] result = new float[3];
 
-		// JAVAFX
-		// FontRenderContext frc = g2.getFontRenderContext();
 		FontMetrics fontMetrics = getFontMetrics(g2);
 		Rectangle2D bounds = TextUtilities.getTextBounds(text, g2, g2.getFont());
-		// LineMetrics metrics = f.getLineMetrics(text, frc);
 		float ascent = fontMetrics.getAscent();
 		result[2] = -ascent;
 		float halfAscent = ascent / 2.0f;
@@ -607,13 +610,12 @@ public class TextUtilities {
 			drawAlignedString(text, g2, textY, textY, TextAnchor.BASELINE_LEFT);
 			return;
 		}
-		// JAVAFX rotation
-		// AffineTransform saved = g2.getTransform();
-		// AffineTransform rotate = AffineTransform.getRotateInstance(angle,
-		// rotateX, rotateY);
-		// g2.transform(rotate);
+		g2.save();
+		g2.translate(rotateX, rotateY);
+		g2.rotate(Math.toDegrees(angle));
+		g2.translate(-rotateX, -rotateY);
 
-		// JAVAFX
+		// JAVAFX text layout
 		// if (useDrawRotatedStringWorkaround) {
 		// // workaround for JDC bug ID 4312117 and others...
 		// TextLayout tl = new TextLayout(text, g2.getFont(),
@@ -623,14 +625,15 @@ public class TextUtilities {
 		// if (!drawStringsWithFontAttributes) {
 		g2.fillText(text, textX, textY);
 
-		// JAVAFX
+		// JAVAFX font attributes
 		// } else {
 		// AttributedString as = new AttributedString(text,
 		// g2.getFont().getAttributes());
 		// g2.drawString(as.getIterator(), textX, textY);
 		// }
 		// }
-		// g2.setTransform(saved);
+
+		g2.restore();
 
 	}
 
@@ -664,8 +667,7 @@ public class TextUtilities {
 			drawAlignedString(text, g2, x, y, textAnchor);
 			return;
 		}
-		float[] textAdj = deriveTextBoundsAnchorOffsets(g2, text, textAnchor,
-				null);
+		float[] textAdj = deriveTextBoundsAnchorOffsets(g2, text, textAnchor);
 		drawRotatedString(text, g2, x + textAdj[0], y + textAdj[1], angle,
 				rotationX, rotationY);
 	}
@@ -700,8 +702,7 @@ public class TextUtilities {
 			drawAlignedString(text, g2, x, y, textAnchor);
 			return;
 		}
-		float[] textAdj = deriveTextBoundsAnchorOffsets(g2, text, textAnchor,
-				null);
+		float[] textAdj = deriveTextBoundsAnchorOffsets(g2, text, textAnchor);
 		float[] rotateAdj = deriveRotationAnchorOffsets(g2, text,
 				rotationAnchor);
 		drawRotatedString(text, g2, x + textAdj[0], y + textAdj[1],
@@ -738,10 +739,8 @@ public class TextUtilities {
 		if (text == null || text.equals("")) {
 			return null;
 		}
-		float[] textAdj = deriveTextBoundsAnchorOffsets(g2, text, textAnchor,
-				null);
-		float[] rotateAdj = deriveRotationAnchorOffsets(g2, text,
-				rotationAnchor);
+		float[] textAdj = deriveTextBoundsAnchorOffsets(g2, text, textAnchor);
+		float[] rotateAdj = deriveRotationAnchorOffsets(g2, text, rotationAnchor);
 		Shape result = calculateRotatedStringBounds(text, g2,
 				x + textAdj[0], y + textAdj[1], angle,
 				x + textAdj[0] + rotateAdj[0], y + textAdj[1] + rotateAdj[1]);
@@ -767,38 +766,34 @@ public class TextUtilities {
 			String text, TextAnchor anchor) {
 
 		float[] result = new float[2];
-		// JAVAFX
-		// FontRenderContext frc = g2.getFontRenderContext();
-		// LineMetrics metrics = g2.getFont().getLineMetrics(text, frc);
-		// FontMetrics fm = g2.getFontMetrics();
-		// Rectangle2D bounds = TextUtilities.getTextBounds(text, g2, fm);
-		// float ascent = metrics.getAscent();
-		// float halfAscent = ascent / 2.0f;
-		// float descent = metrics.getDescent();
-		// float leading = metrics.getLeading();
+		FontMetrics fm = getFontMetrics(g2);
+		Rectangle2D bounds = TextUtilities.getTextBounds(text, g2, fm);
+		float ascent = fm.getAscent();
+		float halfAscent = ascent / 2.0f;
+		float descent = fm.getDescent();
+		float leading = fm.getLeading();
 		float xAdj = 0.0f;
 		float yAdj = 0.0f;
 
-		// JAVAFX
-		// if (anchor.isHorizontalLeft()) {
-		// xAdj = 0.0f;
-		// } else if (anchor.isHorizontalCenter()) {
-		// xAdj = (float) bounds.getWidth() / 2.0f;
-		// } else if (anchor.isHorizontalRight()) {
-		// xAdj = (float) bounds.getWidth();
-		// }
-		//
-		// if (anchor.isTop()) {
-		// yAdj = descent + leading - (float) bounds.getHeight();
-		// } else if (anchor.isHalfHeight()) {
-		// yAdj = descent + leading - (float) (bounds.getHeight() / 2.0);
-		// } else if (anchor.isHalfAscent()) {
-		// yAdj = -halfAscent;
-		// } else if (anchor.isBaseline()) {
-		// yAdj = 0.0f;
-		// } else if (anchor.isBottom()) {
-		// yAdj = descent + leading;
-		// }
+		if (anchor.isHorizontalLeft()) {
+			xAdj = 0.0f;
+		} else if (anchor.isHorizontalCenter()) {
+			xAdj = (float) bounds.getWidth() / 2.0f;
+		} else if (anchor.isHorizontalRight()) {
+			xAdj = (float) bounds.getWidth();
+		}
+
+		if (anchor.isTop()) {
+			yAdj = descent + leading - (float) bounds.getHeight();
+		} else if (anchor.isHalfHeight()) {
+			yAdj = descent + leading - (float) (bounds.getHeight() / 2.0);
+		} else if (anchor.isHalfAscent()) {
+			yAdj = -halfAscent;
+		} else if (anchor.isBaseline()) {
+			yAdj = 0.0f;
+		} else if (anchor.isBottom()) {
+			yAdj = descent + leading;
+		}
 		result[0] = xAdj;
 		result[1] = yAdj;
 		return result;
@@ -907,8 +902,7 @@ public class TextUtilities {
 	 * @param y
 	 *            the y-coordinate.
 	 */
-	public static void drawRotatedString(AttributedString text, GraphicsContext
-			g2,
+	public static void drawRotatedString(AttributedString text, GraphicsContext g2,
 			double angle, float x, float y) {
 		drawRotatedString(text, g2, x, y, angle, x, y);
 	}
@@ -937,17 +931,42 @@ public class TextUtilities {
 			float rotateY) {
 
 		ParamChecks.nullNotPermitted(text, "text");
-		// JAVAFX
+
 		// AffineTransform saved = g2.getTransform();
 		// AffineTransform rotate = AffineTransform.getRotateInstance(angle,
 		// rotateX, rotateY);
 		// g2.transform(rotate);
+
+		//
+		// g2.setTransform(saved);
+
+		// JAVAFX this rotation may be unsufficient
+
+		g2.save();
+		g2.translate(rotateX, rotateY);
+		g2.rotate(Math.toDegrees(angle));
+		g2.translate(-rotateX, -rotateY);
+		drawString(text, g2, textX, textY);
+		g2.restore();
+	}
+
+	private static void drawString(AttributedString text, GraphicsContext g2, float textX, float textY) {
+		// JAVAFX text layout
 		// TextLayout tl = new TextLayout(text.getIterator(),
 		// g2.getFontRenderContext());
 		// tl.draw(g2, textX, textY);
-		//
-		// g2.setTransform(saved);
-		g2.fillText(text.toString(), textX, textY); // JAVAFX fake value
+
+		// FIXME JAVAFX should not draw plain text
+		g2.fillText(toPlainText(text), textX, textY);
+	}
+
+	public static String toPlainText(AttributedString attributedString) {
+		AttributedCharacterIterator iterator = attributedString.getIterator();
+		StringBuilder a = new StringBuilder();
+		for (char c = iterator.current(); c != AttributedCharacterIterator.DONE; c = iterator.next()) {
+			a.append(c);
+		}
+		return a.toString();
 	}
 
 	/**
@@ -970,8 +989,7 @@ public class TextUtilities {
 	 * @param rotationAnchor
 	 *            the rotation anchor point ({@code null} not permitted).
 	 */
-	public static void drawRotatedString(AttributedString text, GraphicsContext
-			g2,
+	public static void drawRotatedString(AttributedString text, GraphicsContext g2,
 			float x, float y, TextAnchor textAnchor,
 			double angle, TextAnchor rotationAnchor) {
 		ParamChecks.nullNotPermitted(text, "text");

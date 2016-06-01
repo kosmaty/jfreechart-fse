@@ -88,6 +88,10 @@
 
 package org.jfree.chart.axis;
 
+import static org.jfree.chart.util.ShapeUtils.asRectangle2D;
+import static org.jfree.chart.util.ShapeUtils.asShape;
+import static org.jfree.geometry.GeometryUtils.getCenterX;
+import static org.jfree.geometry.GeometryUtils.getCenterY;
 import static org.jfree.geometry.GeometryUtils.newLine;
 import static org.jfree.geometry.GeometryUtils.strokeLine;
 
@@ -106,7 +110,7 @@ import org.jfree.chart.ui.RectangleInsets;
 import org.jfree.chart.ui.TextAnchor;
 import org.jfree.chart.util.ObjectUtils;
 import org.jfree.chart.util.PaintUtils;
-// import org.jfree.chart.entity.AxisEntity;
+import org.jfree.chart.entity.AxisEntity;
 import org.jfree.chart.entity.EntityCollection;
 import org.jfree.chart.event.AxisChangeEvent;
 import org.jfree.chart.event.AxisChangeListener;
@@ -118,6 +122,9 @@ import org.jfree.chart.util.ParamChecks;
 import org.jfree.chart.util.SerialUtils;
 import org.jfree.event.EventListenerList;
 import org.jfree.geometry.Line2D;
+
+import com.sun.javafx.geom.Shape;
+import com.sun.javafx.geom.transform.BaseTransform;
 
 import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.GraphicsContext;
@@ -153,7 +160,7 @@ public abstract class Axis implements Cloneable, Serializable {
 	/** The default axis line paint. */
 	public static final Paint DEFAULT_AXIS_LINE_PAINT = Color.GRAY;
 
-	// JAVAFX
+	// JAVAFX stroke
 	//
 	// /** The default axis line stroke. */
 	// public static final Stroke DEFAULT_AXIS_LINE_STROKE = new
@@ -175,7 +182,7 @@ public abstract class Axis implements Cloneable, Serializable {
 	/** The default tick marks visible. */
 	public static final boolean DEFAULT_TICK_MARKS_VISIBLE = true;
 
-	// JAVAFX
+	// JAVAFX stroke
 	//
 	// /** The default tick stroke. */
 	// public static final Stroke DEFAULT_TICK_MARK_STROKE = new BasicStroke(1);
@@ -304,7 +311,7 @@ public abstract class Axis implements Cloneable, Serializable {
 		this.labelPaint = DEFAULT_AXIS_LABEL_PAINT;
 		if (label != null) {
 			AttributedString s = new AttributedString(label);
-			// JAVAFX
+			// JAVAFX font attributes
 			// s.addAttributes(this.labelFont.getAttributes(), 0,
 			// label.length());
 			this.label = s;
@@ -435,7 +442,7 @@ public abstract class Axis implements Cloneable, Serializable {
 			return null;
 		}
 		AttributedString s = new AttributedString(label);
-		// JAVAFX
+		// JAVAFX font attributes
 		// s.addAttributes(this.labelFont.getAttributes(), 0, label.length());
 		return s;
 	}
@@ -464,7 +471,7 @@ public abstract class Axis implements Cloneable, Serializable {
 		ParamChecks.nullNotPermitted(font, "font");
 		this.labelFont = font;
 		if (this.label != null) {
-			// JAVAFX
+			// JAVAFX font attributes
 			// this.label.addAttributes(font.getAttributes(), 0,
 			// this.label.getIterator().getEndIndex());
 		}
@@ -1189,8 +1196,7 @@ public abstract class Axis implements Cloneable, Serializable {
 		}
 		EntityCollection e = plotState.getOwner().getEntityCollection();
 		if (e != null) {
-			// JAVAFX
-			// e.add(new AxisEntity(hotspot, this));
+			e.add(new AxisEntity(asShape(hotspot), this));
 		}
 	}
 
@@ -1273,24 +1279,21 @@ public abstract class Axis implements Cloneable, Serializable {
 			edge) {
 		Rectangle2D result = Rectangle2D.EMPTY;
 		AttributedString axisLabel = getLabel();
-		// JAVAFX
-		// if (axisLabel != null) {
-		// TextLayout layout = new TextLayout(axisLabel.getIterator(),
-		// g2.getFontRenderContext());
-		// Rectangle2D bounds = layout.getBounds();
-		// RectangleInsets insets = getLabelInsets();
-		// bounds = insets.createOutsetRectangle(bounds);
-		// double angle = getLabelAngle();
-		// if (edge == RectangleEdge.LEFT || edge == RectangleEdge.RIGHT) {
-		// angle = angle - Math.PI / 2.0;
-		// }
-		// double x = bounds.getCenterX();
-		// double y = bounds.getCenterY();
-		// AffineTransform transformer =
-		// AffineTransform.getRotateInstance(angle, x, y);
-		// Shape labelBounds = transformer.createTransformedShape(bounds);
-		// result = labelBounds.getBounds2D();
-		// }
+		if (axisLabel != null) {
+			Rectangle2D bounds = TextUtilities.getTextBounds(axisLabel, g2);
+			RectangleInsets insets = getLabelInsets();
+			bounds = insets.createOutsetRectangle(bounds);
+			double angle = getLabelAngle();
+			if (edge == RectangleEdge.LEFT || edge == RectangleEdge.RIGHT) {
+				angle = angle - Math.PI / 2.0;
+			}
+			double x = getCenterX(bounds);
+			double y = getCenterY(bounds);
+			BaseTransform transformer =
+					BaseTransform.getRotateInstance(angle, x, y);
+			Shape labelBounds = transformer.createTransformedShape(asShape(bounds));
+			result = asRectangle2D(labelBounds.getBounds());
+		}
 		return result;
 
 	}
@@ -1325,75 +1328,72 @@ public abstract class Axis implements Cloneable, Serializable {
 		}
 
 		RectangleInsets insets = getLabelInsets();
-		// g2.setFont(getLabelFont());
-		// g2.setPaint(getLabelPaint());
-		// TextLayout layout = new TextLayout(label.getIterator(),
-		// g2.getFontRenderContext());
-		// Rectangle2D labelBounds = layout.getBounds();
-		//
-		// if (edge == RectangleEdge.TOP) {
-		// AffineTransform t = AffineTransform.getRotateInstance(
-		// getLabelAngle(), labelBounds.getCenterX(),
-		// labelBounds.getCenterY());
-		// Shape rotatedLabelBounds = t.createTransformedShape(labelBounds);
-		// labelBounds = rotatedLabelBounds.getBounds2D();
-		// double labelx = this.labelLocation.labelLocationX(dataArea);
-		// double labely = state.getCursor() - insets.getBottom()
-		// - labelBounds.getHeight() / 2.0;
-		// TextAnchor anchor = this.labelLocation.labelAnchorH();
-		// TextUtilities.drawRotatedString(label, g2, (float) labelx,
-		// (float) labely, anchor, getLabelAngle(), TextAnchor.CENTER);
-		// state.cursorUp(insets.getTop() + labelBounds.getHeight()
-		// + insets.getBottom());
-		// }
-		// else if (edge == RectangleEdge.BOTTOM) {
-		// AffineTransform t = AffineTransform.getRotateInstance(
-		// getLabelAngle(), labelBounds.getCenterX(),
-		// labelBounds.getCenterY());
-		// Shape rotatedLabelBounds = t.createTransformedShape(labelBounds);
-		// labelBounds = rotatedLabelBounds.getBounds2D();
-		// double labelx = this.labelLocation.labelLocationX(dataArea);
-		// double labely = state.getCursor()
-		// + insets.getTop() + labelBounds.getHeight() / 2.0;
-		// TextAnchor anchor = this.labelLocation.labelAnchorH();
-		// TextUtilities.drawRotatedString(label, g2, (float) labelx,
-		// (float) labely, anchor, getLabelAngle(), TextAnchor.CENTER);
-		// state.cursorDown(insets.getTop() + labelBounds.getHeight()
-		// + insets.getBottom());
-		// }
-		// else if (edge == RectangleEdge.LEFT) {
-		// AffineTransform t = AffineTransform.getRotateInstance(
-		// getLabelAngle() - Math.PI / 2.0, labelBounds.getCenterX(),
-		// labelBounds.getCenterY());
-		// Shape rotatedLabelBounds = t.createTransformedShape(labelBounds);
-		// labelBounds = rotatedLabelBounds.getBounds2D();
-		// double labelx = state.getCursor()
-		// - insets.getRight() - labelBounds.getWidth() / 2.0;
-		// double labely = this.labelLocation.labelLocationY(dataArea);
-		// TextAnchor anchor = this.labelLocation.labelAnchorV();
-		// TextUtilities.drawRotatedString(label, g2, (float) labelx,
-		// (float) labely, anchor, getLabelAngle() - Math.PI / 2.0,
-		// anchor);
-		// state.cursorLeft(insets.getLeft() + labelBounds.getWidth()
-		// + insets.getRight());
-		// }
-		// else if (edge == RectangleEdge.RIGHT) {
-		// AffineTransform t = AffineTransform.getRotateInstance(
-		// getLabelAngle() + Math.PI / 2.0,
-		// labelBounds.getCenterX(), labelBounds.getCenterY());
-		// Shape rotatedLabelBounds = t.createTransformedShape(labelBounds);
-		// labelBounds = rotatedLabelBounds.getBounds2D();
-		// double labelx = state.getCursor()
-		// + insets.getLeft() + labelBounds.getWidth() / 2.0;
-		// double labely = this.labelLocation.labelLocationY(dataArea);
-		// TextAnchor anchor = this.labelLocation.labelAnchorV();
-		// TextUtilities.drawRotatedString(label, g2, (float) labelx,
-		// (float) labely, anchor, getLabelAngle() + Math.PI / 2.0,
-		// anchor);
-		// state.cursorRight(insets.getLeft() + labelBounds.getWidth()
-		// + insets.getRight());
-		//
-		// }
+		g2.setFont(getLabelFont());
+		g2.setFill(getLabelPaint());
+		Rectangle2D labelBounds = TextUtilities.getTextBounds(label, g2);
+		if (edge == RectangleEdge.TOP) {
+			BaseTransform t = BaseTransform.getRotateInstance(
+					getLabelAngle(), getCenterX(labelBounds),
+					getCenterY(labelBounds));
+			Shape rotatedLabelBounds = t.createTransformedShape(asShape(labelBounds));
+			labelBounds = asRectangle2D(rotatedLabelBounds.getBounds());
+			double labelx = this.labelLocation.labelLocationX(dataArea);
+			double labely = state.getCursor() - insets.getBottom()
+					- labelBounds.getHeight() / 2.0;
+			TextAnchor anchor = this.labelLocation.labelAnchorH();
+			TextUtilities.drawRotatedString(label, g2, (float) labelx,
+					(float) labely, anchor, getLabelAngle(), TextAnchor.CENTER);
+			state.cursorUp(insets.getTop() + labelBounds.getHeight()
+					+ insets.getBottom());
+		}
+		else if (edge == RectangleEdge.BOTTOM) {
+			BaseTransform t = BaseTransform.getRotateInstance(
+					getLabelAngle(), getCenterX(labelBounds),
+					getCenterY(labelBounds));
+			Shape rotatedLabelBounds = t.createTransformedShape(asShape(labelBounds));
+			labelBounds = asRectangle2D(rotatedLabelBounds.getBounds());
+			double labelx = this.labelLocation.labelLocationX(dataArea);
+			double labely = state.getCursor()
+					+ insets.getTop() + labelBounds.getHeight() / 2.0;
+			TextAnchor anchor = this.labelLocation.labelAnchorH();
+			TextUtilities.drawRotatedString(label, g2, (float) labelx,
+					(float) labely, anchor, getLabelAngle(), TextAnchor.CENTER);
+			state.cursorDown(insets.getTop() + labelBounds.getHeight()
+					+ insets.getBottom());
+		}
+		else if (edge == RectangleEdge.LEFT) {
+			BaseTransform t = BaseTransform.getRotateInstance(
+					getLabelAngle() - Math.PI / 2.0, getCenterX(labelBounds),
+					getCenterY(labelBounds));
+			Shape rotatedLabelBounds = t.createTransformedShape(asShape(labelBounds));
+			labelBounds = asRectangle2D(rotatedLabelBounds.getBounds());
+			double labelx = state.getCursor()
+					- insets.getRight() - labelBounds.getWidth() / 2.0;
+			double labely = this.labelLocation.labelLocationY(dataArea);
+			TextAnchor anchor = this.labelLocation.labelAnchorV();
+			TextUtilities.drawRotatedString(label, g2, (float) labelx,
+					(float) labely, anchor, getLabelAngle() - Math.PI / 2.0,
+					anchor);
+			state.cursorLeft(insets.getLeft() + labelBounds.getWidth()
+					+ insets.getRight());
+		}
+		else if (edge == RectangleEdge.RIGHT) {
+			BaseTransform t = BaseTransform.getRotateInstance(
+					getLabelAngle() + Math.PI / 2.0,
+					getCenterX(labelBounds), getCenterY(labelBounds));
+			Shape rotatedLabelBounds = t.createTransformedShape(asShape(labelBounds));
+			labelBounds = asRectangle2D(rotatedLabelBounds.getBounds());
+			double labelx = state.getCursor()
+					+ insets.getLeft() + labelBounds.getWidth() / 2.0;
+			double labely = this.labelLocation.labelLocationY(dataArea);
+			TextAnchor anchor = this.labelLocation.labelAnchorV();
+			TextUtilities.drawRotatedString(label, g2, (float) labelx,
+					(float) labely, anchor, getLabelAngle() + Math.PI / 2.0,
+					anchor);
+			state.cursorRight(insets.getLeft() + labelBounds.getWidth()
+					+ insets.getRight());
+
+		}
 
 		return state;
 
@@ -1413,7 +1413,6 @@ public abstract class Axis implements Cloneable, Serializable {
 	 */
 	protected void drawAxisLine(GraphicsContext g2, double cursor,
 			Rectangle2D dataArea, RectangleEdge edge) {
-		// JAVAFX
 		Line2D axisLine = null;
 		double x = dataArea.getMinX();
 		double y = dataArea.getMinY();
@@ -1429,12 +1428,13 @@ public abstract class Axis implements Cloneable, Serializable {
 		g2.setStroke(this.axisLinePaint);
 		// JAVAFX stroke
 		// g2.setStroke(this.axisLineStroke);
+		// JAVAFX rendering hints
 		// Object saved =
 		// g2.getRenderingHint(RenderingHints.KEY_STROKE_CONTROL);
 		// g2.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL,
 		// RenderingHints.VALUE_STROKE_NORMALIZE);
 		strokeLine(g2, axisLine);
-		// JAVAFX
+		// JAVAFX rendering hints
 		// g2.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, saved);
 	}
 
