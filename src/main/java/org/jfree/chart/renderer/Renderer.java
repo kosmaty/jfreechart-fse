@@ -49,6 +49,9 @@ import org.jfree.chart.LegendItemSource;
 import org.jfree.chart.event.RendererChangeEvent;
 import org.jfree.chart.event.RendererChangeListener;
 
+import javafx.scene.paint.Paint;
+import javafx.scene.text.Font;
+
 //import org.jfree.chart.labels.ItemLabelPosition;
 
 /**
@@ -642,6 +645,7 @@ public interface Renderer extends LegendItemSource {
 	 * @return The legend item (possibly <code>null</code>).
 	 */
 	public LegendItem getLegendItem(int datasetIndex, int series);
+
 	//
 	//
 	// // ITEM LABELS VISIBLE
@@ -777,28 +781,29 @@ public interface Renderer extends LegendItemSource {
 	// public void setSeriesItemLabelFont(int series, Font font, boolean
 	// notify);
 	//
-	// /**
-	// * Returns the default item label font (this is used when no other font
-	// * setting is available).
-	// *
-	// * @return The font (<code>never</code> null).
-	// *
-	// * @see #setDefaultItemLabelFont(Font)
-	// */
-	// public Font getDefaultItemLabelFont();
-	//
-	// /**
-	// * Sets the default item label font and sends a {@link
-	// RendererChangeEvent}
-	// * to all registered listeners.
-	// *
-	// * @param font the font (<code>null</code> not permitted).
-	// *
-	// * @see #getDefaultItemLabelFont()
-	// */
-	// public void setDefaultItemLabelFont(Font font);
-	//
-	// public void setDefaultItemLabelFont(Font font, boolean notify);
+	/**
+	 * Returns the default item label font (this is used when no other font
+	 * setting is available).
+	 *
+	 * @return The font (<code>never</code> null).
+	 *
+	 * @see #setDefaultItemLabelFont(Font)
+	 */
+	public Font getDefaultItemLabelFont();
+
+	/**
+	 * Sets the default item label font and sends a {@link RendererChangeEvent}
+	 * to all registered listeners.
+	 *
+	 * @param font
+	 *            the font (<code>null</code> not permitted).
+	 *
+	 * @see #getDefaultItemLabelFont()
+	 */
+	public void setDefaultItemLabelFont(Font font);
+
+	public void setDefaultItemLabelFont(Font font, boolean notify);
+
 	//
 	//
 	// //// ITEM LABEL PAINT
@@ -839,27 +844,27 @@ public interface Renderer extends LegendItemSource {
 	// public void setSeriesItemLabelPaint(int series, Paint paint, boolean
 	// notify);
 	//
-	// /**
-	// * Returns the default item label paint.
-	// *
-	// * @return The paint (never <code>null</code>).
-	// *
-	// * @see #setDefaultItemLabelPaint(Paint)
-	// */
-	// public Paint getDefaultItemLabelPaint();
-	//
-	// /**
-	// * Sets the default item label paint and sends a {@link
-	// RendererChangeEvent}
-	// * to all registered listeners.
-	// *
-	// * @param paint the paint (<code>null</code> not permitted).
-	// *
-	// * @see #getDefaultItemLabelPaint()
-	// */
-	// public void setDefaultItemLabelPaint(Paint paint);
-	//
-	// public void setDefaultItemLabelPaint(Paint paint, boolean notify);
+	/**
+	 * Returns the default item label paint.
+	 *
+	 * @return The paint (never <code>null</code>).
+	 *
+	 * @see #setDefaultItemLabelPaint(Paint)
+	 */
+	public Paint getDefaultItemLabelPaint();
+
+	/**
+	 * Sets the default item label paint and sends a {@link RendererChangeEvent}
+	 * to all registered listeners.
+	 *
+	 * @param paint
+	 *            the paint (<code>null</code> not permitted).
+	 *
+	 * @see #getDefaultItemLabelPaint()
+	 */
+	public void setDefaultItemLabelPaint(Paint paint);
+
+	public void setDefaultItemLabelPaint(Paint paint, boolean notify);
 	//
 	// // POSITIVE ITEM LABEL POSITION...
 	//

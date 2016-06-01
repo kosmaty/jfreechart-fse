@@ -163,7 +163,7 @@ import org.jfree.chart.LegendItemSource;
 import org.jfree.chart.annotations.Annotation;
 import org.jfree.chart.axis.AxisLocation;
 // import org.jfree.chart.drawable.BorderPainter;
-// import org.jfree.chart.drawable.ColorPainter;
+import org.jfree.chart.drawable.ColorPainter;
 import org.jfree.chart.drawable.Drawable;
 import org.jfree.chart.entity.EntityCollection;
 import org.jfree.chart.entity.PlotEntity;
@@ -321,8 +321,7 @@ public abstract class Plot implements
 	protected Plot() {
 		this.parent = null;
 		this.insets = DEFAULT_INSETS;
-		// JAVAFX
-		// this.backgroundPainter = new ColorPainter(Color.WHITE);
+		this.backgroundPainter = new ColorPainter(Color.WHITE);
 		this.backgroundAlpha = DEFAULT_BACKGROUND_ALPHA;
 		// JAVAFX
 		// this.backgroundImage = null;
@@ -527,26 +526,27 @@ public abstract class Plot implements
 	}
 
 	// JAVAFX
-	//
-	// /**
-	// * Sets the background painter and sends a change event to all registered
-	// * listeners.
-	// *
-	// * @param painter the new painter (<code>null</code> permitted).
-	// */
-	// public void setBackgroundPainter(Drawable painter) {
-	// this.backgroundPainter = painter;
-	// fireChangeEvent();
-	// }
-	//
-	// public void setBackgroundColor(Color color) {
-	// if (color != null) {
-	// setBackgroundPainter(new ColorPainter(color));
-	// } else {
-	// setBackgroundPainter(null);
-	// }
-	// }
-	//
+
+	/**
+	 * Sets the background painter and sends a change event to all registered
+	 * listeners.
+	 *
+	 * @param painter
+	 *            the new painter (<code>null</code> permitted).
+	 */
+	public void setBackgroundPainter(Drawable painter) {
+		this.backgroundPainter = painter;
+		fireChangeEvent();
+	}
+
+	public void setBackgroundColor(Color color) {
+		if (color != null) {
+			setBackgroundPainter(new ColorPainter(color));
+		} else {
+			setBackgroundPainter(null);
+		}
+	}
+
 	/**
 	 * Sets the insets for the plot and, if requested, and sends a
 	 * {@link PlotChangeEvent} to all registered listeners.
@@ -658,7 +658,7 @@ public abstract class Plot implements
 		}
 	}
 
-	//
+	// JAVAFX image
 	// /**
 	// * Returns the background image that is used to fill the plot's background
 	// * area.
@@ -945,7 +945,7 @@ public abstract class Plot implements
 	 * @see #getBackgroundImageAlpha()
 	 */
 	public void drawBackgroundImage(GraphicsContext g2, Rectangle2D area) {
-		// JAVAFX
+		// JAVAFX image
 		// if (this.backgroundImage == null) {
 		// return; // nothing to do
 		// }

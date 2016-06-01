@@ -1459,20 +1459,23 @@ public abstract class AbstractRenderer implements Cloneable, Serializable {
 	// }
 	// }
 	//
-	// /**
-	// * Clears the series stroke settings for this renderer and, if requested,
-	// * sends a {@link RendererChangeEvent} to all registered listeners.
-	// *
-	// * @param notify notify listeners?
-	// *
-	// * @since 1.0.11
-	// */
-	// public void clearSeriesStrokes(boolean notify) {
-	// this.strokeList.clear();
-	// if (notify) {
-	// fireChangeEvent();
-	// }
-	// }
+	/**
+	 * Clears the series stroke settings for this renderer and, if requested,
+	 * sends a {@link RendererChangeEvent} to all registered listeners.
+	 *
+	 * @param notify
+	 *            notify listeners?
+	 *
+	 * @since 1.0.11
+	 */
+	public void clearSeriesStrokes(boolean notify) {
+		// JAVAFX stroke
+		// this.strokeList.clear();
+		// if (notify) {
+		// fireChangeEvent();
+		// }
+	}
+
 	//
 	// /**
 	// * Returns the default stroke.
@@ -1515,36 +1518,36 @@ public abstract class AbstractRenderer implements Cloneable, Serializable {
 	// }
 	// }
 	//
-	// /**
-	// * Returns the flag that controls whether or not the series stroke list is
-	// * automatically populated when {@link #lookupSeriesStroke(int)} is
-	// called.
-	// *
-	// * @return A boolean.
-	// *
-	// * @since 1.0.6
-	// *
-	// * @see #setAutoPopulateSeriesStroke(boolean)
-	// */
-	// public boolean getAutoPopulateSeriesStroke() {
-	// return this.autoPopulateSeriesStroke;
-	// }
-	//
-	// /**
-	// * Sets the flag that controls whether or not the series stroke list is
-	// * automatically populated when {@link #lookupSeriesStroke(int)} is
-	// called.
-	// *
-	// * @param auto the new flag value.
-	// *
-	// * @since 1.0.6
-	// *
-	// * @see #getAutoPopulateSeriesStroke()
-	// */
-	// public void setAutoPopulateSeriesStroke(boolean auto) {
-	// this.autoPopulateSeriesStroke = auto;
-	// }
-	//
+	/**
+	 * Returns the flag that controls whether or not the series stroke list is
+	 * automatically populated when {@link #lookupSeriesStroke(int)} is called.
+	 *
+	 * @return A boolean.
+	 *
+	 * @since 1.0.6
+	 *
+	 * @see #setAutoPopulateSeriesStroke(boolean)
+	 */
+	public boolean getAutoPopulateSeriesStroke() {
+		return this.autoPopulateSeriesStroke;
+	}
+
+	/**
+	 * Sets the flag that controls whether or not the series stroke list is
+	 * automatically populated when {@link #lookupSeriesStroke(int)} is called.
+	 *
+	 * @param auto
+	 *            the new flag value.
+	 *
+	 * @since 1.0.6
+	 *
+	 * @see #getAutoPopulateSeriesStroke()
+	 */
+	public void setAutoPopulateSeriesStroke(boolean auto) {
+		this.autoPopulateSeriesStroke = auto;
+	}
+
+	// JAVAFX stroke
 	// // OUTLINE STROKE
 	//
 	// /**

@@ -219,19 +219,20 @@ public abstract class ChartFactory {
 	/** The chart theme. */
 	private static ChartTheme currentTheme = new StandardChartTheme("JFree");
 
-	// /**
-	// * Returns the current chart theme used by the factory.
-	// *
-	// * @return The chart theme.
-	// *
-	// * @see #setChartTheme(ChartTheme)
-	// * @see ChartUtilities#applyCurrentTheme(JFreeChart)
-	// *
-	// * @since 1.0.11
-	// */
-	// public static ChartTheme getChartTheme() {
-	// return currentTheme;
-	// }
+	/**
+	 * Returns the current chart theme used by the factory.
+	 *
+	 * @return The chart theme.
+	 *
+	 * @see #setChartTheme(ChartTheme)
+	 * @see ChartUtilities#applyCurrentTheme(JFreeChart)
+	 *
+	 * @since 1.0.11
+	 */
+	public static ChartTheme getChartTheme() {
+		return currentTheme;
+	}
+
 	//
 	// /**
 	// * Sets the current chart theme. This will be applied to all new charts

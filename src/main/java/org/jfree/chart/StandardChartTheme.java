@@ -56,7 +56,7 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.List;
 
-// import org.jfree.chart.annotations.XYAnnotation;
+import org.jfree.chart.annotations.XYAnnotation;
 // import org.jfree.chart.annotations.XYTextAnnotation;
 import org.jfree.chart.axis.CategoryAxis;
 // import org.jfree.chart.axis.PeriodAxis;
@@ -64,22 +64,22 @@ import org.jfree.chart.axis.CategoryAxis;
 // import org.jfree.chart.axis.SubCategoryAxis;
 // import org.jfree.chart.axis.SymbolAxis;
 import org.jfree.chart.axis.ValueAxis;
-// import org.jfree.chart.block.Block;
-// import org.jfree.chart.block.BlockContainer;
-// import org.jfree.chart.block.LabelBlock;
+import org.jfree.chart.block.Block;
+import org.jfree.chart.block.BlockContainer;
+import org.jfree.chart.block.LabelBlock;
 // import org.jfree.chart.drawable.BorderPainter;
-// import org.jfree.chart.drawable.ColorPainter;
+import org.jfree.chart.drawable.ColorPainter;
 import org.jfree.chart.drawable.Drawable;
 import org.jfree.chart.ui.RectangleInsets;
-// import org.jfree.chart.util.PaintUtils;
+import org.jfree.chart.util.PaintUtils;
 import org.jfree.chart.util.PublicCloneable;
 import org.jfree.chart.plot.CategoryPlot;
 // import org.jfree.chart.plot.CombinedDomainCategoryPlot;
 // import org.jfree.chart.plot.CombinedDomainXYPlot;
 // import org.jfree.chart.plot.CombinedRangeCategoryPlot;
 // import org.jfree.chart.plot.CombinedRangeXYPlot;
-// import org.jfree.chart.plot.DefaultDrawingSupplier;
-// import org.jfree.chart.plot.DrawingSupplier;
+import org.jfree.chart.plot.DefaultDrawingSupplier;
+import org.jfree.chart.plot.DrawingSupplier;
 // import org.jfree.chart.plot.FastScatterPlot;
 // import org.jfree.chart.plot.MeterPlot;
 // import org.jfree.chart.plot.MultiplePiePlot;
@@ -89,29 +89,34 @@ import org.jfree.chart.plot.Plot;
 // import org.jfree.chart.plot.PolarPlot;
 // import org.jfree.chart.plot.SpiderWebPlot;
 // import org.jfree.chart.plot.ThermometerPlot;
-// import org.jfree.chart.plot.XYPlot;
-// import org.jfree.chart.renderer.AbstractRenderer;
+import org.jfree.chart.plot.XYPlot;
+import org.jfree.chart.renderer.AbstractRenderer;
 // import org.jfree.chart.renderer.category.BarPainter;
 // import org.jfree.chart.renderer.category.BarRenderer;
-// import org.jfree.chart.renderer.category.CategoryItemRenderer;
+import org.jfree.chart.renderer.category.CategoryItemRenderer;
 // import org.jfree.chart.renderer.category.MinMaxCategoryRenderer;
 // import org.jfree.chart.renderer.category.StandardBarPainter;
 // import org.jfree.chart.renderer.category.StatisticalBarRenderer;
 // import org.jfree.chart.renderer.xy.StandardXYBarPainter;
 // import org.jfree.chart.renderer.xy.XYBarPainter;
 // import org.jfree.chart.renderer.xy.XYBarRenderer;
-// import org.jfree.chart.renderer.xy.XYItemRenderer;
+import org.jfree.chart.renderer.xy.XYItemRenderer;
 // import org.jfree.chart.title.CompositeTitle;
-// import org.jfree.chart.title.LegendTitle;
+import org.jfree.chart.title.LegendTitle;
 // import org.jfree.chart.title.PaintScaleLegend;
-// import org.jfree.chart.title.TextTitle;
-// import org.jfree.chart.title.Title;
+import org.jfree.chart.title.TextTitle;
+import org.jfree.chart.title.Title;
 // import org.jfree.chart.util.DefaultShadowGenerator;
 import org.jfree.chart.util.ObjectUtils;
 import org.jfree.chart.util.ParamChecks;
 import org.jfree.chart.util.SerialUtils;
-
 // import org.jfree.chart.util.ShadowGenerator;
+
+import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontPosture;
+import javafx.scene.text.FontWeight;
 
 /**
  * A default implementation of the {@link ChartTheme} interface. This
@@ -131,69 +136,73 @@ public class StandardChartTheme implements ChartTheme, Cloneable,
 
 	/** The second font family to try (usually found on MacOSX). */
 	private static final String FONT_FAMILY_2 = "Palatino";
-	//
-	// /**
-	// * Creates a default font with the specified <code>style</code> and
-	// * <code>size</code>. The method attempts to use 'Palatino Linotype'
-	// * ('Palatino' on MacOSX) but if it is not found it falls back to the
-	// * <code>Font.SERIF</code> font family.
-	// *
-	// * @param style the style (see java.awt.Font).
-	// * @param size the size.
-	// *
-	// * @return The font.
-	// */
-	// public static Font createDefaultFont(int style, int size) {
-	// Font f = new Font(FONT_FAMILY_1, style, size);
-	// if ("Dialog".equals(f.getFamily())) {
-	// f = new Font(FONT_FAMILY_2, style, size);
-	// if ("Dialog".equals(f.getFamily())) {
-	// f = new Font(Font.SERIF, style, size);
-	// }
-	// }
-	// return f;
-	// }
-	//
-	// /** The name of this theme. */
-	// private String name;
-	//
-	// /**
-	// * The largest font size. Use for the main chart title.
-	// */
-	// private Font extraLargeFont;
-	//
-	// /**
-	// * A large font. Used for subtitles.
-	// */
-	// private Font largeFont;
-	//
-	// /**
-	// * The regular font size. Used for axis tick labels, legend items etc.
-	// */
-	// private Font regularFont;
-	//
-	// /**
-	// * The small font size.
-	// */
-	// private Font smallFont;
-	//
-	// /** The paint used to display the main chart title. */
-	// private transient Paint titlePaint;
-	//
-	// /** The paint used to display subtitles. */
-	// private transient Paint subtitlePaint;
+
+	private static final Color LEGACY_DARK_GRAY = Color.rgb(64, 64, 64);
+
+	/**
+	 * Creates a default font with the specified <code>style</code> and
+	 * <code>size</code>. The method attempts to use 'Palatino Linotype'
+	 * ('Palatino' on MacOSX) but if it is not found it falls back to the
+	 * <code>Font.SERIF</code> font family.
+	 *
+	 * @param style
+	 *            the style (see java.awt.Font).
+	 * @param size
+	 *            the size.
+	 *
+	 * @return The font.
+	 */
+	public static Font createDefaultFont(FontWeight fontWeight, FontPosture fontPosture, int size) {
+		Font f = Font.font(FONT_FAMILY_1, fontWeight, fontPosture, size);
+		if ("Dialog".equals(f.getFamily())) {
+			f = Font.font(FONT_FAMILY_2, fontWeight, fontPosture, size);
+			if ("Dialog".equals(f.getFamily())) {
+				f = Font.font("Serif", fontWeight, fontPosture, size);
+			}
+		}
+		return f;
+	}
+
+	/** The name of this theme. */
+	private String name;
+
+	/**
+	 * The largest font size. Use for the main chart title.
+	 */
+	private Font extraLargeFont;
+
+	/**
+	 * A large font. Used for subtitles.
+	 */
+	private Font largeFont;
+
+	/**
+	 * The regular font size. Used for axis tick labels, legend items etc.
+	 */
+	private Font regularFont;
+
+	/**
+	 * The small font size.
+	 */
+	private Font smallFont;
+
+	/** The paint used to display the main chart title. */
+	private transient Paint titlePaint;
+
+	/** The paint used to display subtitles. */
+	private transient Paint subtitlePaint;
 
 	/** The background color for the chart. */
 	private transient Drawable chartBackgroundPainter;
-	//
-	// /** The legend background paint. */
-	// private transient Paint legendBackgroundPaint;
-	//
-	// /** The legend item paint. */
-	// private transient Paint legendItemPaint;
-	//
-	// /** The drawing supplier. */
-	// private DrawingSupplier drawingSupplier;
+
+	/** The legend background paint. */
+	private transient Paint legendBackgroundPaint;
+
+	/** The legend item paint. */
+	private transient Paint legendItemPaint;
+
+	/** The drawing supplier. */
+	private DrawingSupplier drawingSupplier;
 
 	/** The background painter for the plot. */
 	private Drawable plotBackgroundPainter;
@@ -203,58 +212,59 @@ public class StandardChartTheme implements ChartTheme, Cloneable,
 	//
 	// /** The label link style for pie charts. */
 	// private PieLabelLinkStyle labelLinkStyle;
-	//
-	// /** The label link paint for pie charts. */
-	// private transient Paint labelLinkPaint;
-	//
-	// /** The domain grid line paint. */
-	// private transient Paint domainGridlinePaint;
-	//
-	// /** The range grid line paint. */
-	// private transient Paint rangeGridlinePaint;
-	//
-	// /**
-	// * The baseline paint (used for domain and range zero baselines)
-	// *
-	// * @since 1.0.13
-	// */
-	// private transient Paint baselinePaint;
-	//
-	// /** The crosshair paint. */
-	// private transient Paint crosshairPaint;
+
+	/** The label link paint for pie charts. */
+	private transient Paint labelLinkPaint;
+
+	/** The domain grid line paint. */
+	private transient Paint domainGridlinePaint;
+
+	/** The range grid line paint. */
+	private transient Paint rangeGridlinePaint;
+
+	/**
+	 * The baseline paint (used for domain and range zero baselines)
+	 *
+	 * @since 1.0.13
+	 */
+	private transient Paint baselinePaint;
+
+	/** The crosshair paint. */
+	private transient Paint crosshairPaint;
 
 	/** The axis offsets. */
 	private RectangleInsets axisOffset;
 
-	// /** The axis label paint. */
-	// private transient Paint axisLabelPaint;
-	//
-	// /** The tick label paint. */
-	// private transient Paint tickLabelPaint;
-	//
-	// /** The item label paint. */
-	// private transient Paint itemLabelPaint;
-	//
-	// /**
-	// * A flag that controls whether or not shadows are visible (for example,
-	// * in a bar renderer).
-	// */
-	// private boolean shadowVisible;
-	//
-	// /** The shadow paint. */
-	// private transient Paint shadowPaint;
-	//
+	/** The axis label paint. */
+	private transient Paint axisLabelPaint;
+
+	/** The tick label paint. */
+	private transient Paint tickLabelPaint;
+
+	/** The item label paint. */
+	private transient Paint itemLabelPaint;
+
+	/**
+	 * A flag that controls whether or not shadows are visible (for example, in
+	 * a bar renderer).
+	 */
+	private boolean shadowVisible;
+
+	/** The shadow paint. */
+	private transient Paint shadowPaint;
+
 	// /** The bar painter. */
 	// private BarPainter barPainter;
 	//
 	// /** The XY bar painter. */
 	// private XYBarPainter xyBarPainter;
-	//
-	// /** The thermometer paint. */
-	// private transient Paint thermometerPaint;
-	//
-	// /** The error indicator paint for the {@link StatisticalBarRenderer}. */
-	// private transient Paint errorIndicatorPaint;
+
+	/** The thermometer paint. */
+	private transient Paint thermometerPaint;
+
+	/** The error indicator paint for the {@link StatisticalBarRenderer}. */
+	private transient Paint errorIndicatorPaint;
+
 	//
 	// /** The grid band paint for a {@link SymbolAxis}. */
 	// private transient Paint gridBandPaint =
@@ -271,14 +281,15 @@ public class StandardChartTheme implements ChartTheme, Cloneable,
 	// */
 	// private ShadowGenerator shadowGenerator;
 	//
-	// /**
-	// * Creates and returns the default 'JFree' chart theme.
-	// *
-	// * @return A chart theme.
-	// */
-	// public static ChartTheme createJFreeTheme() {
-	// return new StandardChartTheme("JFree");
-	// }
+	/**
+	 * Creates and returns the default 'JFree' chart theme.
+	 *
+	 * @return A chart theme.
+	 */
+	public static ChartTheme createJFreeTheme() {
+		return new StandardChartTheme("JFree");
+	}
+
 	//
 	// /**
 	// * Creates and returns a theme called "Darkness". In this theme, the
@@ -318,23 +329,23 @@ public class StandardChartTheme implements ChartTheme, Cloneable,
 	// return theme;
 	// }
 	//
-	// /**
-	// * Creates and returns a {@link ChartTheme} that doesn't apply any changes
-	// * to the JFreeChart defaults. This produces the "legacy" look for
-	// * JFreeChart.
-	// *
-	// * @return A legacy theme.
-	// */
-	// public static ChartTheme createLegacyTheme() {
-	// StandardChartTheme theme = new StandardChartTheme("Legacy") {
-	// @Override
-	// public void apply(JFreeChart chart) {
-	// // do nothing at all
-	// }
-	// };
-	// return theme;
-	// }
-	//
+	/**
+	 * Creates and returns a {@link ChartTheme} that doesn't apply any changes
+	 * to the JFreeChart defaults. This produces the "legacy" look for
+	 * JFreeChart.
+	 *
+	 * @return A legacy theme.
+	 */
+	public static ChartTheme createLegacyTheme() {
+		StandardChartTheme theme = new StandardChartTheme("Legacy") {
+			@Override
+			public void apply(JFreeChart chart) {
+				// do nothing at all
+			}
+		};
+		return theme;
+	}
+
 	/**
 	 * Creates a new default instance.
 	 *
@@ -358,301 +369,312 @@ public class StandardChartTheme implements ChartTheme, Cloneable,
 	public StandardChartTheme(String name, boolean shadow) {
 		ParamChecks.nullNotPermitted(name, "name");
 		// JAVAFX
-		// this.name = name;
-		// this.extraLargeFont = createDefaultFont(Font.BOLD, 24);
-		// this.largeFont = createDefaultFont(Font.BOLD, 14);
-		// this.regularFont = createDefaultFont(Font.PLAIN, 12);
-		// this.smallFont = createDefaultFont(Font.PLAIN, 10);
-		// this.titlePaint = Color.BLACK;
-		// this.subtitlePaint = Color.BLACK;
-		// this.legendBackgroundPaint = Color.WHITE;
-		// this.legendItemPaint = Color.DARK_GRAY;
-		// this.chartBackgroundPainter = new ColorPainter(Color.WHITE);
-		// this.drawingSupplier = new DefaultDrawingSupplier();
-		// this.plotBackgroundPainter = new ColorPainter(Color.WHITE);
+		this.name = name;
+		this.extraLargeFont = createDefaultFont(FontWeight.BOLD, FontPosture.REGULAR, 24);
+		this.largeFont = createDefaultFont(FontWeight.BOLD, FontPosture.REGULAR, 14);
+		this.regularFont = createDefaultFont(FontWeight.NORMAL, FontPosture.REGULAR, 12);
+		this.smallFont = createDefaultFont(FontWeight.NORMAL, FontPosture.REGULAR, 10);
+		this.titlePaint = Color.BLACK;
+		this.subtitlePaint = Color.BLACK;
+		this.legendBackgroundPaint = Color.WHITE;
+		this.legendItemPaint = LEGACY_DARK_GRAY;
+		this.chartBackgroundPainter = new ColorPainter(Color.WHITE);
+		this.drawingSupplier = new DefaultDrawingSupplier();
+		this.plotBackgroundPainter = new ColorPainter(Color.WHITE);
 		this.plotBorderPainter = null;
-		// this.labelLinkPaint = Color.BLACK;
+		this.labelLinkPaint = Color.BLACK;
 		// this.labelLinkStyle = PieLabelLinkStyle.CUBIC_CURVE;
 		this.axisOffset = new RectangleInsets(4, 4, 4, 4);
-		// this.domainGridlinePaint = Color.WHITE;
-		// this.rangeGridlinePaint = Color.LIGHT_GRAY;
-		// this.baselinePaint = Color.BLACK;
-		// this.crosshairPaint = Color.BLUE;
-		// this.axisLabelPaint = Color.DARK_GRAY;
-		// this.tickLabelPaint = Color.DARK_GRAY;
+		this.domainGridlinePaint = Color.WHITE;
+		this.rangeGridlinePaint = Color.LIGHTGRAY;
+		this.baselinePaint = Color.BLACK;
+		this.crosshairPaint = Color.BLUE;
+		this.axisLabelPaint = LEGACY_DARK_GRAY;
+		this.tickLabelPaint = LEGACY_DARK_GRAY;
 		// this.barPainter = new StandardBarPainter();
 		// this.xyBarPainter = new StandardXYBarPainter();
-		// this.shadowVisible = false;
-		// this.shadowPaint = Color.GRAY;
-		// this.itemLabelPaint = Color.BLACK;
-		// this.thermometerPaint = Color.WHITE;
-		// this.errorIndicatorPaint = Color.BLACK;
+		this.shadowVisible = false;
+		this.shadowPaint = Color.GRAY;
+		this.itemLabelPaint = Color.BLACK;
+		this.thermometerPaint = Color.WHITE;
+		this.errorIndicatorPaint = Color.BLACK;
 		// this.shadowGenerator = shadow ? new DefaultShadowGenerator() : null;
 	}
 
-	//
-	// /**
-	// * Returns the largest font for this theme.
-	// *
-	// * @return The largest font for this theme.
-	// *
-	// * @see #setExtraLargeFont(Font)
-	// */
-	// public Font getExtraLargeFont() {
-	// return this.extraLargeFont;
-	// }
-	//
-	// /**
-	// * Sets the largest font for this theme.
-	// *
-	// * @param font the font (<code>null</code> not permitted).
-	// *
-	// * @see #getExtraLargeFont()
-	// */
-	// public void setExtraLargeFont(Font font) {
-	// ParamChecks.nullNotPermitted(font, "font");
-	// this.extraLargeFont = font;
-	// }
-	//
-	// /**
-	// * Returns the large font for this theme.
-	// *
-	// * @return The large font (never <code>null</code>).
-	// *
-	// * @see #setLargeFont(Font)
-	// */
-	// public Font getLargeFont() {
-	// return this.largeFont;
-	// }
-	//
-	// /**
-	// * Sets the large font for this theme.
-	// *
-	// * @param font the font (<code>null</code> not permitted).
-	// *
-	// * @see #getLargeFont()
-	// */
-	// public void setLargeFont(Font font) {
-	// ParamChecks.nullNotPermitted(font, "font");
-	// this.largeFont = font;
-	// }
-	//
-	// /**
-	// * Returns the regular font.
-	// *
-	// * @return The regular font (never <code>null</code>).
-	// *
-	// * @see #setRegularFont(Font)
-	// */
-	// public Font getRegularFont() {
-	// return this.regularFont;
-	// }
-	//
-	// /**
-	// * Sets the regular font for this theme.
-	// *
-	// * @param font the font (<code>null</code> not permitted).
-	// *
-	// * @see #getRegularFont()
-	// */
-	// public void setRegularFont(Font font) {
-	// ParamChecks.nullNotPermitted(font, "font");
-	// this.regularFont = font;
-	// }
-	//
-	// /**
-	// * Returns the small font.
-	// *
-	// * @return The small font (never <code>null</code>).
-	// *
-	// * @see #setSmallFont(Font)
-	// *
-	// * @since 1.0.13
-	// */
-	// public Font getSmallFont() {
-	// return this.smallFont;
-	// }
-	//
-	// /**
-	// * Sets the small font for this theme.
-	// *
-	// * @param font the font (<code>null</code> not permitted).
-	// *
-	// * @see #getSmallFont()
-	// *
-	// * @since 1.0.13
-	// */
-	// public void setSmallFont(Font font) {
-	// if (font == null) {
-	// throw new IllegalArgumentException("Null 'font' argument.");
-	// }
-	// this.smallFont = font;
-	// }
-	//
-	// /**
-	// * Returns the title paint.
-	// *
-	// * @return The title paint (never <code>null</code>).
-	// *
-	// * @see #setTitlePaint(Paint)
-	// */
-	// public Paint getTitlePaint() {
-	// return this.titlePaint;
-	// }
-	//
-	// /**
-	// * Sets the title paint.
-	// *
-	// * @param paint the paint (<code>null</code> not permitted).
-	// *
-	// * @see #getTitlePaint()
-	// */
-	// public void setTitlePaint(Paint paint) {
-	// ParamChecks.nullNotPermitted(paint, "paint");
-	// this.titlePaint = paint;
-	// }
-	//
-	// /**
-	// * Returns the subtitle paint.
-	// *
-	// * @return The subtitle paint (never <code>null</code>).
-	// *
-	// * @see #setSubtitlePaint(Paint)
-	// */
-	// public Paint getSubtitlePaint() {
-	// return this.subtitlePaint;
-	// }
-	//
-	// /**
-	// * Sets the subtitle paint.
-	// *
-	// * @param paint the paint (<code>null</code> not permitted).
-	// *
-	// * @see #getSubtitlePaint()
-	// */
-	// public void setSubtitlePaint(Paint paint) {
-	// ParamChecks.nullNotPermitted(paint, "paint");
-	// this.subtitlePaint = paint;
-	// }
-	//
-	// /**
-	// * Returns the chart background painter.
-	// *
-	// * @return The chart background paint (never <code>null</code>).
-	// *
-	// * @see #setChartBackgroundPainter(Drawable)
-	// */
-	// public Drawable getChartBackgroundPainter() {
-	// return this.chartBackgroundPainter;
-	// }
-	//
-	// /**
-	// * Sets the chart background painter.
-	// * <br><br>
-	// * Note that for cloning charts the background painter is assumed to be
-	// * immutable.
-	// *
-	// * @param painter the painter (<code>null</code> permitted).
-	// *
-	// * @see #getChartBackgroundPainter()
-	// */
-	// public void setChartBackgroundPainter(Drawable painter) {
-	// this.chartBackgroundPainter = painter;
-	// }
-	//
-	// /**
-	// * Returns the legend background paint.
-	// *
-	// * @return The legend background paint (never <code>null</code>).
-	// *
-	// * @see #setLegendBackgroundPaint(Paint)
-	// */
-	// public Paint getLegendBackgroundPaint() {
-	// return this.legendBackgroundPaint;
-	// }
-	//
-	// /**
-	// * Sets the legend background paint.
-	// *
-	// * @param paint the paint (<code>null</code> not permitted).
-	// *
-	// * @see #getLegendBackgroundPaint()
-	// */
-	// public void setLegendBackgroundPaint(Paint paint) {
-	// if (paint == null) {
-	// throw new IllegalArgumentException("Null 'paint' argument.");
-	// }
-	// this.legendBackgroundPaint = paint;
-	// }
-	//
-	// /**
-	// * Returns the legend item paint.
-	// *
-	// * @return The legend item paint (never <code>null</code>).
-	// *
-	// * @see #setLegendItemPaint(Paint)
-	// */
-	// public Paint getLegendItemPaint() {
-	// return this.legendItemPaint;
-	// }
-	//
-	// /**
-	// * Sets the legend item paint.
-	// *
-	// * @param paint the paint (<code>null</code> not permitted).
-	// *
-	// * @see #getLegendItemPaint()
-	// */
-	// public void setLegendItemPaint(Paint paint) {
-	// ParamChecks.nullNotPermitted(paint, "paint");
-	// this.legendItemPaint = paint;
-	// }
-	//
-	// /**
-	// * Returns the plot background painter.
-	// *
-	// * @return The painter (possibly <code>null</code>).
-	// *
-	// * @see #setPlotBackgroundPainter(Drawable)
-	// */
-	// public Drawable getPlotBackgroundPainter() {
-	// return this.plotBackgroundPainter;
-	// }
-	//
-	// /**
-	// * Sets the plot background painter.
-	// *
-	// * @param painter the painter (<code>null</code> permitted).
-	// *
-	// * @see #getPlotBackgroundPainter()
-	// */
-	// public void setPlotBackgroundPainter(Drawable painter) {
-	// this.plotBackgroundPainter = painter;
-	// }
-	//
-	// /**
-	// * Returns the plot border painter.
-	// *
-	// * @return The plot border painter (possibly <code>null</code>).
-	// *
-	// * @see #setPlotBorderPainter(Drawable)
-	// */
-	// public Drawable getPlotBorderPainter() {
-	// return this.plotBorderPainter;
-	// }
-	//
-	// /**
-	// * Sets the plot border painter.
-	// *
-	// * @param painter the painter (<code>null</code> not permitted).
-	// *
-	// * @see #getPlotBorderPainter()
-	// */
-	// public void setPlotBorderPainter(Drawable painter) {
-	// ParamChecks.nullNotPermitted(painter, "painter");
-	// this.plotBorderPainter = painter;
-	// }
-	//
+	/**
+	 * Returns the largest font for this theme.
+	 *
+	 * @return The largest font for this theme.
+	 *
+	 * @see #setExtraLargeFont(Font)
+	 */
+	public Font getExtraLargeFont() {
+		return this.extraLargeFont;
+	}
+
+	/**
+	 * Sets the largest font for this theme.
+	 *
+	 * @param font
+	 *            the font (<code>null</code> not permitted).
+	 *
+	 * @see #getExtraLargeFont()
+	 */
+	public void setExtraLargeFont(Font font) {
+		ParamChecks.nullNotPermitted(font, "font");
+		this.extraLargeFont = font;
+	}
+
+	/**
+	 * Returns the large font for this theme.
+	 *
+	 * @return The large font (never <code>null</code>).
+	 *
+	 * @see #setLargeFont(Font)
+	 */
+	public Font getLargeFont() {
+		return this.largeFont;
+	}
+
+	/**
+	 * Sets the large font for this theme.
+	 *
+	 * @param font
+	 *            the font (<code>null</code> not permitted).
+	 *
+	 * @see #getLargeFont()
+	 */
+	public void setLargeFont(Font font) {
+		ParamChecks.nullNotPermitted(font, "font");
+		this.largeFont = font;
+	}
+
+	/**
+	 * Returns the regular font.
+	 *
+	 * @return The regular font (never <code>null</code>).
+	 *
+	 * @see #setRegularFont(Font)
+	 */
+	public Font getRegularFont() {
+		return this.regularFont;
+	}
+
+	/**
+	 * Sets the regular font for this theme.
+	 *
+	 * @param font
+	 *            the font (<code>null</code> not permitted).
+	 *
+	 * @see #getRegularFont()
+	 */
+	public void setRegularFont(Font font) {
+		ParamChecks.nullNotPermitted(font, "font");
+		this.regularFont = font;
+	}
+
+	/**
+	 * Returns the small font.
+	 *
+	 * @return The small font (never <code>null</code>).
+	 *
+	 * @see #setSmallFont(Font)
+	 *
+	 * @since 1.0.13
+	 */
+	public Font getSmallFont() {
+		return this.smallFont;
+	}
+
+	/**
+	 * Sets the small font for this theme.
+	 *
+	 * @param font
+	 *            the font (<code>null</code> not permitted).
+	 *
+	 * @see #getSmallFont()
+	 *
+	 * @since 1.0.13
+	 */
+	public void setSmallFont(Font font) {
+		if (font == null) {
+			throw new IllegalArgumentException("Null 'font' argument.");
+		}
+		this.smallFont = font;
+	}
+
+	/**
+	 * Returns the title paint.
+	 *
+	 * @return The title paint (never <code>null</code>).
+	 *
+	 * @see #setTitlePaint(Paint)
+	 */
+	public Paint getTitlePaint() {
+		return this.titlePaint;
+	}
+
+	/**
+	 * Sets the title paint.
+	 *
+	 * @param paint
+	 *            the paint (<code>null</code> not permitted).
+	 *
+	 * @see #getTitlePaint()
+	 */
+	public void setTitlePaint(Paint paint) {
+		ParamChecks.nullNotPermitted(paint, "paint");
+		this.titlePaint = paint;
+	}
+
+	/**
+	 * Returns the subtitle paint.
+	 *
+	 * @return The subtitle paint (never <code>null</code>).
+	 *
+	 * @see #setSubtitlePaint(Paint)
+	 */
+	public Paint getSubtitlePaint() {
+		return this.subtitlePaint;
+	}
+
+	/**
+	 * Sets the subtitle paint.
+	 *
+	 * @param paint
+	 *            the paint (<code>null</code> not permitted).
+	 *
+	 * @see #getSubtitlePaint()
+	 */
+	public void setSubtitlePaint(Paint paint) {
+		ParamChecks.nullNotPermitted(paint, "paint");
+		this.subtitlePaint = paint;
+	}
+
+	/**
+	 * Returns the chart background painter.
+	 *
+	 * @return The chart background paint (never <code>null</code>).
+	 *
+	 * @see #setChartBackgroundPainter(Drawable)
+	 */
+	public Drawable getChartBackgroundPainter() {
+		return this.chartBackgroundPainter;
+	}
+
+	/**
+	 * Sets the chart background painter. <br>
+	 * <br>
+	 * Note that for cloning charts the background painter is assumed to be
+	 * immutable.
+	 *
+	 * @param painter
+	 *            the painter (<code>null</code> permitted).
+	 *
+	 * @see #getChartBackgroundPainter()
+	 */
+	public void setChartBackgroundPainter(Drawable painter) {
+		this.chartBackgroundPainter = painter;
+	}
+
+	/**
+	 * Returns the legend background paint.
+	 *
+	 * @return The legend background paint (never <code>null</code>).
+	 *
+	 * @see #setLegendBackgroundPaint(Paint)
+	 */
+	public Paint getLegendBackgroundPaint() {
+		return this.legendBackgroundPaint;
+	}
+
+	/**
+	 * Sets the legend background paint.
+	 *
+	 * @param paint
+	 *            the paint (<code>null</code> not permitted).
+	 *
+	 * @see #getLegendBackgroundPaint()
+	 */
+	public void setLegendBackgroundPaint(Paint paint) {
+		if (paint == null) {
+			throw new IllegalArgumentException("Null 'paint' argument.");
+		}
+		this.legendBackgroundPaint = paint;
+	}
+
+	/**
+	 * Returns the legend item paint.
+	 *
+	 * @return The legend item paint (never <code>null</code>).
+	 *
+	 * @see #setLegendItemPaint(Paint)
+	 */
+	public Paint getLegendItemPaint() {
+		return this.legendItemPaint;
+	}
+
+	/**
+	 * Sets the legend item paint.
+	 *
+	 * @param paint
+	 *            the paint (<code>null</code> not permitted).
+	 *
+	 * @see #getLegendItemPaint()
+	 */
+	public void setLegendItemPaint(Paint paint) {
+		ParamChecks.nullNotPermitted(paint, "paint");
+		this.legendItemPaint = paint;
+	}
+
+	/**
+	 * Returns the plot background painter.
+	 *
+	 * @return The painter (possibly <code>null</code>).
+	 *
+	 * @see #setPlotBackgroundPainter(Drawable)
+	 */
+	public Drawable getPlotBackgroundPainter() {
+		return this.plotBackgroundPainter;
+	}
+
+	/**
+	 * Sets the plot background painter.
+	 *
+	 * @param painter
+	 *            the painter (<code>null</code> permitted).
+	 *
+	 * @see #getPlotBackgroundPainter()
+	 */
+	public void setPlotBackgroundPainter(Drawable painter) {
+		this.plotBackgroundPainter = painter;
+	}
+
+	/**
+	 * Returns the plot border painter.
+	 *
+	 * @return The plot border painter (possibly <code>null</code>).
+	 *
+	 * @see #setPlotBorderPainter(Drawable)
+	 */
+	public Drawable getPlotBorderPainter() {
+		return this.plotBorderPainter;
+	}
+
+	/**
+	 * Sets the plot border painter.
+	 *
+	 * @param painter
+	 *            the painter (<code>null</code> not permitted).
+	 *
+	 * @see #getPlotBorderPainter()
+	 */
+	public void setPlotBorderPainter(Drawable painter) {
+		ParamChecks.nullNotPermitted(painter, "painter");
+		this.plotBorderPainter = painter;
+	}
+
+	// JAVAFX
 	// /**
 	// * Returns the label link style for pie charts.
 	// *
@@ -667,7 +689,8 @@ public class StandardChartTheme implements ChartTheme, Cloneable,
 	// /**
 	// * Sets the label link style for pie charts.
 	// *
-	// * @param style the style (<code>null</code> not permitted).
+	// * @param style
+	// * the style (<code>null</code> not permitted).
 	// *
 	// * @see #getLabelLinkStyle()
 	// */
@@ -677,259 +700,271 @@ public class StandardChartTheme implements ChartTheme, Cloneable,
 	// }
 	// this.labelLinkStyle = style;
 	// }
-	//
-	// /**
-	// * Returns the label link paint for pie charts.
-	// *
-	// * @return The label link paint (never <code>null</code>).
-	// *
-	// * @see #setLabelLinkPaint(Paint)
-	// */
-	// public Paint getLabelLinkPaint() {
-	// return this.labelLinkPaint;
-	// }
-	//
-	// /**
-	// * Sets the label link paint for pie charts.
-	// *
-	// * @param paint the paint (<code>null</code> not permitted).
-	// *
-	// * @see #getLabelLinkPaint()
-	// */
-	// public void setLabelLinkPaint(Paint paint) {
-	// ParamChecks.nullNotPermitted(paint, "paint");
-	// this.labelLinkPaint = paint;
-	// }
-	//
-	// /**
-	// * Returns the domain grid line paint.
-	// *
-	// * @return The domain grid line paint (never <code>null</code>).
-	// *
-	// * @see #setDomainGridlinePaint(Paint)
-	// */
-	// public Paint getDomainGridlinePaint() {
-	// return this.domainGridlinePaint;
-	// }
-	//
-	// /**
-	// * Sets the domain grid line paint.
-	// *
-	// * @param paint the paint (<code>null</code> not permitted).
-	// *
-	// * @see #getDomainGridlinePaint()
-	// */
-	// public void setDomainGridlinePaint(Paint paint) {
-	// ParamChecks.nullNotPermitted(paint, "paint");
-	// this.domainGridlinePaint = paint;
-	// }
-	//
-	// /**
-	// * Returns the range grid line paint.
-	// *
-	// * @return The range grid line paint (never <code>null</code>).
-	// *
-	// * @see #setRangeGridlinePaint(Paint)
-	// */
-	// public Paint getRangeGridlinePaint() {
-	// return this.rangeGridlinePaint;
-	// }
-	//
-	// /**
-	// * Sets the range grid line paint.
-	// *
-	// * @param paint the paint (<code>null</code> not permitted).
-	// *
-	// * @see #getRangeGridlinePaint()
-	// */
-	// public void setRangeGridlinePaint(Paint paint) {
-	// ParamChecks.nullNotPermitted(paint, "paint");
-	// this.rangeGridlinePaint = paint;
-	// }
-	//
-	// /**
-	// * Returns the baseline paint.
-	// *
-	// * @return The baseline paint.
-	// *
-	// * @since 1.0.13
-	// */
-	// public Paint getBaselinePaint() {
-	// return this.baselinePaint;
-	// }
-	//
-	// /**
-	// * Sets the baseline paint.
-	// *
-	// * @param paint the paint (<code>null</code> not permitted).
-	// *
-	// * @since 1.0.13
-	// */
-	// public void setBaselinePaint(Paint paint) {
-	// if (paint == null) {
-	// throw new IllegalArgumentException("Null 'paint' argument.");
-	// }
-	// this.baselinePaint = paint;
-	// }
-	//
-	// /**
-	// * Returns the crosshair paint.
-	// *
-	// * @return The crosshair paint.
-	// */
-	// public Paint getCrosshairPaint() {
-	// return this.crosshairPaint;
-	// }
-	//
-	// /**
-	// * Sets the crosshair paint.
-	// *
-	// * @param paint the paint (<code>null</code> not permitted).
-	// */
-	// public void setCrosshairPaint(Paint paint) {
-	// ParamChecks.nullNotPermitted(paint, "paint");
-	// this.crosshairPaint = paint;
-	// }
-	//
-	// /**
-	// * Returns the axis offsets.
-	// *
-	// * @return The axis offsets (never <code>null</code>).
-	// *
-	// * @see #setAxisOffset(RectangleInsets)
-	// */
-	// public RectangleInsets getAxisOffset() {
-	// return this.axisOffset;
-	// }
-	//
-	// /**
-	// * Sets the axis offset.
-	// *
-	// * @param offset the offset (<code>null</code> not permitted).
-	// *
-	// * @see #getAxisOffset()
-	// */
-	// public void setAxisOffset(RectangleInsets offset) {
-	// ParamChecks.nullNotPermitted(offset, "offset");
-	// this.axisOffset = offset;
-	// }
-	//
-	// /**
-	// * Returns the axis label paint.
-	// *
-	// * @return The axis label paint (never <code>null</code>).
-	// *
-	// * @see #setAxisLabelPaint(Paint)
-	// */
-	// public Paint getAxisLabelPaint() {
-	// return this.axisLabelPaint;
-	// }
-	//
-	// /**
-	// * Sets the axis label paint.
-	// *
-	// * @param paint the paint (<code>null</code> not permitted).
-	// *
-	// * @see #getAxisLabelPaint()
-	// */
-	// public void setAxisLabelPaint(Paint paint) {
-	// ParamChecks.nullNotPermitted(paint, "paint");
-	// this.axisLabelPaint = paint;
-	// }
-	//
-	// /**
-	// * Returns the tick label paint.
-	// *
-	// * @return The tick label paint (never <code>null</code>).
-	// *
-	// * @see #setTickLabelPaint(Paint)
-	// */
-	// public Paint getTickLabelPaint() {
-	// return this.tickLabelPaint;
-	// }
-	//
-	// /**
-	// * Sets the tick label paint.
-	// *
-	// * @param paint the paint (<code>null</code> not permitted).
-	// *
-	// * @see #getTickLabelPaint()
-	// */
-	// public void setTickLabelPaint(Paint paint) {
-	// if (paint == null) {
-	// throw new IllegalArgumentException("Null 'paint' argument.");
-	// }
-	// this.tickLabelPaint = paint;
-	// }
-	//
-	// /**
-	// * Returns the item label paint.
-	// *
-	// * @return The item label paint (never <code>null</code>).
-	// *
-	// * @see #setItemLabelPaint(Paint)
-	// */
-	// public Paint getItemLabelPaint() {
-	// return this.itemLabelPaint;
-	// }
-	//
-	// /**
-	// * Sets the item label paint.
-	// *
-	// * @param paint the paint (<code>null</code> not permitted).
-	// *
-	// * @see #getItemLabelPaint()
-	// */
-	// public void setItemLabelPaint(Paint paint) {
-	// ParamChecks.nullNotPermitted(paint, "paint");
-	// this.itemLabelPaint = paint;
-	// }
-	//
-	// /**
-	// * Returns the shadow visibility flag.
-	// *
-	// * @return The shadow visibility flag.
-	// *
-	// * @see #setShadowVisible(boolean)
-	// */
-	// public boolean isShadowVisible() {
-	// return this.shadowVisible;
-	// }
-	//
-	// /**
-	// * Sets the shadow visibility flag.
-	// *
-	// * @param visible the flag.
-	// *
-	// * @see #isShadowVisible()
-	// */
-	// public void setShadowVisible(boolean visible) {
-	// this.shadowVisible = visible;
-	// }
-	//
-	// /**
-	// * Returns the shadow paint.
-	// *
-	// * @return The shadow paint (never <code>null</code>).
-	// *
-	// * @see #setShadowPaint(Paint)
-	// */
-	// public Paint getShadowPaint() {
-	// return this.shadowPaint;
-	// }
-	//
-	// /**
-	// * Sets the shadow paint.
-	// *
-	// * @param paint the paint (<code>null</code> not permitted).
-	// *
-	// * @see #getShadowPaint()
-	// */
-	// public void setShadowPaint(Paint paint) {
-	// ParamChecks.nullNotPermitted(paint, "paint");
-	// this.shadowPaint = paint;
-	// }
-	//
+
+	/**
+	 * Returns the label link paint for pie charts.
+	 *
+	 * @return The label link paint (never <code>null</code>).
+	 *
+	 * @see #setLabelLinkPaint(Paint)
+	 */
+	public Paint getLabelLinkPaint() {
+		return this.labelLinkPaint;
+	}
+
+	/**
+	 * Sets the label link paint for pie charts.
+	 *
+	 * @param paint
+	 *            the paint (<code>null</code> not permitted).
+	 *
+	 * @see #getLabelLinkPaint()
+	 */
+	public void setLabelLinkPaint(Paint paint) {
+		ParamChecks.nullNotPermitted(paint, "paint");
+		this.labelLinkPaint = paint;
+	}
+
+	/**
+	 * Returns the domain grid line paint.
+	 *
+	 * @return The domain grid line paint (never <code>null</code>).
+	 *
+	 * @see #setDomainGridlinePaint(Paint)
+	 */
+	public Paint getDomainGridlinePaint() {
+		return this.domainGridlinePaint;
+	}
+
+	/**
+	 * Sets the domain grid line paint.
+	 *
+	 * @param paint
+	 *            the paint (<code>null</code> not permitted).
+	 *
+	 * @see #getDomainGridlinePaint()
+	 */
+	public void setDomainGridlinePaint(Paint paint) {
+		ParamChecks.nullNotPermitted(paint, "paint");
+		this.domainGridlinePaint = paint;
+	}
+
+	/**
+	 * Returns the range grid line paint.
+	 *
+	 * @return The range grid line paint (never <code>null</code>).
+	 *
+	 * @see #setRangeGridlinePaint(Paint)
+	 */
+	public Paint getRangeGridlinePaint() {
+		return this.rangeGridlinePaint;
+	}
+
+	/**
+	 * Sets the range grid line paint.
+	 *
+	 * @param paint
+	 *            the paint (<code>null</code> not permitted).
+	 *
+	 * @see #getRangeGridlinePaint()
+	 */
+	public void setRangeGridlinePaint(Paint paint) {
+		ParamChecks.nullNotPermitted(paint, "paint");
+		this.rangeGridlinePaint = paint;
+	}
+
+	/**
+	 * Returns the baseline paint.
+	 *
+	 * @return The baseline paint.
+	 *
+	 * @since 1.0.13
+	 */
+	public Paint getBaselinePaint() {
+		return this.baselinePaint;
+	}
+
+	/**
+	 * Sets the baseline paint.
+	 *
+	 * @param paint
+	 *            the paint (<code>null</code> not permitted).
+	 *
+	 * @since 1.0.13
+	 */
+	public void setBaselinePaint(Paint paint) {
+		if (paint == null) {
+			throw new IllegalArgumentException("Null 'paint' argument.");
+		}
+		this.baselinePaint = paint;
+	}
+
+	/**
+	 * Returns the crosshair paint.
+	 *
+	 * @return The crosshair paint.
+	 */
+	public Paint getCrosshairPaint() {
+		return this.crosshairPaint;
+	}
+
+	/**
+	 * Sets the crosshair paint.
+	 *
+	 * @param paint
+	 *            the paint (<code>null</code> not permitted).
+	 */
+	public void setCrosshairPaint(Paint paint) {
+		ParamChecks.nullNotPermitted(paint, "paint");
+		this.crosshairPaint = paint;
+	}
+
+	/**
+	 * Returns the axis offsets.
+	 *
+	 * @return The axis offsets (never <code>null</code>).
+	 *
+	 * @see #setAxisOffset(RectangleInsets)
+	 */
+	public RectangleInsets getAxisOffset() {
+		return this.axisOffset;
+	}
+
+	/**
+	 * Sets the axis offset.
+	 *
+	 * @param offset
+	 *            the offset (<code>null</code> not permitted).
+	 *
+	 * @see #getAxisOffset()
+	 */
+	public void setAxisOffset(RectangleInsets offset) {
+		ParamChecks.nullNotPermitted(offset, "offset");
+		this.axisOffset = offset;
+	}
+
+	/**
+	 * Returns the axis label paint.
+	 *
+	 * @return The axis label paint (never <code>null</code>).
+	 *
+	 * @see #setAxisLabelPaint(Paint)
+	 */
+	public Paint getAxisLabelPaint() {
+		return this.axisLabelPaint;
+	}
+
+	/**
+	 * Sets the axis label paint.
+	 *
+	 * @param paint
+	 *            the paint (<code>null</code> not permitted).
+	 *
+	 * @see #getAxisLabelPaint()
+	 */
+	public void setAxisLabelPaint(Paint paint) {
+		ParamChecks.nullNotPermitted(paint, "paint");
+		this.axisLabelPaint = paint;
+	}
+
+	/**
+	 * Returns the tick label paint.
+	 *
+	 * @return The tick label paint (never <code>null</code>).
+	 *
+	 * @see #setTickLabelPaint(Paint)
+	 */
+	public Paint getTickLabelPaint() {
+		return this.tickLabelPaint;
+	}
+
+	/**
+	 * Sets the tick label paint.
+	 *
+	 * @param paint
+	 *            the paint (<code>null</code> not permitted).
+	 *
+	 * @see #getTickLabelPaint()
+	 */
+	public void setTickLabelPaint(Paint paint) {
+		if (paint == null) {
+			throw new IllegalArgumentException("Null 'paint' argument.");
+		}
+		this.tickLabelPaint = paint;
+	}
+
+	/**
+	 * Returns the item label paint.
+	 *
+	 * @return The item label paint (never <code>null</code>).
+	 *
+	 * @see #setItemLabelPaint(Paint)
+	 */
+	public Paint getItemLabelPaint() {
+		return this.itemLabelPaint;
+	}
+
+	/**
+	 * Sets the item label paint.
+	 *
+	 * @param paint
+	 *            the paint (<code>null</code> not permitted).
+	 *
+	 * @see #getItemLabelPaint()
+	 */
+	public void setItemLabelPaint(Paint paint) {
+		ParamChecks.nullNotPermitted(paint, "paint");
+		this.itemLabelPaint = paint;
+	}
+
+	/**
+	 * Returns the shadow visibility flag.
+	 *
+	 * @return The shadow visibility flag.
+	 *
+	 * @see #setShadowVisible(boolean)
+	 */
+	public boolean isShadowVisible() {
+		return this.shadowVisible;
+	}
+
+	/**
+	 * Sets the shadow visibility flag.
+	 *
+	 * @param visible
+	 *            the flag.
+	 *
+	 * @see #isShadowVisible()
+	 */
+	public void setShadowVisible(boolean visible) {
+		this.shadowVisible = visible;
+	}
+
+	/**
+	 * Returns the shadow paint.
+	 *
+	 * @return The shadow paint (never <code>null</code>).
+	 *
+	 * @see #setShadowPaint(Paint)
+	 */
+	public Paint getShadowPaint() {
+		return this.shadowPaint;
+	}
+
+	/**
+	 * Sets the shadow paint.
+	 *
+	 * @param paint
+	 *            the paint (<code>null</code> not permitted).
+	 *
+	 * @see #getShadowPaint()
+	 */
+	public void setShadowPaint(Paint paint) {
+		ParamChecks.nullNotPermitted(paint, "paint");
+		this.shadowPaint = paint;
+	}
+
+	// JAVAFX
 	// /**
 	// * Returns the bar painter.
 	// *
@@ -977,53 +1012,56 @@ public class StandardChartTheme implements ChartTheme, Cloneable,
 	// }
 	// this.xyBarPainter = painter;
 	// }
-	//
-	// /**
-	// * Returns the thermometer paint.
-	// *
-	// * @return The thermometer paint (never <code>null</code>).
-	// *
-	// * @see #setThermometerPaint(Paint)
-	// */
-	// public Paint getThermometerPaint() {
-	// return this.thermometerPaint;
-	// }
-	//
-	// /**
-	// * Sets the thermometer paint.
-	// *
-	// * @param paint the paint (<code>null</code> not permitted).
-	// *
-	// * @see #getThermometerPaint()
-	// */
-	// public void setThermometerPaint(Paint paint) {
-	// ParamChecks.nullNotPermitted(paint, "paint");
-	// this.thermometerPaint = paint;
-	// }
-	//
-	// /**
-	// * Returns the error indicator paint.
-	// *
-	// * @return The error indicator paint (never <code>null</code>).
-	// *
-	// * @see #setErrorIndicatorPaint(Paint)
-	// */
-	// public Paint getErrorIndicatorPaint() {
-	// return this.errorIndicatorPaint;
-	// }
-	//
-	// /**
-	// * Sets the error indicator paint.
-	// *
-	// * @param paint the paint (<code>null</code> not permitted).
-	// *
-	// * @see #getErrorIndicatorPaint()
-	// */
-	// public void setErrorIndicatorPaint(Paint paint) {
-	// ParamChecks.nullNotPermitted(paint, "paint");
-	// this.errorIndicatorPaint = paint;
-	// }
-	//
+
+	/**
+	 * Returns the thermometer paint.
+	 *
+	 * @return The thermometer paint (never <code>null</code>).
+	 *
+	 * @see #setThermometerPaint(Paint)
+	 */
+	public Paint getThermometerPaint() {
+		return this.thermometerPaint;
+	}
+
+	/**
+	 * Sets the thermometer paint.
+	 *
+	 * @param paint
+	 *            the paint (<code>null</code> not permitted).
+	 *
+	 * @see #getThermometerPaint()
+	 */
+	public void setThermometerPaint(Paint paint) {
+		ParamChecks.nullNotPermitted(paint, "paint");
+		this.thermometerPaint = paint;
+	}
+
+	/**
+	 * Returns the error indicator paint.
+	 *
+	 * @return The error indicator paint (never <code>null</code>).
+	 *
+	 * @see #setErrorIndicatorPaint(Paint)
+	 */
+	public Paint getErrorIndicatorPaint() {
+		return this.errorIndicatorPaint;
+	}
+
+	/**
+	 * Sets the error indicator paint.
+	 *
+	 * @param paint
+	 *            the paint (<code>null</code> not permitted).
+	 *
+	 * @see #getErrorIndicatorPaint()
+	 */
+	public void setErrorIndicatorPaint(Paint paint) {
+		ParamChecks.nullNotPermitted(paint, "paint");
+		this.errorIndicatorPaint = paint;
+	}
+
+	// JAVAFX
 	// /**
 	// * Returns the grid band paint.
 	// *
@@ -1038,7 +1076,8 @@ public class StandardChartTheme implements ChartTheme, Cloneable,
 	// /**
 	// * Sets the grid band paint.
 	// *
-	// * @param paint the paint (<code>null</code> not permitted).
+	// * @param paint
+	// * the paint (<code>null</code> not permitted).
 	// *
 	// * @see #getGridBandPaint()
 	// */
@@ -1063,7 +1102,8 @@ public class StandardChartTheme implements ChartTheme, Cloneable,
 	// /**
 	// * Sets the grid band alternate paint (used for a {@link SymbolAxis}).
 	// *
-	// * @param paint the paint (<code>null</code> not permitted).
+	// * @param paint
+	// * the paint (<code>null</code> not permitted).
 	// *
 	// * @see #getGridBandAlternatePaint()
 	// */
@@ -1071,47 +1111,47 @@ public class StandardChartTheme implements ChartTheme, Cloneable,
 	// ParamChecks.nullNotPermitted(paint, "paint");
 	// this.gridBandAlternatePaint = paint;
 	// }
-	//
-	// /**
-	// * Returns the name of this theme.
-	// *
-	// * @return The name of this theme.
-	// */
-	// public String getName() {
-	// return this.name;
-	// }
-	//
-	// /**
-	// * Returns a clone of the drawing supplier for this theme.
-	// *
-	// * @return A clone of the drawing supplier.
-	// */
-	// public DrawingSupplier getDrawingSupplier() {
-	// DrawingSupplier result = null;
-	// if (this.drawingSupplier instanceof PublicCloneable) {
-	// PublicCloneable pc = (PublicCloneable) this.drawingSupplier;
-	// try {
-	// result = (DrawingSupplier) pc.clone();
-	// }
-	// catch (CloneNotSupportedException e) {
-	// throw new RuntimeException("Could not clone drawing supplier", e);
-	// }
-	// }
-	// return result;
-	// }
-	//
-	// /**
-	// * Sets the drawing supplier for this theme.
-	// *
-	// * @param supplier the supplier (<code>null</code> not permitted).
-	// *
-	// * @see #getDrawingSupplier()
-	// */
-	// public void setDrawingSupplier(DrawingSupplier supplier) {
-	// ParamChecks.nullNotPermitted(supplier, "supplier");
-	// this.drawingSupplier = supplier;
-	// }
-	//
+
+	/**
+	 * Returns the name of this theme.
+	 *
+	 * @return The name of this theme.
+	 */
+	public String getName() {
+		return this.name;
+	}
+
+	/**
+	 * Returns a clone of the drawing supplier for this theme.
+	 *
+	 * @return A clone of the drawing supplier.
+	 */
+	public DrawingSupplier getDrawingSupplier() {
+		DrawingSupplier result = null;
+		if (this.drawingSupplier instanceof PublicCloneable) {
+			PublicCloneable pc = (PublicCloneable) this.drawingSupplier;
+			try {
+				result = (DrawingSupplier) pc.clone();
+			} catch (CloneNotSupportedException e) {
+				throw new RuntimeException("Could not clone drawing supplier", e);
+			}
+		}
+		return result;
+	}
+
+	/**
+	 * Sets the drawing supplier for this theme.
+	 *
+	 * @param supplier
+	 *            the supplier (<code>null</code> not permitted).
+	 *
+	 * @see #getDrawingSupplier()
+	 */
+	public void setDrawingSupplier(DrawingSupplier supplier) {
+		ParamChecks.nullNotPermitted(supplier, "supplier");
+		this.drawingSupplier = supplier;
+	}
+
 	/**
 	 * Applies this theme to the supplied chart.
 	 *
@@ -1121,142 +1161,147 @@ public class StandardChartTheme implements ChartTheme, Cloneable,
 	@Override
 	public void apply(JFreeChart chart) {
 		ParamChecks.nullNotPermitted(chart, "chart");
+		TextTitle title = chart.getTitle();
+		if (title != null) {
+			title.setFont(this.extraLargeFont);
+			title.setPaint(this.titlePaint);
+		}
+
+		int subtitleCount = chart.getSubtitleCount();
+		for (int i = 0; i < subtitleCount; i++) {
+			applyToTitle(chart.getSubtitle(i));
+		}
+
+		chart.setBackgroundPainter(this.chartBackgroundPainter);
+
+		// now process the plot if there is one
+		Plot plot = chart.getPlot();
+		if (plot != null) {
+			applyToPlot(plot);
+		}
+	}
+
+	/**
+	 * Applies the attributes of this theme to the specified title.
+	 *
+	 * @param title
+	 *            the title.
+	 */
+	protected void applyToTitle(Title title) {
+		if (title instanceof TextTitle) {
+			TextTitle tt = (TextTitle) title;
+			tt.setFont(this.largeFont);
+			tt.setPaint(this.subtitlePaint);
+		}
+		else if (title instanceof LegendTitle) {
+			LegendTitle lt = (LegendTitle) title;
+			if (lt.getBackgroundPaint() != null) {
+				lt.setBackgroundPaint(this.legendBackgroundPaint);
+			}
+			lt.setItemFont(this.regularFont);
+			lt.setItemPaint(this.legendItemPaint);
+			if (lt.getWrapper() != null) {
+				applyToBlockContainer(lt.getWrapper());
+			}
+		}
 		// JAVAFX
-		// TextTitle title = chart.getTitle();
-		// if (title != null) {
-		// title.setFont(this.extraLargeFont);
-		// title.setPaint(this.titlePaint);
+		// else if (title instanceof PaintScaleLegend) {
+		// PaintScaleLegend psl = (PaintScaleLegend) title;
+		// psl.setBackgroundPaint(this.legendBackgroundPaint);
+		// ValueAxis axis = psl.getAxis();
+		// if (axis != null) {
+		// applyToValueAxis(axis);
 		// }
-		//
-		// int subtitleCount = chart.getSubtitleCount();
-		// for (int i = 0; i < subtitleCount; i++) {
-		// applyToTitle(chart.getSubtitle(i));
 		// }
-		//
-		// chart.setBackgroundPainter(this.chartBackgroundPainter);
-		//
-		// // now process the plot if there is one
-		// Plot plot = chart.getPlot();
-		// if (plot != null) {
-		// applyToPlot(plot);
+		// else if (title instanceof CompositeTitle) {
+		// CompositeTitle ct = (CompositeTitle) title;
+		// BlockContainer bc = ct.getContainer();
+		// List<Block> blocks = bc.getBlocks();
+		// for (Block b : blocks) {
+		// if (b instanceof Title) {
+		// applyToTitle((Title) b);
+		// }
+		// }
 		// }
 	}
 
-	//
-	// /**
-	// * Applies the attributes of this theme to the specified title.
-	// *
-	// * @param title the title.
-	// */
-	// protected void applyToTitle(Title title) {
-	// if (title instanceof TextTitle) {
-	// TextTitle tt = (TextTitle) title;
-	// tt.setFont(this.largeFont);
-	// tt.setPaint(this.subtitlePaint);
-	// }
-	// else if (title instanceof LegendTitle) {
-	// LegendTitle lt = (LegendTitle) title;
-	// if (lt.getBackgroundPaint() != null) {
-	// lt.setBackgroundPaint(this.legendBackgroundPaint);
-	// }
-	// lt.setItemFont(this.regularFont);
-	// lt.setItemPaint(this.legendItemPaint);
-	// if (lt.getWrapper() != null) {
-	// applyToBlockContainer(lt.getWrapper());
-	// }
-	// }
-	// else if (title instanceof PaintScaleLegend) {
-	// PaintScaleLegend psl = (PaintScaleLegend) title;
-	// psl.setBackgroundPaint(this.legendBackgroundPaint);
-	// ValueAxis axis = psl.getAxis();
-	// if (axis != null) {
-	// applyToValueAxis(axis);
-	// }
-	// }
-	// else if (title instanceof CompositeTitle) {
-	// CompositeTitle ct = (CompositeTitle) title;
-	// BlockContainer bc = ct.getContainer();
-	// List<Block> blocks = bc.getBlocks();
-	// for (Block b : blocks) {
-	// if (b instanceof Title) {
-	// applyToTitle((Title) b);
-	// }
-	// }
-	// }
-	// }
-	//
-	// /**
-	// * Applies the attributes of this theme to the specified container.
-	// *
-	// * @param bc a block container (<code>null</code> not permitted).
-	// */
-	// protected void applyToBlockContainer(BlockContainer bc) {
-	// for (Block b : bc.getBlocks()) {
-	// applyToBlock(b);
-	// }
-	// }
-	//
-	// /**
-	// * Applies the attributes of this theme to the specified block.
-	// *
-	// * @param b the block.
-	// */
-	// protected void applyToBlock(Block b) {
-	// if (b instanceof Title) {
-	// applyToTitle((Title) b);
-	// }
-	// else if (b instanceof LabelBlock) {
-	// LabelBlock lb = (LabelBlock) b;
-	// lb.setFont(this.regularFont);
-	// lb.setPaint(this.legendItemPaint);
-	// }
-	// }
-	//
-	// /**
-	// * Applies the attributes of this theme to a plot.
-	// *
-	// * @param plot the plot (<code>null</code>).
-	// */
-	// protected void applyToPlot(Plot plot) {
-	// ParamChecks.nullNotPermitted(plot, "plot");
-	// if (plot.getDrawingSupplier() != null) {
-	// plot.setDrawingSupplier(getDrawingSupplier());
-	// }
-	// plot.setBackgroundPainter(this.plotBackgroundPainter);
-	// plot.setBorderPainter(this.plotBorderPainter);
-	//
-	// // now handle specific plot types (and yes, I know this is some
-	// // really ugly code that has to be manually updated any time a new
-	// // plot type is added - I should have written something much cooler,
-	// // but I didn't and neither did anyone else).
-	// if (plot instanceof PiePlot) {
-	// applyToPiePlot((PiePlot) plot);
-	// }
-	// else if (plot instanceof MultiplePiePlot) {
-	// applyToMultiplePiePlot((MultiplePiePlot) plot);
-	// }
-	// else if (plot instanceof CategoryPlot) {
-	// applyToCategoryPlot((CategoryPlot) plot);
-	// }
-	// else if (plot instanceof XYPlot) {
-	// applyToXYPlot((XYPlot) plot);
-	// }
-	// else if (plot instanceof FastScatterPlot) {
-	// applyToFastScatterPlot((FastScatterPlot) plot);
-	// }
-	// else if (plot instanceof MeterPlot) {
-	// applyToMeterPlot((MeterPlot) plot);
-	// }
-	// else if (plot instanceof ThermometerPlot) {
-	// applyToThermometerPlot((ThermometerPlot) plot);
-	// }
-	// else if (plot instanceof SpiderWebPlot) {
-	// applyToSpiderWebPlot((SpiderWebPlot) plot);
-	// }
-	// else if (plot instanceof PolarPlot) {
-	// applyToPolarPlot((PolarPlot) plot);
-	// }
-	// }
+	/**
+	 * Applies the attributes of this theme to the specified container.
+	 *
+	 * @param bc
+	 *            a block container (<code>null</code> not permitted).
+	 */
+	protected void applyToBlockContainer(BlockContainer bc) {
+		for (Block b : bc.getBlocks()) {
+			applyToBlock(b);
+		}
+	}
+
+	/**
+	 * Applies the attributes of this theme to the specified block.
+	 *
+	 * @param b
+	 *            the block.
+	 */
+	protected void applyToBlock(Block b) {
+		if (b instanceof Title) {
+			applyToTitle((Title) b);
+		}
+		else if (b instanceof LabelBlock) {
+			LabelBlock lb = (LabelBlock) b;
+			lb.setFont(this.regularFont);
+			lb.setPaint(this.legendItemPaint);
+		}
+	}
+
+	/**
+	 * Applies the attributes of this theme to a plot.
+	 *
+	 * @param plot
+	 *            the plot (<code>null</code>).
+	 */
+	protected void applyToPlot(Plot plot) {
+		ParamChecks.nullNotPermitted(plot, "plot");
+		if (plot.getDrawingSupplier() != null) {
+			plot.setDrawingSupplier(getDrawingSupplier());
+		}
+		plot.setBackgroundPainter(this.plotBackgroundPainter);
+		plot.setBorderPainter(this.plotBorderPainter);
+
+		// now handle specific plot types (and yes, I know this is some
+		// really ugly code that has to be manually updated any time a new
+		// plot type is added - I should have written something much cooler,
+		// but I didn't and neither did anyone else).
+		// if (plot instanceof PiePlot) {
+		// applyToPiePlot((PiePlot) plot);
+		// }
+		// else if (plot instanceof MultiplePiePlot) {
+		// applyToMultiplePiePlot((MultiplePiePlot) plot);
+		// }
+		// else
+		if (plot instanceof CategoryPlot) {
+			applyToCategoryPlot((CategoryPlot) plot);
+		}
+		else if (plot instanceof XYPlot) {
+			applyToXYPlot((XYPlot) plot);
+		}
+		// else if (plot instanceof FastScatterPlot) {
+		// applyToFastScatterPlot((FastScatterPlot) plot);
+		// }
+		// else if (plot instanceof MeterPlot) {
+		// applyToMeterPlot((MeterPlot) plot);
+		// }
+		// else if (plot instanceof ThermometerPlot) {
+		// applyToThermometerPlot((ThermometerPlot) plot);
+		// }
+		// else if (plot instanceof SpiderWebPlot) {
+		// applyToSpiderWebPlot((SpiderWebPlot) plot);
+		// }
+		// else if (plot instanceof PolarPlot) {
+		// applyToPolarPlot((PolarPlot) plot);
+		// }
+	}
+
 	//
 	// /**
 	// * Applies the attributes of this theme to a {@link PiePlot} instance.
@@ -1293,127 +1338,135 @@ public class StandardChartTheme implements ChartTheme, Cloneable,
 	// apply(plot.getPieChart());
 	// }
 	//
-	// /**
-	// * Applies the attributes of this theme to a {@link CategoryPlot}.
-	// *
-	// * @param plot the plot (<code>null</code> not permitted).
-	// */
-	// protected void applyToCategoryPlot(CategoryPlot plot) {
-	// plot.setAxisOffset(this.axisOffset);
-	// plot.setDomainGridlinePaint(this.domainGridlinePaint);
-	// plot.setRangeGridlinePaint(this.rangeGridlinePaint);
-	// plot.setRangeZeroBaselinePaint(this.baselinePaint);
-	// plot.setShadowGenerator(this.shadowGenerator);
+	/**
+	 * Applies the attributes of this theme to a {@link CategoryPlot}.
+	 *
+	 * @param plot
+	 *            the plot (<code>null</code> not permitted).
+	 */
+	protected void applyToCategoryPlot(CategoryPlot plot) {
+		plot.setAxisOffset(this.axisOffset);
+		plot.setDomainGridlinePaint(this.domainGridlinePaint);
+		plot.setRangeGridlinePaint(this.rangeGridlinePaint);
+		plot.setRangeZeroBaselinePaint(this.baselinePaint);
+		// JAVAFX
+		// plot.setShadowGenerator(this.shadowGenerator);
+
+		// process all domain axes
+		int domainAxisCount = plot.getDomainAxisCount();
+		for (int i = 0; i < domainAxisCount; i++) {
+			CategoryAxis axis = plot.getDomainAxis(i);
+			if (axis != null) {
+				applyToCategoryAxis(axis);
+			}
+		}
+
+		// process all range axes
+		int rangeAxisCount = plot.getRangeAxisCount();
+		for (int i = 0; i < rangeAxisCount; i++) {
+			ValueAxis axis = plot.getRangeAxis(i);
+			if (axis != null) {
+				applyToValueAxis(axis);
+			}
+		}
+
+		// process all renderers
+		int rendererCount = plot.getRendererCount();
+		for (int i = 0; i < rendererCount; i++) {
+			CategoryItemRenderer r = plot.getRenderer(i);
+			if (r != null) {
+				applyToCategoryItemRenderer(r);
+			}
+		}
+
+		// JAVAFX
+		// if (plot instanceof CombinedDomainCategoryPlot) {
+		// CombinedDomainCategoryPlot cp = (CombinedDomainCategoryPlot) plot;
+		// for (CategoryPlot subplot : cp.getSubplots()) {
+		// if (subplot != null) {
+		// applyToPlot(subplot);
+		// }
+		// }
+		// }
+		// if (plot instanceof CombinedRangeCategoryPlot) {
+		// CombinedRangeCategoryPlot cp = (CombinedRangeCategoryPlot) plot;
+		// for (CategoryPlot subplot : cp.getSubplots()) {
+		// if (subplot != null) {
+		// applyToPlot(subplot);
+		// }
+		// }
+		// }
+	}
+
 	//
-	// // process all domain axes
-	// int domainAxisCount = plot.getDomainAxisCount();
-	// for (int i = 0; i < domainAxisCount; i++) {
-	// CategoryAxis axis = plot.getDomainAxis(i);
-	// if (axis != null) {
-	// applyToCategoryAxis(axis);
-	// }
-	// }
-	//
-	// // process all range axes
-	// int rangeAxisCount = plot.getRangeAxisCount();
-	// for (int i = 0; i < rangeAxisCount; i++) {
-	// ValueAxis axis = plot.getRangeAxis(i);
-	// if (axis != null) {
-	// applyToValueAxis(axis);
-	// }
-	// }
-	//
-	// // process all renderers
-	// int rendererCount = plot.getRendererCount();
-	// for (int i = 0; i < rendererCount; i++) {
-	// CategoryItemRenderer r = plot.getRenderer(i);
-	// if (r != null) {
-	// applyToCategoryItemRenderer(r);
-	// }
-	// }
-	//
-	// if (plot instanceof CombinedDomainCategoryPlot) {
-	// CombinedDomainCategoryPlot cp = (CombinedDomainCategoryPlot) plot;
-	// for (CategoryPlot subplot : cp.getSubplots()) {
-	// if (subplot != null) {
-	// applyToPlot(subplot);
-	// }
-	// }
-	// }
-	// if (plot instanceof CombinedRangeCategoryPlot) {
-	// CombinedRangeCategoryPlot cp = (CombinedRangeCategoryPlot) plot;
-	// for (CategoryPlot subplot : cp.getSubplots()) {
-	// if (subplot != null) {
-	// applyToPlot(subplot);
-	// }
-	// }
-	// }
-	// }
-	//
-	// /**
-	// * Applies the attributes of this theme to a {@link XYPlot}.
-	// *
-	// * @param plot the plot (<code>null</code> not permitted).
-	// */
-	// protected void applyToXYPlot(XYPlot plot) {
-	// plot.setAxisOffset(this.axisOffset);
-	// plot.setDomainZeroBaselinePaint(this.baselinePaint);
-	// plot.setRangeZeroBaselinePaint(this.baselinePaint);
-	// plot.setDomainGridlinePaint(this.domainGridlinePaint);
-	// plot.setRangeGridlinePaint(this.rangeGridlinePaint);
-	// plot.setDomainCrosshairPaint(this.crosshairPaint);
-	// plot.setRangeCrosshairPaint(this.crosshairPaint);
-	// plot.setShadowGenerator(this.shadowGenerator);
-	//
-	// // process all domain axes
-	// int domainAxisCount = plot.getDomainAxisCount();
-	// for (int i = 0; i < domainAxisCount; i++) {
-	// ValueAxis axis = plot.getDomainAxis(i);
-	// if (axis != null) {
-	// applyToValueAxis(axis);
-	// }
-	// }
-	//
-	// // process all range axes
-	// int rangeAxisCount = plot.getRangeAxisCount();
-	// for (int i = 0; i < rangeAxisCount; i++) {
-	// ValueAxis axis = plot.getRangeAxis(i);
-	// if (axis != null) {
-	// applyToValueAxis(axis);
-	// }
-	// }
-	//
-	// // process all renderers
-	// int rendererCount = plot.getRendererCount();
-	// for (int i = 0; i < rendererCount; i++) {
-	// XYItemRenderer r = plot.getRenderer(i);
-	// if (r != null) {
-	// applyToXYItemRenderer(r);
-	// }
-	// }
-	//
-	// // process all annotations
-	// for (XYAnnotation a : plot.getAnnotations()) {
-	// applyToXYAnnotation(a);
-	// }
-	//
-	// if (plot instanceof CombinedDomainXYPlot) {
-	// CombinedDomainXYPlot cp = (CombinedDomainXYPlot) plot;
-	// for (XYPlot subplot : cp.getSubplots()) {
-	// if (subplot != null) {
-	// applyToPlot(subplot);
-	// }
-	// }
-	// }
-	// if (plot instanceof CombinedRangeXYPlot) {
-	// CombinedRangeXYPlot cp = (CombinedRangeXYPlot) plot;
-	// for (XYPlot subplot : cp.getSubplots()) {
-	// if (subplot != null) {
-	// applyToPlot(subplot);
-	// }
-	// }
-	// }
-	// }
+	/**
+	 * Applies the attributes of this theme to a {@link XYPlot}.
+	 *
+	 * @param plot
+	 *            the plot (<code>null</code> not permitted).
+	 */
+	protected void applyToXYPlot(XYPlot plot) {
+		plot.setAxisOffset(this.axisOffset);
+		plot.setDomainZeroBaselinePaint(this.baselinePaint);
+		plot.setRangeZeroBaselinePaint(this.baselinePaint);
+		plot.setDomainGridlinePaint(this.domainGridlinePaint);
+		plot.setRangeGridlinePaint(this.rangeGridlinePaint);
+		plot.setDomainCrosshairPaint(this.crosshairPaint);
+		plot.setRangeCrosshairPaint(this.crosshairPaint);
+		// JAVAFX shadow generator
+		// plot.setShadowGenerator(this.shadowGenerator);
+
+		// process all domain axes
+		int domainAxisCount = plot.getDomainAxisCount();
+		for (int i = 0; i < domainAxisCount; i++) {
+			ValueAxis axis = plot.getDomainAxis(i);
+			if (axis != null) {
+				applyToValueAxis(axis);
+			}
+		}
+
+		// process all range axes
+		int rangeAxisCount = plot.getRangeAxisCount();
+		for (int i = 0; i < rangeAxisCount; i++) {
+			ValueAxis axis = plot.getRangeAxis(i);
+			if (axis != null) {
+				applyToValueAxis(axis);
+			}
+		}
+
+		// process all renderers
+		int rendererCount = plot.getRendererCount();
+		for (int i = 0; i < rendererCount; i++) {
+			XYItemRenderer r = plot.getRenderer(i);
+			if (r != null) {
+				applyToXYItemRenderer(r);
+			}
+		}
+
+		// process all annotations
+		for (XYAnnotation a : plot.getAnnotations()) {
+			applyToXYAnnotation(a);
+		}
+
+		// JAVAFX
+		// if (plot instanceof CombinedDomainXYPlot) {
+		// CombinedDomainXYPlot cp = (CombinedDomainXYPlot) plot;
+		// for (XYPlot subplot : cp.getSubplots()) {
+		// if (subplot != null) {
+		// applyToPlot(subplot);
+		// }
+		// }
+		// }
+		// if (plot instanceof CombinedRangeXYPlot) {
+		// CombinedRangeXYPlot cp = (CombinedRangeXYPlot) plot;
+		// for (XYPlot subplot : cp.getSubplots()) {
+		// if (subplot != null) {
+		// applyToPlot(subplot);
+		// }
+		// }
+		// }
+	}
+
 	//
 	// /**
 	// * Applies the attributes of this theme to a {@link FastScatterPlot}.
@@ -1491,40 +1544,45 @@ public class StandardChartTheme implements ChartTheme, Cloneable,
 	// }
 	// }
 	//
-	// /**
-	// * Applies the attributes for this theme to a {@link CategoryAxis}.
-	// *
-	// * @param axis the axis (<code>null</code> not permitted).
-	// */
-	// protected void applyToCategoryAxis(CategoryAxis axis) {
-	// axis.setLabelFont(this.largeFont);
-	// axis.setLabelPaint(this.axisLabelPaint);
-	// axis.setTickLabelFont(this.regularFont);
-	// axis.setTickLabelPaint(this.tickLabelPaint);
-	// if (axis instanceof SubCategoryAxis) {
-	// SubCategoryAxis sca = (SubCategoryAxis) axis;
-	// sca.setSubLabelFont(this.regularFont);
-	// sca.setSubLabelPaint(this.tickLabelPaint);
-	// }
-	// }
-	//
-	// /**
-	// * Applies the attributes for this theme to a {@link ValueAxis}.
-	// *
-	// * @param axis the axis (<code>null</code> not permitted).
-	// */
-	// protected void applyToValueAxis(ValueAxis axis) {
-	// axis.setLabelFont(this.largeFont);
-	// axis.setLabelPaint(this.axisLabelPaint);
-	// axis.setTickLabelFont(this.regularFont);
-	// axis.setTickLabelPaint(this.tickLabelPaint);
-	// if (axis instanceof SymbolAxis) {
-	// applyToSymbolAxis((SymbolAxis) axis);
-	// }
-	// if (axis instanceof PeriodAxis) {
-	// applyToPeriodAxis((PeriodAxis) axis);
-	// }
-	// }
+	/**
+	 * Applies the attributes for this theme to a {@link CategoryAxis}.
+	 *
+	 * @param axis
+	 *            the axis (<code>null</code> not permitted).
+	 */
+	protected void applyToCategoryAxis(CategoryAxis axis) {
+		axis.setLabelFont(this.largeFont);
+		axis.setLabelPaint(this.axisLabelPaint);
+		axis.setTickLabelFont(this.regularFont);
+		axis.setTickLabelPaint(this.tickLabelPaint);
+		// JAVAFX
+		// if (axis instanceof SubCategoryAxis) {
+		// SubCategoryAxis sca = (SubCategoryAxis) axis;
+		// sca.setSubLabelFont(this.regularFont);
+		// sca.setSubLabelPaint(this.tickLabelPaint);
+		// }
+	}
+
+	/**
+	 * Applies the attributes for this theme to a {@link ValueAxis}.
+	 *
+	 * @param axis
+	 *            the axis (<code>null</code> not permitted).
+	 */
+	protected void applyToValueAxis(ValueAxis axis) {
+		axis.setLabelFont(this.largeFont);
+		axis.setLabelPaint(this.axisLabelPaint);
+		axis.setTickLabelFont(this.regularFont);
+		axis.setTickLabelPaint(this.tickLabelPaint);
+		// JAVAFX
+		// if (axis instanceof SymbolAxis) {
+		// applyToSymbolAxis((SymbolAxis) axis);
+		// }
+		// if (axis instanceof PeriodAxis) {
+		// applyToPeriodAxis((PeriodAxis) axis);
+		// }
+	}
+
 	//
 	// /**
 	// * Applies the attributes for this theme to a {@link SymbolAxis}.
@@ -1554,91 +1612,99 @@ public class StandardChartTheme implements ChartTheme, Cloneable,
 	// axis.setLabelInfo(info);
 	// }
 	//
-	// /**
-	// * Applies the attributes for this theme to an {@link AbstractRenderer}.
-	// *
-	// * @param renderer the renderer (<code>null</code> not permitted).
-	// */
-	// protected void applyToAbstractRenderer(AbstractRenderer renderer) {
-	// if (renderer.getAutoPopulateSeriesPaint()) {
-	// renderer.clearSeriesPaints(false);
-	// }
-	// if (renderer.getAutoPopulateSeriesStroke()) {
-	// renderer.clearSeriesStrokes(false);
-	// }
-	// }
-	//
-	// /**
-	// * Applies the settings of this theme to the specified renderer.
-	// *
-	// * @param renderer the renderer (<code>null</code> not permitted).
-	// */
-	// protected void applyToCategoryItemRenderer(CategoryItemRenderer renderer)
-	// {
-	// ParamChecks.nullNotPermitted(renderer, "renderer");
-	//
-	// if (renderer instanceof AbstractRenderer) {
-	// applyToAbstractRenderer((AbstractRenderer) renderer);
-	// }
-	//
-	// renderer.setDefaultItemLabelFont(this.regularFont);
-	// renderer.setDefaultItemLabelPaint(this.itemLabelPaint);
-	//
-	// // now we handle some special cases - yes, UGLY code alert!
-	//
-	// // BarRenderer
-	// if (renderer instanceof BarRenderer) {
-	// BarRenderer br = (BarRenderer) renderer;
-	// br.setBarPainter(this.barPainter);
-	// br.setShadowVisible(this.shadowVisible);
-	// br.setShadowPaint(this.shadowPaint);
-	// }
-	//
-	// // StatisticalBarRenderer
-	// if (renderer instanceof StatisticalBarRenderer) {
-	// StatisticalBarRenderer sbr = (StatisticalBarRenderer) renderer;
-	// sbr.setErrorIndicatorPaint(this.errorIndicatorPaint);
-	// }
-	//
-	// // MinMaxCategoryRenderer
-	// if (renderer instanceof MinMaxCategoryRenderer) {
-	// MinMaxCategoryRenderer mmcr = (MinMaxCategoryRenderer) renderer;
-	// mmcr.setGroupPaint(this.errorIndicatorPaint);
-	// }
-	// }
-	//
-	// /**
-	// * Applies the settings of this theme to the specified renderer.
-	// *
-	// * @param renderer the renderer (<code>null</code> not permitted).
-	// */
-	// protected void applyToXYItemRenderer(XYItemRenderer renderer) {
-	// ParamChecks.nullNotPermitted(renderer, "renderer");
-	// if (renderer instanceof AbstractRenderer) {
-	// applyToAbstractRenderer((AbstractRenderer) renderer);
-	// }
-	// renderer.setDefaultItemLabelFont(this.regularFont);
-	// renderer.setDefaultItemLabelPaint(this.itemLabelPaint);
-	// if (renderer instanceof XYBarRenderer) {
-	// XYBarRenderer br = (XYBarRenderer) renderer;
-	// br.setBarPainter(this.xyBarPainter);
-	// br.setShadowVisible(this.shadowVisible);
-	// }
-	// }
-	//
-	// /**
-	// * Applies the settings of this theme to the specified annotation.
-	// *
-	// * @param annotation the annotation.
-	// */
-	// protected void applyToXYAnnotation(XYAnnotation annotation) {
-	// ParamChecks.nullNotPermitted(annotation, "annotation");
-	// if (annotation instanceof XYTextAnnotation) {
-	// XYTextAnnotation xyta = (XYTextAnnotation) annotation;
-	// xyta.setFont(this.smallFont);
-	// xyta.setPaint(this.itemLabelPaint);
-	// }
-	// }
+	/**
+	 * Applies the attributes for this theme to an {@link AbstractRenderer}.
+	 *
+	 * @param renderer
+	 *            the renderer (<code>null</code> not permitted).
+	 */
+	protected void applyToAbstractRenderer(AbstractRenderer renderer) {
+		if (renderer.getAutoPopulateSeriesPaint()) {
+			renderer.clearSeriesPaints(false);
+		}
+		if (renderer.getAutoPopulateSeriesStroke()) {
+			renderer.clearSeriesStrokes(false);
+		}
+	}
+
+	/**
+	 * Applies the settings of this theme to the specified renderer.
+	 *
+	 * @param renderer
+	 *            the renderer (<code>null</code> not permitted).
+	 */
+	protected void applyToCategoryItemRenderer(CategoryItemRenderer renderer)
+	{
+		ParamChecks.nullNotPermitted(renderer, "renderer");
+
+		if (renderer instanceof AbstractRenderer) {
+			applyToAbstractRenderer((AbstractRenderer) renderer);
+		}
+
+		renderer.setDefaultItemLabelFont(this.regularFont);
+		renderer.setDefaultItemLabelPaint(this.itemLabelPaint);
+
+		// now we handle some special cases - yes, UGLY code alert!
+
+		// JAVAFX
+		// // BarRenderer
+		// if (renderer instanceof BarRenderer) {
+		// BarRenderer br = (BarRenderer) renderer;
+		// br.setBarPainter(this.barPainter);
+		// br.setShadowVisible(this.shadowVisible);
+		// br.setShadowPaint(this.shadowPaint);
+		// }
+		//
+		// // StatisticalBarRenderer
+		// if (renderer instanceof StatisticalBarRenderer) {
+		// StatisticalBarRenderer sbr = (StatisticalBarRenderer) renderer;
+		// sbr.setErrorIndicatorPaint(this.errorIndicatorPaint);
+		// }
+		//
+		// // MinMaxCategoryRenderer
+		// if (renderer instanceof MinMaxCategoryRenderer) {
+		// MinMaxCategoryRenderer mmcr = (MinMaxCategoryRenderer) renderer;
+		// mmcr.setGroupPaint(this.errorIndicatorPaint);
+		// }
+	}
+
+	/**
+	 * Applies the settings of this theme to the specified renderer.
+	 *
+	 * @param renderer
+	 *            the renderer (<code>null</code> not permitted).
+	 */
+	protected void applyToXYItemRenderer(XYItemRenderer renderer) {
+		ParamChecks.nullNotPermitted(renderer, "renderer");
+		if (renderer instanceof AbstractRenderer) {
+			applyToAbstractRenderer((AbstractRenderer) renderer);
+		}
+		renderer.setDefaultItemLabelFont(this.regularFont);
+		renderer.setDefaultItemLabelPaint(this.itemLabelPaint);
+		// JAVAFX
+		// if (renderer instanceof XYBarRenderer) {
+		// XYBarRenderer br = (XYBarRenderer) renderer;
+		// br.setBarPainter(this.xyBarPainter);
+		// br.setShadowVisible(this.shadowVisible);
+		// }
+	}
+
+	/**
+	 * Applies the settings of this theme to the specified annotation.
+	 *
+	 * @param annotation
+	 *            the annotation.
+	 */
+	protected void applyToXYAnnotation(XYAnnotation annotation) {
+		ParamChecks.nullNotPermitted(annotation, "annotation");
+		// JAVAFX
+		// if (annotation instanceof XYTextAnnotation) {
+		// XYTextAnnotation xyta = (XYTextAnnotation) annotation;
+		// xyta.setFont(this.smallFont);
+		// xyta.setPaint(this.itemLabelPaint);
+		// }
+	}
+
 	//
 	// /**
 	// * Tests this theme for equality with an arbitrary object.
