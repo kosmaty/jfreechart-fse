@@ -727,4 +727,21 @@ public class ShapeUtils {
 		return polygon;
 
 	}
+
+	public static Shape newPolygon(int[] xPoints, int[] yPoints) {
+		if (xPoints.length != yPoints.length) {
+			throw new IllegalArgumentException("arrays should have equals length");
+		}
+		if (xPoints.length < 3) {
+			throw new IllegalArgumentException("polygon must have at least three points");
+		}
+		Path2D polygon = new Path2D();
+		polygon.moveTo(xPoints[0], yPoints[0]);
+		for (int i = 1; i < xPoints.length; i++) {
+			polygon.lineTo(xPoints[i], yPoints[i]);
+		}
+		polygon.closePath();
+		return polygon;
+
+	}
 }

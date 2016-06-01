@@ -111,26 +111,18 @@
 
 package org.jfree.chart.axis;
 
+import static org.jfree.chart.util.ShapeUtils.fillShape;
+import static org.jfree.chart.util.ShapeUtils.newPolygon;
+import static org.jfree.chart.util.ShapeUtils.outlineShape;
 import static org.jfree.geometry.GeometryUtils.newLine;
 import static org.jfree.geometry.GeometryUtils.strokeLine;
 
-// 
-// import java.awt.Font;
-// import java.awt.FontMetrics;
-// import java.awt.Graphics2D;
-// import java.awt.Polygon;
-// import java.awt.RenderingHints;
-// import java.awt.Shape;
-// import java.awt.font.LineMetrics;
-// import java.awt.geom.AffineTransform;
-// import java.awt.geom.Line2D;
-// import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.List;
-// 
+
 import org.jfree.chart.ui.RectangleEdge;
 import org.jfree.chart.ui.RectangleInsets;
 import org.jfree.chart.util.ObjectUtils;
@@ -143,6 +135,8 @@ import org.jfree.chart.util.SerialUtils;
 import org.jfree.data.Range;
 import org.jfree.geometry.Line2D;
 
+import com.sun.javafx.geom.Shape;
+import com.sun.javafx.geom.transform.Affine2D;
 import com.sun.javafx.tk.FontMetrics;
 
 import javafx.geometry.Rectangle2D;
@@ -196,17 +190,17 @@ public abstract class ValueAxis extends Axis
 	 */
 	private boolean negativeArrowVisible;
 
-	// /** The shape used for an up arrow. */
-	// private transient Shape upArrow;
-	//
-	// /** The shape used for a down arrow. */
-	// private transient Shape downArrow;
-	//
-	// /** The shape used for a left arrow. */
-	// private transient Shape leftArrow;
-	//
-	// /** The shape used for a right arrow. */
-	// private transient Shape rightArrow;
+	/** The shape used for an up arrow. */
+	private transient Shape upArrow;
+
+	/** The shape used for a down arrow. */
+	private transient Shape downArrow;
+
+	/** The shape used for a left arrow. */
+	private transient Shape leftArrow;
+
+	/** The shape used for a right arrow. */
+	private transient Shape rightArrow;
 
 	/** A flag that affects the orientation of the values on the axis. */
 	private boolean inverted;
@@ -298,34 +292,21 @@ public abstract class ValueAxis extends Axis
 		this.autoTickUnitSelection = DEFAULT_AUTO_TICK_UNIT_SELECTION;
 		this.standardTickUnits = standardTickUnits;
 
-		// JAVAFX
-		// Polygon p1 = new Polygon();
-		// p1.addPoint(0, 0);
-		// p1.addPoint(-2, 2);
-		// p1.addPoint(2, 2);
-		//
-		// this.upArrow = p1;
-		//
-		// Polygon p2 = new Polygon();
-		// p2.addPoint(0, 0);
-		// p2.addPoint(-2, -2);
-		// p2.addPoint(2, -2);
-		//
-		// this.downArrow = p2;
-		//
-		// Polygon p3 = new Polygon();
-		// p3.addPoint(0, 0);
-		// p3.addPoint(-2, -2);
-		// p3.addPoint(-2, 2);
-		//
-		// this.rightArrow = p3;
-		//
-		// Polygon p4 = new Polygon();
-		// p4.addPoint(0, 0);
-		// p4.addPoint(2, -2);
-		// p4.addPoint(2, 2);
-		//
-		// this.leftArrow = p4;
+		int[] upArrowX = new int[] { 0, -2, 2 };
+		int[] upArrowY = new int[] { 0, 2, 2 };
+		this.upArrow = newPolygon(upArrowX, upArrowY);
+
+		int[] downArrowX = new int[] { 0, -2, 2 };
+		int[] downArrowY = new int[] { 0, -2, -2 };
+		this.downArrow = newPolygon(downArrowX, downArrowY);
+
+		int[] rightArrowX = new int[] { 0, -2, -2 };
+		int[] rightArrowY = new int[] { 0, -2, 2 };
+		this.rightArrow = newPolygon(rightArrowX, rightArrowY);
+
+		int[] leftArrowX = new int[] { 0, 2, 2 };
+		int[] leftArrowY = new int[] { 0, -2, 2 };
+		this.leftArrow = newPolygon(leftArrowX, leftArrowY);
 
 		this.verticalTickLabels = false;
 	}
@@ -413,115 +394,118 @@ public abstract class ValueAxis extends Axis
 		fireChangeEvent();
 	}
 
-	//
-	// /**
-	// * Returns a shape that can be displayed as an arrow pointing upwards at
-	// * the end of an axis line.
-	// *
-	// * @return A shape (never <code>null</code>).
-	// *
-	// * @see #setUpArrow(Shape)
-	// */
-	// public Shape getUpArrow() {
-	// return this.upArrow;
-	// }
-	//
-	// /**
-	// * Sets the shape that can be displayed as an arrow pointing upwards at
-	// * the end of an axis line and sends an {@link AxisChangeEvent} to all
-	// * registered listeners.
-	// *
-	// * @param arrow the arrow shape (<code>null</code> not permitted).
-	// *
-	// * @see #getUpArrow()
-	// */
-	// public void setUpArrow(Shape arrow) {
-	// ParamChecks.nullNotPermitted(arrow, "arrow");
-	// this.upArrow = arrow;
-	// fireChangeEvent();
-	// }
-	//
-	// /**
-	// * Returns a shape that can be displayed as an arrow pointing downwards at
-	// * the end of an axis line.
-	// *
-	// * @return A shape (never <code>null</code>).
-	// *
-	// * @see #setDownArrow(Shape)
-	// */
-	// public Shape getDownArrow() {
-	// return this.downArrow;
-	// }
-	//
-	// /**
-	// * Sets the shape that can be displayed as an arrow pointing downwards at
-	// * the end of an axis line and sends an {@link AxisChangeEvent} to all
-	// * registered listeners.
-	// *
-	// * @param arrow the arrow shape (<code>null</code> not permitted).
-	// *
-	// * @see #getDownArrow()
-	// */
-	// public void setDownArrow(Shape arrow) {
-	// ParamChecks.nullNotPermitted(arrow, "arrow");
-	// this.downArrow = arrow;
-	// fireChangeEvent();
-	// }
-	//
-	// /**
-	// * Returns a shape that can be displayed as an arrow pointing left at the
-	// * end of an axis line.
-	// *
-	// * @return A shape (never <code>null</code>).
-	// *
-	// * @see #setLeftArrow(Shape)
-	// */
-	// public Shape getLeftArrow() {
-	// return this.leftArrow;
-	// }
-	//
-	// /**
-	// * Sets the shape that can be displayed as an arrow pointing left at the
-	// * end of an axis line and sends an {@link AxisChangeEvent} to all
-	// * registered listeners.
-	// *
-	// * @param arrow the arrow shape (<code>null</code> not permitted).
-	// *
-	// * @see #getLeftArrow()
-	// */
-	// public void setLeftArrow(Shape arrow) {
-	// ParamChecks.nullNotPermitted(arrow, "arrow");
-	// this.leftArrow = arrow;
-	// fireChangeEvent();
-	// }
-	//
-	// /**
-	// * Returns a shape that can be displayed as an arrow pointing right at the
-	// * end of an axis line.
-	// *
-	// * @return A shape (never <code>null</code>).
-	// *
-	// * @see #setRightArrow(Shape)
-	// */
-	// public Shape getRightArrow() {
-	// return this.rightArrow;
-	// }
-	//
-	// /**
-	// * Sets the shape that can be displayed as an arrow pointing rightwards at
-	// * the end of an axis line and sends an {@link AxisChangeEvent} to all
-	// * registered listeners.
-	// *
-	// * @param arrow the arrow shape (<code>null</code> not permitted).
-	// *
-	// * @see #getRightArrow()
-	// */
-	// public void setRightArrow(Shape arrow) {
-	// ParamChecks.nullNotPermitted(arrow, "arrow");
-	// this.rightArrow = arrow;
-	// fireChangeEvent();
-	// }
-	//
+	/**
+	 * Returns a shape that can be displayed as an arrow pointing upwards at the
+	 * end of an axis line.
+	 *
+	 * @return A shape (never <code>null</code>).
+	 *
+	 * @see #setUpArrow(Shape)
+	 */
+	public Shape getUpArrow() {
+		return this.upArrow;
+	}
+
+	/**
+	 * Sets the shape that can be displayed as an arrow pointing upwards at the
+	 * end of an axis line and sends an {@link AxisChangeEvent} to all
+	 * registered listeners.
+	 *
+	 * @param arrow
+	 *            the arrow shape (<code>null</code> not permitted).
+	 *
+	 * @see #getUpArrow()
+	 */
+	public void setUpArrow(Shape arrow) {
+		ParamChecks.nullNotPermitted(arrow, "arrow");
+		this.upArrow = arrow;
+		fireChangeEvent();
+	}
+
+	/**
+	 * Returns a shape that can be displayed as an arrow pointing downwards at
+	 * the end of an axis line.
+	 *
+	 * @return A shape (never <code>null</code>).
+	 *
+	 * @see #setDownArrow(Shape)
+	 */
+	public Shape getDownArrow() {
+		return this.downArrow;
+	}
+
+	/**
+	 * Sets the shape that can be displayed as an arrow pointing downwards at
+	 * the end of an axis line and sends an {@link AxisChangeEvent} to all
+	 * registered listeners.
+	 *
+	 * @param arrow
+	 *            the arrow shape (<code>null</code> not permitted).
+	 *
+	 * @see #getDownArrow()
+	 */
+	public void setDownArrow(Shape arrow) {
+		ParamChecks.nullNotPermitted(arrow, "arrow");
+		this.downArrow = arrow;
+		fireChangeEvent();
+	}
+
+	/**
+	 * Returns a shape that can be displayed as an arrow pointing left at the
+	 * end of an axis line.
+	 *
+	 * @return A shape (never <code>null</code>).
+	 *
+	 * @see #setLeftArrow(Shape)
+	 */
+	public Shape getLeftArrow() {
+		return this.leftArrow;
+	}
+
+	/**
+	 * Sets the shape that can be displayed as an arrow pointing left at the end
+	 * of an axis line and sends an {@link AxisChangeEvent} to all registered
+	 * listeners.
+	 *
+	 * @param arrow
+	 *            the arrow shape (<code>null</code> not permitted).
+	 *
+	 * @see #getLeftArrow()
+	 */
+	public void setLeftArrow(Shape arrow) {
+		ParamChecks.nullNotPermitted(arrow, "arrow");
+		this.leftArrow = arrow;
+		fireChangeEvent();
+	}
+
+	/**
+	 * Returns a shape that can be displayed as an arrow pointing right at the
+	 * end of an axis line.
+	 *
+	 * @return A shape (never <code>null</code>).
+	 *
+	 * @see #setRightArrow(Shape)
+	 */
+	public Shape getRightArrow() {
+		return this.rightArrow;
+	}
+
+	/**
+	 * Sets the shape that can be displayed as an arrow pointing rightwards at
+	 * the end of an axis line and sends an {@link AxisChangeEvent} to all
+	 * registered listeners.
+	 *
+	 * @param arrow
+	 *            the arrow shape (<code>null</code> not permitted).
+	 *
+	 * @see #getRightArrow()
+	 */
+	public void setRightArrow(Shape arrow) {
+		ParamChecks.nullNotPermitted(arrow, "arrow");
+		this.rightArrow = arrow;
+		fireChangeEvent();
+	}
+
 	/**
 	 * Draws an axis line at the current cursor position and edge.
 	 *
@@ -560,7 +544,7 @@ public abstract class ValueAxis extends Axis
 		// g2.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL,
 		// RenderingHints.VALUE_STROKE_NORMALIZE);
 		strokeLine(g2, axisLine);
-		// JAVAFX
+		// JAVAFX rendering hints
 		// g2.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, saved);
 
 		boolean drawUpOrRight = false;
@@ -580,53 +564,51 @@ public abstract class ValueAxis extends Axis
 				drawDownOrLeft = true;
 			}
 		}
-		// JAVAFX
-		// if (drawUpOrRight) {
-		// double x = 0.0;
-		// double y = 0.0;
-		// Shape arrow = null;
-		// if (edge == RectangleEdge.TOP || edge == RectangleEdge.BOTTOM) {
-		// x = dataArea.getMaxX();
-		// y = cursor;
-		// arrow = this.rightArrow;
-		// } else if (edge == RectangleEdge.LEFT
-		// || edge == RectangleEdge.RIGHT) {
-		// x = cursor;
-		// y = dataArea.getMinY();
-		// arrow = this.upArrow;
-		// }
-		//
-		// // draw the arrow...
-		// AffineTransform transformer = new AffineTransform();
-		// transformer.setToTranslation(x, y);
-		// Shape shape = transformer.createTransformedShape(arrow);
-		// g2.fill(shape);
-		// g2.draw(shape);
-		// }
-		//
-		// if (drawDownOrLeft) {
-		// double x = 0.0;
-		// double y = 0.0;
-		// Shape arrow = null;
-		// if (edge == RectangleEdge.TOP || edge == RectangleEdge.BOTTOM) {
-		// x = dataArea.getMinX();
-		// y = cursor;
-		// arrow = this.leftArrow;
-		// }
-		// else if (edge == RectangleEdge.LEFT
-		// || edge == RectangleEdge.RIGHT) {
-		// x = cursor;
-		// y = dataArea.getMaxY();
-		// arrow = this.downArrow;
-		// }
-		//
-		// // draw the arrow...
-		// AffineTransform transformer = new AffineTransform();
-		// transformer.setToTranslation(x, y);
-		// Shape shape = transformer.createTransformedShape(arrow);
-		// g2.fill(shape);
-		// g2.draw(shape);
-		// }
+		if (drawUpOrRight) {
+			double x = 0.0;
+			double y = 0.0;
+			Shape arrow = null;
+			if (edge == RectangleEdge.TOP || edge == RectangleEdge.BOTTOM) {
+				x = dataArea.getMaxX();
+				y = cursor;
+				arrow = this.rightArrow;
+			} else if (edge == RectangleEdge.LEFT
+					|| edge == RectangleEdge.RIGHT) {
+				x = cursor;
+				y = dataArea.getMinY();
+				arrow = this.upArrow;
+			}
+			// draw the arrow...
+			Affine2D transformer = new Affine2D();
+			transformer.setToTranslation(x, y);
+			Shape shape = transformer.createTransformedShape(arrow);
+			fillShape(g2, shape);
+			outlineShape(g2, shape);
+		}
+
+		if (drawDownOrLeft) {
+			double x = 0.0;
+			double y = 0.0;
+			Shape arrow = null;
+			if (edge == RectangleEdge.TOP || edge == RectangleEdge.BOTTOM) {
+				x = dataArea.getMinX();
+				y = cursor;
+				arrow = this.leftArrow;
+			}
+			else if (edge == RectangleEdge.LEFT
+					|| edge == RectangleEdge.RIGHT) {
+				x = cursor;
+				y = dataArea.getMaxY();
+				arrow = this.downArrow;
+			}
+
+			// draw the arrow...
+			Affine2D transformer = new Affine2D();
+			transformer.setToTranslation(x, y);
+			Shape shape = transformer.createTransformedShape(arrow);
+			fillShape(g2, shape);
+			outlineShape(g2, shape);
+		}
 
 	}
 
@@ -693,11 +675,10 @@ public abstract class ValueAxis extends Axis
 		if (isAxisLineVisible()) {
 			drawAxisLine(g2, cursor, dataArea, edge);
 		}
-		// JAVAFX
 		List<ValueTick> ticks = refreshTicks(g2, state, dataArea, edge);
 		state.setTicks(ticks);
 		g2.setFont(getTickLabelFont());
-		// JAVAFX
+		// JAVAFX rendering hints
 		// Object saved =
 		// g2.getRenderingHint(RenderingHints.KEY_STROKE_CONTROL);
 		// g2.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL,
@@ -758,7 +739,7 @@ public abstract class ValueAxis extends Axis
 				strokeLine(g2, mark);
 			}
 		}
-		// JAVAFX
+		// JAVAFX rendering hints
 		// g2.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, saved);
 
 		// need to work out the space used by the tick labels...
@@ -899,33 +880,31 @@ public abstract class ValueAxis extends Axis
 		Font font = getTickLabelFont();
 		g2.setFont(font);
 		double maxHeight = 0.0;
-		// JAVAFX font metrics
-		// if (vertical) {
-		// FontMetrics fm = g2.getFontMetrics(font);
-		// for (Tick tick : ticks) {
-		// Rectangle2D labelBounds = null;
-		// if (tick instanceof LogTick) {
-		// LogTick lt = (LogTick) tick;
-		// if (lt.getAttributedLabel() != null) {
-		// labelBounds = TextUtilities.getTextBounds(
-		// lt.getAttributedLabel(), g2);
-		// }
-		// } else if (tick.getText() != null) {
-		// labelBounds = TextUtilities.getTextBounds(
-		// tick.getText(), g2, fm);
-		// }
-		// if (labelBounds != null && labelBounds.getWidth()
-		// + insets.getTop() + insets.getBottom() > maxHeight) {
-		// maxHeight = labelBounds.getWidth()
-		// + insets.getTop() + insets.getBottom();
-		// }
-		// }
-		// } else {
-		// LineMetrics metrics = font.getLineMetrics("ABCxyz",
-		// g2.getFontRenderContext());
-		// maxHeight = metrics.getHeight()
-		// + insets.getTop() + insets.getBottom();
-		// }
+		FontMetrics fm = TextUtilities.getFontMetrics(font);
+		if (vertical) {
+			for (Tick tick : ticks) {
+				Rectangle2D labelBounds = null;
+				if (tick instanceof LogTick) {
+					// JAVAFX log tick
+					// LogTick lt = (LogTick) tick;
+					// if (lt.getAttributedLabel() != null) {
+					// labelBounds = TextUtilities.getTextBounds(
+					// lt.getAttributedLabel(), g2);
+					// }
+				} else if (tick.getText() != null) {
+					labelBounds = TextUtilities.getTextBounds(
+							tick.getText(), g2, fm);
+				}
+				if (labelBounds != null && labelBounds.getWidth()
+						+ insets.getTop() + insets.getBottom() > maxHeight) {
+					maxHeight = labelBounds.getWidth()
+							+ insets.getTop() + insets.getBottom();
+				}
+			}
+		} else {
+			maxHeight = fm.getLineHeight()
+					+ insets.getTop() + insets.getBottom();
+		}
 		return maxHeight;
 
 	}
@@ -956,7 +935,7 @@ public abstract class ValueAxis extends Axis
 			for (ValueTick tick : ticks) {
 				Rectangle2D labelBounds = null;
 				if (tick instanceof LogTick) {
-					// JAVAFX
+					// JAVAFX log tick
 					// LogTick lt = (LogTick) tick;
 					// if (lt.getAttributedLabel() != null) {
 					// labelBounds = TextUtilities.getTextBounds(
@@ -1818,7 +1797,7 @@ public abstract class ValueAxis extends Axis
 	 */
 	private void writeObject(ObjectOutputStream stream) throws IOException {
 		stream.defaultWriteObject();
-		// JAVAFX
+		// JAVAFX serialization
 		// SerialUtils.writeShape(this.upArrow, stream);
 		// SerialUtils.writeShape(this.downArrow, stream);
 		// SerialUtils.writeShape(this.leftArrow, stream);
@@ -1840,7 +1819,7 @@ public abstract class ValueAxis extends Axis
 			throws IOException, ClassNotFoundException {
 
 		stream.defaultReadObject();
-		// JAVAFX
+		// JAVAFX serialization
 		// this.upArrow = SerialUtils.readShape(stream);
 		// this.downArrow = SerialUtils.readShape(stream);
 		// this.leftArrow = SerialUtils.readShape(stream);
