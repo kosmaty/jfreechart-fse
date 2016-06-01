@@ -30,11 +30,41 @@ public class GeometryUtils {
 	}
 
 	public static Line2D emptyLine() {
-		return new Line2D(0, 0, 0, 0);
+
+		return new Line2D(0, 0, 0, 0) {
+			@Override
+			public boolean isEmpty() {
+				return true;
+			}
+
+			@Override
+			public Rectangle2D getBounds2D() {
+				return Rectangle2D.EMPTY;
+			}
+		};
 	}
 
 	public static void strokeLine(GraphicsContext context, Line2D line) {
-		context.strokeLine(line.getX1(), line.getY1(), line.getX2(), line.getY2());
+		// To draw one-pixel horizontal or vertical line in JavaFX we need to
+		// adjust x or y value
+		if (isHorizontal(line)) {
+			double y = ((int) line.getY1()) + 0.5;
+			context.strokeLine(line.getX1(), y, line.getX2(), y);
+		}
+		else if (isVertical(line)) {
+			double x = ((int) line.getX1()) + 0.5;
+			context.strokeLine(x, line.getY1(), x, line.getY2());
+		} else {
+			context.strokeLine(line.getX1(), line.getY1(), line.getX2(), line.getY2());
+		}
+	}
+
+	private static boolean isHorizontal(Line2D line) {
+		return line.getY1() == line.getY2();
+	}
+
+	private static boolean isVertical(Line2D line) {
+		return line.getX1() == line.getX2();
 	}
 
 	public static void fillRectangle(GraphicsContext context, Rectangle2D rectangle) {

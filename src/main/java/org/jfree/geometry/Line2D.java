@@ -50,4 +50,11 @@ public class Line2D {
 		return new Rectangle2D(x, y, w, h);
 	}
 
+	public boolean isEmpty() {
+		double width = x2 - x1;
+		double height = y2 - y1;
+		boolean empty = width == 0 && height == 0;
+		return empty;
+	}
+
 }

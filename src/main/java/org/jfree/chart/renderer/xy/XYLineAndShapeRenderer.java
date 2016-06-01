@@ -942,11 +942,11 @@ public class XYLineAndShapeRenderer extends AbstractXYItemRenderer
 		else if (orientation == PlotOrientation.VERTICAL) {
 			state.workingLine = newLine(transX0, transY0, transX1, transY1);
 		}
-		// JAVAFX line clipping
-		// visible = LineUtils.clipLine(state.workingLine, dataArea);
-		// if (visible) {
-		drawFirstPassShape(g2, pass, series, item, ShapeUtils.asShape(state.workingLine));
-		// }
+		state.workingLine = LineUtils.clipLine(state.workingLine, dataArea);
+		visible = !state.workingLine.isEmpty();
+		if (visible) {
+			drawFirstPassShape(g2, pass, series, item, ShapeUtils.asShape(state.workingLine));
+		}
 	}
 
 	/**
