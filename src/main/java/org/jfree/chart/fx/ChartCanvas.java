@@ -76,7 +76,6 @@ import org.jfree.chart.fx.interaction.MouseHandlerFX;
 import org.jfree.chart.fx.overlay.OverlayFX;
 import org.jfree.chart.plot.PlotRenderingInfo;
 import org.jfree.chart.util.ParamChecks;
-import org.jfree.fx.FXGraphics2D;
 
 /**
  * A canvas for displaying a {@link JFreeChart} in JavaFX. You can use the
