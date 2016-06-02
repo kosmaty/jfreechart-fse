@@ -185,6 +185,10 @@
 
 package org.jfree.chart.plot;
 
+import static org.jfree.chart.util.ShapeUtils.setStrokeProperties;
+import static org.jfree.geometry.GeometryUtils.newLine;
+import static org.jfree.geometry.GeometryUtils.strokeLine;
+
 // 
 // import java.awt.AlphaComposite;
 // import java.awt.BasicStroke;
@@ -228,13 +232,14 @@ import org.jfree.chart.axis.CategoryAxis;
 import org.jfree.chart.axis.TickType;
 import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.axis.ValueTick;
+import org.jfree.chart.drawable.StrokeProperties;
 import org.jfree.chart.event.AnnotationChangeEvent;
 import org.jfree.chart.event.AnnotationChangeListener;
 import org.jfree.chart.event.ChartChangeEventType;
 import org.jfree.chart.event.PlotChangeEvent;
 import org.jfree.chart.event.RendererChangeEvent;
 import org.jfree.chart.event.RendererChangeListener;
-// import org.jfree.chart.renderer.category.AbstractCategoryItemRenderer;
+import org.jfree.chart.renderer.category.AbstractCategoryItemRenderer;
 import org.jfree.chart.renderer.category.CategoryItemRenderer;
 import org.jfree.chart.renderer.category.CategoryItemRendererState;
 import org.jfree.chart.ui.Layer;
@@ -251,6 +256,8 @@ import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
+import javafx.scene.shape.StrokeLineCap;
+import javafx.scene.shape.StrokeLineJoin;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
@@ -264,6 +271,7 @@ import org.jfree.data.Range;
 import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.general.DatasetChangeEvent;
 import org.jfree.data.general.DatasetUtilities;
+import org.jfree.geometry.Line2D;
 
 // 
 
@@ -293,12 +301,10 @@ public class CategoryPlot extends Plot implements
 	 * The default visibility of the grid lines plotted against the range axis.
 	 */
 	public static final boolean DEFAULT_RANGE_GRIDLINES_VISIBLE = true;
-	//
-	// /** The default grid line stroke. */
-	// public static final Stroke DEFAULT_GRIDLINE_STROKE = new
-	// BasicStroke(0.5f,
-	// BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0.0f, new float[]
-	// {2.0f, 2.0f}, 0.0f);
+
+	/** The default grid line stroke. */
+	public static final StrokeProperties DEFAULT_GRIDLINE_STROKE = new StrokeProperties(0.5, StrokeLineCap.BUTT,
+			StrokeLineJoin.BEVEL, 0.0f, new double[] { 2.0, 2.0 }, 0.0);
 
 	/** The default grid line paint. */
 	public static final Paint DEFAULT_GRIDLINE_PAINT = Color.LIGHTGRAY;
@@ -314,14 +320,13 @@ public class CategoryPlot extends Plot implements
 	 */
 	public static final boolean DEFAULT_CROSSHAIR_VISIBLE = false;
 
-	// /**
-	// * The default crosshair stroke.
-	// *
-	// * @since 1.0.5
-	// */
-	// public static final Stroke DEFAULT_CROSSHAIR_STROKE
-	// = DEFAULT_GRIDLINE_STROKE;
-	//
+	/**
+	 * The default crosshair stroke.
+	 *
+	 * @since 1.0.5
+	 */
+	public static final StrokeProperties DEFAULT_CROSSHAIR_STROKE = DEFAULT_GRIDLINE_STROKE;
+
 	/**
 	 * The default crosshair paint.
 	 *
@@ -393,10 +398,8 @@ public class CategoryPlot extends Plot implements
 	/** The position of the domain gridlines relative to the category. */
 	private CategoryAnchor domainGridlinePosition;
 
-	// JAVAFX stroke
-	//
-	// /** The stroke used to draw the domain grid-lines. */
-	// private transient Stroke domainGridlineStroke;
+	/** The stroke used to draw the domain grid-lines. */
+	private transient StrokeProperties domainGridlineStroke;
 
 	/** The paint used to draw the domain grid-lines. */
 	private transient Paint domainGridlinePaint;
@@ -408,13 +411,12 @@ public class CategoryPlot extends Plot implements
 	 * @since 1.0.13
 	 */
 	private boolean rangeZeroBaselineVisible;
-	// JAVAFX stroke
-	// /**
-	// * The stroke used for the zero baseline against the range axis.
-	// *
-	// * @since 1.0.13
-	// */
-	// private transient Stroke rangeZeroBaselineStroke;
+	/**
+	 * The stroke used for the zero baseline against the range axis.
+	 *
+	 * @since 1.0.13
+	 */
+	private transient StrokeProperties rangeZeroBaselineStroke;
 
 	/**
 	 * The paint used for the zero baseline against the range axis.
@@ -429,9 +431,8 @@ public class CategoryPlot extends Plot implements
 	 */
 	private boolean rangeGridlinesVisible;
 
-	// JAVAFX stroke
-	// /** The stroke used to draw the range axis grid-lines. */
-	// private transient Stroke rangeGridlineStroke;
+	/** The stroke used to draw the range axis grid-lines. */
+	private transient StrokeProperties rangeGridlineStroke;
 
 	/** The paint used to draw the range axis grid-lines. */
 	private transient Paint rangeGridlinePaint;
@@ -444,13 +445,12 @@ public class CategoryPlot extends Plot implements
 	 */
 	private boolean rangeMinorGridlinesVisible;
 
-	// JAVAFX stroke
-	// /**
-	// * The stroke used to draw the range minor grid-lines.
-	// *
-	// * @since 1.0.13
-	// */
-	// private transient Stroke rangeMinorGridlineStroke;
+	/**
+	 * The stroke used to draw the range minor grid-lines.
+	 *
+	 * @since 1.0.13
+	 */
+	private transient StrokeProperties rangeMinorGridlineStroke;
 
 	/**
 	 * The paint used to draw the range minor grid-lines.
@@ -491,13 +491,12 @@ public class CategoryPlot extends Plot implements
 	 */
 	private Comparable domainCrosshairColumnKey;
 
-	// JAVAFX stroke
-	// /**
-	// * The stroke used to draw the domain crosshair if it is visible.
-	// *
-	// * @since 1.0.11
-	// */
-	// private transient Stroke domainCrosshairStroke;
+	/**
+	 * The stroke used to draw the domain crosshair if it is visible.
+	 *
+	 * @since 1.0.11
+	 */
+	private transient StrokeProperties domainCrosshairStroke;
 
 	/**
 	 * The paint used to draw the domain crosshair if it is visible.
@@ -512,9 +511,8 @@ public class CategoryPlot extends Plot implements
 	/** The range crosshair value. */
 	private double rangeCrosshairValue;
 
-	// JAVAFX stroke
-	// /** The pen/brush used to draw the crosshair (if any). */
-	// private transient Stroke rangeCrosshairStroke;
+	/** The pen/brush used to draw the crosshair (if any). */
+	private transient StrokeProperties rangeCrosshairStroke;
 
 	/** The color used to draw the crosshair (if any). */
 	private transient Paint rangeCrosshairPaint;
@@ -652,45 +650,35 @@ public class CategoryPlot extends Plot implements
 
 		this.domainGridlinesVisible = DEFAULT_DOMAIN_GRIDLINES_VISIBLE;
 		this.domainGridlinePosition = CategoryAnchor.MIDDLE;
-		// JAVAFX stroke
-		// this.domainGridlineStroke = DEFAULT_GRIDLINE_STROKE;
+		this.domainGridlineStroke = DEFAULT_GRIDLINE_STROKE;
 		this.domainGridlinePaint = DEFAULT_GRIDLINE_PAINT;
 
 		this.rangeZeroBaselineVisible = false;
 		this.rangeZeroBaselinePaint = Color.BLACK;
-		// JAVAFX stroke
-		// this.rangeZeroBaselineStroke = new BasicStroke(0.5f);
+		this.rangeZeroBaselineStroke = new StrokeProperties(0.5);
 
 		this.rangeGridlinesVisible = DEFAULT_RANGE_GRIDLINES_VISIBLE;
-		// JAVAFX stroke
-		// this.rangeGridlineStroke = DEFAULT_GRIDLINE_STROKE;
+		this.rangeGridlineStroke = DEFAULT_GRIDLINE_STROKE;
 		this.rangeGridlinePaint = DEFAULT_GRIDLINE_PAINT;
 
 		this.rangeMinorGridlinesVisible = false;
-		// JAVAFX stroke
-		// this.rangeMinorGridlineStroke = DEFAULT_GRIDLINE_STROKE;
+		this.rangeMinorGridlineStroke = DEFAULT_GRIDLINE_STROKE;
 		this.rangeMinorGridlinePaint = Color.WHITE;
 
-		this.foregroundDomainMarkers = new HashMap<Integer,
-				Collection<Marker>>();
-		this.backgroundDomainMarkers = new HashMap<Integer,
-				Collection<Marker>>();
-		this.foregroundRangeMarkers = new HashMap<Integer,
-				Collection<Marker>>();
-		this.backgroundRangeMarkers = new HashMap<Integer,
-				Collection<Marker>>();
+		this.foregroundDomainMarkers = new HashMap<Integer, Collection<Marker>>();
+		this.backgroundDomainMarkers = new HashMap<Integer, Collection<Marker>>();
+		this.foregroundRangeMarkers = new HashMap<Integer, Collection<Marker>>();
+		this.backgroundRangeMarkers = new HashMap<Integer, Collection<Marker>>();
 
 		this.anchorValue = 0.0;
 
 		this.domainCrosshairVisible = false;
-		// JAVAFX stroke
-		// this.domainCrosshairStroke = DEFAULT_CROSSHAIR_STROKE;
+		this.domainCrosshairStroke = DEFAULT_CROSSHAIR_STROKE;
 		this.domainCrosshairPaint = DEFAULT_CROSSHAIR_PAINT;
 
 		this.rangeCrosshairVisible = DEFAULT_CROSSHAIR_VISIBLE;
 		this.rangeCrosshairValue = 0.0;
-		// JAVAFX stroke
-		// this.rangeCrosshairStroke = DEFAULT_CROSSHAIR_STROKE;
+		this.rangeCrosshairStroke = DEFAULT_CROSSHAIR_STROKE;
 		this.rangeCrosshairPaint = DEFAULT_CROSSHAIR_PAINT;
 
 		this.annotations = new java.util.ArrayList<CategoryAnnotation>();
@@ -843,13 +831,11 @@ public class CategoryPlot extends Plot implements
 			existing.removeChangeListener(this);
 		}
 		if (axis != null) {
-			// JAVAFX
-			// axis.setPlot(this);
+			axis.setPlot(this);
 		}
 		this.domainAxes.put(index, axis);
 		if (axis != null) {
-			// JAVAFX
-			// axis.configure();
+			axis.configure();
 			axis.addChangeListener(this);
 		}
 		if (notify) {
@@ -1061,8 +1047,7 @@ public class CategoryPlot extends Plot implements
 	public void configureDomainAxes() {
 		for (CategoryAxis axis : this.domainAxes.values()) {
 			if (axis != null) {
-				// JAVAFX
-				// axis.configure();
+				axis.configure();
 			}
 		}
 	}
@@ -1943,32 +1928,31 @@ public class CategoryPlot extends Plot implements
 		fireChangeEvent();
 	}
 
-	// JAVAFX stroke
-	//
-	// /**
-	// * Returns the stroke used to draw grid-lines against the domain axis.
-	// *
-	// * @return The stroke (never <code>null</code>).
-	// *
-	// * @see #setDomainGridlineStroke(Stroke)
-	// */
-	// public Stroke getDomainGridlineStroke() {
-	// return this.domainGridlineStroke;
-	// }
-	//
-	// /**
-	// * Sets the stroke used to draw grid-lines against the domain axis and
-	// * sends a {@link PlotChangeEvent} to all registered listeners.
-	// *
-	// * @param stroke the stroke (<code>null</code> not permitted).
-	// *
-	// * @see #getDomainGridlineStroke()
-	// */
-	// public void setDomainGridlineStroke(Stroke stroke) {
-	// ParamChecks.nullNotPermitted(stroke, "stroke");
-	// this.domainGridlineStroke = stroke;
-	// fireChangeEvent();
-	// }
+	/**
+	 * Returns the stroke used to draw grid-lines against the domain axis.
+	 *
+	 * @return The stroke (never <code>null</code>).
+	 *
+	 * @see #setDomainGridlineStroke(Stroke)
+	 */
+	public StrokeProperties getDomainGridlineStroke() {
+		return this.domainGridlineStroke;
+	}
+
+	/**
+	 * Sets the stroke used to draw grid-lines against the domain axis and sends
+	 * a {@link PlotChangeEvent} to all registered listeners.
+	 *
+	 * @param stroke
+	 *            the stroke (<code>null</code> not permitted).
+	 *
+	 * @see #getDomainGridlineStroke()
+	 */
+	public void setDomainGridlineStroke(StrokeProperties stroke) {
+		ParamChecks.nullNotPermitted(stroke, "stroke");
+		this.domainGridlineStroke = stroke;
+		fireChangeEvent();
+	}
 
 	/**
 	 * Returns the paint used to draw grid-lines against the domain axis.
@@ -2027,36 +2011,35 @@ public class CategoryPlot extends Plot implements
 		fireChangeEvent();
 	}
 
-	// JAVAFX stroke
-	//
-	// /**
-	// * Returns the stroke used for the zero baseline against the range axis.
-	// *
-	// * @return The stroke (never <code>null</code>).
-	// *
-	// * @see #setRangeZeroBaselineStroke(Stroke)
-	// *
-	// * @since 1.0.13
-	// */
-	// public Stroke getRangeZeroBaselineStroke() {
-	// return this.rangeZeroBaselineStroke;
-	// }
-	//
-	// /**
-	// * Sets the stroke for the zero baseline for the range axis,
-	// * and sends a {@link PlotChangeEvent} to all registered listeners.
-	// *
-	// * @param stroke the stroke (<code>null</code> not permitted).
-	// *
-	// * @see #getRangeZeroBaselineStroke()
-	// *
-	// * @since 1.0.13
-	// */
-	// public void setRangeZeroBaselineStroke(Stroke stroke) {
-	// ParamChecks.nullNotPermitted(stroke, "stroke");
-	// this.rangeZeroBaselineStroke = stroke;
-	// fireChangeEvent();
-	// }
+	/**
+	 * Returns the stroke used for the zero baseline against the range axis.
+	 *
+	 * @return The stroke (never <code>null</code>).
+	 *
+	 * @see #setRangeZeroBaselineStroke(Stroke)
+	 *
+	 * @since 1.0.13
+	 */
+	public StrokeProperties getRangeZeroBaselineStroke() {
+		return this.rangeZeroBaselineStroke;
+	}
+
+	/**
+	 * Sets the stroke for the zero baseline for the range axis, and sends a
+	 * {@link PlotChangeEvent} to all registered listeners.
+	 *
+	 * @param stroke
+	 *            the stroke (<code>null</code> not permitted).
+	 *
+	 * @see #getRangeZeroBaselineStroke()
+	 *
+	 * @since 1.0.13
+	 */
+	public void setRangeZeroBaselineStroke(StrokeProperties stroke) {
+		ParamChecks.nullNotPermitted(stroke, "stroke");
+		this.rangeZeroBaselineStroke = stroke;
+		fireChangeEvent();
+	}
 
 	/**
 	 * Returns the paint for the zero baseline (if any) plotted against the
@@ -2117,33 +2100,32 @@ public class CategoryPlot extends Plot implements
 		}
 	}
 
-	// JAVAFX stroke
-	//
-	// /**
-	// * Returns the stroke used to draw the grid-lines against the range axis.
-	// *
-	// * @return The stroke (never <code>null</code>).
-	// *
-	// * @see #setRangeGridlineStroke(Stroke)
-	// */
-	// public Stroke getRangeGridlineStroke() {
-	// return this.rangeGridlineStroke;
-	// }
-	//
-	// /**
-	// * Sets the stroke used to draw the grid-lines against the range axis and
-	// * sends a {@link PlotChangeEvent} to all registered listeners.
-	// *
-	// * @param stroke the stroke (<code>null</code> not permitted).
-	// *
-	// * @see #getRangeGridlineStroke()
-	// */
-	// public void setRangeGridlineStroke(Stroke stroke) {
-	// ParamChecks.nullNotPermitted(stroke, "stroke");
-	// this.rangeGridlineStroke = stroke;
-	// fireChangeEvent();
-	// }
-	//
+	/**
+	 * Returns the stroke used to draw the grid-lines against the range axis.
+	 *
+	 * @return The stroke (never <code>null</code>).
+	 *
+	 * @see #setRangeGridlineStroke(Stroke)
+	 */
+	public StrokeProperties getRangeGridlineStroke() {
+		return this.rangeGridlineStroke;
+	}
+
+	/**
+	 * Sets the stroke used to draw the grid-lines against the range axis and
+	 * sends a {@link PlotChangeEvent} to all registered listeners.
+	 *
+	 * @param stroke
+	 *            the stroke (<code>null</code> not permitted).
+	 *
+	 * @see #getRangeGridlineStroke()
+	 */
+	public void setRangeGridlineStroke(StrokeProperties stroke) {
+		ParamChecks.nullNotPermitted(stroke, "stroke");
+		this.rangeGridlineStroke = stroke;
+		fireChangeEvent();
+	}
+
 	/**
 	 * Returns the paint used to draw the grid-lines against the range axis.
 	 *
@@ -2205,40 +2187,37 @@ public class CategoryPlot extends Plot implements
 		}
 	}
 
-	// JAVAFX stroke
-	//
-	// /**
-	// * Returns the stroke for the minor grid lines (if any) plotted against
-	// the
-	// * range axis.
-	// *
-	// * @return The stroke (never <code>null</code>).
-	// *
-	// * @see #setRangeMinorGridlineStroke(Stroke)
-	// *
-	// * @since 1.0.13
-	// */
-	// public Stroke getRangeMinorGridlineStroke() {
-	// return this.rangeMinorGridlineStroke;
-	// }
-	//
-	// /**
-	// * Sets the stroke for the minor grid lines plotted against the range
-	// axis,
-	// * and sends a {@link PlotChangeEvent} to all registered listeners.
-	// *
-	// * @param stroke the stroke (<code>null</code> not permitted).
-	// *
-	// * @see #getRangeMinorGridlineStroke()
-	// *
-	// * @since 1.0.13
-	// */
-	// public void setRangeMinorGridlineStroke(Stroke stroke) {
-	// ParamChecks.nullNotPermitted(stroke, "stroke");
-	// this.rangeMinorGridlineStroke = stroke;
-	// fireChangeEvent();
-	// }
-	//
+	/**
+	 * Returns the stroke for the minor grid lines (if any) plotted against the
+	 * range axis.
+	 *
+	 * @return The stroke (never <code>null</code>).
+	 *
+	 * @see #setRangeMinorGridlineStroke(Stroke)
+	 *
+	 * @since 1.0.13
+	 */
+	public StrokeProperties getRangeMinorGridlineStroke() {
+		return this.rangeMinorGridlineStroke;
+	}
+
+	/**
+	 * Sets the stroke for the minor grid lines plotted against the range axis,
+	 * and sends a {@link PlotChangeEvent} to all registered listeners.
+	 *
+	 * @param stroke
+	 *            the stroke (<code>null</code> not permitted).
+	 *
+	 * @see #getRangeMinorGridlineStroke()
+	 *
+	 * @since 1.0.13
+	 */
+	public void setRangeMinorGridlineStroke(StrokeProperties stroke) {
+		ParamChecks.nullNotPermitted(stroke, "stroke");
+		this.rangeMinorGridlineStroke = stroke;
+		fireChangeEvent();
+	}
+
 	/**
 	 * Returns the paint for the minor grid lines (if any) plotted against the
 	 * range axis.
@@ -3224,35 +3203,35 @@ public class CategoryPlot extends Plot implements
 		fireChangeEvent();
 	}
 
-	// JAVAFX stroke
-	// /**
-	// * Returns the stroke used to draw the domain crosshair.
-	// *
-	// * @return The stroke (never <code>null</code>).
-	// *
-	// * @since 1.0.11
-	// *
-	// * @see #setDomainCrosshairStroke(Stroke)
-	// * @see #getDomainCrosshairPaint()
-	// */
-	// public Stroke getDomainCrosshairStroke() {
-	// return this.domainCrosshairStroke;
-	// }
-	//
-	// /**
-	// * Sets the stroke used to draw the domain crosshair, and sends a
-	// * {@link PlotChangeEvent} to all registered listeners.
-	// *
-	// * @param stroke the stroke (<code>null</code> not permitted).
-	// *
-	// * @since 1.0.11
-	// *
-	// * @see #getDomainCrosshairStroke()
-	// */
-	// public void setDomainCrosshairStroke(Stroke stroke) {
-	// ParamChecks.nullNotPermitted(stroke, "stroke");
-	// this.domainCrosshairStroke = stroke;
-	// }
+	/**
+	 * Returns the stroke used to draw the domain crosshair.
+	 *
+	 * @return The stroke (never <code>null</code>).
+	 *
+	 * @since 1.0.11
+	 *
+	 * @see #setDomainCrosshairStroke(Stroke)
+	 * @see #getDomainCrosshairPaint()
+	 */
+	public StrokeProperties getDomainCrosshairStroke() {
+		return this.domainCrosshairStroke;
+	}
+
+	/**
+	 * Sets the stroke used to draw the domain crosshair, and sends a
+	 * {@link PlotChangeEvent} to all registered listeners.
+	 *
+	 * @param stroke
+	 *            the stroke (<code>null</code> not permitted).
+	 *
+	 * @since 1.0.11
+	 *
+	 * @see #getDomainCrosshairStroke()
+	 */
+	public void setDomainCrosshairStroke(StrokeProperties stroke) {
+		ParamChecks.nullNotPermitted(stroke, "stroke");
+		this.domainCrosshairStroke = stroke;
+	}
 
 	/**
 	 * Returns a flag indicating whether or not the range crosshair is visible.
@@ -3352,37 +3331,36 @@ public class CategoryPlot extends Plot implements
 		}
 	}
 
-	// JAVAFX stroke
-	// /**
-	// * Returns the pen-style (<code>Stroke</code>) used to draw the crosshair
-	// * (if visible).
-	// *
-	// * @return The crosshair stroke (never <code>null</code>).
-	// *
-	// * @see #setRangeCrosshairStroke(Stroke)
-	// * @see #isRangeCrosshairVisible()
-	// * @see #getRangeCrosshairPaint()
-	// */
-	// public Stroke getRangeCrosshairStroke() {
-	// return this.rangeCrosshairStroke;
-	// }
-	//
-	// /**
-	// * Sets the pen-style (<code>Stroke</code>) used to draw the range
-	// * crosshair (if visible), and sends a {@link PlotChangeEvent} to all
-	// * registered listeners.
-	// *
-	// * @param stroke the new crosshair stroke (<code>null</code> not
-	// * permitted).
-	// *
-	// * @see #getRangeCrosshairStroke()
-	// */
-	// public void setRangeCrosshairStroke(Stroke stroke) {
-	// ParamChecks.nullNotPermitted(stroke, "stroke");
-	// this.rangeCrosshairStroke = stroke;
-	// fireChangeEvent();
-	// }
-	//
+	/**
+	 * Returns the pen-style (<code>Stroke</code>) used to draw the crosshair
+	 * (if visible).
+	 *
+	 * @return The crosshair stroke (never <code>null</code>).
+	 *
+	 * @see #setRangeCrosshairStroke(Stroke)
+	 * @see #isRangeCrosshairVisible()
+	 * @see #getRangeCrosshairPaint()
+	 */
+	public StrokeProperties getRangeCrosshairStroke() {
+		return this.rangeCrosshairStroke;
+	}
+
+	/**
+	 * Sets the pen-style (<code>Stroke</code>) used to draw the range crosshair
+	 * (if visible), and sends a {@link PlotChangeEvent} to all registered
+	 * listeners.
+	 *
+	 * @param stroke
+	 *            the new crosshair stroke (<code>null</code> not permitted).
+	 *
+	 * @see #getRangeCrosshairStroke()
+	 */
+	public void setRangeCrosshairStroke(StrokeProperties stroke) {
+		ParamChecks.nullNotPermitted(stroke, "stroke");
+		this.rangeCrosshairStroke = stroke;
+		fireChangeEvent();
+	}
+
 	/**
 	 * Returns the paint used to draw the range crosshair.
 	 *
@@ -3873,10 +3851,9 @@ public class CategoryPlot extends Plot implements
 		setDomainCrosshairColumnKey(columnKey, false);
 		if (isDomainCrosshairVisible() && columnKey != null) {
 			Paint paint = getDomainCrosshairPaint();
-			// JAVAFX stroke
-			// Stroke stroke = getDomainCrosshairStroke();
-			// drawDomainCrosshair(g2, dataArea, this.orientation,
-			// datasetIndex, rowKey, columnKey, stroke, paint);
+			StrokeProperties stroke = getDomainCrosshairStroke();
+			drawDomainCrosshair(g2, dataArea, this.orientation,
+					datasetIndex, rowKey, columnKey, stroke, paint);
 		}
 
 		// draw range crosshair if required...
@@ -4271,15 +4248,14 @@ public class CategoryPlot extends Plot implements
 			return;
 		}
 		CategoryItemRenderer r = getRenderer();
-		// JAVAFX
-		// if (r instanceof AbstractCategoryItemRenderer) {
-		// AbstractCategoryItemRenderer aci = (AbstractCategoryItemRenderer) r;
-		// aci.drawRangeGridline(g2, this, getRangeAxis(), area, 0.0,
-		// this.rangeZeroBaselinePaint, this.rangeZeroBaselineStroke);
-		// }
-		// else {
-		r.drawRangeGridline(g2, this, getRangeAxis(), area, 0.0);
-		// }
+		if (r instanceof AbstractCategoryItemRenderer) {
+			AbstractCategoryItemRenderer aci = (AbstractCategoryItemRenderer) r;
+			aci.drawRangeGridline(g2, this, getRangeAxis(), area, 0.0,
+					this.rangeZeroBaselinePaint, this.rangeZeroBaselineStroke);
+		}
+		else {
+			r.drawRangeGridline(g2, this, getRangeAxis(), area, 0.0);
+		}
 	}
 
 	/**
@@ -4369,124 +4345,142 @@ public class CategoryPlot extends Plot implements
 
 	}
 
-	//
-	// /**
-	// * Utility method for drawing a line perpendicular to the range axis (used
-	// * for crosshairs).
-	// *
-	// * @param g2 the graphics device.
-	// * @param dataArea the area defined by the axes.
-	// * @param value the data value.
-	// * @param stroke the line stroke (<code>null</code> not permitted).
-	// * @param paint the line paint (<code>null</code> not permitted).
-	// */
-	// protected void drawRangeLine(Graphics2D g2, Rectangle2D dataArea,
-	// double value, Stroke stroke, Paint paint) {
-	//
-	// double java2D = getRangeAxis().valueToJava2D(value, dataArea,
-	// getRangeAxisEdge());
-	// Line2D line = null;
-	// if (this.orientation == PlotOrientation.HORIZONTAL) {
-	// line = new Line2D.Double(java2D, dataArea.getMinY(), java2D,
-	// dataArea.getMaxY());
-	// }
-	// else if (this.orientation == PlotOrientation.VERTICAL) {
-	// line = new Line2D.Double(dataArea.getMinX(), java2D,
-	// dataArea.getMaxX(), java2D);
-	// }
-	// g2.setStroke(stroke);
-	// g2.setPaint(paint);
-	// g2.draw(line);
-	//
-	// }
-	//
-	// /**
-	// * Draws a domain crosshair.
-	// *
-	// * @param g2 the graphics target.
-	// * @param dataArea the data area.
-	// * @param orientation the plot orientation.
-	// * @param datasetIndex the dataset index.
-	// * @param rowKey the row key.
-	// * @param columnKey the column key.
-	// * @param stroke the stroke used to draw the crosshair line.
-	// * @param paint the paint used to draw the crosshair line.
-	// *
-	// * @see #drawRangeCrosshair(Graphics2D, Rectangle2D, PlotOrientation,
-	// * double, ValueAxis, Stroke, Paint)
-	// *
-	// * @since 1.0.11
-	// */
-	// protected void drawDomainCrosshair(Graphics2D g2, Rectangle2D dataArea,
-	// PlotOrientation orientation, int datasetIndex,
-	// Comparable rowKey, Comparable columnKey, Stroke stroke,
-	// Paint paint) {
-	//
-	// CategoryDataset dataset = getDataset(datasetIndex);
-	// CategoryAxis axis = getDomainAxisForDataset(datasetIndex);
-	// CategoryItemRenderer renderer = getRenderer(datasetIndex);
-	// Line2D line;
-	// if (orientation == PlotOrientation.VERTICAL) {
-	// double xx = renderer.getItemMiddle(rowKey, columnKey, dataset, axis,
-	// dataArea, RectangleEdge.BOTTOM);
-	// line = new Line2D.Double(xx, dataArea.getMinY(), xx,
-	// dataArea.getMaxY());
-	// }
-	// else {
-	// double yy = renderer.getItemMiddle(rowKey, columnKey, dataset, axis,
-	// dataArea, RectangleEdge.LEFT);
-	// line = new Line2D.Double(dataArea.getMinX(), yy,
-	// dataArea.getMaxX(), yy);
-	// }
-	// g2.setStroke(stroke);
-	// g2.setPaint(paint);
-	// g2.draw(line);
-	//
-	// }
-	//
-	// /**
-	// * Draws a range crosshair.
-	// *
-	// * @param g2 the graphics target.
-	// * @param dataArea the data area.
-	// * @param orientation the plot orientation.
-	// * @param value the crosshair value.
-	// * @param axis the axis against which the value is measured.
-	// * @param stroke the stroke used to draw the crosshair line.
-	// * @param paint the paint used to draw the crosshair line.
-	// *
-	// * @see #drawDomainCrosshair(Graphics2D, Rectangle2D, PlotOrientation,
-	// int,
-	// * Comparable, Comparable, Stroke, Paint)
-	// *
-	// * @since 1.0.5
-	// */
-	// protected void drawRangeCrosshair(Graphics2D g2, Rectangle2D dataArea,
-	// PlotOrientation orientation, double value, ValueAxis axis,
-	// Stroke stroke, Paint paint) {
-	//
-	// if (!axis.getRange().contains(value)) {
-	// return;
-	// }
-	// Line2D line;
-	// if (orientation == PlotOrientation.HORIZONTAL) {
-	// double xx = axis.valueToJava2D(value, dataArea,
-	// RectangleEdge.BOTTOM);
-	// line = new Line2D.Double(xx, dataArea.getMinY(), xx,
-	// dataArea.getMaxY());
-	// }
-	// else {
-	// double yy = axis.valueToJava2D(value, dataArea,
-	// RectangleEdge.LEFT);
-	// line = new Line2D.Double(dataArea.getMinX(), yy,
-	// dataArea.getMaxX(), yy);
-	// }
-	// g2.setStroke(stroke);
-	// g2.setPaint(paint);
-	// g2.draw(line);
-	//
-	// }
-	//
+	/**
+	 * Utility method for drawing a line perpendicular to the range axis (used
+	 * for crosshairs).
+	 *
+	 * @param g2
+	 *            the graphics device.
+	 * @param dataArea
+	 *            the area defined by the axes.
+	 * @param value
+	 *            the data value.
+	 * @param stroke
+	 *            the line stroke (<code>null</code> not permitted).
+	 * @param paint
+	 *            the line paint (<code>null</code> not permitted).
+	 */
+	protected void drawRangeLine(GraphicsContext g2, Rectangle2D dataArea,
+			double value, StrokeProperties stroke, Paint paint) {
+
+		double java2D = getRangeAxis().valueToJava2D(value, dataArea,
+				getRangeAxisEdge());
+		Line2D line = null;
+		if (this.orientation == PlotOrientation.HORIZONTAL) {
+			line = newLine(java2D, dataArea.getMinY(), java2D,
+					dataArea.getMaxY());
+		}
+		else if (this.orientation == PlotOrientation.VERTICAL) {
+			line = newLine(dataArea.getMinX(), java2D,
+					dataArea.getMaxX(), java2D);
+		}
+		setStrokeProperties(g2, stroke);
+		g2.setStroke(paint);
+		strokeLine(g2, line);
+
+	}
+
+	/**
+	 * Draws a domain crosshair.
+	 *
+	 * @param g2
+	 *            the graphics target.
+	 * @param dataArea
+	 *            the data area.
+	 * @param orientation
+	 *            the plot orientation.
+	 * @param datasetIndex
+	 *            the dataset index.
+	 * @param rowKey
+	 *            the row key.
+	 * @param columnKey
+	 *            the column key.
+	 * @param stroke
+	 *            the stroke used to draw the crosshair line.
+	 * @param paint
+	 *            the paint used to draw the crosshair line.
+	 *
+	 * @see #drawRangeCrosshair(Graphics2D, Rectangle2D, PlotOrientation,
+	 *      double, ValueAxis, Stroke, Paint)
+	 *
+	 * @since 1.0.11
+	 */
+	protected void drawDomainCrosshair(GraphicsContext g2, Rectangle2D dataArea,
+			PlotOrientation orientation, int datasetIndex,
+			Comparable rowKey, Comparable columnKey, StrokeProperties stroke,
+			Paint paint) {
+
+		CategoryDataset dataset = getDataset(datasetIndex);
+		CategoryAxis axis = getDomainAxisForDataset(datasetIndex);
+		CategoryItemRenderer renderer = getRenderer(datasetIndex);
+		Line2D line;
+		if (orientation == PlotOrientation.VERTICAL) {
+			double xx = renderer.getItemMiddle(rowKey, columnKey, dataset, axis,
+					dataArea, RectangleEdge.BOTTOM);
+			line = newLine(xx, dataArea.getMinY(), xx,
+					dataArea.getMaxY());
+		}
+		else {
+			double yy = renderer.getItemMiddle(rowKey, columnKey, dataset, axis,
+					dataArea, RectangleEdge.LEFT);
+			line = newLine(dataArea.getMinX(), yy,
+					dataArea.getMaxX(), yy);
+		}
+		setStrokeProperties(g2, stroke);
+		g2.setStroke(paint);
+		strokeLine(g2, line);
+
+	}
+
+	/**
+	 * Draws a range crosshair.
+	 *
+	 * @param g2
+	 *            the graphics target.
+	 * @param dataArea
+	 *            the data area.
+	 * @param orientation
+	 *            the plot orientation.
+	 * @param value
+	 *            the crosshair value.
+	 * @param axis
+	 *            the axis against which the value is measured.
+	 * @param stroke
+	 *            the stroke used to draw the crosshair line.
+	 * @param paint
+	 *            the paint used to draw the crosshair line.
+	 *
+	 * @see #drawDomainCrosshair(Graphics2D, Rectangle2D, PlotOrientation, int,
+	 *      Comparable, Comparable, Stroke, Paint)
+	 *
+	 * @since 1.0.5
+	 */
+	protected void drawRangeCrosshair(GraphicsContext g2, Rectangle2D dataArea,
+			PlotOrientation orientation, double value, ValueAxis axis,
+			StrokeProperties stroke, Paint paint) {
+
+		if (!axis.getRange().contains(value)) {
+			return;
+		}
+		Line2D line;
+		if (orientation == PlotOrientation.HORIZONTAL) {
+			double xx = axis.valueToJava2D(value, dataArea,
+					RectangleEdge.BOTTOM);
+			line = newLine(xx, dataArea.getMinY(), xx,
+					dataArea.getMaxY());
+		}
+		else {
+			double yy = axis.valueToJava2D(value, dataArea,
+					RectangleEdge.LEFT);
+			line = newLine(dataArea.getMinX(), yy,
+					dataArea.getMaxX(), yy);
+		}
+		setStrokeProperties(g2, stroke);
+		g2.setStroke(paint);
+		strokeLine(g2, line);
+
+	}
+
 	/**
 	 * Returns the range of data values that will be plotted against the range
 	 * axis. If the dataset is <code>null</code>, this method returns

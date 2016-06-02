@@ -59,6 +59,7 @@ import org.jfree.chart.util.ObjectUtils;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 
+import org.jfree.chart.drawable.StrokeProperties;
 import org.jfree.chart.event.MarkerChangeEvent;
 
 /**
@@ -75,7 +76,7 @@ public class IntervalMarker extends Marker implements Cloneable, Serializable {
 	/** The end value. */
 	private double endValue;
 
-	// JAVAFX
+	// JAVAFX gradient
 	// /** The gradient paint transformer (optional). */
 	// private GradientPaintTransformer gradientPaintTransformer;
 
@@ -88,8 +89,8 @@ public class IntervalMarker extends Marker implements Cloneable, Serializable {
 	 *            the end of the interval.
 	 */
 	public IntervalMarker(double start, double end) {
-		this(start, end, Color.GRAY, /* JAVAFX new BasicStroke(0.5f), */Color.GRAY,
-				/* JAVAFX new BasicStroke(0.5f), */0.8f);
+		this(start, end, Color.GRAY, new StrokeProperties(0.5), Color.GRAY,
+				new StrokeProperties(0.5), 0.8f);
 	}
 
 	/**
@@ -106,8 +107,8 @@ public class IntervalMarker extends Marker implements Cloneable, Serializable {
 	 * @since 1.0.9
 	 */
 	public IntervalMarker(double start, double end, Paint paint) {
-		this(start, end, paint, /* JAVAFX new BasicStroke(0.5f), */null,
-				/* JAVAFX null, */0.8f);
+		this(start, end, paint, new StrokeProperties(0.5), null,
+				null, 0.8f);
 	}
 
 	/**
@@ -129,14 +130,14 @@ public class IntervalMarker extends Marker implements Cloneable, Serializable {
 	 *            the alpha transparency.
 	 */
 	public IntervalMarker(double start, double end,
-			Paint paint, /* JAVAFX Stroke stroke, */
-			Paint outlinePaint, /* JAVAFX Stroke outlineStroke, */
+			Paint paint, StrokeProperties stroke,
+			Paint outlinePaint, StrokeProperties outlineStroke,
 			float alpha) {
 
-		super(paint, /* JAVAFX stroke, */outlinePaint, /* JAVAFX outlineStroke, */alpha);
+		super(paint, stroke, outlinePaint, outlineStroke, alpha);
 		this.startValue = start;
 		this.endValue = end;
-		// JAVAFX
+		// JAVAFX gradient
 		// this.gradientPaintTransformer = null;
 		setLabelOffsetType(LengthAdjustmentType.CONTRACT);
 
@@ -188,7 +189,7 @@ public class IntervalMarker extends Marker implements Cloneable, Serializable {
 		notifyListeners(new MarkerChangeEvent(this));
 	}
 
-	// JAVAFX
+	// JAVAFX gradient
 	// /**
 	// * Returns the gradient paint transformer.
 	// *
@@ -238,7 +239,7 @@ public class IntervalMarker extends Marker implements Cloneable, Serializable {
 		if (this.endValue != that.endValue) {
 			return false;
 		}
-		// JAVAFX
+		// JAVAFX gradient
 		// if (!ObjectUtils.equal(this.gradientPaintTransformer,
 		// that.gradientPaintTransformer)) {
 		// return false;

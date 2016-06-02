@@ -65,6 +65,7 @@ import java.util.Arrays;
 
 import org.jfree.chart.ChartColor;
 import org.jfree.chart.Colors;
+import org.jfree.chart.drawable.StrokeProperties;
 import org.jfree.chart.util.PublicCloneable;
 import org.jfree.chart.util.ShapeUtils;
 
@@ -76,6 +77,8 @@ import com.sun.javafx.geom.Shape;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
+import javafx.scene.shape.StrokeLineCap;
+import javafx.scene.shape.StrokeLineJoin;
 
 import org.jfree.chart.util.SerialUtils;
 
@@ -101,17 +104,13 @@ public class DefaultDrawingSupplier implements DrawingSupplier, Cloneable,
 	public static final Paint[] DEFAULT_FILL_PAINT_SEQUENCE = new Paint[] {
 			Color.WHITE };
 
-	// JAVAFX stroke
-	// /** The default stroke sequence. */
-	// public static final Stroke[] DEFAULT_STROKE_SEQUENCE = new Stroke[] {
-	// new BasicStroke(1.0f, BasicStroke.CAP_SQUARE,
-	// BasicStroke.JOIN_BEVEL) };
-	//
-	// /** The default outline stroke sequence. */
-	// public static final Stroke[] DEFAULT_OUTLINE_STROKE_SEQUENCE = new
-	// Stroke[] { new BasicStroke(1.0f,
-	// BasicStroke.CAP_SQUARE,
-	// BasicStroke.JOIN_BEVEL) };
+	/** The default stroke sequence. */
+	public static final StrokeProperties[] DEFAULT_STROKE_SEQUENCE = new StrokeProperties[] {
+			new StrokeProperties(1.0, StrokeLineCap.SQUARE, StrokeLineJoin.BEVEL) };
+
+	/** The default outline stroke sequence. */
+	public static final StrokeProperties[] DEFAULT_OUTLINE_STROKE_SEQUENCE = new
+			StrokeProperties[] { new StrokeProperties(1.0, StrokeLineCap.SQUARE, StrokeLineJoin.BEVEL) };
 
 	/** The default shape sequence. */
 	public static final Shape[] DEFAULT_SHAPE_SEQUENCE = createStandardSeriesShapes();
@@ -134,15 +133,14 @@ public class DefaultDrawingSupplier implements DrawingSupplier, Cloneable,
 	/** The current fill paint index. */
 	private int fillPaintIndex;
 
-	// JAVAFX stroke
-	// /** The stroke sequence. */
-	// private transient Stroke[] strokeSequence;
-	//
-	// /** The current stroke index. */
-	// private int strokeIndex;
-	//
-	// /** The outline stroke sequence. */
-	// private transient Stroke[] outlineStrokeSequence;
+	/** The stroke sequence. */
+	private transient StrokeProperties[] strokeSequence;
+
+	/** The current stroke index. */
+	private int strokeIndex;
+
+	/** The outline stroke sequence. */
+	private transient StrokeProperties[] outlineStrokeSequence;
 
 	/** The current outline stroke index. */
 	private int outlineStrokeIndex;
@@ -160,10 +158,8 @@ public class DefaultDrawingSupplier implements DrawingSupplier, Cloneable,
 	public DefaultDrawingSupplier() {
 		this(Colors.getDefaultColors(), DEFAULT_FILL_PAINT_SEQUENCE,
 				DEFAULT_OUTLINE_PAINT_SEQUENCE,
-				/*
-				 * JAVAFX DEFAULT_STROKE_SEQUENCE,
-				 * DEFAULT_OUTLINE_STROKE_SEQUENCE,
-				 */
+				DEFAULT_STROKE_SEQUENCE,
+				DEFAULT_OUTLINE_STROKE_SEQUENCE,
 				DEFAULT_SHAPE_SEQUENCE);
 	}
 
@@ -183,16 +179,13 @@ public class DefaultDrawingSupplier implements DrawingSupplier, Cloneable,
 	 */
 	public DefaultDrawingSupplier(Paint[] paintSequence,
 			Paint[] outlinePaintSequence,
-			/*
-			 * JAVAFXStroke[] strokeSequence, Stroke[] outlineStrokeSequence,
-			 */
+			StrokeProperties[] strokeSequence, StrokeProperties[] outlineStrokeSequence,
 			Shape[] shapeSequence) {
 		this.paintSequence = paintSequence;
 		this.fillPaintSequence = DEFAULT_FILL_PAINT_SEQUENCE;
 		this.outlinePaintSequence = outlinePaintSequence;
-		// JAVAFX stroke
-		// this.strokeSequence = strokeSequence;
-		// this.outlineStrokeSequence = outlineStrokeSequence;
+		this.strokeSequence = strokeSequence;
+		this.outlineStrokeSequence = outlineStrokeSequence;
 		this.shapeSequence = shapeSequence;
 	}
 
@@ -216,14 +209,13 @@ public class DefaultDrawingSupplier implements DrawingSupplier, Cloneable,
 	 */
 	public DefaultDrawingSupplier(Paint[] paintSequence,
 			Paint[] fillPaintSequence, Paint[] outlinePaintSequence,
-			/* JAVAFX Stroke[] strokeSequence, Stroke[] outlineStrokeSequence, */
+			StrokeProperties[] strokeSequence, StrokeProperties[] outlineStrokeSequence,
 			Shape[] shapeSequence) {
 		this.paintSequence = paintSequence;
 		this.fillPaintSequence = fillPaintSequence;
 		this.outlinePaintSequence = outlinePaintSequence;
-		// JAVAFX stroke
-		// this.strokeSequence = strokeSequence;
-		// this.outlineStrokeSequence = outlineStrokeSequence;
+		this.strokeSequence = strokeSequence;
+		this.outlineStrokeSequence = outlineStrokeSequence;
 		this.shapeSequence = shapeSequence;
 	}
 
@@ -268,32 +260,31 @@ public class DefaultDrawingSupplier implements DrawingSupplier, Cloneable,
 		return result;
 	}
 
-	// JAVAFX stroke
-	// /**
-	// * Returns the next stroke in the sequence.
-	// *
-	// * @return The stroke.
-	// */
-	// @Override
-	// public Stroke getNextStroke() {
-	// Stroke result = this.strokeSequence[
-	// this.strokeIndex % this.strokeSequence.length];
-	// this.strokeIndex++;
-	// return result;
-	// }
-	//
-	// /**
-	// * Returns the next outline stroke in the sequence.
-	// *
-	// * @return The stroke.
-	// */
-	// @Override
-	// public Stroke getNextOutlineStroke() {
-	// Stroke result = this.outlineStrokeSequence[
-	// this.outlineStrokeIndex % this.outlineStrokeSequence.length];
-	// this.outlineStrokeIndex++;
-	// return result;
-	// }
+	/**
+	 * Returns the next stroke in the sequence.
+	 *
+	 * @return The stroke.
+	 */
+	@Override
+	public StrokeProperties getNextStroke() {
+		StrokeProperties result = this.strokeSequence[
+				this.strokeIndex % this.strokeSequence.length];
+		this.strokeIndex++;
+		return result;
+	}
+
+	/**
+	 * Returns the next outline stroke in the sequence.
+	 *
+	 * @return The stroke.
+	 */
+	@Override
+	public StrokeProperties getNextOutlineStroke() {
+		StrokeProperties result = this.outlineStrokeSequence[
+				this.outlineStrokeIndex % this.outlineStrokeSequence.length];
+		this.outlineStrokeIndex++;
+		return result;
+	}
 
 	/**
 	 * Returns the next shape in the sequence.

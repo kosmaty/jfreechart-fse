@@ -79,6 +79,7 @@ import org.jfree.chart.ui.RectangleInsets;
 import org.jfree.chart.ui.TextAnchor;
 import org.jfree.chart.util.ObjectUtils;
 import org.jfree.chart.util.PaintUtils;
+import org.jfree.chart.drawable.StrokeProperties;
 import org.jfree.chart.event.MarkerChangeEvent;
 import org.jfree.chart.event.MarkerChangeListener;
 import org.jfree.chart.util.ParamChecks;
@@ -106,16 +107,14 @@ public abstract class Marker implements Cloneable, Serializable {
 	/** The paint (null is not allowed). */
 	private transient Paint paint;
 
-	// JAVAFX stroke
-	// /** The stroke (null is not allowed). */
-	// private transient Stroke stroke;
+	/** The stroke (null is not allowed). */
+	private transient StrokeProperties stroke;
 
 	/** The outline paint. */
 	private transient Paint outlinePaint;
 
-	// JAVAFX stroke
-	// /** The outline stroke. */
-	// private transient Stroke outlineStroke;
+	/** The outline stroke. */
+	private transient StrokeProperties outlineStroke;
 
 	/** The alpha transparency. */
 	private float alpha;
@@ -163,13 +162,7 @@ public abstract class Marker implements Cloneable, Serializable {
 	 *            the paint ({@code null} not permitted).
 	 */
 	protected Marker(Paint paint) {
-		this(paint, /* JAVAFX new BasicStroke(0.5f), */Color.GRAY, /*
-																	 * JAVAFX
-																	 * new
-																	 * BasicStroke
-																	 * (0.5f),
-																	 */
-		0.80f);
+		this(paint, new StrokeProperties(0.5), Color.GRAY, new StrokeProperties(0.5f), 0.80f);
 	}
 
 	/**
@@ -190,24 +183,21 @@ public abstract class Marker implements Cloneable, Serializable {
 	 *             if {@code paint} or {@code stroke} is {@code null}, or
 	 *             {@code alpha} is not in the specified range.
 	 */
-	protected Marker(Paint paint, /* JAVAFX Stroke stroke, */
-			Paint outlinePaint, /* JAVAFX Stroke outlineStroke, */
+	protected Marker(Paint paint, StrokeProperties stroke,
+			Paint outlinePaint, StrokeProperties outlineStroke,
 			float alpha) {
 
 		ParamChecks.nullNotPermitted(paint, "paint");
-		// JAVAFX stroke
-		// ParamChecks.nullNotPermitted(stroke, "stroke");
+		ParamChecks.nullNotPermitted(stroke, "stroke");
 		if (alpha < 0.0f || alpha > 1.0f) {
 			throw new IllegalArgumentException(
 					"The 'alpha' value must be in the range 0.0f to 1.0f");
 		}
 
 		this.paint = paint;
-		// JAVAFX stroke
-		// this.stroke = stroke;
+		this.stroke = stroke;
 		this.outlinePaint = outlinePaint;
-		// JAVAFX stroke
-		// this.outlineStroke = outlineStroke;
+		this.outlineStroke = outlineStroke;
 		this.alpha = alpha;
 
 		this.labelFont = Font.font("SansSerif", FontWeight.NORMAL, FontPosture.REGULAR, 9);
@@ -247,32 +237,31 @@ public abstract class Marker implements Cloneable, Serializable {
 		notifyListeners(new MarkerChangeEvent(this));
 	}
 
-	// JAVAFX stroke
-	//
-	// /**
-	// * Returns the stroke.
-	// *
-	// * @return The stroke (never {@code null}).
-	// *
-	// * @see #setStroke(Stroke)
-	// */
-	// public Stroke getStroke() {
-	// return this.stroke;
-	// }
-	//
-	// /**
-	// * Sets the stroke and sends a {@link MarkerChangeEvent} to all registered
-	// * listeners.
-	// *
-	// * @param stroke the stroke ({@code null}not permitted).
-	// *
-	// * @see #getStroke()
-	// */
-	// public void setStroke(Stroke stroke) {
-	// ParamChecks.nullNotPermitted(stroke, "stroke");
-	// this.stroke = stroke;
-	// notifyListeners(new MarkerChangeEvent(this));
-	// }
+	/**
+	 * Returns the stroke.
+	 *
+	 * @return The stroke (never {@code null}).
+	 *
+	 * @see #setStroke(StrokeProperties)
+	 */
+	public StrokeProperties getStroke() {
+		return this.stroke;
+	}
+
+	/**
+	 * Sets the stroke and sends a {@link MarkerChangeEvent} to all registered
+	 * listeners.
+	 *
+	 * @param stroke
+	 *            the stroke ({@code null}not permitted).
+	 *
+	 * @see #getStroke()
+	 */
+	public void setStroke(StrokeProperties stroke) {
+		ParamChecks.nullNotPermitted(stroke, "stroke");
+		this.stroke = stroke;
+		notifyListeners(new MarkerChangeEvent(this));
+	}
 
 	/**
 	 * Returns the outline paint.
@@ -299,30 +288,30 @@ public abstract class Marker implements Cloneable, Serializable {
 		notifyListeners(new MarkerChangeEvent(this));
 	}
 
-	//
-	// /**
-	// * Returns the outline stroke.
-	// *
-	// * @return The outline stroke (possibly {@code null}).
-	// *
-	// * @see #setOutlineStroke(Stroke)
-	// */
-	// public Stroke getOutlineStroke() {
-	// return this.outlineStroke;
-	// }
-	//
-	// /**
-	// * Sets the outline stroke and sends a {@link MarkerChangeEvent} to all
-	// * registered listeners.
-	// *
-	// * @param stroke the stroke ({@code null} permitted).
-	// *
-	// * @see #getOutlineStroke()
-	// */
-	// public void setOutlineStroke(Stroke stroke) {
-	// this.outlineStroke = stroke;
-	// notifyListeners(new MarkerChangeEvent(this));
-	// }
+	/**
+	 * Returns the outline stroke.
+	 *
+	 * @return The outline stroke (possibly {@code null}).
+	 *
+	 * @see #setOutlineStroke(StrokeProperties)
+	 */
+	public StrokeProperties getOutlineStroke() {
+		return this.outlineStroke;
+	}
+
+	/**
+	 * Sets the outline stroke and sends a {@link MarkerChangeEvent} to all
+	 * registered listeners.
+	 *
+	 * @param stroke
+	 *            the stroke ({@code null} permitted).
+	 *
+	 * @see #getOutlineStroke()
+	 */
+	public void setOutlineStroke(StrokeProperties stroke) {
+		this.outlineStroke = stroke;
+		notifyListeners(new MarkerChangeEvent(this));
+	}
 
 	/**
 	 * Returns the alpha transparency.
@@ -647,17 +636,15 @@ public abstract class Marker implements Cloneable, Serializable {
 		if (!PaintUtils.equal(this.paint, that.paint)) {
 			return false;
 		}
-		// JAVAFX stroke
-		// if (!ObjectUtils.equal(this.stroke, that.stroke)) {
-		// return false;
-		// }
+		if (!ObjectUtils.equal(this.stroke, that.stroke)) {
+			return false;
+		}
 		if (!PaintUtils.equal(this.outlinePaint, that.outlinePaint)) {
 			return false;
 		}
-		// JAVAFX stroke
-		// if (!ObjectUtils.equal(this.outlineStroke, that.outlineStroke)) {
-		// return false;
-		// }
+		if (!ObjectUtils.equal(this.outlineStroke, that.outlineStroke)) {
+			return false;
+		}
 		if (this.alpha != that.alpha) {
 			return false;
 		}

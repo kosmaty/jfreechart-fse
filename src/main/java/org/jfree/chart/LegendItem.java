@@ -83,6 +83,7 @@ import java.io.Serializable;
 import java.text.AttributedString;
 import java.text.CharacterIterator;
 
+import org.jfree.chart.drawable.StrokeProperties;
 // import org.jfree.chart.ui.GradientPaintTransformer;
 // import org.jfree.chart.ui.StandardGradientPaintTransformer;
 import org.jfree.chart.util.AttributedStringUtils;
@@ -173,7 +174,7 @@ public class LegendItem implements Cloneable, Serializable {
 	/** The paint. */
 	private transient Paint fillPaint;
 
-	// JAVAFX
+	// JAVAFX gradient
 	// /**
 	// * A gradient paint transformer.
 	// *
@@ -187,9 +188,8 @@ public class LegendItem implements Cloneable, Serializable {
 	/** The outline paint. */
 	private transient Paint outlinePaint;
 
-	// JAVAFX stroke
-	// /** The outline stroke. */
-	// private transient Stroke outlineStroke;
+	/** The outline stroke. */
+	private transient StrokeProperties outlineStroke;
 
 	/** A flag that controls whether or not the line is visible. */
 	private boolean lineVisible;
@@ -197,9 +197,8 @@ public class LegendItem implements Cloneable, Serializable {
 	/** The line. */
 	private transient Shape line;
 
-	// JAVAFX stroke
-	// /** The stroke. */
-	// private transient Stroke lineStroke;
+	/** The stroke. */
+	private transient StrokeProperties lineStroke;
 
 	/** The line paint. */
 	private transient Paint linePaint;
@@ -210,14 +209,12 @@ public class LegendItem implements Cloneable, Serializable {
 	 */
 	private static final Shape UNUSED_SHAPE = asShape(emptyLine());
 
-	// JAVAFX stroke
-	// /**
-	// * The stroke must be non-null for a LegendItem - if no stroke is
-	// required,
-	// * use this.
-	// */
-	// private static final Stroke UNUSED_STROKE = new BasicStroke(0.0f);
-	//
+	/**
+	 * The stroke must be non-null for a LegendItem - if no stroke is required,
+	 * use this.
+	 */
+	private static final StrokeProperties UNUSED_STROKE = new StrokeProperties(0.0);
+
 	/**
 	 * Creates a legend item with the specified label. The remaining attributes
 	 * take default values.
@@ -272,8 +269,8 @@ public class LegendItem implements Cloneable, Serializable {
 		this(label, description, toolTipText, urlText,
 				/* shape visible = */true, shape,
 				/* shape filled = */true, fillPaint,
-				/* shape outlined */false, Color.BLACK, /* JAVAFX UNUSED_STROKE, */
-				/* line visible */false, UNUSED_SHAPE, /* JAVAFX UNUSED_STROKE, */
+				/* shape outlined */false, Color.BLACK, UNUSED_STROKE,
+				/* line visible */false, UNUSED_SHAPE, UNUSED_STROKE,
 				Color.BLACK);
 
 	}
@@ -300,39 +297,44 @@ public class LegendItem implements Cloneable, Serializable {
 	 */
 	public LegendItem(String label, String description, String toolTipText,
 			String urlText, Shape shape, Paint fillPaint,
-			/* JAVAFX Stroke outlineStroke, */Paint outlinePaint) {
+			StrokeProperties outlineStroke, Paint outlinePaint) {
 
 		this(label, description, toolTipText, urlText,
 				/* shape visible = */true, shape,
 				/* shape filled = */true, fillPaint,
-				/* shape outlined = */true, outlinePaint, /* JAVAFX outlineStroke, */
-				/* line visible */false, UNUSED_SHAPE, /* JAVAFX UNUSED_STROKE, */
+				/* shape outlined = */true, outlinePaint, outlineStroke,
+				/* line visible */false, UNUSED_SHAPE, UNUSED_STROKE,
 				Color.BLACK);
 
 	}
 
-	// JAVAFX stroke
-	//
-	// /**
-	// * Creates a legend item using a line.
-	// *
-	// * @param label the label ({@code null} not permitted).
-	// * @param description the description ({@code null} permitted).
-	// * @param toolTipText the tool tip text ({@code null} permitted).
-	// * @param urlText the URL text ({@code null} permitted).
-	// * @param line the line ({@code null} not permitted).
-	// * @param lineStroke the line stroke ({@code null} not permitted).
-	// * @param linePaint the line paint ({@code null} not permitted).
-	// */
-	// public LegendItem(String label, String description, String toolTipText,
-	// String urlText, Shape line, Stroke lineStroke, Paint linePaint) {
-	//
-	// this(label, description, toolTipText, urlText,
-	// /* shape visible = */ false, UNUSED_SHAPE,
-	// /* shape filled = */ false, Color.BLACK,
-	// /* shape outlined = */ false, Color.BLACK, UNUSED_STROKE,
-	// /* line visible = */ true, line, lineStroke, linePaint);
-	// }
+	/**
+	 * Creates a legend item using a line.
+	 *
+	 * @param label
+	 *            the label ({@code null} not permitted).
+	 * @param description
+	 *            the description ({@code null} permitted).
+	 * @param toolTipText
+	 *            the tool tip text ({@code null} permitted).
+	 * @param urlText
+	 *            the URL text ({@code null} permitted).
+	 * @param line
+	 *            the line ({@code null} not permitted).
+	 * @param lineStroke
+	 *            the line stroke ({@code null} not permitted).
+	 * @param linePaint
+	 *            the line paint ({@code null} not permitted).
+	 */
+	public LegendItem(String label, String description, String toolTipText,
+			String urlText, Shape line, StrokeProperties lineStroke, Paint linePaint) {
+
+		this(label, description, toolTipText, urlText,
+				/* shape visible = */false, UNUSED_SHAPE,
+				/* shape filled = */false, Color.BLACK,
+				/* shape outlined = */false, Color.BLACK, UNUSED_STROKE,
+				/* line visible = */true, line, lineStroke, linePaint);
+	}
 
 	/**
 	 * Creates a new legend item.
@@ -374,19 +376,17 @@ public class LegendItem implements Cloneable, Serializable {
 			boolean shapeVisible, Shape shape,
 			boolean shapeFilled, Paint fillPaint,
 			boolean shapeOutlineVisible, Paint outlinePaint,
-			/* JAVAFX Stroke outlineStroke, */
+			StrokeProperties outlineStroke,
 			boolean lineVisible, Shape line,
-			/* JAVAFX Stroke lineStroke, */Paint linePaint) {
+			StrokeProperties lineStroke, Paint linePaint) {
 
 		ParamChecks.nullNotPermitted(label, "label");
 		ParamChecks.nullNotPermitted(fillPaint, "fillPaint");
-		// JAVAFX stroke
-		// ParamChecks.nullNotPermitted(lineStroke, "lineStroke");
+		ParamChecks.nullNotPermitted(lineStroke, "lineStroke");
 		ParamChecks.nullNotPermitted(line, "line");
 		ParamChecks.nullNotPermitted(linePaint, "linePaint");
 		ParamChecks.nullNotPermitted(outlinePaint, "outlinePaint");
-		// JAVAFX stroke
-		// ParamChecks.nullNotPermitted(outlineStroke, "outlineStroke");
+		ParamChecks.nullNotPermitted(outlineStroke, "outlineStroke");
 
 		this.label = label;
 		this.labelPaint = null;
@@ -396,16 +396,14 @@ public class LegendItem implements Cloneable, Serializable {
 		this.shape = shape;
 		this.shapeFilled = shapeFilled;
 		this.fillPaint = fillPaint;
-		// JAVAFX
+		// JAVAFX gradient
 		// this.fillPaintTransformer = new StandardGradientPaintTransformer();
 		this.shapeOutlineVisible = shapeOutlineVisible;
 		this.outlinePaint = outlinePaint;
-		// JAVAFX stroke
-		// this.outlineStroke = outlineStroke;
+		this.outlineStroke = outlineStroke;
 		this.lineVisible = lineVisible;
 		this.line = line;
-		// JAVAFX stroke
-		// this.lineStroke = lineStroke;
+		this.lineStroke = lineStroke;
 		this.linePaint = linePaint;
 		this.toolTipText = toolTipText;
 		this.urlText = urlText;
@@ -435,69 +433,74 @@ public class LegendItem implements Cloneable, Serializable {
 		this(label, description, toolTipText, urlText,
 				/* shape visible = */true, shape,
 				/* shape filled = */true, fillPaint,
-				/* shape outlined = */false, Color.BLACK, /* JAVAFX UNUSED_STROKE, */
-				/* line visible = */false, UNUSED_SHAPE, /* JAVAFX UNUSED_STROKE, */
+				/* shape outlined = */false, Color.BLACK, UNUSED_STROKE,
+				/* line visible = */false, UNUSED_SHAPE, UNUSED_STROKE,
 				Color.BLACK);
 
 	}
 
-	// JAVAFX stroke
-	// /**
-	// * Creates a legend item with a filled and outlined shape.
-	// *
-	// * @param label
-	// * the label (<code>null</code> not permitted).
-	// * @param description
-	// * the description (<code>null</code> permitted).
-	// * @param toolTipText
-	// * the tool tip text (<code>null</code> permitted).
-	// * @param urlText
-	// * the URL text (<code>null</code> permitted).
-	// * @param shape
-	// * the shape (<code>null</code> not permitted).
-	// * @param fillPaint
-	// * the paint used to fill the shape (<code>null</code> not
-	// * permitted).
-	// * @param outlineStroke
-	// * the outline stroke (<code>null</code> not permitted).
-	// * @param outlinePaint
-	// * the outline paint (<code>null</code> not permitted).
-	// */
-	// public LegendItem(AttributedString label, String description,
-	// String toolTipText, String urlText, Shape shape, Paint fillPaint,
-	// Stroke outlineStroke, Paint outlinePaint) {
-	//
-	// this(label, description, toolTipText, urlText,
-	// /* shape visible = */true, shape,
-	// /* shape filled = */true, fillPaint,
-	// /* shape outlined = */true, outlinePaint, outlineStroke,
-	// /* line visible = */false, UNUSED_SHAPE, UNUSED_STROKE,
-	// Color.BLACK);
-	// }
-	//
-	//
-	// /**
-	// * Creates a legend item using a line.
-	// *
-	// * @param label the label (<code>null</code> not permitted).
-	// * @param description the description (<code>null</code> permitted).
-	// * @param toolTipText the tool tip text (<code>null</code> permitted).
-	// * @param urlText the URL text (<code>null</code> permitted).
-	// * @param line the line (<code>null</code> not permitted).
-	// * @param lineStroke the line stroke (<code>null</code> not permitted).
-	// * @param linePaint the line paint (<code>null</code> not permitted).
-	// */
-	// public LegendItem(AttributedString label, String description,
-	// String toolTipText, String urlText, Shape line, Stroke lineStroke,
-	// Paint linePaint) {
-	//
-	// this(label, description, toolTipText, urlText,
-	// /* shape visible = */ false, UNUSED_SHAPE,
-	// /* shape filled = */ false, Color.BLACK,
-	// /* shape outlined = */ false, Color.BLACK, UNUSED_STROKE,
-	// /* line visible = */ true, line, lineStroke, linePaint);
-	// }
-	//
+	/**
+	 * Creates a legend item with a filled and outlined shape.
+	 *
+	 * @param label
+	 *            the label (<code>null</code> not permitted).
+	 * @param description
+	 *            the description (<code>null</code> permitted).
+	 * @param toolTipText
+	 *            the tool tip text (<code>null</code> permitted).
+	 * @param urlText
+	 *            the URL text (<code>null</code> permitted).
+	 * @param shape
+	 *            the shape (<code>null</code> not permitted).
+	 * @param fillPaint
+	 *            the paint used to fill the shape (<code>null</code> not
+	 *            permitted).
+	 * @param outlineStroke
+	 *            the outline stroke (<code>null</code> not permitted).
+	 * @param outlinePaint
+	 *            the outline paint (<code>null</code> not permitted).
+	 */
+	public LegendItem(AttributedString label, String description,
+			String toolTipText, String urlText, Shape shape, Paint fillPaint,
+			StrokeProperties outlineStroke, Paint outlinePaint) {
+
+		this(label, description, toolTipText, urlText,
+				/* shape visible = */true, shape,
+				/* shape filled = */true, fillPaint,
+				/* shape outlined = */true, outlinePaint, outlineStroke,
+				/* line visible = */false, UNUSED_SHAPE, UNUSED_STROKE,
+				Color.BLACK);
+	}
+
+	/**
+	 * Creates a legend item using a line.
+	 *
+	 * @param label
+	 *            the label (<code>null</code> not permitted).
+	 * @param description
+	 *            the description (<code>null</code> permitted).
+	 * @param toolTipText
+	 *            the tool tip text (<code>null</code> permitted).
+	 * @param urlText
+	 *            the URL text (<code>null</code> permitted).
+	 * @param line
+	 *            the line (<code>null</code> not permitted).
+	 * @param lineStroke
+	 *            the line stroke (<code>null</code> not permitted).
+	 * @param linePaint
+	 *            the line paint (<code>null</code> not permitted).
+	 */
+	public LegendItem(AttributedString label, String description,
+			String toolTipText, String urlText, Shape line, StrokeProperties lineStroke,
+			Paint linePaint) {
+
+		this(label, description, toolTipText, urlText,
+				/* shape visible = */false, UNUSED_SHAPE,
+				/* shape filled = */false, Color.BLACK,
+				/* shape outlined = */false, Color.BLACK, UNUSED_STROKE,
+				/* line visible = */true, line, lineStroke, linePaint);
+	}
+
 	/**
 	 * Creates a new legend item.
 	 *
@@ -537,18 +540,16 @@ public class LegendItem implements Cloneable, Serializable {
 			String toolTipText, String urlText, boolean shapeVisible,
 			Shape shape, boolean shapeFilled, Paint fillPaint,
 			boolean shapeOutlineVisible, Paint outlinePaint,
-			/* JAVAFX Stroke outlineStroke, */boolean lineVisible, Shape line,
-			/* JAVAFX Stroke lineStroke, */Paint linePaint) {
+			StrokeProperties outlineStroke, boolean lineVisible, Shape line,
+			StrokeProperties lineStroke, Paint linePaint) {
 
 		ParamChecks.nullNotPermitted(label, "label");
 		ParamChecks.nullNotPermitted(fillPaint, "fillPaint");
-		// JAVAFX stroke
-		// ParamChecks.nullNotPermitted(lineStroke, "lineStroke");
+		ParamChecks.nullNotPermitted(lineStroke, "lineStroke");
 		ParamChecks.nullNotPermitted(line, "line");
 		ParamChecks.nullNotPermitted(linePaint, "linePaint");
 		ParamChecks.nullNotPermitted(outlinePaint, "outlinePaint");
-		// JAVAFX stroke
-		// ParamChecks.nullNotPermitted(outlineStroke, "outlineStroke");
+		ParamChecks.nullNotPermitted(outlineStroke, "outlineStroke");
 
 		this.label = characterIteratorToString(label.getIterator());
 		this.attributedLabel = label;
@@ -557,16 +558,14 @@ public class LegendItem implements Cloneable, Serializable {
 		this.shape = shape;
 		this.shapeFilled = shapeFilled;
 		this.fillPaint = fillPaint;
-		// JAVAFX stroke
+		// JAVAFX gradient
 		// this.fillPaintTransformer = new StandardGradientPaintTransformer();
 		this.shapeOutlineVisible = shapeOutlineVisible;
 		this.outlinePaint = outlinePaint;
-		// JAVAFX stroke
-		// this.outlineStroke = outlineStroke;
+		this.outlineStroke = outlineStroke;
 		this.lineVisible = lineVisible;
 		this.line = line;
-		// JAVAFX stroke
-		// this.lineStroke = lineStroke;
+		this.lineStroke = lineStroke;
 		this.linePaint = linePaint;
 		this.toolTipText = toolTipText;
 		this.urlText = urlText;
@@ -929,29 +928,28 @@ public class LegendItem implements Cloneable, Serializable {
 		return this.shapeOutlineVisible;
 	}
 
-	// JAVAFX stroke
-	//
-	// /**
-	// * Returns the line stroke for the series.
-	// *
-	// * @return The stroke (never <code>null</code>).
-	// */
-	// public Stroke getLineStroke() {
-	// return this.lineStroke;
-	// }
-	//
-	// /**
-	// * Sets the line stroke.
-	// *
-	// * @param stroke the stroke (<code>null</code> not permitted).
-	// *
-	// * @since 1.0.18
-	// */
-	// public void setLineStroke(Stroke stroke) {
-	// ParamChecks.nullNotPermitted(stroke, "stroke");
-	// this.lineStroke = stroke;
-	// }
-	//
+	/**
+	 * Returns the line stroke for the series.
+	 *
+	 * @return The stroke (never <code>null</code>).
+	 */
+	public StrokeProperties getLineStroke() {
+		return this.lineStroke;
+	}
+
+	/**
+	 * Sets the line stroke.
+	 *
+	 * @param stroke
+	 *            the stroke (<code>null</code> not permitted).
+	 *
+	 * @since 1.0.18
+	 */
+	public void setLineStroke(StrokeProperties stroke) {
+		ParamChecks.nullNotPermitted(stroke, "stroke");
+		this.lineStroke = stroke;
+	}
+
 	/**
 	 * Returns the paint used for lines.
 	 *
@@ -996,32 +994,32 @@ public class LegendItem implements Cloneable, Serializable {
 		this.outlinePaint = paint;
 	}
 
-	// JAVAFX stroke
-	// /**
-	// * Returns the outline stroke.
-	// *
-	// * @return The outline stroke (never <code>null</code>).
-	// *
-	// * @see #setOutlineStroke(java.awt.Stroke)
-	// */
-	// public Stroke getOutlineStroke() {
-	// return this.outlineStroke;
-	// }
-	//
-	// /**
-	// * Sets the outline stroke.
-	// *
-	// * @param stroke the stroke (<code>null</code> not permitted).
-	// *
-	// * @see #getOutlineStroke()
-	// *
-	// * @since 1.0.14
-	// */
-	// public void setOutlineStroke(Stroke stroke) {
-	// ParamChecks.nullNotPermitted(stroke, "stroke");
-	// this.outlineStroke = stroke;
-	// }
-	//
+	/**
+	 * Returns the outline stroke.
+	 *
+	 * @return The outline stroke (never <code>null</code>).
+	 *
+	 * @see #setOutlineStroke(StrokeProperties)
+	 */
+	public StrokeProperties getOutlineStroke() {
+		return this.outlineStroke;
+	}
+
+	/**
+	 * Sets the outline stroke.
+	 *
+	 * @param stroke
+	 *            the stroke (<code>null</code> not permitted).
+	 *
+	 * @see #getOutlineStroke()
+	 *
+	 * @since 1.0.14
+	 */
+	public void setOutlineStroke(StrokeProperties stroke) {
+		ParamChecks.nullNotPermitted(stroke, "stroke");
+		this.outlineStroke = stroke;
+	}
+
 	/**
 	 * Returns a flag that indicates whether or not the line is visible.
 	 *
@@ -1073,7 +1071,7 @@ public class LegendItem implements Cloneable, Serializable {
 		this.line = line;
 	}
 
-	// JAVAFX
+	// JAVAFX gradient
 	//
 	// /**
 	// * Returns the transformer used when the fill paint is an instance of
@@ -1150,7 +1148,7 @@ public class LegendItem implements Cloneable, Serializable {
 		if (!PaintUtils.equal(this.fillPaint, that.fillPaint)) {
 			return false;
 		}
-		// JAVAFX
+		// JAVAFX gradient
 		// if (!ObjectUtils.equal(this.fillPaintTransformer,
 		// that.fillPaintTransformer)) {
 		// return false;
@@ -1158,10 +1156,9 @@ public class LegendItem implements Cloneable, Serializable {
 		if (this.shapeOutlineVisible != that.shapeOutlineVisible) {
 			return false;
 		}
-		// JAVAFX stroke
-		// if (!this.outlineStroke.equals(that.outlineStroke)) {
-		// return false;
-		// }
+		if (!this.outlineStroke.equals(that.outlineStroke)) {
+			return false;
+		}
 		if (!PaintUtils.equal(this.outlinePaint, that.outlinePaint)) {
 			return false;
 		}
@@ -1171,10 +1168,9 @@ public class LegendItem implements Cloneable, Serializable {
 		if (!ShapeUtils.equal(this.line, that.line)) {
 			return false;
 		}
-		// JAVAFX stroke
-		// if (!this.lineStroke.equals(that.lineStroke)) {
-		// return false;
-		// }
+		if (!this.lineStroke.equals(that.lineStroke)) {
+			return false;
+		}
 		if (!PaintUtils.equal(this.linePaint, that.linePaint)) {
 			return false;
 		}

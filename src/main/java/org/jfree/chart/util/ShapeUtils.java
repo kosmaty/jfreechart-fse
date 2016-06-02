@@ -68,6 +68,7 @@ import com.sun.javafx.geom.transform.BaseTransform;
 import java.awt.RenderingHints;
 import java.util.Arrays;
 
+import org.jfree.chart.drawable.StrokeProperties;
 import org.jfree.chart.ui.RectangleAnchor;
 
 import javafx.geometry.Point2D;
@@ -746,5 +747,14 @@ public class ShapeUtils {
 		polygon.closePath();
 		return polygon;
 
+	}
+
+	public static void setStrokeProperties(GraphicsContext context, StrokeProperties strokeProperties) {
+		context.setLineWidth(strokeProperties.getLineWidth());
+		context.setLineCap(strokeProperties.getLineCap());
+		context.setLineJoin(strokeProperties.getLineJoin());
+		context.setLineDashes(strokeProperties.getLineDashes());
+		context.setLineDashOffset(strokeProperties.getLineDashOffset());
+		context.setMiterLimit(strokeProperties.getMiterLimit());
 	}
 }

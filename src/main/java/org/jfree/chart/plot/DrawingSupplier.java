@@ -43,6 +43,8 @@
 
 package org.jfree.chart.plot;
 
+import org.jfree.chart.drawable.StrokeProperties;
+
 import com.sun.javafx.geom.Shape;
 
 import javafx.scene.paint.Paint;
@@ -80,22 +82,21 @@ public interface DrawingSupplier {
 	 */
 	public Paint getNextFillPaint();
 
-	// JAVAFX stroke
-	// /**
-	// * Returns the next <code>Stroke</code> object in a sequence maintained by
-	// * the supplier.
-	// *
-	// * @return The stroke.
-	// */
-	// public Stroke getNextStroke();
-	//
-	// /**
-	// * Returns the next <code>Stroke</code> object in a sequence maintained by
-	// * the supplier.
-	// *
-	// * @return The stroke.
-	// */
-	// public Stroke getNextOutlineStroke();
+	/**
+	 * Returns the next <code>Stroke</code> object in a sequence maintained by
+	 * the supplier.
+	 *
+	 * @return The stroke.
+	 */
+	public StrokeProperties getNextStroke();
+
+	/**
+	 * Returns the next <code>Stroke</code> object in a sequence maintained by
+	 * the supplier.
+	 *
+	 * @return The stroke.
+	 */
+	public StrokeProperties getNextOutlineStroke();
 
 	/**
 	 * Returns the next <code>Shape</code> object in a sequence maintained by

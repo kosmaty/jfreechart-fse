@@ -63,6 +63,7 @@ import java.util.Collection;
 
 import org.jfree.chart.annotations.XYAnnotation;
 import org.jfree.chart.axis.ValueAxis;
+import org.jfree.chart.drawable.StrokeProperties;
 import org.jfree.chart.ui.Layer;
 import org.jfree.chart.event.RendererChangeEvent;
 import org.jfree.chart.labels.XYItemLabelGenerator;
@@ -538,7 +539,7 @@ public interface XYItemRenderer extends Renderer {
 	 */
 	public void drawRangeGridline(GraphicsContext g2, XYPlot plot, ValueAxis axis,
 			Rectangle2D dataArea, double value,
-			Paint paint /* JAVAFX, Stroke stroke */);
+			Paint paint, StrokeProperties stroke);
 
 	/**
 	 * Draws the specified <code>marker</code> against the domain axis.

@@ -235,6 +235,7 @@
 
 package org.jfree.chart.plot;
 
+import static org.jfree.chart.util.ShapeUtils.setStrokeProperties;
 import static org.jfree.geometry.GeometryUtils.fillRectangle;
 import static org.jfree.geometry.GeometryUtils.isEmpty;
 import static org.jfree.geometry.GeometryUtils.newLine;
@@ -284,6 +285,7 @@ import org.jfree.chart.axis.AxisState;
 import org.jfree.chart.axis.TickType;
 import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.axis.ValueTick;
+import org.jfree.chart.drawable.StrokeProperties;
 import org.jfree.chart.ui.Layer;
 import org.jfree.chart.ui.RectangleEdge;
 import org.jfree.chart.ui.RectangleInsets;
@@ -315,6 +317,8 @@ import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
+import javafx.scene.shape.StrokeLineCap;
+import javafx.scene.shape.StrokeLineJoin;
 
 /**
  * A general class for plotting data in the form of (x, y) pairs. This plot can
@@ -333,12 +337,9 @@ public class XYPlot extends Plot implements ValueAxisPlot, Pannable, Zoomable,
 	/** For serialization. */
 	private static final long serialVersionUID = 7044148245716569264L;
 
-	// JAVAFX stroke
-	// /** The default grid line stroke. */
-	// public static final Stroke DEFAULT_GRIDLINE_STROKE = new
-	// BasicStroke(0.5f,
-	// BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0.0f,
-	// new float[] { 2.0f, 2.0f }, 0.0f);
+	/** The default grid line stroke. */
+	public static final StrokeProperties DEFAULT_GRIDLINE_STROKE = new StrokeProperties(
+			0.5, StrokeLineCap.BUTT, StrokeLineJoin.BEVEL, 0.0, new double[] { 2.0, 2.0 }, 0.0);
 
 	/** The default grid line paint. */
 	public static final Paint DEFAULT_GRIDLINE_PAINT = Color.LIGHTGRAY;
@@ -346,10 +347,8 @@ public class XYPlot extends Plot implements ValueAxisPlot, Pannable, Zoomable,
 	/** The default crosshair visibility. */
 	public static final boolean DEFAULT_CROSSHAIR_VISIBLE = false;
 
-	// JAVAFX stroke
-	// /** The default crosshair stroke. */
-	// public static final Stroke DEFAULT_CROSSHAIR_STROKE =
-	// DEFAULT_GRIDLINE_STROKE;
+	/** The default crosshair stroke. */
+	public static final StrokeProperties DEFAULT_CROSSHAIR_STROKE = DEFAULT_GRIDLINE_STROKE;
 
 	/** The default crosshair paint. */
 	public static final Paint DEFAULT_CROSSHAIR_PAINT = Color.BLUE;
@@ -409,9 +408,8 @@ public class XYPlot extends Plot implements ValueAxisPlot, Pannable, Zoomable,
 	/** A flag that controls whether the domain grid-lines are visible. */
 	private boolean domainGridlinesVisible;
 
-	// JAVAFX stroke
-	// /** The stroke used to draw the domain grid-lines. */
-	// private transient Stroke domainGridlineStroke;
+	/** The stroke used to draw the domain grid-lines. */
+	private transient StrokeProperties domainGridlineStroke;
 
 	/** The paint used to draw the domain grid-lines. */
 	private transient Paint domainGridlinePaint;
@@ -419,9 +417,8 @@ public class XYPlot extends Plot implements ValueAxisPlot, Pannable, Zoomable,
 	/** A flag that controls whether the range grid-lines are visible. */
 	private boolean rangeGridlinesVisible;
 
-	// JAVAFX stroke
-	// /** The stroke used to draw the range grid-lines. */
-	// private transient Stroke rangeGridlineStroke;
+	/** The stroke used to draw the range grid-lines. */
+	private transient StrokeProperties rangeGridlineStroke;
 
 	/** The paint used to draw the range grid-lines. */
 	private transient Paint rangeGridlinePaint;
@@ -433,13 +430,12 @@ public class XYPlot extends Plot implements ValueAxisPlot, Pannable, Zoomable,
 	 */
 	private boolean domainMinorGridlinesVisible;
 
-	// JAVAFX stroke
-	// /**
-	// * The stroke used to draw the domain minor grid-lines.
-	// *
-	// * @since 1.0.12
-	// */
-	// private transient Stroke domainMinorGridlineStroke;
+	/**
+	 * The stroke used to draw the domain minor grid-lines.
+	 *
+	 * @since 1.0.12
+	 */
+	private transient StrokeProperties domainMinorGridlineStroke;
 
 	/**
 	 * The paint used to draw the domain minor grid-lines.
@@ -455,13 +451,12 @@ public class XYPlot extends Plot implements ValueAxisPlot, Pannable, Zoomable,
 	 */
 	private boolean rangeMinorGridlinesVisible;
 
-	// JAVAFX stroke
-	// /**
-	// * The stroke used to draw the range minor grid-lines.
-	// *
-	// * @since 1.0.12
-	// */
-	// private transient Stroke rangeMinorGridlineStroke;
+	/**
+	 * The stroke used to draw the range minor grid-lines.
+	 *
+	 * @since 1.0.12
+	 */
+	private transient StrokeProperties rangeMinorGridlineStroke;
 
 	/**
 	 * The paint used to draw the range minor grid-lines.
@@ -478,13 +473,12 @@ public class XYPlot extends Plot implements ValueAxisPlot, Pannable, Zoomable,
 	 */
 	private boolean domainZeroBaselineVisible;
 
-	// JAVAFX stroke
-	// /**
-	// * The stroke used for the zero baseline against the domain axis.
-	// *
-	// * @since 1.0.5
-	// */
-	// private transient Stroke domainZeroBaselineStroke;
+	/**
+	 * The stroke used for the zero baseline against the domain axis.
+	 *
+	 * @since 1.0.5
+	 */
+	private transient StrokeProperties domainZeroBaselineStroke;
 
 	/**
 	 * The paint used for the zero baseline against the domain axis.
@@ -499,9 +493,8 @@ public class XYPlot extends Plot implements ValueAxisPlot, Pannable, Zoomable,
 	 */
 	private boolean rangeZeroBaselineVisible;
 
-	// JAVAFX stroke
-	// /** The stroke used for the zero baseline against the range axis. */
-	// private transient Stroke rangeZeroBaselineStroke;
+	/** The stroke used for the zero baseline against the range axis. */
+	private transient StrokeProperties rangeZeroBaselineStroke;
 
 	/** The paint used for the zero baseline against the range axis. */
 	private transient Paint rangeZeroBaselinePaint;
@@ -512,9 +505,8 @@ public class XYPlot extends Plot implements ValueAxisPlot, Pannable, Zoomable,
 	/** The domain crosshair value. */
 	private double domainCrosshairValue;
 
-	// JAVAFX stroke
-	// /** The pen/brush used to draw the crosshair (if any). */
-	// private transient Stroke domainCrosshairStroke;
+	/** The pen/brush used to draw the crosshair (if any). */
+	private transient StrokeProperties domainCrosshairStroke;
 
 	/** The color used to draw the crosshair (if any). */
 	private transient Paint domainCrosshairPaint;
@@ -531,9 +523,8 @@ public class XYPlot extends Plot implements ValueAxisPlot, Pannable, Zoomable,
 	/** The range crosshair value. */
 	private double rangeCrosshairValue;
 
-	// JAVAFX stroke
-	// /** The pen/brush used to draw the crosshair (if any). */
-	// private transient Stroke rangeCrosshairStroke;
+	/** The pen/brush used to draw the crosshair (if any). */
+	private transient StrokeProperties rangeCrosshairStroke;
 
 	/** The color used to draw the crosshair (if any). */
 	private transient Paint rangeCrosshairPaint;
@@ -622,7 +613,7 @@ public class XYPlot extends Plot implements ValueAxisPlot, Pannable, Zoomable,
 	 */
 	private boolean rangePannable;
 
-	// JAVAFX
+	// JAVAFX shadow generator
 	// /**
 	// * The shadow generator (<code>null</code> permitted).
 	// *
@@ -715,47 +706,39 @@ public class XYPlot extends Plot implements ValueAxisPlot, Pannable, Zoomable,
 		configureRangeAxes();
 
 		this.domainGridlinesVisible = true;
-		// JAVAFX stroke
-		// this.domainGridlineStroke = DEFAULT_GRIDLINE_STROKE;
+		this.domainGridlineStroke = DEFAULT_GRIDLINE_STROKE;
 		this.domainGridlinePaint = DEFAULT_GRIDLINE_PAINT;
 
 		this.domainMinorGridlinesVisible = false;
-		// JAVAFX stroke
-		// this.domainMinorGridlineStroke = DEFAULT_GRIDLINE_STROKE;
+		this.domainMinorGridlineStroke = DEFAULT_GRIDLINE_STROKE;
 		this.domainMinorGridlinePaint = Color.WHITE;
 
 		this.domainZeroBaselineVisible = false;
 		this.domainZeroBaselinePaint = Color.BLACK;
-		// JAVAFX stroke
-		// this.domainZeroBaselineStroke = new BasicStroke(0.5f);
+		this.domainZeroBaselineStroke = new StrokeProperties(0.5);
 
 		this.rangeGridlinesVisible = true;
-		// JAVAFX stroke
-		// this.rangeGridlineStroke = DEFAULT_GRIDLINE_STROKE;
+		this.rangeGridlineStroke = DEFAULT_GRIDLINE_STROKE;
 		this.rangeGridlinePaint = DEFAULT_GRIDLINE_PAINT;
 
 		this.rangeMinorGridlinesVisible = false;
-		// JAVAFX stroke
-		// this.rangeMinorGridlineStroke = DEFAULT_GRIDLINE_STROKE;
+		this.rangeMinorGridlineStroke = DEFAULT_GRIDLINE_STROKE;
 		this.rangeMinorGridlinePaint = Color.WHITE;
 
 		this.rangeZeroBaselineVisible = false;
 		this.rangeZeroBaselinePaint = Color.BLACK;
-		// JAVAFX stroke
-		// this.rangeZeroBaselineStroke = new BasicStroke(0.5f);
+		this.rangeZeroBaselineStroke = new StrokeProperties(0.5);
 
 		this.domainCrosshairVisible = false;
 		this.domainCrosshairValue = 0.0;
-		// JAVAFX stroke
-		// this.domainCrosshairStroke = DEFAULT_CROSSHAIR_STROKE;
+		this.domainCrosshairStroke = DEFAULT_CROSSHAIR_STROKE;
 		this.domainCrosshairPaint = DEFAULT_CROSSHAIR_PAINT;
 
 		this.rangeCrosshairVisible = false;
 		this.rangeCrosshairValue = 0.0;
-		// JAVAFX stroke
-		// this.rangeCrosshairStroke = DEFAULT_CROSSHAIR_STROKE;
+		this.rangeCrosshairStroke = DEFAULT_CROSSHAIR_STROKE;
 		this.rangeCrosshairPaint = DEFAULT_CROSSHAIR_PAINT;
-		// JAVAFX
+		// JAVAFX shadow generator
 		// this.shadowGenerator = null;
 	}
 
@@ -1916,74 +1899,70 @@ public class XYPlot extends Plot implements ValueAxisPlot, Pannable, Zoomable,
 		}
 	}
 
-	// JAVAFX stroke
-	// /**
-	// * Returns the stroke for the grid-lines (if any) plotted against the
-	// domain
-	// * axis.
-	// *
-	// * @return The stroke (never <code>null</code>).
-	// *
-	// * @see #setDomainGridlineStroke(Stroke)
-	// */
-	// public Stroke getDomainGridlineStroke() {
-	// return this.domainGridlineStroke;
-	// }
-	//
-	// /**
-	// * Sets the stroke for the grid lines plotted against the domain axis, and
-	// * sends a {@link PlotChangeEvent} to all registered listeners.
-	// *
-	// * @param stroke
-	// * the stroke (<code>null</code> not permitted).
-	// *
-	// * @throws IllegalArgumentException
-	// * if <code>stroke</code> is <code>null</code>.
-	// *
-	// * @see #getDomainGridlineStroke()
-	// */
-	// public void setDomainGridlineStroke(Stroke stroke) {
-	// ParamChecks.nullNotPermitted(stroke, "stroke");
-	// this.domainGridlineStroke = stroke;
-	// fireChangeEvent();
-	// }
-	//
-	// /**
-	// * Returns the stroke for the minor grid-lines (if any) plotted against
-	// the
-	// * domain axis.
-	// *
-	// * @return The stroke (never <code>null</code>).
-	// *
-	// * @see #setDomainMinorGridlineStroke(Stroke)
-	// *
-	// * @since 1.0.12
-	// */
-	//
-	// public Stroke getDomainMinorGridlineStroke() {
-	// return this.domainMinorGridlineStroke;
-	// }
-	//
-	// /**
-	// * Sets the stroke for the minor grid lines plotted against the domain
-	// axis,
-	// * and sends a {@link PlotChangeEvent} to all registered listeners.
-	// *
-	// * @param stroke
-	// * the stroke (<code>null</code> not permitted).
-	// *
-	// * @throws IllegalArgumentException
-	// * if <code>stroke</code> is <code>null</code>.
-	// *
-	// * @see #getDomainMinorGridlineStroke()
-	// *
-	// * @since 1.0.12
-	// */
-	// public void setDomainMinorGridlineStroke(Stroke stroke) {
-	// ParamChecks.nullNotPermitted(stroke, "stroke");
-	// this.domainMinorGridlineStroke = stroke;
-	// fireChangeEvent();
-	// }
+	/**
+	 * Returns the stroke for the grid-lines (if any) plotted against the domain
+	 * axis.
+	 *
+	 * @return The stroke (never <code>null</code>).
+	 *
+	 * @see #setDomainGridlineStroke(StrokeProperties)
+	 */
+	public StrokeProperties getDomainGridlineStroke() {
+		return this.domainGridlineStroke;
+	}
+
+	/**
+	 * Sets the stroke for the grid lines plotted against the domain axis, and
+	 * sends a {@link PlotChangeEvent} to all registered listeners.
+	 *
+	 * @param stroke
+	 *            the stroke (<code>null</code> not permitted).
+	 *
+	 * @throws IllegalArgumentException
+	 *             if <code>stroke</code> is <code>null</code>.
+	 *
+	 * @see #getDomainGridlineStroke()
+	 */
+	public void setDomainGridlineStroke(StrokeProperties stroke) {
+		ParamChecks.nullNotPermitted(stroke, "stroke");
+		this.domainGridlineStroke = stroke;
+		fireChangeEvent();
+	}
+
+	/**
+	 * Returns the stroke for the minor grid-lines (if any) plotted against the
+	 * domain axis.
+	 *
+	 * @return The stroke (never <code>null</code>).
+	 *
+	 * @see #setDomainMinorGridlineStroke(StrokeProperties)
+	 *
+	 * @since 1.0.12
+	 */
+
+	public StrokeProperties getDomainMinorGridlineStroke() {
+		return this.domainMinorGridlineStroke;
+	}
+
+	/**
+	 * Sets the stroke for the minor grid lines plotted against the domain axis,
+	 * and sends a {@link PlotChangeEvent} to all registered listeners.
+	 *
+	 * @param stroke
+	 *            the stroke (<code>null</code> not permitted).
+	 *
+	 * @throws IllegalArgumentException
+	 *             if <code>stroke</code> is <code>null</code>.
+	 *
+	 * @see #getDomainMinorGridlineStroke()
+	 *
+	 * @since 1.0.12
+	 */
+	public void setDomainMinorGridlineStroke(StrokeProperties stroke) {
+		ParamChecks.nullNotPermitted(stroke, "stroke");
+		this.domainMinorGridlineStroke = stroke;
+		fireChangeEvent();
+	}
 
 	/**
 	 * Returns the paint for the grid lines (if any) plotted against the domain
@@ -2080,34 +2059,32 @@ public class XYPlot extends Plot implements ValueAxisPlot, Pannable, Zoomable,
 		}
 	}
 
-	// JAVAFX stroke
-	// /**
-	// * Returns the stroke for the grid lines (if any) plotted against the
-	// range
-	// * axis.
-	// *
-	// * @return The stroke (never <code>null</code>).
-	// *
-	// * @see #setRangeGridlineStroke(Stroke)
-	// */
-	// public Stroke getRangeGridlineStroke() {
-	// return this.rangeGridlineStroke;
-	// }
-	//
-	// /**
-	// * Sets the stroke for the grid lines plotted against the range axis, and
-	// * sends a {@link PlotChangeEvent} to all registered listeners.
-	// *
-	// * @param stroke
-	// * the stroke (<code>null</code> not permitted).
-	// *
-	// * @see #getRangeGridlineStroke()
-	// */
-	// public void setRangeGridlineStroke(Stroke stroke) {
-	// ParamChecks.nullNotPermitted(stroke, "stroke");
-	// this.rangeGridlineStroke = stroke;
-	// fireChangeEvent();
-	// }
+	/**
+	 * Returns the stroke for the grid lines (if any) plotted against the range
+	 * axis.
+	 *
+	 * @return The stroke (never <code>null</code>).
+	 *
+	 * @see #setRangeGridlineStroke(StrokeProperties)
+	 */
+	public StrokeProperties getRangeGridlineStroke() {
+		return this.rangeGridlineStroke;
+	}
+
+	/**
+	 * Sets the stroke for the grid lines plotted against the range axis, and
+	 * sends a {@link PlotChangeEvent} to all registered listeners.
+	 *
+	 * @param stroke
+	 *            the stroke (<code>null</code> not permitted).
+	 *
+	 * @see #getRangeGridlineStroke()
+	 */
+	public void setRangeGridlineStroke(StrokeProperties stroke) {
+		ParamChecks.nullNotPermitted(stroke, "stroke");
+		this.rangeGridlineStroke = stroke;
+		fireChangeEvent();
+	}
 
 	/**
 	 * Returns the paint for the grid lines (if any) plotted against the range
@@ -2171,39 +2148,36 @@ public class XYPlot extends Plot implements ValueAxisPlot, Pannable, Zoomable,
 		}
 	}
 
-	// JAVAFX stroke
-	// /**
-	// * Returns the stroke for the minor grid lines (if any) plotted against
-	// the
-	// * range axis.
-	// *
-	// * @return The stroke (never <code>null</code>).
-	// *
-	// * @see #setRangeMinorGridlineStroke(Stroke)
-	// *
-	// * @since 1.0.12
-	// */
-	// public Stroke getRangeMinorGridlineStroke() {
-	// return this.rangeMinorGridlineStroke;
-	// }
-	//
-	// /**
-	// * Sets the stroke for the minor grid lines plotted against the range
-	// axis,
-	// * and sends a {@link PlotChangeEvent} to all registered listeners.
-	// *
-	// * @param stroke
-	// * the stroke (<code>null</code> not permitted).
-	// *
-	// * @see #getRangeMinorGridlineStroke()
-	// *
-	// * @since 1.0.12
-	// */
-	// public void setRangeMinorGridlineStroke(Stroke stroke) {
-	// ParamChecks.nullNotPermitted(stroke, "stroke");
-	// this.rangeMinorGridlineStroke = stroke;
-	// fireChangeEvent();
-	// }
+	/**
+	 * Returns the stroke for the minor grid lines (if any) plotted against the
+	 * range axis.
+	 *
+	 * @return The stroke (never <code>null</code>).
+	 *
+	 * @see #setRangeMinorGridlineStroke(StrokeProperties)
+	 *
+	 * @since 1.0.12
+	 */
+	public StrokeProperties getRangeMinorGridlineStroke() {
+		return this.rangeMinorGridlineStroke;
+	}
+
+	/**
+	 * Sets the stroke for the minor grid lines plotted against the range axis,
+	 * and sends a {@link PlotChangeEvent} to all registered listeners.
+	 *
+	 * @param stroke
+	 *            the stroke (<code>null</code> not permitted).
+	 *
+	 * @see #getRangeMinorGridlineStroke()
+	 *
+	 * @since 1.0.12
+	 */
+	public void setRangeMinorGridlineStroke(StrokeProperties stroke) {
+		ParamChecks.nullNotPermitted(stroke, "stroke");
+		this.rangeMinorGridlineStroke = stroke;
+		fireChangeEvent();
+	}
 
 	/**
 	 * Returns the paint for the minor grid lines (if any) plotted against the
@@ -2267,36 +2241,35 @@ public class XYPlot extends Plot implements ValueAxisPlot, Pannable, Zoomable,
 		fireChangeEvent();
 	}
 
-	// JAVAFX stroke
-	// /**
-	// * Returns the stroke used for the zero baseline against the domain axis.
-	// *
-	// * @return The stroke (never <code>null</code>).
-	// *
-	// * @since 1.0.5
-	// *
-	// * @see #setDomainZeroBaselineStroke(Stroke)
-	// */
-	// public Stroke getDomainZeroBaselineStroke() {
-	// return this.domainZeroBaselineStroke;
-	// }
-	//
-	// /**
-	// * Sets the stroke for the zero baseline for the domain axis, and sends a
-	// * {@link PlotChangeEvent} to all registered listeners.
-	// *
-	// * @param stroke
-	// * the stroke (<code>null</code> not permitted).
-	// *
-	// * @since 1.0.5
-	// *
-	// * @see #getRangeZeroBaselineStroke()
-	// */
-	// public void setDomainZeroBaselineStroke(Stroke stroke) {
-	// ParamChecks.nullNotPermitted(stroke, "stroke");
-	// this.domainZeroBaselineStroke = stroke;
-	// fireChangeEvent();
-	// }
+	/**
+	 * Returns the stroke used for the zero baseline against the domain axis.
+	 *
+	 * @return The stroke (never <code>null</code>).
+	 *
+	 * @since 1.0.5
+	 *
+	 * @see #setDomainZeroBaselineStroke(StrokeProperties)
+	 */
+	public StrokeProperties getDomainZeroBaselineStroke() {
+		return this.domainZeroBaselineStroke;
+	}
+
+	/**
+	 * Sets the stroke for the zero baseline for the domain axis, and sends a
+	 * {@link PlotChangeEvent} to all registered listeners.
+	 *
+	 * @param stroke
+	 *            the stroke (<code>null</code> not permitted).
+	 *
+	 * @since 1.0.5
+	 *
+	 * @see #getRangeZeroBaselineStroke()
+	 */
+	public void setDomainZeroBaselineStroke(StrokeProperties stroke) {
+		ParamChecks.nullNotPermitted(stroke, "stroke");
+		this.domainZeroBaselineStroke = stroke;
+		fireChangeEvent();
+	}
 
 	/**
 	 * Returns the paint for the zero baseline (if any) plotted against the
@@ -2356,32 +2329,31 @@ public class XYPlot extends Plot implements ValueAxisPlot, Pannable, Zoomable,
 		fireChangeEvent();
 	}
 
-	// JAVAFX stroke
-	// /**
-	// * Returns the stroke used for the zero baseline against the range axis.
-	// *
-	// * @return The stroke (never <code>null</code>).
-	// *
-	// * @see #setRangeZeroBaselineStroke(Stroke)
-	// */
-	// public Stroke getRangeZeroBaselineStroke() {
-	// return this.rangeZeroBaselineStroke;
-	// }
-	//
-	// /**
-	// * Sets the stroke for the zero baseline for the range axis, and sends a
-	// * {@link PlotChangeEvent} to all registered listeners.
-	// *
-	// * @param stroke
-	// * the stroke (<code>null</code> not permitted).
-	// *
-	// * @see #getRangeZeroBaselineStroke()
-	// */
-	// public void setRangeZeroBaselineStroke(Stroke stroke) {
-	// ParamChecks.nullNotPermitted(stroke, "stroke");
-	// this.rangeZeroBaselineStroke = stroke;
-	// fireChangeEvent();
-	// }
+	/**
+	 * Returns the stroke used for the zero baseline against the range axis.
+	 *
+	 * @return The stroke (never <code>null</code>).
+	 *
+	 * @see #setRangeZeroBaselineStroke(StrokeProperties)
+	 */
+	public StrokeProperties getRangeZeroBaselineStroke() {
+		return this.rangeZeroBaselineStroke;
+	}
+
+	/**
+	 * Sets the stroke for the zero baseline for the range axis, and sends a
+	 * {@link PlotChangeEvent} to all registered listeners.
+	 *
+	 * @param stroke
+	 *            the stroke (<code>null</code> not permitted).
+	 *
+	 * @see #getRangeZeroBaselineStroke()
+	 */
+	public void setRangeZeroBaselineStroke(StrokeProperties stroke) {
+		ParamChecks.nullNotPermitted(stroke, "stroke");
+		this.rangeZeroBaselineStroke = stroke;
+		fireChangeEvent();
+	}
 
 	/**
 	 * Returns the paint for the zero baseline (if any) plotted against the
@@ -3122,7 +3094,7 @@ public class XYPlot extends Plot implements ValueAxisPlot, Pannable, Zoomable,
 		fireChangeEvent();
 	}
 
-	// JAVAFX
+	// JAVAFX shadow generator
 	// /**
 	// * Returns the shadow generator for the plot, if any.
 	// *
@@ -3376,7 +3348,7 @@ public class XYPlot extends Plot implements ValueAxisPlot, Pannable, Zoomable,
 		}
 		crosshairState.setCrosshairX(getDomainCrosshairValue());
 		crosshairState.setCrosshairY(getRangeCrosshairValue());
-		// JAVAFX
+		// JAVAFX composite, clipping
 		// Shape originalClip = g2.getClip();
 		// Composite originalComposite = g2.getComposite();
 		//
@@ -3415,7 +3387,7 @@ public class XYPlot extends Plot implements ValueAxisPlot, Pannable, Zoomable,
 			drawZeroRangeBaseline(g2, dataArea);
 		}
 
-		// JAVAFX
+		// JAVAFX shadow generator
 		// Graphics2D savedG2 = g2;
 		// BufferedImage dataImage = null;
 		// boolean suppressShadow = Boolean.TRUE.equals(g2.getRenderingHint(
@@ -3490,10 +3462,9 @@ public class XYPlot extends Plot implements ValueAxisPlot, Pannable, Zoomable,
 		if (isDomainCrosshairVisible()) {
 			double x = getDomainCrosshairValue();
 			Paint paint = getDomainCrosshairPaint();
-			// JAVAFX stroke
-			// Stroke stroke = getDomainCrosshairStroke();
+			StrokeProperties stroke = getDomainCrosshairStroke();
 			drawDomainCrosshair(g2, dataArea, orient, x, xAxis,
-					/* JAVAFX stroke, */paint);
+					stroke, paint);
 		}
 
 		// draw range crosshair if required...
@@ -3512,10 +3483,9 @@ public class XYPlot extends Plot implements ValueAxisPlot, Pannable, Zoomable,
 		if (isRangeCrosshairVisible()) {
 			double y = getRangeCrosshairValue();
 			Paint paint = getRangeCrosshairPaint();
-			// JAVAFX stroke
-			// Stroke stroke = getRangeCrosshairStroke();
+			StrokeProperties stroke = getRangeCrosshairStroke();
 			drawRangeCrosshair(g2, dataArea, orient, y, yAxis,
-					/* JAVAFX stroke, */paint);
+					stroke, paint);
 		}
 
 		if (!foundData) {
@@ -3530,7 +3500,7 @@ public class XYPlot extends Plot implements ValueAxisPlot, Pannable, Zoomable,
 		}
 
 		drawAnnotations(g2, dataArea, info);
-		// JAVAFX
+		// JAVAFX shadow generator
 		// if (this.shadowGenerator != null && !suppressShadow) {
 		// BufferedImage shadowImage =
 		// this.shadowGenerator.createDropShadow(dataImage);
@@ -3707,7 +3677,7 @@ public class XYPlot extends Plot implements ValueAxisPlot, Pannable, Zoomable,
 			}
 		}
 		if (somethingToDraw) {
-			// JAVAFX
+			// JAVAFX composite
 			// Composite originalComposite = g2.getComposite();
 			// g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER,
 			// getBackgroundAlpha()));
@@ -3717,7 +3687,7 @@ public class XYPlot extends Plot implements ValueAxisPlot, Pannable, Zoomable,
 					fillRectangle(g2, r[i]);
 				}
 			}
-			// JAVAFX
+			// JAVAFX composite
 			// g2.setComposite(originalComposite);
 		}
 	}
@@ -4053,22 +4023,19 @@ public class XYPlot extends Plot implements ValueAxisPlot, Pannable, Zoomable,
 
 		// draw the domain grid lines, if any...
 		if (isDomainGridlinesVisible() || isDomainMinorGridlinesVisible()) {
-			// JAVAFX stroke
-			// Stroke gridStroke = null;
+			StrokeProperties gridStroke = null;
 			Paint gridPaint = null;
 			boolean paintLine;
 			for (ValueTick tick : ticks) {
 				paintLine = false;
 				if ((tick.getTickType() == TickType.MINOR)
 						&& isDomainMinorGridlinesVisible()) {
-					// JAVAFX stroke
-					// gridStroke = getDomainMinorGridlineStroke();
+					gridStroke = getDomainMinorGridlineStroke();
 					gridPaint = getDomainMinorGridlinePaint();
 					paintLine = true;
 				} else if ((tick.getTickType() == TickType.MAJOR)
 						&& isDomainGridlinesVisible()) {
-					// JAVAFX stroke
-					// gridStroke = getDomainGridlineStroke();
+					gridStroke = getDomainGridlineStroke();
 					gridPaint = getDomainGridlinePaint();
 					paintLine = true;
 				}
@@ -4076,7 +4043,7 @@ public class XYPlot extends Plot implements ValueAxisPlot, Pannable, Zoomable,
 				if ((r instanceof AbstractXYItemRenderer) && paintLine) {
 					((AbstractXYItemRenderer) r).drawDomainLine(g2, this,
 							getDomainAxis(), dataArea, tick.getValue(),
-							gridPaint /* JAVAFX, gridStroke */);
+							gridPaint, gridStroke);
 				}
 			}
 		}
@@ -4105,8 +4072,7 @@ public class XYPlot extends Plot implements ValueAxisPlot, Pannable, Zoomable,
 
 		// draw the range grid lines, if any...
 		if (isRangeGridlinesVisible() || isRangeMinorGridlinesVisible()) {
-			// JAVAFX stroke
-			// Stroke gridStroke = null;
+			StrokeProperties gridStroke = null;
 			Paint gridPaint = null;
 			ValueAxis axis = getRangeAxis();
 			if (axis != null) {
@@ -4115,22 +4081,19 @@ public class XYPlot extends Plot implements ValueAxisPlot, Pannable, Zoomable,
 					paintLine = false;
 					if ((tick.getTickType() == TickType.MINOR)
 							&& isRangeMinorGridlinesVisible()) {
-						// JAVAFX stroke
-						// gridStroke = getRangeMinorGridlineStroke();
+						gridStroke = getRangeMinorGridlineStroke();
 						gridPaint = getRangeMinorGridlinePaint();
 						paintLine = true;
 					} else if ((tick.getTickType() == TickType.MAJOR)
 							&& isRangeGridlinesVisible()) {
-						// JAVAFX stroke
-						// gridStroke = getRangeGridlineStroke();
+						gridStroke = getRangeGridlineStroke();
 						gridPaint = getRangeGridlinePaint();
 						paintLine = true;
 					}
 					if ((tick.getValue() != 0.0
 							|| !isRangeZeroBaselineVisible()) && paintLine) {
 						getRenderer().drawRangeGridline(g2, this, axis,
-								area, tick.getValue(), gridPaint
-								/* JAVAFX, gridStroke */);
+								area, tick.getValue(), gridPaint, gridStroke);
 					}
 				}
 			}
@@ -4158,8 +4121,7 @@ public class XYPlot extends Plot implements ValueAxisPlot, Pannable, Zoomable,
 			if (r instanceof AbstractXYItemRenderer) {
 				AbstractXYItemRenderer renderer = (AbstractXYItemRenderer) r;
 				renderer.drawDomainLine(g2, this, getDomainAxis(), area, 0.0,
-						this.domainZeroBaselinePaint
-						/* JAVAFX , this.domainZeroBaselineStroke */);
+						this.domainZeroBaselinePaint, this.domainZeroBaselineStroke);
 			}
 		}
 	}
@@ -4176,10 +4138,8 @@ public class XYPlot extends Plot implements ValueAxisPlot, Pannable, Zoomable,
 	 */
 	protected void drawZeroRangeBaseline(GraphicsContext g2, Rectangle2D area) {
 		if (isRangeZeroBaselineVisible()) {
-			// JAVAFX stroke
-			// getRenderer().drawRangeGridline(g2, this, getRangeAxis(), area,
-			// 0.0,
-			// this.rangeZeroBaselinePaint, this.rangeZeroBaselineStroke);
+			getRenderer().drawRangeGridline(g2, this, getRangeAxis(), area, 0.0,
+					this.rangeZeroBaselinePaint, this.rangeZeroBaselineStroke);
 		}
 	}
 
@@ -4371,8 +4331,7 @@ public class XYPlot extends Plot implements ValueAxisPlot, Pannable, Zoomable,
 	 *            the paint to use.
 	 */
 	protected void drawHorizontalLine(GraphicsContext g2, Rectangle2D dataArea,
-			double value, /* JAVAFX Stroke stroke, */
-			Paint paint) {
+			double value, StrokeProperties stroke, Paint paint) {
 
 		ValueAxis axis = getRangeAxis();
 		if (getOrientation() == PlotOrientation.HORIZONTAL) {
@@ -4382,8 +4341,7 @@ public class XYPlot extends Plot implements ValueAxisPlot, Pannable, Zoomable,
 			double yy = axis.valueToJava2D(value, dataArea, RectangleEdge.LEFT);
 			Line2D line = newLine(dataArea.getMinX(), yy,
 					dataArea.getMaxX(), yy);
-			// JAVAFX stroke
-			// g2.setStroke(stroke);
+			setStrokeProperties(g2, stroke);
 			g2.setStroke(paint);
 			strokeLine(g2, line);
 		}
@@ -4412,7 +4370,7 @@ public class XYPlot extends Plot implements ValueAxisPlot, Pannable, Zoomable,
 	 */
 	protected void drawDomainCrosshair(GraphicsContext g2, Rectangle2D dataArea,
 			PlotOrientation orientation, double value, ValueAxis axis,
-			/* JAVAFX Stroke stroke, */Paint paint) {
+			StrokeProperties stroke, Paint paint) {
 
 		if (!axis.getRange().contains(value)) {
 			return;
@@ -4429,15 +4387,15 @@ public class XYPlot extends Plot implements ValueAxisPlot, Pannable, Zoomable,
 			line = newLine(dataArea.getMinX(), yy,
 					dataArea.getMaxX(), yy);
 		}
-		// JAVAFX
+		// JAVAFX rendering hints
 		// Object saved =
 		// g2.getRenderingHint(RenderingHints.KEY_STROKE_CONTROL);
 		// g2.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL,
 		// RenderingHints.VALUE_STROKE_NORMALIZE);
-		// g2.setStroke(stroke);
+		setStrokeProperties(g2, stroke);
 		g2.setStroke(paint);
 		strokeLine(g2, line);
-		// JAVAFX
+		// JAVAFX rendering hints
 		// g2.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, saved);
 	}
 
@@ -4456,7 +4414,7 @@ public class XYPlot extends Plot implements ValueAxisPlot, Pannable, Zoomable,
 	 *            the paint to use.
 	 */
 	protected void drawVerticalLine(GraphicsContext g2, Rectangle2D dataArea,
-			double value, /* JAVAFX Stroke stroke, */Paint paint) {
+			double value, StrokeProperties stroke, Paint paint) {
 
 		ValueAxis axis = getDomainAxis();
 		if (getOrientation() == PlotOrientation.HORIZONTAL) {
@@ -4467,8 +4425,7 @@ public class XYPlot extends Plot implements ValueAxisPlot, Pannable, Zoomable,
 					RectangleEdge.BOTTOM);
 			Line2D line = newLine(xx, dataArea.getMinY(), xx,
 					dataArea.getMaxY());
-			// JAVAFX stroke
-			// g2.setStroke(stroke);
+			setStrokeProperties(g2, stroke);
 			g2.setStroke(paint);
 			strokeLine(g2, line);
 		}
@@ -4497,12 +4454,12 @@ public class XYPlot extends Plot implements ValueAxisPlot, Pannable, Zoomable,
 	 */
 	protected void drawRangeCrosshair(GraphicsContext g2, Rectangle2D dataArea,
 			PlotOrientation orientation, double value, ValueAxis axis,
-			/* JAVAFX Stroke stroke, */Paint paint) {
+			StrokeProperties stroke, Paint paint) {
 
 		if (!axis.getRange().contains(value)) {
 			return;
 		}
-		// JAVAFX
+		// JAVAFX rendering hints
 		// Object saved =
 		// g2.getRenderingHint(RenderingHints.KEY_STROKE_CONTROL);
 		// g2.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL,
@@ -4519,11 +4476,10 @@ public class XYPlot extends Plot implements ValueAxisPlot, Pannable, Zoomable,
 			line = newLine(dataArea.getMinX(), yy,
 					dataArea.getMaxX(), yy);
 		}
-		// JAVAFX stroke
-		// g2.setStroke(stroke);
+		setStrokeProperties(g2, stroke);
 		g2.setStroke(paint);
 		strokeLine(g2, line);
-		// JAVAFX
+		// JAVAFX rendering hints
 		// g2.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, saved);
 	}
 
@@ -4933,34 +4889,33 @@ public class XYPlot extends Plot implements ValueAxisPlot, Pannable, Zoomable,
 		}
 	}
 
-	// JAVAFX stroke
-	// /**
-	// * Returns the {@link Stroke} used to draw the crosshair (if visible).
-	// *
-	// * @return The crosshair stroke (never <code>null</code>).
-	// *
-	// * @see #setDomainCrosshairStroke(Stroke)
-	// * @see #isDomainCrosshairVisible()
-	// * @see #getDomainCrosshairPaint()
-	// */
-	// public Stroke getDomainCrosshairStroke() {
-	// return this.domainCrosshairStroke;
-	// }
-	//
-	// /**
-	// * Sets the Stroke used to draw the crosshairs (if visible) and notifies
-	// * registered listeners that the axis has been modified.
-	// *
-	// * @param stroke
-	// * the new crosshair stroke (<code>null</code> not permitted).
-	// *
-	// * @see #getDomainCrosshairStroke()
-	// */
-	// public void setDomainCrosshairStroke(Stroke stroke) {
-	// ParamChecks.nullNotPermitted(stroke, "stroke");
-	// this.domainCrosshairStroke = stroke;
-	// fireChangeEvent();
-	// }
+	/**
+	 * Returns the {@link Stroke} used to draw the crosshair (if visible).
+	 *
+	 * @return The crosshair stroke (never <code>null</code>).
+	 *
+	 * @see #setDomainCrosshairStroke(Stroke)
+	 * @see #isDomainCrosshairVisible()
+	 * @see #getDomainCrosshairPaint()
+	 */
+	public StrokeProperties getDomainCrosshairStroke() {
+		return this.domainCrosshairStroke;
+	}
+
+	/**
+	 * Sets the Stroke used to draw the crosshairs (if visible) and notifies
+	 * registered listeners that the axis has been modified.
+	 *
+	 * @param stroke
+	 *            the new crosshair stroke (<code>null</code> not permitted).
+	 *
+	 * @see #getDomainCrosshairStroke()
+	 */
+	public void setDomainCrosshairStroke(StrokeProperties stroke) {
+		ParamChecks.nullNotPermitted(stroke, "stroke");
+		this.domainCrosshairStroke = stroke;
+		fireChangeEvent();
+	}
 
 	/**
 	 * Returns the domain crosshair paint.
@@ -5092,34 +5047,33 @@ public class XYPlot extends Plot implements ValueAxisPlot, Pannable, Zoomable,
 		}
 	}
 
-	// JAVAFX stroke
-	// /**
-	// * Returns the stroke used to draw the crosshair (if visible).
-	// *
-	// * @return The crosshair stroke (never <code>null</code>).
-	// *
-	// * @see #setRangeCrosshairStroke(Stroke)
-	// * @see #isRangeCrosshairVisible()
-	// * @see #getRangeCrosshairPaint()
-	// */
-	// public Stroke getRangeCrosshairStroke() {
-	// return this.rangeCrosshairStroke;
-	// }
-	//
-	// /**
-	// * Sets the stroke used to draw the crosshairs (if visible) and sends a
-	// * {@link PlotChangeEvent} to all registered listeners.
-	// *
-	// * @param stroke
-	// * the new crosshair stroke (<code>null</code> not permitted).
-	// *
-	// * @see #getRangeCrosshairStroke()
-	// */
-	// public void setRangeCrosshairStroke(Stroke stroke) {
-	// ParamChecks.nullNotPermitted(stroke, "stroke");
-	// this.rangeCrosshairStroke = stroke;
-	// fireChangeEvent();
-	// }
+	/**
+	 * Returns the stroke used to draw the crosshair (if visible).
+	 *
+	 * @return The crosshair stroke (never <code>null</code>).
+	 *
+	 * @see #setRangeCrosshairStroke(StrokeProperties)
+	 * @see #isRangeCrosshairVisible()
+	 * @see #getRangeCrosshairPaint()
+	 */
+	public StrokeProperties getRangeCrosshairStroke() {
+		return this.rangeCrosshairStroke;
+	}
+
+	/**
+	 * Sets the stroke used to draw the crosshairs (if visible) and sends a
+	 * {@link PlotChangeEvent} to all registered listeners.
+	 *
+	 * @param stroke
+	 *            the new crosshair stroke (<code>null</code> not permitted).
+	 *
+	 * @see #getRangeCrosshairStroke()
+	 */
+	public void setRangeCrosshairStroke(StrokeProperties stroke) {
+		ParamChecks.nullNotPermitted(stroke, "stroke");
+		this.rangeCrosshairStroke = stroke;
+		fireChangeEvent();
+	}
 
 	/**
 	 * Returns the range crosshair paint.
@@ -5707,38 +5661,34 @@ public class XYPlot extends Plot implements ValueAxisPlot, Pannable, Zoomable,
 				that.datasetToRangeAxesMap)) {
 			return false;
 		}
-		// JAVAFX stroke
-		// if (!ObjectUtils.equal(this.domainGridlineStroke,
-		// that.domainGridlineStroke)) {
-		// return false;
-		// }
+		if (!ObjectUtils.equal(this.domainGridlineStroke,
+				that.domainGridlineStroke)) {
+			return false;
+		}
 		if (!PaintUtils.equal(this.domainGridlinePaint,
 				that.domainGridlinePaint)) {
 			return false;
 		}
-		// JAVAFX stroke
-		// if (!ObjectUtils.equal(this.rangeGridlineStroke,
-		// that.rangeGridlineStroke)) {
-		// return false;
-		// }
+		if (!ObjectUtils.equal(this.rangeGridlineStroke,
+				that.rangeGridlineStroke)) {
+			return false;
+		}
 		if (!PaintUtils.equal(this.rangeGridlinePaint,
 				that.rangeGridlinePaint)) {
 			return false;
 		}
-		// JAVAFX stroke
-		// if (!ObjectUtils.equal(this.domainMinorGridlineStroke,
-		// that.domainMinorGridlineStroke)) {
-		// return false;
-		// }
+		if (!ObjectUtils.equal(this.domainMinorGridlineStroke,
+				that.domainMinorGridlineStroke)) {
+			return false;
+		}
 		if (!PaintUtils.equal(this.domainMinorGridlinePaint,
 				that.domainMinorGridlinePaint)) {
 			return false;
 		}
-		// JAVAFX stroke
-		// if (!ObjectUtils.equal(this.rangeMinorGridlineStroke,
-		// that.rangeMinorGridlineStroke)) {
-		// return false;
-		// }
+		if (!ObjectUtils.equal(this.rangeMinorGridlineStroke,
+				that.rangeMinorGridlineStroke)) {
+			return false;
+		}
 		if (!PaintUtils.equal(this.rangeMinorGridlinePaint,
 				that.rangeMinorGridlinePaint)) {
 			return false;
@@ -5747,33 +5697,30 @@ public class XYPlot extends Plot implements ValueAxisPlot, Pannable, Zoomable,
 				that.domainZeroBaselinePaint)) {
 			return false;
 		}
-		// JAVAFX stroke
-		// if (!ObjectUtils.equal(this.domainZeroBaselineStroke,
-		// that.domainZeroBaselineStroke)) {
-		// return false;
-		// }
+		if (!ObjectUtils.equal(this.domainZeroBaselineStroke,
+				that.domainZeroBaselineStroke)) {
+			return false;
+		}
 		if (!PaintUtils.equal(this.rangeZeroBaselinePaint,
 				that.rangeZeroBaselinePaint)) {
 			return false;
 		}
-		// JAVAFX stroke
-		// if (!ObjectUtils.equal(this.rangeZeroBaselineStroke,
-		// that.rangeZeroBaselineStroke)) {
-		// return false;
-		// }
-		// if (!ObjectUtils.equal(this.domainCrosshairStroke,
-		// that.domainCrosshairStroke)) {
-		// return false;
-		// }
+		if (!ObjectUtils.equal(this.rangeZeroBaselineStroke,
+				that.rangeZeroBaselineStroke)) {
+			return false;
+		}
+		if (!ObjectUtils.equal(this.domainCrosshairStroke,
+				that.domainCrosshairStroke)) {
+			return false;
+		}
 		if (!PaintUtils.equal(this.domainCrosshairPaint,
 				that.domainCrosshairPaint)) {
 			return false;
 		}
-		// JAVAFX stroke
-		// if (!ObjectUtils.equal(this.rangeCrosshairStroke,
-		// that.rangeCrosshairStroke)) {
-		// return false;
-		// }
+		if (!ObjectUtils.equal(this.rangeCrosshairStroke,
+				that.rangeCrosshairStroke)) {
+			return false;
+		}
 		if (!PaintUtils.equal(this.rangeCrosshairPaint,
 				that.rangeCrosshairPaint)) {
 			return false;
@@ -5834,7 +5781,7 @@ public class XYPlot extends Plot implements ValueAxisPlot, Pannable, Zoomable,
 				return false;
 			}
 		}
-		// JAVAFX
+		// JAVAFX shadow generator
 		// if (!ObjectUtils.equal(this.shadowGenerator,
 		// that.shadowGenerator)) {
 		// return false;

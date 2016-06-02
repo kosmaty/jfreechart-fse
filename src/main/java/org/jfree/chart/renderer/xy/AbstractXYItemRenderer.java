@@ -125,6 +125,7 @@
 
 package org.jfree.chart.renderer.xy;
 
+import static org.jfree.chart.util.ShapeUtils.setStrokeProperties;
 import static org.jfree.geometry.GeometryUtils.emptyLine;
 import static org.jfree.geometry.GeometryUtils.fillRectangle;
 import static org.jfree.geometry.GeometryUtils.newLine;
@@ -156,6 +157,7 @@ import org.jfree.chart.LegendItem;
 import org.jfree.chart.annotations.Annotation;
 import org.jfree.chart.annotations.XYAnnotation;
 import org.jfree.chart.axis.ValueAxis;
+import org.jfree.chart.drawable.StrokeProperties;
 // import org.jfree.chart.ui.GradientPaintTransformer;
 import org.jfree.chart.ui.Layer;
 import org.jfree.chart.ui.LengthAdjustmentType;
@@ -1005,11 +1007,9 @@ public abstract class AbstractXYItemRenderer extends AbstractRenderer
 		}
 		else {
 			Paint outlinePaint = lookupSeriesOutlinePaint(series);
-			// JAVAFX stroke
-			// Stroke outlineStroke = lookupSeriesOutlineStroke(series);
+			StrokeProperties outlineStroke = lookupSeriesOutlineStroke(series);
 			item.setOutlinePaint(outlinePaint);
-			// JAVAFX stroke
-			// item.setOutlineStroke(outlineStroke);
+			item.setOutlineStroke(outlineStroke);
 		}
 		return item;
 	}
@@ -1137,8 +1137,7 @@ public abstract class AbstractXYItemRenderer extends AbstractRenderer
 		}
 
 		g2.setStroke(plot.getDomainGridlinePaint());
-		// JAVAFX stroke
-		// g2.setStroke(plot.getDomainGridlineStroke());
+		setStrokeProperties(g2, plot.getDomainGridlineStroke());
 
 		// JAVAFX rendering hints
 		// Object saved =
@@ -1172,8 +1171,7 @@ public abstract class AbstractXYItemRenderer extends AbstractRenderer
 	 * @since 1.0.5
 	 */
 	public void drawDomainLine(GraphicsContext g2, XYPlot plot, ValueAxis axis,
-			Rectangle2D dataArea, double value, Paint paint
-			/* JAVAFX, Stroke stroke */) {
+			Rectangle2D dataArea, double value, Paint paint, StrokeProperties stroke) {
 
 		Range range = axis.getRange();
 		if (!range.contains(value)) {
@@ -1193,8 +1191,7 @@ public abstract class AbstractXYItemRenderer extends AbstractRenderer
 		}
 
 		g2.setStroke(paint);
-		// JAVAFX stroke
-		// g2.setStroke(stroke);
+		setStrokeProperties(g2, stroke);
 
 		// JAVAFX rendering hints
 		// Object saved =
@@ -1227,8 +1224,7 @@ public abstract class AbstractXYItemRenderer extends AbstractRenderer
 	 */
 	@Override
 	public void drawRangeGridline(GraphicsContext g2, XYPlot plot, ValueAxis axis,
-			Rectangle2D dataArea, double value, Paint paint
-			/* JAVAFX, Stroke stroke */) {
+			Rectangle2D dataArea, double value, Paint paint, StrokeProperties stroke) {
 
 		Range range = axis.getRange();
 		if (!range.contains(value)) {
@@ -1247,8 +1243,7 @@ public abstract class AbstractXYItemRenderer extends AbstractRenderer
 		}
 
 		g2.setStroke(paint);
-		// JAVAFX stroke
-		// g2.setStroke(stroke);
+		setStrokeProperties(g2, stroke);
 
 		// JAVAFX rendering hints
 		// Object saved =
@@ -1306,8 +1301,7 @@ public abstract class AbstractXYItemRenderer extends AbstractRenderer
 			// g2.setComposite(AlphaComposite.getInstance(
 			// AlphaComposite.SRC_OVER, marker.getAlpha()));
 			g2.setStroke(marker.getPaint());
-			// JAVAFX stroke
-			// g2.setStroke(marker.getStroke());
+			setStrokeProperties(g2, marker.getStroke());
 			g2.strokeLine(line.getX1(), line.getY1(), line.getX2(), line.getY2());
 
 			String label = marker.getLabel();
@@ -1383,40 +1377,39 @@ public abstract class AbstractXYItemRenderer extends AbstractRenderer
 			// }
 			fillRectangle(g2, rect);
 
-			// JAVAFX stroke
-			// // now draw the outlines, if visible...
-			// if (im.getOutlinePaint() != null && im.getOutlineStroke() !=
-			// null) {
-			// if (orientation == PlotOrientation.VERTICAL) {
-			// Line2D line = emptyLine();
-			// double y0 = dataArea.getMinY();
-			// double y1 = dataArea.getMaxY();
-			// g2.setPaint(im.getOutlinePaint());
-			// g2.setStroke(im.getOutlineStroke());
-			// if (range.contains(start)) {
-			// line = newLine(start2d, y0, start2d, y1);
-			// strokeLine(g2, line);
-			// }
-			// if (range.contains(end)) {
-			// line = newLine(end2d, y0, end2d, y1);
-			// strokeLine(g2, line);
-			// }
-			// } else { // PlotOrientation.HORIZONTAL
-			// Line2D line = emptyLine();
-			// double x0 = dataArea.getMinX();
-			// double x1 = dataArea.getMaxX();
-			// g2.setPaint(im.getOutlinePaint());
-			// g2.setStroke(im.getOutlineStroke());
-			// if (range.contains(start)) {
-			// line = newLine(x0, start2d, x1, start2d);
-			// strokeLine(g2, line);
-			// }
-			// if (range.contains(end)) {
-			// line = newLine(x0, end2d, x1, end2d);
-			// strokeLine(g2, line);
-			// }
-			// }
-			// }
+			// now draw the outlines, if visible...
+			if (im.getOutlinePaint() != null && im.getOutlineStroke() !=
+					null) {
+				if (orientation == PlotOrientation.VERTICAL) {
+					Line2D line = emptyLine();
+					double y0 = dataArea.getMinY();
+					double y1 = dataArea.getMaxY();
+					g2.setStroke(im.getOutlinePaint());
+					setStrokeProperties(g2, im.getOutlineStroke());
+					if (range.contains(start)) {
+						line = newLine(start2d, y0, start2d, y1);
+						strokeLine(g2, line);
+					}
+					if (range.contains(end)) {
+						line = newLine(end2d, y0, end2d, y1);
+						strokeLine(g2, line);
+					}
+				} else { // PlotOrientation.HORIZONTAL
+					Line2D line = emptyLine();
+					double x0 = dataArea.getMinX();
+					double x1 = dataArea.getMaxX();
+					g2.setStroke(im.getOutlinePaint());
+					setStrokeProperties(g2, im.getOutlineStroke());
+					if (range.contains(start)) {
+						line = newLine(x0, start2d, x1, start2d);
+						strokeLine(g2, line);
+					}
+					if (range.contains(end)) {
+						line = newLine(x0, end2d, x1, end2d);
+						strokeLine(g2, line);
+					}
+				}
+			}
 
 			String label = marker.getLabel();
 			RectangleAnchor anchor = marker.getLabelAnchor();
@@ -1526,8 +1519,7 @@ public abstract class AbstractXYItemRenderer extends AbstractRenderer
 			// g2.setComposite(AlphaComposite.getInstance(
 			// AlphaComposite.SRC_OVER, marker.getAlpha()));
 			g2.setStroke(marker.getPaint());
-			// JAVAFX stroke
-			// g2.setStroke(marker.getStroke());
+			setStrokeProperties(g2, marker.getStroke());
 			strokeLine(g2, line);
 
 			String label = marker.getLabel();
@@ -1603,40 +1595,39 @@ public abstract class AbstractXYItemRenderer extends AbstractRenderer
 			// }
 			fillRectangle(g2, rect);
 
-			// JAVAFX stroke
-			// // now draw the outlines, if visible...
-			// if (im.getOutlinePaint() != null && im.getOutlineStroke() !=
-			// null) {
-			// if (orientation == PlotOrientation.VERTICAL) {
-			// Line2D line = new Line2D.Double();
-			// double x0 = dataArea.getMinX();
-			// double x1 = dataArea.getMaxX();
-			// g2.setPaint(im.getOutlinePaint());
-			// g2.setStroke(im.getOutlineStroke());
-			// if (range.contains(start)) {
-			// line.setLine(x0, start2d, x1, start2d);
-			// g2.draw(line);
-			// }
-			// if (range.contains(end)) {
-			// line.setLine(x0, end2d, x1, end2d);
-			// g2.draw(line);
-			// }
-			// } else { // PlotOrientation.HORIZONTAL
-			// Line2D line = new Line2D.Double();
-			// double y0 = dataArea.getMinY();
-			// double y1 = dataArea.getMaxY();
-			// g2.setPaint(im.getOutlinePaint());
-			// g2.setStroke(im.getOutlineStroke());
-			// if (range.contains(start)) {
-			// line.setLine(start2d, y0, start2d, y1);
-			// g2.draw(line);
-			// }
-			// if (range.contains(end)) {
-			// line.setLine(end2d, y0, end2d, y1);
-			// g2.draw(line);
-			// }
-			// }
-			// }
+			// now draw the outlines, if visible...
+			if (im.getOutlinePaint() != null && im.getOutlineStroke() !=
+					null) {
+				if (orientation == PlotOrientation.VERTICAL) {
+					Line2D line = emptyLine();
+					double x0 = dataArea.getMinX();
+					double x1 = dataArea.getMaxX();
+					g2.setFill(im.getOutlinePaint());
+					setStrokeProperties(g2, im.getOutlineStroke());
+					if (range.contains(start)) {
+						line = newLine(x0, start2d, x1, start2d);
+						strokeLine(g2, line);
+					}
+					if (range.contains(end)) {
+						line = newLine(x0, end2d, x1, end2d);
+						strokeLine(g2, line);
+					}
+				} else { // PlotOrientation.HORIZONTAL
+					Line2D line = emptyLine();
+					double y0 = dataArea.getMinY();
+					double y1 = dataArea.getMaxY();
+					g2.setStroke(im.getOutlinePaint());
+					setStrokeProperties(g2, im.getOutlineStroke());
+					if (range.contains(start)) {
+						line = newLine(start2d, y0, start2d, y1);
+						strokeLine(g2, line);
+					}
+					if (range.contains(end)) {
+						line = newLine(end2d, y0, end2d, y1);
+						strokeLine(g2, line);
+					}
+				}
+			}
 
 			String label = marker.getLabel();
 			RectangleAnchor anchor = marker.getLabelAnchor();

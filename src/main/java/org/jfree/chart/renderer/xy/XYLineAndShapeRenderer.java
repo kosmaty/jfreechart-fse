@@ -73,6 +73,7 @@
 package org.jfree.chart.renderer.xy;
 
 import static org.jfree.chart.util.ShapeUtils.asShape;
+import static org.jfree.chart.util.ShapeUtils.setStrokeProperties;
 import static org.jfree.geometry.GeometryUtils.newLine;
 import static org.jfree.geometry.GeometryUtils.strokeLine;
 
@@ -90,6 +91,7 @@ import java.io.Serializable;
 
 import org.jfree.chart.LegendItem;
 import org.jfree.chart.axis.ValueAxis;
+import org.jfree.chart.drawable.StrokeProperties;
 import org.jfree.chart.ui.RectangleEdge;
 import org.jfree.chart.util.BooleanList;
 import org.jfree.chart.util.ObjectUtils;
@@ -965,8 +967,7 @@ public class XYLineAndShapeRenderer extends AbstractXYItemRenderer
 	 */
 	protected void drawFirstPassShape(GraphicsContext g2, int pass, int series,
 			int item, Shape shape) {
-		// JAVAFX stroke
-		// g2.setStroke(getItemStroke(series, item));
+		setStrokeProperties(g2, getItemStroke(series, item));
 		g2.setFill(getItemPaint(series, item));
 		g2.setStroke(getItemPaint(series, item));
 		ShapeUtils.outlineShape(g2, shape);
@@ -1133,8 +1134,7 @@ public class XYLineAndShapeRenderer extends AbstractXYItemRenderer
 						g2.setFill(getItemPaint(series, item));
 						g2.setStroke(getItemPaint(series, item));
 					}
-					// JAVAFX stroke
-					// g2.setStroke(getItemOutlineStroke(series, item));
+					setStrokeProperties(g2, getItemOutlineStroke(series, item));
 					ShapeUtils.outlineShape(g2, shape);
 				}
 			}
@@ -1212,16 +1212,14 @@ public class XYLineAndShapeRenderer extends AbstractXYItemRenderer
 		Paint outlinePaint = (this.useOutlinePaint ?
 				lookupSeriesOutlinePaint(
 				series) : lookupSeriesPaint(series));
-		// JAVAFX stroke
-		// Stroke outlineStroke = lookupSeriesOutlineStroke(series);
+		StrokeProperties outlineStroke = lookupSeriesOutlineStroke(series);
 		boolean lineVisible = getItemLineVisible(series, 0);
-		// JAVAFX stroke
-		// Stroke lineStroke = lookupSeriesStroke(series);
+		StrokeProperties lineStroke = lookupSeriesStroke(series);
 		Paint linePaint = lookupSeriesPaint(series);
 		LegendItem result = new LegendItem(label, description, toolTipText,
 				urlText, shapeIsVisible, shape, shapeIsFilled, fillPaint,
-				shapeOutlineVisible, outlinePaint, /* JAVAFX outlineStroke, */lineVisible,
-				this.legendLine, /* JAVAFX lineStroke, */linePaint);
+				shapeOutlineVisible, outlinePaint, outlineStroke, lineVisible,
+				this.legendLine, lineStroke, linePaint);
 		result.setLabelFont(lookupLegendTextFont(series));
 		Paint labelPaint = lookupLegendTextPaint(series);
 		if (labelPaint != null) {

@@ -98,6 +98,7 @@ package org.jfree.chart.renderer.category;
 import static org.jfree.chart.util.ShapeUtils.asShape;
 import static org.jfree.chart.util.ShapeUtils.fillShape;
 import static org.jfree.chart.util.ShapeUtils.outlineShape;
+import static org.jfree.chart.util.ShapeUtils.setStrokeProperties;
 import static org.jfree.geometry.GeometryUtils.newLine;
 
 import java.io.Serializable;
@@ -105,6 +106,7 @@ import java.io.Serializable;
 import org.jfree.chart.LegendItem;
 import org.jfree.chart.axis.CategoryAxis;
 import org.jfree.chart.axis.ValueAxis;
+import org.jfree.chart.drawable.StrokeProperties;
 import org.jfree.chart.util.BooleanList;
 import org.jfree.chart.util.ObjectUtils;
 import org.jfree.chart.util.PublicCloneable;
@@ -703,16 +705,15 @@ public class LineAndShapeRenderer extends AbstractCategoryItemRenderer
 			boolean shapeOutlineVisible = this.drawOutlines;
 			Paint outlinePaint = (this.useOutlinePaint
 					? getItemOutlinePaint(series, 0) : paint);
-			// JAVAFX stroke
-			// Stroke outlineStroke = lookupSeriesOutlineStroke(series);
+			StrokeProperties outlineStroke = lookupSeriesOutlineStroke(series);
 			boolean lineVisible = getItemLineVisible(series, 0);
 			boolean shapeVisible = getItemShapeVisible(series, 0);
 			LegendItem result = new LegendItem(label, description, toolTipText,
 					urlText, shapeVisible, shape, getItemShapeFilled(series, 0),
 					fillPaint, shapeOutlineVisible, outlinePaint,
-					/* JAVAFX outlineStroke, */
+					outlineStroke,
 					lineVisible, asShape(newLine(-7.0, 0.0, 7.0, 0.0)),
-					/* JAVAFX getItemStroke(series, 0), */getItemPaint(series, 0));
+					getItemStroke(series, 0), getItemPaint(series, 0));
 			result.setLabelFont(lookupLegendTextFont(series));
 			Paint labelPaint = lookupLegendTextPaint(series);
 			if (labelPaint != null) {
@@ -847,9 +848,8 @@ public class LineAndShapeRenderer extends AbstractCategoryItemRenderer
 						endX = x1;
 						endY = y1;
 					}
-					// JAVAFX stroke
 					g2.setStroke(getItemPaint(row, column));
-					// g2.setStroke(getItemStroke(row, column));
+					setStrokeProperties(g2, getItemStroke(row, column));
 					g2.strokeLine(startX, startY, endX, endY);
 				}
 			}
@@ -878,8 +878,7 @@ public class LineAndShapeRenderer extends AbstractCategoryItemRenderer
 					} else {
 						g2.setStroke(getItemPaint(row, column));
 					}
-					// JAVAFX stroke
-					// g2.setStroke(getItemOutlineStroke(row, column));
+					setStrokeProperties(g2, getItemOutlineStroke(row, column));
 					outlineShape(g2, shape);
 				}
 			}

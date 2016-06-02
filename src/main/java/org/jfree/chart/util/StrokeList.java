@@ -41,15 +41,16 @@
 
 package org.jfree.chart.util;
 
-import java.awt.Stroke;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
+import org.jfree.chart.drawable.StrokeProperties;
+
 /**
  * A table of {@link Stroke} objects.
  */
-public class StrokeList extends AbstractObjectList<Stroke> {
+public class StrokeList extends AbstractObjectList<StrokeProperties> {
 
 	/**
 	 * Creates a new list.
@@ -66,7 +67,7 @@ public class StrokeList extends AbstractObjectList<Stroke> {
 	 *
 	 * @return The object.
 	 */
-	public Stroke getStroke(final int index) {
+	public StrokeProperties getStroke(final int index) {
 		return get(index);
 	}
 
@@ -79,7 +80,7 @@ public class StrokeList extends AbstractObjectList<Stroke> {
 	 * @param stroke
 	 *            the {@link Stroke}.
 	 */
-	public void setStroke(final int index, final Stroke stroke) {
+	public void setStroke(final int index, final StrokeProperties stroke) {
 		set(index, stroke);
 	}
 
@@ -148,10 +149,10 @@ public class StrokeList extends AbstractObjectList<Stroke> {
 		final int count = size();
 		stream.writeInt(count);
 		for (int i = 0; i < count; i++) {
-			final Stroke stroke = getStroke(i);
+			final StrokeProperties stroke = getStroke(i);
 			if (stroke != null) {
 				stream.writeInt(i);
-				// JAVAFX
+				// JAVAFX serialization
 				// SerialUtils.writeStroke(stroke, stream);
 			}
 			else {
@@ -179,7 +180,7 @@ public class StrokeList extends AbstractObjectList<Stroke> {
 		for (int i = 0; i < count; i++) {
 			final int index = stream.readInt();
 			if (index != -1) {
-				// JAVAFX
+				// JAVAFX serialization
 				// setStroke(index, SerialUtils.readStroke(stream));
 			}
 		}

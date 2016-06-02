@@ -134,6 +134,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
 
+import org.jfree.chart.drawable.StrokeProperties;
 import org.jfree.chart.event.RendererChangeEvent;
 import org.jfree.chart.event.RendererChangeListener;
 import org.jfree.chart.labels.ItemLabelAnchor;
@@ -143,14 +144,14 @@ import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.renderer.item.DefaultLabelIRS;
 import org.jfree.chart.renderer.item.DefaultPaintIRS;
 import org.jfree.chart.renderer.item.DefaultShapeIRS;
-// import org.jfree.chart.renderer.item.DefaultStrokeIRS;
+import org.jfree.chart.renderer.item.DefaultStrokeIRS;
 import org.jfree.chart.renderer.item.DefaultVisibilityIRS;
 import org.jfree.chart.renderer.item.LabelIRS;
 import org.jfree.chart.renderer.item.PaintIRS;
 import org.jfree.chart.renderer.item.ShapeIRS;
-// import org.jfree.chart.renderer.item.StrokeIRS;
+import org.jfree.chart.renderer.item.StrokeIRS;
 import org.jfree.chart.renderer.item.VisibilityIRS;
-// import org.jfree.chart.title.LegendTitle;
+import org.jfree.chart.title.LegendTitle;
 import org.jfree.chart.util.ParamChecks;
 import org.jfree.chart.util.SerialUtils;
 
@@ -174,15 +175,12 @@ public abstract class AbstractRenderer implements Cloneable, Serializable {
 	/** The default outline paint. */
 	public static final Paint DEFAULT_OUTLINE_PAINT = Color.GRAY;
 
-	// JAVAFX
-	//
-	// /** The default stroke. */
-	// public static final Stroke DEFAULT_STROKE = new BasicStroke(1.0f);
-	//
-	// /** The default outline stroke. */
-	// public static final Stroke DEFAULT_OUTLINE_STROKE = new
-	// BasicStroke(1.0f);
-	//
+	/** The default stroke. */
+	public static final StrokeProperties DEFAULT_STROKE = new StrokeProperties(1.0);
+
+	/** The default outline stroke. */
+	public static final StrokeProperties DEFAULT_OUTLINE_STROKE = new StrokeProperties(1.0);
+
 	/** The default shape. */
 	public static final Shape DEFAULT_SHAPE = ShapeUtils.asShape(new Rectangle2D(-3.0, -3.0, 6.0, 6.0));
 
@@ -211,11 +209,11 @@ public abstract class AbstractRenderer implements Cloneable, Serializable {
 	 */
 	private ShapeIRS shapeIRS = new DefaultShapeIRS(this);
 
-	// /**
-	// * A hook that allows to use individual strokes for each item
-	// * (if the renderer uses {@link #getItemStroke(int, int)} ... )
-	// */
-	// private StrokeIRS strokeIRS = new DefaultStrokeIRS(this);
+	/**
+	 * A hook that allows to use individual strokes for each item (if the
+	 * renderer uses {@link #getItemStroke(int, int)} ... )
+	 */
+	private StrokeIRS strokeIRS = new DefaultStrokeIRS(this);
 
 	/**
 	 * A hook that allows to control the visibility of individual items (if the
@@ -283,9 +281,9 @@ public abstract class AbstractRenderer implements Cloneable, Serializable {
 
 	/** The base outline paint. */
 	private transient Paint defaultOutlinePaint;
-	//
-	// /** The stroke list. */
-	// private StrokeList strokeList;
+
+	/** The stroke list. */
+	private StrokeList strokeList;
 
 	/**
 	 * A flag that controls whether or not the strokeList is auto-populated in
@@ -294,15 +292,15 @@ public abstract class AbstractRenderer implements Cloneable, Serializable {
 	 * @since 1.0.6
 	 */
 	private boolean autoPopulateSeriesStroke;
-	//
-	// /** The base stroke. */
-	// private transient Stroke defaultStroke;
-	//
-	// /** The outline stroke list. */
-	// private StrokeList outlineStrokeList;
-	//
-	// /** The base outline stroke. */
-	// private transient Stroke defaultOutlineStroke;
+
+	/** The base stroke. */
+	private transient StrokeProperties defaultStroke;
+
+	/** The outline stroke list. */
+	private StrokeList outlineStrokeList;
+
+	/** The base outline stroke. */
+	private transient StrokeProperties defaultOutlineStroke;
 
 	/**
 	 * A flag that controls whether or not the outlineStrokeList is
@@ -462,14 +460,12 @@ public abstract class AbstractRenderer implements Cloneable, Serializable {
 		this.defaultOutlinePaint = DEFAULT_OUTLINE_PAINT;
 		this.autoPopulateSeriesOutlinePaint = false;
 
-		// JAVAFX
-		// this.strokeList = new StrokeList();
-		// this.defaultStroke = DEFAULT_STROKE;
+		this.strokeList = new StrokeList();
+		this.defaultStroke = DEFAULT_STROKE;
 		this.autoPopulateSeriesStroke = true;
 
-		// JAVAFX
-		// this.outlineStrokeList = new StrokeList();
-		// this.defaultOutlineStroke = DEFAULT_OUTLINE_STROKE;
+		this.outlineStrokeList = new StrokeList();
+		this.defaultOutlineStroke = DEFAULT_OUTLINE_STROKE;
 		this.autoPopulateSeriesOutlineStroke = false;
 
 		this.shapeList = new ShapeList();
@@ -549,15 +545,14 @@ public abstract class AbstractRenderer implements Cloneable, Serializable {
 		this.shapeIRS = shapeIRS;
 	}
 
-	// JAVAFX stroke
-	//
-	// /**
-	// * @param strokeIRS {@link #strokeIRS} (<code>null</code> not permitted)
-	// */
-	// public void setStrokeIRS(StrokeIRS strokeIRS) {
-	// ParamChecks.nullNotPermitted(strokeIRS, "strokeIRS");
-	// this.strokeIRS = strokeIRS;
-	// }
+	/**
+	 * @param strokeIRS
+	 *            {@link #strokeIRS} (<code>null</code> not permitted)
+	 */
+	public void setStrokeIRS(StrokeIRS strokeIRS) {
+		ParamChecks.nullNotPermitted(strokeIRS, "strokeIRS");
+		this.strokeIRS = strokeIRS;
+	}
 
 	/**
 	 * @param visibilityIRS
@@ -1366,99 +1361,104 @@ public abstract class AbstractRenderer implements Cloneable, Serializable {
 		this.autoPopulateSeriesOutlinePaint = auto;
 	}
 
-	// JAVAFX stroke
-	//
-	// // STROKE
-	//
-	// /**
-	// * Returns the stroke used to draw data items.
-	// * (this is typically the same for an entire series).
-	// * <p>
-	// * The default implementation passes control to the {@link
-	// DefaultStrokeIRS}
-	// * which uses the <code>lookupSeriesStroke(row)</code> method. You can
-	// * implement your own {@link StrokeIRS} or override this method if you
-	// * require different behavior.
-	// *
-	// * @param row the row (or series) index (zero-based).
-	// * @param column the column (or category) index (zero-based).
-	// *
-	// * @return The stroke (never <code>null</code>).
-	// */
-	// public Stroke getItemStroke(int row, int column) {
-	// return strokeIRS.getItemStroke(row, column);
-	// }
-	//
-	// /**
-	// * Returns the stroke used to draw the items in a series.
-	// *
-	// * @param series the series (zero-based index).
-	// *
-	// * @return The stroke (never <code>null</code>).
-	// *
-	// * @since 1.0.6
-	// */
-	// public Stroke lookupSeriesStroke(int series) {
-	//
-	// Stroke result = getSeriesStroke(series);
-	// if (result == null && this.autoPopulateSeriesStroke) {
-	// DrawingSupplier supplier = getDrawingSupplier();
-	// if (supplier != null) {
-	// result = supplier.getNextStroke();
-	// setSeriesStroke(series, result, false);
-	// }
-	// }
-	// if (result == null) {
-	// result = this.defaultStroke;
-	// }
-	// return result;
-	//
-	// }
-	//
-	// /**
-	// * Returns the stroke used to draw the items in a series.
-	// *
-	// * @param series the series (zero-based index).
-	// *
-	// * @return The stroke (possibly <code>null</code>).
-	// *
-	// * @see #setSeriesStroke(int, Stroke)
-	// */
-	// public Stroke getSeriesStroke(int series) {
-	// return this.strokeList.getStroke(series);
-	// }
-	//
-	// /**
-	// * Sets the stroke used for a series and sends a {@link
-	// RendererChangeEvent}
-	// * to all registered listeners.
-	// *
-	// * @param series the series index (zero-based).
-	// * @param stroke the stroke (<code>null</code> permitted).
-	// *
-	// * @see #getSeriesStroke(int)
-	// */
-	// public void setSeriesStroke(int series, Stroke stroke) {
-	// setSeriesStroke(series, stroke, true);
-	// }
-	//
-	// /**
-	// * Sets the stroke for a series and, if requested, sends a
-	// * {@link RendererChangeEvent} to all registered listeners.
-	// *
-	// * @param series the series index (zero-based).
-	// * @param stroke the stroke (<code>null</code> permitted).
-	// * @param notify notify listeners?
-	// *
-	// * @see #getSeriesStroke(int)
-	// */
-	// public void setSeriesStroke(int series, Stroke stroke, boolean notify) {
-	// this.strokeList.setStroke(series, stroke);
-	// if (notify) {
-	// fireChangeEvent();
-	// }
-	// }
-	//
+	// STROKE
+
+	/**
+	 * Returns the stroke used to draw data items. (this is typically the same
+	 * for an entire series).
+	 * <p>
+	 * The default implementation passes control to the {@link DefaultStrokeIRS}
+	 * which uses the <code>lookupSeriesStroke(row)</code> method. You can
+	 * implement your own {@link StrokeIRS} or override this method if you
+	 * require different behavior.
+	 *
+	 * @param row
+	 *            the row (or series) index (zero-based).
+	 * @param column
+	 *            the column (or category) index (zero-based).
+	 *
+	 * @return The stroke (never <code>null</code>).
+	 */
+	public StrokeProperties getItemStroke(int row, int column) {
+		return strokeIRS.getItemStroke(row, column);
+	}
+
+	/**
+	 * Returns the stroke used to draw the items in a series.
+	 *
+	 * @param series
+	 *            the series (zero-based index).
+	 *
+	 * @return The stroke (never <code>null</code>).
+	 *
+	 * @since 1.0.6
+	 */
+	public StrokeProperties lookupSeriesStroke(int series) {
+
+		StrokeProperties result = getSeriesStroke(series);
+		if (result == null && this.autoPopulateSeriesStroke) {
+			DrawingSupplier supplier = getDrawingSupplier();
+			if (supplier != null) {
+				result = supplier.getNextStroke();
+				setSeriesStroke(series, result, false);
+			}
+		}
+		if (result == null) {
+			result = this.defaultStroke;
+		}
+		return result;
+
+	}
+
+	/**
+	 * Returns the stroke used to draw the items in a series.
+	 *
+	 * @param series
+	 *            the series (zero-based index).
+	 *
+	 * @return The stroke (possibly <code>null</code>).
+	 *
+	 * @see #setSeriesStroke(int, Stroke)
+	 */
+	public StrokeProperties getSeriesStroke(int series) {
+		return this.strokeList.getStroke(series);
+	}
+
+	/**
+	 * Sets the stroke used for a series and sends a {@link RendererChangeEvent}
+	 * to all registered listeners.
+	 *
+	 * @param series
+	 *            the series index (zero-based).
+	 * @param stroke
+	 *            the stroke (<code>null</code> permitted).
+	 *
+	 * @see #getSeriesStroke(int)
+	 */
+	public void setSeriesStroke(int series, StrokeProperties stroke) {
+		setSeriesStroke(series, stroke, true);
+	}
+
+	/**
+	 * Sets the stroke for a series and, if requested, sends a
+	 * {@link RendererChangeEvent} to all registered listeners.
+	 *
+	 * @param series
+	 *            the series index (zero-based).
+	 * @param stroke
+	 *            the stroke (<code>null</code> permitted).
+	 * @param notify
+	 *            notify listeners?
+	 *
+	 * @see #getSeriesStroke(int)
+	 */
+	public void setSeriesStroke(int series, StrokeProperties stroke, boolean notify) {
+		this.strokeList.setStroke(series, stroke);
+		if (notify) {
+			fireChangeEvent();
+		}
+	}
+
 	/**
 	 * Clears the series stroke settings for this renderer and, if requested,
 	 * sends a {@link RendererChangeEvent} to all registered listeners.
@@ -1469,55 +1469,56 @@ public abstract class AbstractRenderer implements Cloneable, Serializable {
 	 * @since 1.0.11
 	 */
 	public void clearSeriesStrokes(boolean notify) {
-		// JAVAFX stroke
-		// this.strokeList.clear();
-		// if (notify) {
-		// fireChangeEvent();
-		// }
+		this.strokeList.clear();
+		if (notify) {
+			fireChangeEvent();
+		}
 	}
 
-	//
-	// /**
-	// * Returns the default stroke.
-	// *
-	// * @return The default stroke (never <code>null</code>).
-	// *
-	// * @see #setDefaultStroke(Stroke)
-	// */
-	// public Stroke getDefaultStroke() {
-	// return this.defaultStroke;
-	// }
-	//
-	// /**
-	// * Sets the default stroke and sends a {@link RendererChangeEvent} to all
-	// * registered listeners.
-	// *
-	// * @param stroke the stroke (<code>null</code> not permitted).
-	// *
-	// * @see #getDefaultStroke()
-	// */
-	// public void setDefaultStroke(Stroke stroke) {
-	// // defer argument checking...
-	// setDefaultStroke(stroke, true);
-	// }
-	//
-	// /**
-	// * Sets the default stroke and, if requested, sends a
-	// * {@link RendererChangeEvent} to all registered listeners.
-	// *
-	// * @param stroke the stroke (<code>null</code> not permitted).
-	// * @param notify notify listeners?
-	// *
-	// * @see #getDefaultStroke()
-	// */
-	// public void setDefaultStroke(Stroke stroke, boolean notify) {
-	// ParamChecks.nullNotPermitted(stroke, "stroke");
-	// this.defaultStroke = stroke;
-	// if (notify) {
-	// fireChangeEvent();
-	// }
-	// }
-	//
+	/**
+	 * Returns the default stroke.
+	 *
+	 * @return The default stroke (never <code>null</code>).
+	 *
+	 * @see #setDefaultStroke(Stroke)
+	 */
+	public StrokeProperties getDefaultStroke() {
+		return this.defaultStroke;
+	}
+
+	/**
+	 * Sets the default stroke and sends a {@link RendererChangeEvent} to all
+	 * registered listeners.
+	 *
+	 * @param stroke
+	 *            the stroke (<code>null</code> not permitted).
+	 *
+	 * @see #getDefaultStroke()
+	 */
+	public void setDefaultStroke(StrokeProperties stroke) {
+		// defer argument checking...
+		setDefaultStroke(stroke, true);
+	}
+
+	/**
+	 * Sets the default stroke and, if requested, sends a
+	 * {@link RendererChangeEvent} to all registered listeners.
+	 *
+	 * @param stroke
+	 *            the stroke (<code>null</code> not permitted).
+	 * @param notify
+	 *            notify listeners?
+	 *
+	 * @see #getDefaultStroke()
+	 */
+	public void setDefaultStroke(StrokeProperties stroke, boolean notify) {
+		ParamChecks.nullNotPermitted(stroke, "stroke");
+		this.defaultStroke = stroke;
+		if (notify) {
+			fireChangeEvent();
+		}
+	}
+
 	/**
 	 * Returns the flag that controls whether or not the series stroke list is
 	 * automatically populated when {@link #lookupSeriesStroke(int)} is called.
@@ -1547,172 +1548,181 @@ public abstract class AbstractRenderer implements Cloneable, Serializable {
 		this.autoPopulateSeriesStroke = auto;
 	}
 
-	// JAVAFX stroke
-	// // OUTLINE STROKE
-	//
-	// /**
-	// * Returns the stroke used to outline data items
-	// * (this is typically the same for an entire series).
-	// * <p>
-	// * The default implementation passes control to the {@link
-	// DefaultStrokeIRS}
-	// * which uses the <code>lookupSeriesOutlineStroke(row)</code> method. You
-	// * can implement your own {@link StrokeIRS} or override this method if you
-	// * require different behavior.
-	// *
-	// * @param row the row (or series) index (zero-based).
-	// * @param column the column (or category) index (zero-based).
-	// *
-	// * @return The stroke (never <code>null</code>).
-	// */
-	// public Stroke getItemOutlineStroke(int row, int column) {
-	// return strokeIRS.getItemOutlineStroke(row, column);
-	// }
-	//
-	// /**
-	// * Returns the stroke used to outline the items in a series.
-	// *
-	// * @param series the series (zero-based index).
-	// *
-	// * @return The stroke (never <code>null</code>).
-	// *
-	// * @since 1.0.6
-	// */
-	// public Stroke lookupSeriesOutlineStroke(int series) {
-	//
-	// Stroke result = getSeriesOutlineStroke(series);
-	// if (result == null && this.autoPopulateSeriesOutlineStroke) {
-	// DrawingSupplier supplier = getDrawingSupplier();
-	// if (supplier != null) {
-	// result = supplier.getNextOutlineStroke();
-	// setSeriesOutlineStroke(series, result, false);
-	// }
-	// }
-	// if (result == null) {
-	// result = this.defaultOutlineStroke;
-	// }
-	// return result;
-	//
-	// }
-	//
-	// /**
-	// * Returns the stroke used to outline the items in a series.
-	// *
-	// * @param series the series (zero-based index).
-	// *
-	// * @return The stroke (possibly <code>null</code>).
-	// *
-	// * @see #setSeriesOutlineStroke(int, Stroke)
-	// */
-	// public Stroke getSeriesOutlineStroke(int series) {
-	// return this.outlineStrokeList.getStroke(series);
-	// }
-	//
-	// /**
-	// * Sets the outline stroke used for a series and sends a
-	// * {@link RendererChangeEvent} to all registered listeners.
-	// *
-	// * @param series the series index (zero-based).
-	// * @param stroke the stroke (<code>null</code> permitted).
-	// *
-	// * @see #getSeriesOutlineStroke(int)
-	// */
-	// public void setSeriesOutlineStroke(int series, Stroke stroke) {
-	// setSeriesOutlineStroke(series, stroke, true);
-	// }
-	//
-	// /**
-	// * Sets the outline stroke for a series and, if requested, sends a
-	// * {@link RendererChangeEvent} to all registered listeners.
-	// *
-	// * @param series the series index.
-	// * @param stroke the stroke (<code>null</code> permitted).
-	// * @param notify notify listeners?
-	// *
-	// * @see #getSeriesOutlineStroke(int)
-	// */
-	// public void setSeriesOutlineStroke(int series, Stroke stroke,
-	// boolean notify) {
-	// this.outlineStrokeList.setStroke(series, stroke);
-	// if (notify) {
-	// fireChangeEvent();
-	// }
-	// }
-	//
-	// /**
-	// * Returns the default outline stroke.
-	// *
-	// * @return The stroke (never <code>null</code>).
-	// *
-	// * @see #setDefaultOutlineStroke(Stroke)
-	// */
-	// public Stroke getDefaultOutlineStroke() {
-	// return this.defaultOutlineStroke;
-	// }
-	//
-	// /**
-	// * Sets the default outline stroke and sends a {@link RendererChangeEvent}
-	// * to all registered listeners.
-	// *
-	// * @param stroke the stroke (<code>null</code> not permitted).
-	// *
-	// * @see #getDefaultOutlineStroke()
-	// */
-	// public void setDefaultOutlineStroke(Stroke stroke) {
-	// setDefaultOutlineStroke(stroke, true);
-	// }
-	//
-	// /**
-	// * Sets the default outline stroke and, if requested, sends a
-	// * {@link RendererChangeEvent} to all registered listeners.
-	// *
-	// * @param stroke the stroke (<code>null</code> not permitted).
-	// * @param notify a flag that controls whether or not listeners are
-	// * notified.
-	// *
-	// * @see #getDefaultOutlineStroke()
-	// */
-	// public void setDefaultOutlineStroke(Stroke stroke, boolean notify) {
-	// ParamChecks.nullNotPermitted(stroke, "stroke");
-	// this.defaultOutlineStroke = stroke;
-	// if (notify) {
-	// fireChangeEvent();
-	// }
-	// }
-	//
-	// /**
-	// * Returns the flag that controls whether or not the series outline stroke
-	// * list is automatically populated when
-	// * {@link #lookupSeriesOutlineStroke(int)} is called.
-	// *
-	// * @return A boolean.
-	// *
-	// * @since 1.0.6
-	// *
-	// * @see #setAutoPopulateSeriesOutlineStroke(boolean)
-	// */
-	// public boolean getAutoPopulateSeriesOutlineStroke() {
-	// return this.autoPopulateSeriesOutlineStroke;
-	// }
-	//
-	// /**
-	// * Sets the flag that controls whether or not the series outline stroke
-	// list
-	// * is automatically populated when {@link #lookupSeriesOutlineStroke(int)}
-	// * is called.
-	// *
-	// * @param auto the new flag value.
-	// *
-	// * @since 1.0.6
-	// *
-	// * @see #getAutoPopulateSeriesOutlineStroke()
-	// */
-	// public void setAutoPopulateSeriesOutlineStroke(boolean auto) {
-	// this.autoPopulateSeriesOutlineStroke = auto;
-	// }
-	//
-	// // SHAPE
-	//
+	// OUTLINE STROKE
+
+	/**
+	 * Returns the stroke used to outline data items (this is typically the same
+	 * for an entire series).
+	 * <p>
+	 * The default implementation passes control to the {@link DefaultStrokeIRS}
+	 * which uses the <code>lookupSeriesOutlineStroke(row)</code> method. You
+	 * can implement your own {@link StrokeIRS} or override this method if you
+	 * require different behavior.
+	 *
+	 * @param row
+	 *            the row (or series) index (zero-based).
+	 * @param column
+	 *            the column (or category) index (zero-based).
+	 *
+	 * @return The stroke (never <code>null</code>).
+	 */
+	public StrokeProperties getItemOutlineStroke(int row, int column) {
+		return strokeIRS.getItemOutlineStroke(row, column);
+	}
+
+	/**
+	 * Returns the stroke used to outline the items in a series.
+	 *
+	 * @param series
+	 *            the series (zero-based index).
+	 *
+	 * @return The stroke (never <code>null</code>).
+	 *
+	 * @since 1.0.6
+	 */
+	public StrokeProperties lookupSeriesOutlineStroke(int series) {
+
+		StrokeProperties result = getSeriesOutlineStroke(series);
+		if (result == null && this.autoPopulateSeriesOutlineStroke) {
+			DrawingSupplier supplier = getDrawingSupplier();
+			if (supplier != null) {
+				result = supplier.getNextOutlineStroke();
+				setSeriesOutlineStroke(series, result, false);
+			}
+		}
+		if (result == null) {
+			result = this.defaultOutlineStroke;
+		}
+		return result;
+
+	}
+
+	/**
+	 * Returns the stroke used to outline the items in a series.
+	 *
+	 * @param series
+	 *            the series (zero-based index).
+	 *
+	 * @return The stroke (possibly <code>null</code>).
+	 *
+	 * @see #setSeriesOutlineStroke(int, Stroke)
+	 */
+	public StrokeProperties getSeriesOutlineStroke(int series) {
+		return this.outlineStrokeList.getStroke(series);
+	}
+
+	/**
+	 * Sets the outline stroke used for a series and sends a
+	 * {@link RendererChangeEvent} to all registered listeners.
+	 *
+	 * @param series
+	 *            the series index (zero-based).
+	 * @param stroke
+	 *            the stroke (<code>null</code> permitted).
+	 *
+	 * @see #getSeriesOutlineStroke(int)
+	 */
+	public void setSeriesOutlineStroke(int series, StrokeProperties stroke) {
+		setSeriesOutlineStroke(series, stroke, true);
+	}
+
+	/**
+	 * Sets the outline stroke for a series and, if requested, sends a
+	 * {@link RendererChangeEvent} to all registered listeners.
+	 *
+	 * @param series
+	 *            the series index.
+	 * @param stroke
+	 *            the stroke (<code>null</code> permitted).
+	 * @param notify
+	 *            notify listeners?
+	 *
+	 * @see #getSeriesOutlineStroke(int)
+	 */
+	public void setSeriesOutlineStroke(int series, StrokeProperties stroke,
+			boolean notify) {
+		this.outlineStrokeList.setStroke(series, stroke);
+		if (notify) {
+			fireChangeEvent();
+		}
+	}
+
+	/**
+	 * Returns the default outline stroke.
+	 *
+	 * @return The stroke (never <code>null</code>).
+	 *
+	 * @see #setDefaultOutlineStroke(Stroke)
+	 */
+	public StrokeProperties getDefaultOutlineStroke() {
+		return this.defaultOutlineStroke;
+	}
+
+	/**
+	 * Sets the default outline stroke and sends a {@link RendererChangeEvent}
+	 * to all registered listeners.
+	 *
+	 * @param stroke
+	 *            the stroke (<code>null</code> not permitted).
+	 *
+	 * @see #getDefaultOutlineStroke()
+	 */
+	public void setDefaultOutlineStroke(StrokeProperties stroke) {
+		setDefaultOutlineStroke(stroke, true);
+	}
+
+	/**
+	 * Sets the default outline stroke and, if requested, sends a
+	 * {@link RendererChangeEvent} to all registered listeners.
+	 *
+	 * @param stroke
+	 *            the stroke (<code>null</code> not permitted).
+	 * @param notify
+	 *            a flag that controls whether or not listeners are notified.
+	 *
+	 * @see #getDefaultOutlineStroke()
+	 */
+	public void setDefaultOutlineStroke(StrokeProperties stroke, boolean notify) {
+		ParamChecks.nullNotPermitted(stroke, "stroke");
+		this.defaultOutlineStroke = stroke;
+		if (notify) {
+			fireChangeEvent();
+		}
+	}
+
+	/**
+	 * Returns the flag that controls whether or not the series outline stroke
+	 * list is automatically populated when
+	 * {@link #lookupSeriesOutlineStroke(int)} is called.
+	 *
+	 * @return A boolean.
+	 *
+	 * @since 1.0.6
+	 *
+	 * @see #setAutoPopulateSeriesOutlineStroke(boolean)
+	 */
+	public boolean getAutoPopulateSeriesOutlineStroke() {
+		return this.autoPopulateSeriesOutlineStroke;
+	}
+
+	/**
+	 * Sets the flag that controls whether or not the series outline stroke list
+	 * is automatically populated when {@link #lookupSeriesOutlineStroke(int)}
+	 * is called.
+	 *
+	 * @param auto
+	 *            the new flag value.
+	 *
+	 * @since 1.0.6
+	 *
+	 * @see #getAutoPopulateSeriesOutlineStroke()
+	 */
+	public void setAutoPopulateSeriesOutlineStroke(boolean auto) {
+		this.autoPopulateSeriesOutlineStroke = auto;
+	}
+
+	// SHAPE
+
 	/**
 	 * Returns a shape used to represent a data item. (this is typically the
 	 * same for an entire series).

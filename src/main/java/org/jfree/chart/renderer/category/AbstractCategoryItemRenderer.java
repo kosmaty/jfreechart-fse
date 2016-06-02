@@ -110,6 +110,8 @@
 
 package org.jfree.chart.renderer.category;
 
+import static org.jfree.chart.util.ShapeUtils.setStrokeProperties;
+import static org.jfree.geometry.GeometryUtils.emptyLine;
 import static org.jfree.geometry.GeometryUtils.fillRectangle;
 import static org.jfree.geometry.GeometryUtils.newLine;
 import static org.jfree.geometry.GeometryUtils.strokeLine;
@@ -137,6 +139,7 @@ import java.util.Map;
 import org.jfree.chart.LegendItem;
 import org.jfree.chart.axis.CategoryAxis;
 import org.jfree.chart.axis.ValueAxis;
+import org.jfree.chart.drawable.StrokeProperties;
 // import org.jfree.chart.ui.GradientPaintTransformer;
 import org.jfree.chart.ui.LengthAdjustmentType;
 import org.jfree.chart.ui.RectangleAnchor;
@@ -903,13 +906,11 @@ public abstract class AbstractCategoryItemRenderer extends AbstractRenderer
 		}
 		g2.setStroke(paint);
 
-		// JAVAFX stroke
-		// Stroke stroke = plot.getDomainGridlineStroke();
-		// if (stroke == null) {
-		// stroke = CategoryPlot.DEFAULT_GRIDLINE_STROKE;
-		// }
-		// g2.setStroke(stroke);
-
+		StrokeProperties stroke = plot.getDomainGridlineStroke();
+		if (stroke == null) {
+			stroke = CategoryPlot.DEFAULT_GRIDLINE_STROKE;
+		}
+		setStrokeProperties(g2, stroke);
 		g2.strokeLine(start.getX(), start.getY(), end.getX(), end.getY());
 	}
 
@@ -966,65 +967,71 @@ public abstract class AbstractCategoryItemRenderer extends AbstractRenderer
 		}
 		g2.setStroke(paint);
 
-		// JAVAFX stroke
-		// Stroke stroke = plot.getRangeGridlineStroke();
-		// if (stroke == null) {
-		// stroke = CategoryPlot.DEFAULT_GRIDLINE_STROKE;
-		// }
-		// g2.setStroke(stroke);
-
+		StrokeProperties stroke = plot.getRangeGridlineStroke();
+		if (stroke == null) {
+			stroke = CategoryPlot.DEFAULT_GRIDLINE_STROKE;
+		}
+		setStrokeProperties(g2, stroke);
 		g2.strokeLine(startX, startY, endX, endY);
 
 	}
 
-	//
-	// /**
-	// * Draws a line perpendicular to the range axis.
-	// *
-	// * @param g2 the graphics device.
-	// * @param plot the plot.
-	// * @param axis the value axis.
-	// * @param dataArea the area for plotting data (not yet adjusted for any 3D
-	// * effect).
-	// * @param value the value at which the grid line should be drawn.
-	// * @param paint the paint ({@code null} not permitted).
-	// * @param stroke the stroke ({@code null} not permitted).
-	// *
-	// * @see #drawRangeGridline
-	// *
-	// * @since 1.0.13
-	// */
-	// public void drawRangeGridline(Graphics2D g2, CategoryPlot plot, ValueAxis
-	// axis,
-	// Rectangle2D dataArea, double value, Paint paint, Stroke stroke) {
-	//
-	// // TODO: In JFreeChart 1.2.0, put this method in the
-	// // CategoryItemRenderer interface
-	// Range range = axis.getRange();
-	// if (!range.contains(value)) {
-	// return;
-	// }
-	//
-	// PlotOrientation orientation = plot.getOrientation();
-	// Line2D line = null;
-	// double v = axis.valueToJava2D(value, dataArea, plot.getRangeAxisEdge());
-	// if (orientation == PlotOrientation.HORIZONTAL) {
-	// line = new Line2D.Double(v, dataArea.getMinY(), v,
-	// dataArea.getMaxY());
-	// } else if (orientation == PlotOrientation.VERTICAL) {
-	// line = new Line2D.Double(dataArea.getMinX(), v,
-	// dataArea.getMaxX(), v);
-	// }
-	//
-	// g2.setPaint(paint);
-	// g2.setStroke(stroke);
-	// Object saved = g2.getRenderingHint(RenderingHints.KEY_STROKE_CONTROL);
-	// g2.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL,
-	// RenderingHints.VALUE_STROKE_NORMALIZE);
-	// g2.draw(line);
-	// g2.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, saved);
-	// }
-	//
+	/**
+	 * Draws a line perpendicular to the range axis.
+	 *
+	 * @param g2
+	 *            the graphics device.
+	 * @param plot
+	 *            the plot.
+	 * @param axis
+	 *            the value axis.
+	 * @param dataArea
+	 *            the area for plotting data (not yet adjusted for any 3D
+	 *            effect).
+	 * @param value
+	 *            the value at which the grid line should be drawn.
+	 * @param paint
+	 *            the paint ({@code null} not permitted).
+	 * @param stroke
+	 *            the stroke ({@code null} not permitted).
+	 *
+	 * @see #drawRangeGridline
+	 *
+	 * @since 1.0.13
+	 */
+	public void drawRangeGridline(GraphicsContext g2, CategoryPlot plot, ValueAxis axis,
+			Rectangle2D dataArea, double value, Paint paint, StrokeProperties stroke) {
+
+		// TODO: In JFreeChart 1.2.0, put this method in the
+		// CategoryItemRenderer interface
+		Range range = axis.getRange();
+		if (!range.contains(value)) {
+			return;
+		}
+
+		PlotOrientation orientation = plot.getOrientation();
+		Line2D line = null;
+		double v = axis.valueToJava2D(value, dataArea, plot.getRangeAxisEdge());
+		if (orientation == PlotOrientation.HORIZONTAL) {
+			line = newLine(v, dataArea.getMinY(), v,
+					dataArea.getMaxY());
+		} else if (orientation == PlotOrientation.VERTICAL) {
+			line = newLine(dataArea.getMinX(), v,
+					dataArea.getMaxX(), v);
+		}
+
+		g2.setStroke(paint);
+		setStrokeProperties(g2, stroke);
+		// JAVAFX rendering hints
+		// Object saved =
+		// g2.getRenderingHint(RenderingHints.KEY_STROKE_CONTROL);
+		// g2.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL,
+		// RenderingHints.VALUE_STROKE_NORMALIZE);
+		strokeLine(g2, line);
+		// JAVAFX rendering hints
+		// g2.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, saved);
+	}
+
 	/**
 	 * Draws a marker for the domain axis.
 	 *
@@ -1053,7 +1060,7 @@ public abstract class AbstractCategoryItemRenderer extends AbstractRenderer
 			return;
 		}
 
-		// JAVAFX
+		// JAVAFX composite
 		// final Composite savedComposite = g2.getComposite();
 		// g2.setComposite(AlphaComposite.getInstance(
 		// AlphaComposite.SRC_OVER, marker.getAlpha()));
@@ -1074,8 +1081,7 @@ public abstract class AbstractCategoryItemRenderer extends AbstractRenderer
 						+ orientation);
 			}
 			g2.setStroke(marker.getPaint());
-			// JAVAFX stroke
-			// g2.setStroke(marker.getStroke());
+			setStrokeProperties(g2, marker.getStroke());
 			strokeLine(g2, line);
 			bounds = line.getBounds2D();
 		} else {
@@ -1113,7 +1119,7 @@ public abstract class AbstractCategoryItemRenderer extends AbstractRenderer
 					(float) coords.getX(), (float) coords.getY(),
 					marker.getLabelTextAnchor());
 		}
-		// JAVAFX
+		// JAVAFX composite
 		// g2.setComposite(savedComposite);
 	}
 
@@ -1138,7 +1144,6 @@ public abstract class AbstractCategoryItemRenderer extends AbstractRenderer
 	public void drawRangeMarker(GraphicsContext g2, CategoryPlot plot,
 			ValueAxis axis, Marker marker, Rectangle2D dataArea) {
 
-		// JAVAFX
 		if (marker instanceof ValueMarker) {
 			ValueMarker vm = (ValueMarker) marker;
 			double value = vm.getValue();
@@ -1147,7 +1152,7 @@ public abstract class AbstractCategoryItemRenderer extends AbstractRenderer
 				return;
 			}
 
-			// JAVAFX
+			// JAVAFX composite
 			// final Composite savedComposite = g2.getComposite();
 			// g2.setComposite(AlphaComposite.getInstance(
 			// AlphaComposite.SRC_OVER, marker.getAlpha()));
@@ -1168,8 +1173,7 @@ public abstract class AbstractCategoryItemRenderer extends AbstractRenderer
 			}
 
 			g2.setStroke(marker.getPaint());
-			// JAVAFX stroke
-			// g2.setStroke(marker.getStroke());
+			setStrokeProperties(g2, marker.getStroke());
 			strokeLine(g2, line);
 
 			String label = marker.getLabel();
@@ -1191,7 +1195,7 @@ public abstract class AbstractCategoryItemRenderer extends AbstractRenderer
 						(float) coords.getX(), (float) coords.getY(),
 						marker.getLabelTextAnchor());
 			}
-			// JAVAFX
+			// JAVAFX composite
 			// g2.setComposite(savedComposite);
 		} else if (marker instanceof IntervalMarker) {
 			IntervalMarker im = (IntervalMarker) marker;
@@ -1202,7 +1206,7 @@ public abstract class AbstractCategoryItemRenderer extends AbstractRenderer
 				return;
 			}
 
-			// JAVAFX
+			// JAVAFX composite
 			// final Composite savedComposite = g2.getComposite();
 			// g2.setComposite(AlphaComposite.getInstance(
 			// AlphaComposite.SRC_OVER, marker.getAlpha()));
@@ -1245,40 +1249,39 @@ public abstract class AbstractCategoryItemRenderer extends AbstractRenderer
 			// }
 			fillRectangle(g2, rect);
 
-			// JAVAFX stroke
-			// // now draw the outlines, if visible...
-			// if (im.getOutlinePaint() != null && im.getOutlineStroke() !=
-			// null) {
-			// if (orientation == PlotOrientation.VERTICAL) {
-			// Line2D line = new Line2D.Double();
-			// double x0 = dataArea.getMinX();
-			// double x1 = dataArea.getMaxX();
-			// g2.setPaint(im.getOutlinePaint());
-			// g2.setStroke(im.getOutlineStroke());
-			// if (range.contains(start)) {
-			// line.setLine(x0, start2d, x1, start2d);
-			// g2.draw(line);
-			// }
-			// if (range.contains(end)) {
-			// line.setLine(x0, end2d, x1, end2d);
-			// g2.draw(line);
-			// }
-			// } else { // PlotOrientation.HORIZONTAL
-			// Line2D line = new Line2D.Double();
-			// double y0 = dataArea.getMinY();
-			// double y1 = dataArea.getMaxY();
-			// g2.setPaint(im.getOutlinePaint());
-			// g2.setStroke(im.getOutlineStroke());
-			// if (range.contains(start)) {
-			// line.setLine(start2d, y0, start2d, y1);
-			// g2.draw(line);
-			// }
-			// if (range.contains(end)) {
-			// line.setLine(end2d, y0, end2d, y1);
-			// g2.draw(line);
-			// }
-			// }
-			// }
+			// now draw the outlines, if visible...
+			if (im.getOutlinePaint() != null && im.getOutlineStroke() !=
+					null) {
+				if (orientation == PlotOrientation.VERTICAL) {
+					Line2D line = emptyLine();
+					double x0 = dataArea.getMinX();
+					double x1 = dataArea.getMaxX();
+					g2.setStroke(im.getOutlinePaint());
+					setStrokeProperties(g2, im.getOutlineStroke());
+					if (range.contains(start)) {
+						line = newLine(x0, start2d, x1, start2d);
+						strokeLine(g2, line);
+					}
+					if (range.contains(end)) {
+						line = newLine(x0, end2d, x1, end2d);
+						strokeLine(g2, line);
+					}
+				} else { // PlotOrientation.HORIZONTAL
+					Line2D line = emptyLine();
+					double y0 = dataArea.getMinY();
+					double y1 = dataArea.getMaxY();
+					g2.setStroke(im.getOutlinePaint());
+					setStrokeProperties(g2, im.getOutlineStroke());
+					if (range.contains(start)) {
+						line = newLine(start2d, y0, start2d, y1);
+						strokeLine(g2, line);
+					}
+					if (range.contains(end)) {
+						line = newLine(end2d, y0, end2d, y1);
+						strokeLine(g2, line);
+					}
+				}
+			}
 
 			String label = marker.getLabel();
 			if (label != null) {
@@ -1298,7 +1301,7 @@ public abstract class AbstractCategoryItemRenderer extends AbstractRenderer
 						(float) coords.getX(), (float) coords.getY(),
 						marker.getLabelTextAnchor());
 			}
-			// JAVAFX
+			// JAVAFX composite
 			// g2.setComposite(savedComposite);
 		}
 	}
@@ -1419,11 +1422,10 @@ public abstract class AbstractCategoryItemRenderer extends AbstractRenderer
 		Shape shape = lookupLegendShape(series);
 		Paint paint = lookupSeriesPaint(series);
 		Paint outlinePaint = lookupSeriesOutlinePaint(series);
-		// JAVAFX stroke
-		// Stroke outlineStroke = lookupSeriesOutlineStroke(series);
+		StrokeProperties outlineStroke = lookupSeriesOutlineStroke(series);
 
 		LegendItem item = new LegendItem(label, description, toolTipText,
-				urlText, shape, paint, /* JAVAFX outlineStroke, */outlinePaint);
+				urlText, shape, paint, outlineStroke, outlinePaint);
 		item.setLabelFont(lookupLegendTextFont(series));
 		Paint labelPaint = lookupLegendTextPaint(series);
 		if (labelPaint != null) {
@@ -1594,7 +1596,6 @@ public abstract class AbstractCategoryItemRenderer extends AbstractRenderer
 		CategoryItemLabelGenerator generator = getItemLabelGenerator(row,
 				column);
 		if (generator != null) {
-			// JAVAFX paint, stroke
 			Font labelFont = getItemLabelFont(row, column);
 			Paint paint = getItemLabelPaint(row, column);
 			g2.setFont(labelFont);
@@ -1698,39 +1699,42 @@ public abstract class AbstractCategoryItemRenderer extends AbstractRenderer
 		return clone;
 	}
 
-	//
-	// /**
-	// * Returns a domain axis for a plot.
-	// *
-	// * @param plot the plot.
-	// * @param index the axis index.
-	// *
-	// * @return A domain axis.
-	// */
-	// protected CategoryAxis getDomainAxis(CategoryPlot plot, int index) {
-	// CategoryAxis result = plot.getDomainAxis(index);
-	// if (result == null) {
-	// result = plot.getDomainAxis();
-	// }
-	// return result;
-	// }
-	//
-	// /**
-	// * Returns a range axis for a plot.
-	// *
-	// * @param plot the plot.
-	// * @param index the axis index.
-	// *
-	// * @return A range axis.
-	// */
-	// protected ValueAxis getRangeAxis(CategoryPlot plot, int index) {
-	// ValueAxis result = plot.getRangeAxis(index);
-	// if (result == null) {
-	// result = plot.getRangeAxis();
-	// }
-	// return result;
-	// }
-	//
+	/**
+	 * Returns a domain axis for a plot.
+	 *
+	 * @param plot
+	 *            the plot.
+	 * @param index
+	 *            the axis index.
+	 *
+	 * @return A domain axis.
+	 */
+	protected CategoryAxis getDomainAxis(CategoryPlot plot, int index) {
+		CategoryAxis result = plot.getDomainAxis(index);
+		if (result == null) {
+			result = plot.getDomainAxis();
+		}
+		return result;
+	}
+
+	/**
+	 * Returns a range axis for a plot.
+	 *
+	 * @param plot
+	 *            the plot.
+	 * @param index
+	 *            the axis index.
+	 *
+	 * @return A range axis.
+	 */
+	protected ValueAxis getRangeAxis(CategoryPlot plot, int index) {
+		ValueAxis result = plot.getRangeAxis(index);
+		if (result == null) {
+			result = plot.getRangeAxis();
+		}
+		return result;
+	}
+
 	/**
 	 * Returns a (possibly empty) collection of legend items for the series that
 	 * this renderer is responsible for drawing.
