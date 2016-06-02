@@ -67,8 +67,7 @@ import java.util.Arrays;
 import java.util.EventListener;
 import java.util.List;
 
-// FIXME JAVAFX remove swing dependency
-import javax.swing.event.EventListenerList;
+import org.jfree.event.EventListenerList;
 
 /**
  * An abstract implementation of the {@link Dataset} interface, containing a
