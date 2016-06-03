@@ -586,7 +586,7 @@ public class RectangleInsets implements Serializable {
 	 *            the area (<code>null</code> not permitted).
 	 */
 	public Rectangle2D trim2(final Rectangle2D area) {
-		// JAVAFX changed method name because Rectangle2D is immutable!!!
+		// JAVA-FX changed method name because Rectangle2D is immutable!!!
 		final double w = area.getWidth();
 		final double h = area.getHeight();
 		final double l = calculateLeftInset(w);

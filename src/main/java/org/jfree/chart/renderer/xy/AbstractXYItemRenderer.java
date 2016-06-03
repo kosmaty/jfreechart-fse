@@ -1297,10 +1297,9 @@ public abstract class AbstractXYItemRenderer extends AbstractRenderer
 				throw new IllegalStateException("Unrecognised orientation.");
 			}
 
-			// JAVAFX composite
-			// final Composite originalComposite = g2.getComposite();
-			// g2.setComposite(AlphaComposite.getInstance(
-			// AlphaComposite.SRC_OVER, marker.getAlpha()));
+			g2.save();
+			g2.setGlobalAlpha(marker.getAlpha());
+
 			g2.setStroke(marker.getPaint());
 			setStrokeProperties(g2, marker.getStroke());
 			g2.strokeLine(line.getX1(), line.getY1(), line.getX2(), line.getY2());
@@ -1324,8 +1323,7 @@ public abstract class AbstractXYItemRenderer extends AbstractRenderer
 						(float) coords.getX(), (float) coords.getY(),
 						marker.getLabelTextAnchor());
 			}
-			// JAVAFX composite
-			// g2.setComposite(originalComposite);
+			g2.restore();
 		} else if (marker instanceof IntervalMarker) {
 			IntervalMarker im = (IntervalMarker) marker;
 			double start = im.getStartValue();
@@ -1360,10 +1358,9 @@ public abstract class AbstractXYItemRenderer extends AbstractRenderer
 						dataArea.getHeight());
 			}
 
-			// JAVAFX composite
-			// final Composite originalComposite = g2.getComposite();
-			// g2.setComposite(AlphaComposite.getInstance(
-			// AlphaComposite.SRC_OVER, marker.getAlpha()));
+			g2.save();
+			g2.setGlobalAlpha(marker.getAlpha());
+
 			Paint p = marker.getPaint();
 			if (p instanceof LinearGradient) {
 				LinearGradient gp = (LinearGradient) p;
@@ -1430,8 +1427,7 @@ public abstract class AbstractXYItemRenderer extends AbstractRenderer
 						(float) coords.getX(), (float) coords.getY(),
 						marker.getLabelTextAnchor());
 			}
-			// JAVAFX composite
-			// g2.setComposite(originalComposite);
+			g2.restore();
 		}
 	}
 
@@ -1514,10 +1510,9 @@ public abstract class AbstractXYItemRenderer extends AbstractRenderer
 				throw new IllegalStateException("Unrecognised orientation.");
 			}
 
-			// JAVAFX composite
-			// final Composite originalComposite = g2.getComposite();
-			// g2.setComposite(AlphaComposite.getInstance(
-			// AlphaComposite.SRC_OVER, marker.getAlpha()));
+			g2.save();
+			g2.setGlobalAlpha(marker.getAlpha());
+
 			g2.setStroke(marker.getPaint());
 			setStrokeProperties(g2, marker.getStroke());
 			strokeLine(g2, line);
@@ -1541,8 +1536,7 @@ public abstract class AbstractXYItemRenderer extends AbstractRenderer
 						(float) coords.getX(), (float) coords.getY(),
 						marker.getLabelTextAnchor());
 			}
-			// JAVAFX composite
-			// g2.setComposite(originalComposite);
+			g2.restore();
 		} else if (marker instanceof IntervalMarker) {
 			IntervalMarker im = (IntervalMarker) marker;
 			double start = im.getStartValue();
@@ -1577,10 +1571,9 @@ public abstract class AbstractXYItemRenderer extends AbstractRenderer
 						high - low);
 			}
 
-			// JAVAFX composite
-			// final Composite originalComposite = g2.getComposite();
-			// g2.setComposite(AlphaComposite.getInstance(
-			// AlphaComposite.SRC_OVER, marker.getAlpha()));
+			g2.save();
+			g2.setGlobalAlpha(marker.getAlpha());
+
 			Paint p = marker.getPaint();
 			if (p instanceof LinearGradient) {
 				LinearGradient gp = (LinearGradient) p;
@@ -1647,8 +1640,7 @@ public abstract class AbstractXYItemRenderer extends AbstractRenderer
 						(float) coords.getX(), (float) coords.getY(),
 						marker.getLabelTextAnchor());
 			}
-			// JAVAFX composite
-			// g2.setComposite(originalComposite);
+			g2.restore();
 		}
 	}
 

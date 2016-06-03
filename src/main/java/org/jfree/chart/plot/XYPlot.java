@@ -3348,13 +3348,14 @@ public class XYPlot extends Plot implements ValueAxisPlot, Pannable, Zoomable,
 		}
 		crosshairState.setCrosshairX(getDomainCrosshairValue());
 		crosshairState.setCrosshairY(getRangeCrosshairValue());
-		// JAVAFX composite, clipping
+
+		// JAVAFX clipping
 		// Shape originalClip = g2.getClip();
-		// Composite originalComposite = g2.getComposite();
 		//
 		// g2.clip(dataArea);
-		// g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER,
-		// getForegroundAlpha()));
+
+		g2.save();
+		g2.setGlobalAlpha(getForegroundAlpha());
 
 		AxisState domainAxisState = axisStateMap.get(
 				getDomainAxis());
@@ -3513,7 +3514,8 @@ public class XYPlot extends Plot implements ValueAxisPlot, Pannable, Zoomable,
 		// (int) dataArea.getY(), null);
 		// }
 		// g2.setClip(originalClip);
-		// g2.setComposite(originalComposite);
+
+		g2.restore();
 
 		drawOutline(g2, dataArea);
 
@@ -3677,18 +3679,16 @@ public class XYPlot extends Plot implements ValueAxisPlot, Pannable, Zoomable,
 			}
 		}
 		if (somethingToDraw) {
-			// JAVAFX composite
-			// Composite originalComposite = g2.getComposite();
-			// g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER,
-			// getBackgroundAlpha()));
+			g2.save();
+			g2.setGlobalAlpha(getBackgroundAlpha());
+
 			for (int i = 0; i < 4; i++) {
 				if (this.quadrantPaint[i] != null && r[i] != null) {
 					g2.setFill(this.quadrantPaint[i]);
 					fillRectangle(g2, r[i]);
 				}
 			}
-			// JAVAFX composite
-			// g2.setComposite(originalComposite);
+			g2.restore();
 		}
 	}
 

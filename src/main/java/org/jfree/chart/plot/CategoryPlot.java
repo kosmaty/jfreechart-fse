@@ -3798,10 +3798,8 @@ public class CategoryPlot extends Plot implements
 		boolean foundData = false;
 
 		// set up the alpha-transparency...
-		// JAVAFX composite
-		// Composite originalComposite = g2.getComposite();
-		// g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER,
-		// getForegroundAlpha()));
+		g2.save();
+		g2.setGlobalAlpha(getForegroundAlpha());
 
 		DatasetRenderingOrder order = getDatasetRenderingOrder();
 		List<Integer> indices = this.getDatasetIndices(order);
@@ -3835,7 +3833,8 @@ public class CategoryPlot extends Plot implements
 		// (int) dataArea.getY(), null);
 		// }
 		// g2.setClip(savedClip);
-		// g2.setComposite(originalComposite);
+
+		g2.restore();
 
 		if (!foundData) {
 			drawNoDataMessage(g2, dataArea);

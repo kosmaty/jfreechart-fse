@@ -225,17 +225,15 @@ public class MarkerAxisBand implements Serializable {
 					h - this.topOuterGap - this.bottomOuterGap
 					);
 
-			// JAVAFX composite
-			// Composite originalComposite = g2.getComposite();
-			// g2.setComposite(AlphaComposite.getInstance(
-			// AlphaComposite.SRC_OVER, marker.getAlpha())
-			// );
+			g2.save();
+			g2.setGlobalAlpha(marker.getAlpha());
+
 			g2.setFill(marker.getPaint());
 			fillRectangle(g2, r);
 			g2.setStroke(marker.getOutlinePaint());
 			strokeRectangle(g2, r);
-			// JAVAFX composite
-			// g2.setComposite(originalComposite);
+
+			g2.restore();
 
 			g2.setFill(Color.BLACK);
 			drawStringInRect(g2, r, this.font, marker.getLabel());

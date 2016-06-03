@@ -1061,11 +1061,9 @@ public abstract class AbstractCategoryItemRenderer extends AbstractRenderer
 			return;
 		}
 
-		// JAVAFX composite
-		// final Composite savedComposite = g2.getComposite();
-		// g2.setComposite(AlphaComposite.getInstance(
-		// AlphaComposite.SRC_OVER, marker.getAlpha()));
-		//
+		g2.save();
+		g2.setGlobalAlpha(marker.getAlpha());
+
 		PlotOrientation orientation = plot.getOrientation();
 		Rectangle2D bounds;
 		if (marker.getDrawAsLine()) {
@@ -1120,8 +1118,7 @@ public abstract class AbstractCategoryItemRenderer extends AbstractRenderer
 					(float) coords.getX(), (float) coords.getY(),
 					marker.getLabelTextAnchor());
 		}
-		// JAVAFX composite
-		// g2.setComposite(savedComposite);
+		g2.restore();
 	}
 
 	/**
@@ -1153,10 +1150,8 @@ public abstract class AbstractCategoryItemRenderer extends AbstractRenderer
 				return;
 			}
 
-			// JAVAFX composite
-			// final Composite savedComposite = g2.getComposite();
-			// g2.setComposite(AlphaComposite.getInstance(
-			// AlphaComposite.SRC_OVER, marker.getAlpha()));
+			g2.save();
+			g2.setGlobalAlpha(marker.getAlpha());
 
 			PlotOrientation orientation = plot.getOrientation();
 			double v = axis.valueToJava2D(value, dataArea,
@@ -1196,8 +1191,7 @@ public abstract class AbstractCategoryItemRenderer extends AbstractRenderer
 						(float) coords.getX(), (float) coords.getY(),
 						marker.getLabelTextAnchor());
 			}
-			// JAVAFX composite
-			// g2.setComposite(savedComposite);
+			g2.restore();
 		} else if (marker instanceof IntervalMarker) {
 			IntervalMarker im = (IntervalMarker) marker;
 			double start = im.getStartValue();
@@ -1207,10 +1201,8 @@ public abstract class AbstractCategoryItemRenderer extends AbstractRenderer
 				return;
 			}
 
-			// JAVAFX composite
-			// final Composite savedComposite = g2.getComposite();
-			// g2.setComposite(AlphaComposite.getInstance(
-			// AlphaComposite.SRC_OVER, marker.getAlpha()));
+			g2.save();
+			g2.setGlobalAlpha(marker.getAlpha());
 
 			double start2d = axis.valueToJava2D(start, dataArea,
 					plot.getRangeAxisEdge());
@@ -1301,8 +1293,7 @@ public abstract class AbstractCategoryItemRenderer extends AbstractRenderer
 						(float) coords.getX(), (float) coords.getY(),
 						marker.getLabelTextAnchor());
 			}
-			// JAVAFX composite
-			// g2.setComposite(savedComposite);
+			g2.restore();
 		}
 	}
 

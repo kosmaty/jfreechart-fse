@@ -1819,76 +1819,79 @@ public abstract class AbstractRenderer implements Cloneable, Serializable {
 		}
 	}
 
-	//
-	// /**
-	// * Returns the default shape.
-	// *
-	// * @return The shape (never <code>null</code>).
-	// *
-	// * @see #setDefaultShape(Shape)
-	// */
-	// public Shape getDefaultShape() {
-	// return this.defaultShape;
-	// }
-	//
-	// /**
-	// * Sets the default shape and sends a {@link RendererChangeEvent} to all
-	// * registered listeners.
-	// *
-	// * @param shape the shape (<code>null</code> not permitted).
-	// *
-	// * @see #getDefaultShape()
-	// */
-	// public void setDefaultShape(Shape shape) {
-	// // defer argument checking...
-	// setDefaultShape(shape, true);
-	// }
-	//
-	// /**
-	// * Sets the default shape and, if requested, sends a
-	// * {@link RendererChangeEvent} to all registered listeners.
-	// *
-	// * @param shape the shape (<code>null</code> not permitted).
-	// * @param notify notify listeners?
-	// *
-	// * @see #getDefaultShape()
-	// */
-	// public void setDefaultShape(Shape shape, boolean notify) {
-	// ParamChecks.nullNotPermitted(shape, "shape");
-	// this.defaultShape = shape;
-	// if (notify) {
-	// fireChangeEvent();
-	// }
-	// }
-	//
-	// /**
-	// * Returns the flag that controls whether or not the series shape list is
-	// * automatically populated when {@link #lookupSeriesShape(int)} is called.
-	// *
-	// * @return A boolean.
-	// *
-	// * @since 1.0.6
-	// *
-	// * @see #setAutoPopulateSeriesShape(boolean)
-	// */
-	// public boolean getAutoPopulateSeriesShape() {
-	// return this.autoPopulateSeriesShape;
-	// }
-	//
-	// /**
-	// * Sets the flag that controls whether or not the series shape list is
-	// * automatically populated when {@link #lookupSeriesShape(int)} is called.
-	// *
-	// * @param auto the new flag value.
-	// *
-	// * @since 1.0.6
-	// *
-	// * @see #getAutoPopulateSeriesShape()
-	// */
-	// public void setAutoPopulateSeriesShape(boolean auto) {
-	// this.autoPopulateSeriesShape = auto;
-	// }
-	//
+	/**
+	 * Returns the default shape.
+	 *
+	 * @return The shape (never <code>null</code>).
+	 *
+	 * @see #setDefaultShape(Shape)
+	 */
+	public Shape getDefaultShape() {
+		return this.defaultShape;
+	}
+
+	/**
+	 * Sets the default shape and sends a {@link RendererChangeEvent} to all
+	 * registered listeners.
+	 *
+	 * @param shape
+	 *            the shape (<code>null</code> not permitted).
+	 *
+	 * @see #getDefaultShape()
+	 */
+	public void setDefaultShape(Shape shape) {
+		// defer argument checking...
+		setDefaultShape(shape, true);
+	}
+
+	/**
+	 * Sets the default shape and, if requested, sends a
+	 * {@link RendererChangeEvent} to all registered listeners.
+	 *
+	 * @param shape
+	 *            the shape (<code>null</code> not permitted).
+	 * @param notify
+	 *            notify listeners?
+	 *
+	 * @see #getDefaultShape()
+	 */
+	public void setDefaultShape(Shape shape, boolean notify) {
+		ParamChecks.nullNotPermitted(shape, "shape");
+		this.defaultShape = shape;
+		if (notify) {
+			fireChangeEvent();
+		}
+	}
+
+	/**
+	 * Returns the flag that controls whether or not the series shape list is
+	 * automatically populated when {@link #lookupSeriesShape(int)} is called.
+	 *
+	 * @return A boolean.
+	 *
+	 * @since 1.0.6
+	 *
+	 * @see #setAutoPopulateSeriesShape(boolean)
+	 */
+	public boolean getAutoPopulateSeriesShape() {
+		return this.autoPopulateSeriesShape;
+	}
+
+	/**
+	 * Sets the flag that controls whether or not the series shape list is
+	 * automatically populated when {@link #lookupSeriesShape(int)} is called.
+	 *
+	 * @param auto
+	 *            the new flag value.
+	 *
+	 * @since 1.0.6
+	 *
+	 * @see #getAutoPopulateSeriesShape()
+	 */
+	public void setAutoPopulateSeriesShape(boolean auto) {
+		this.autoPopulateSeriesShape = auto;
+	}
+
 	// ITEM LABEL VISIBILITY...
 
 	/**
