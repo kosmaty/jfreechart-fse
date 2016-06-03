@@ -184,28 +184,27 @@ public class ComparableObjectSeriesTest {
 		assertEquals(s1, s2);
 	}
 
-	// JAVAFX serialization
-	// /**
-	// * Serialize an instance, restore it, and check for equality.
-	// */
-	// @Test
-	// public void testSerialization() throws IOException,
-	// ClassNotFoundException {
-	// MyComparableObjectSeries s1 = new MyComparableObjectSeries("A");
-	// s1.add(new Integer(1), "ABC");
-	//
-	// ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-	// ObjectOutput out = new ObjectOutputStream(buffer);
-	// out.writeObject(s1);
-	// out.close();
-	//
-	// ObjectInput in = new ObjectInputStream(
-	// new ByteArrayInputStream(buffer.toByteArray()));
-	// MyComparableObjectSeries s2 = (MyComparableObjectSeries) in.readObject();
-	// in.close();
-	//
-	// assertEquals(s1, s2);
-	// }
+	/**
+	 * Serialize an instance, restore it, and check for equality.
+	 */
+	@Test
+	public void testSerialization() throws IOException,
+			ClassNotFoundException {
+		MyComparableObjectSeries s1 = new MyComparableObjectSeries("A");
+		s1.add(new Integer(1), "ABC");
+
+		ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+		ObjectOutput out = new ObjectOutputStream(buffer);
+		out.writeObject(s1);
+		out.close();
+
+		ObjectInput in = new ObjectInputStream(
+				new ByteArrayInputStream(buffer.toByteArray()));
+		MyComparableObjectSeries s2 = (MyComparableObjectSeries) in.readObject();
+		in.close();
+
+		assertEquals(s1, s2);
+	}
 
 	/**
 	 * Some simple checks for the hashCode() method.

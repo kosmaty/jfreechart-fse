@@ -61,11 +61,16 @@ import java.beans.PropertyChangeSupport;
 import java.beans.PropertyVetoException;
 import java.beans.VetoableChangeListener;
 import java.beans.VetoableChangeSupport;
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.Serializable;
+import java.util.EventListener;
 
 import org.jfree.chart.util.ObjectUtils;
 import org.jfree.chart.util.ParamChecks;
 import org.jfree.event.EventListenerList;
+
+import sun.reflect.misc.ReflectUtil;
 
 /**
  * Base class representing a data series. Subclasses are left to implement the
@@ -89,7 +94,7 @@ public abstract class Series implements Cloneable, Serializable {
 	private String description;
 
 	/** Storage for registered change listeners. */
-	private EventListenerList listeners;
+	private transient EventListenerList listeners;
 
 	/** Object to support property change notification. */
 	private PropertyChangeSupport propertyChangeSupport;
@@ -435,6 +440,23 @@ public abstract class Series implements Cloneable, Serializable {
 			Object newValue) throws PropertyVetoException {
 		this.vetoableChangeSupport.fireVetoableChange(property, oldValue,
 				newValue);
+	}
+
+	/**
+	 * Restores a serialized object.
+	 *
+	 * @param stream
+	 *            the input stream.
+	 *
+	 * @throws IOException
+	 *             if there is an I/O problem.
+	 * @throws ClassNotFoundException
+	 *             if there is a problem loading a class.
+	 */
+	private void readObject(ObjectInputStream s)
+			throws IOException, ClassNotFoundException {
+		s.defaultReadObject();
+		listeners = new EventListenerList();
 	}
 
 }
