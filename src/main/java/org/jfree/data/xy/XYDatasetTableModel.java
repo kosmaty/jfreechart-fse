@@ -1,4 +1,4 @@
-// JAVAFX
+// JAVAFX swing table model
 // /* ===========================================================
 //  * JFreeChart : a free chart library for the Java(tm) platform
 //  * ===========================================================

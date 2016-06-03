@@ -269,7 +269,7 @@ public class ChartViewer extends Control implements Skinnable,
 
 		Menu export = new Menu("Export As");
 
-		// JAVAFX
+		// JAVAFX export menu
 		// MenuItem pngItem = new MenuItem("PNG...");
 		// pngItem.setOnAction(e -> handleExportToPNG());
 		// export.getItems().add(pngItem);
@@ -291,7 +291,7 @@ public class ChartViewer extends Control implements Skinnable,
 		return menu;
 	}
 
-	// JAVAFX
+	// JAVAFX export menu
 	// /**
 	// * A handler for the export to PDF option in the context menu.
 	// */

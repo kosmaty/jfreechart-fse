@@ -65,11 +65,6 @@ package org.jfree.chart.title;
 
 import static org.jfree.geometry.GeometryUtils.fillRectangle;
 
-// import java.awt.Color;
-// import java.awt.Font;
-// import java.awt.Graphics2D;
-// import java.awt.Paint;
-// import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -505,8 +500,7 @@ public class LegendTitle extends Title
 		BlockContainer result;
 		LegendGraphic lg = new LegendGraphic(item.getShape(),
 				item.getFillPaint());
-		// JAVAFX gradient
-		// lg.setFillPaintTransformer(item.getFillPaintTransformer());
+		lg.setFillPaintTransformer(item.getFillPaintTransformer());
 		lg.setShapeFilled(item.isShapeFilled());
 		lg.setLine(item.getLine());
 		lg.setLineStroke(item.getLineStroke());

@@ -61,11 +61,11 @@ public class CloneUtils {
 	 * 
 	 * @since 1.0.18
 	 */
-	public static Map cloneMapValues(Map source) {
+	public static <K, V> Map<K, V> cloneMapValues(Map<K, V> source) {
 		ParamChecks.nullNotPermitted(source, "source");
-		Map result = new HashMap();
-		for (Object key : source.keySet()) {
-			Object value = source.get(key);
+		Map<K, V> result = new HashMap<>();
+		for (K key : source.keySet()) {
+			V value = source.get(key);
 			if (value != null) {
 				try {
 					result.put(key, ObjectUtils.clone(value));

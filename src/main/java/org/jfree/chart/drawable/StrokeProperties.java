@@ -1,11 +1,12 @@
 package org.jfree.chart.drawable;
 
+import java.io.Serializable;
 import java.util.Arrays;
 
 import javafx.scene.shape.StrokeLineCap;
 import javafx.scene.shape.StrokeLineJoin;
 
-public class StrokeProperties {
+public class StrokeProperties implements Serializable {
 	public static final double DEFAULT_LINE_WIDTH = 1.0;
 	public static final StrokeLineCap DEFAULT_LINE_CAP = StrokeLineCap.SQUARE;
 	public static final StrokeLineJoin DEFAULT_LINE_JOIN = StrokeLineJoin.MITER;

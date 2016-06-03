@@ -41,10 +41,6 @@
 
 package org.jfree.chart.fx;
 
-// import java.awt.Graphics2D;
-// import java.awt.Rectangle;
-// import java.awt.geom.Point2D;
-// import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.List;
 import javafx.collections.FXCollections;
@@ -57,7 +53,6 @@ import javafx.scene.control.Tooltip;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.text.FontSmoothingType;
-// import org.jfree.chart.ChartMouseEvent;
 import org.jfree.chart.ChartRenderingInfo;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.entity.ChartEntity;
@@ -180,8 +175,6 @@ public class ChartCanvas extends Canvas implements ChartChangeListener
 		// change the default font smoothing for better results
 		GraphicsContext gc = getGraphicsContext2D();
 		gc.setFontSmoothingType(FontSmoothingType.LCD);
-		// JAVAFX
-		// this.g2 = new FXGraphics2D(gc);
 		this.liveHandler = null;
 		this.availableMouseHandlers = new ArrayList<MouseHandlerFX>();
 

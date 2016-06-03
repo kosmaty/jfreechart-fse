@@ -152,8 +152,7 @@ public class StrokeList extends AbstractObjectList<StrokeProperties> {
 			final StrokeProperties stroke = getStroke(i);
 			if (stroke != null) {
 				stream.writeInt(i);
-				// JAVAFX serialization
-				// SerialUtils.writeStroke(stroke, stream);
+				SerialUtils.writeStroke(stroke, stream);
 			}
 			else {
 				stream.writeInt(-1);
@@ -180,8 +179,7 @@ public class StrokeList extends AbstractObjectList<StrokeProperties> {
 		for (int i = 0; i < count; i++) {
 			final int index = stream.readInt();
 			if (index != -1) {
-				// JAVAFX serialization
-				// setStroke(index, SerialUtils.readStroke(stream));
+				setStroke(index, SerialUtils.readStroke(stream));
 			}
 		}
 

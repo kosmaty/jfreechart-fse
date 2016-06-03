@@ -158,7 +158,7 @@ import org.jfree.chart.annotations.Annotation;
 import org.jfree.chart.annotations.XYAnnotation;
 import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.drawable.StrokeProperties;
-// import org.jfree.chart.ui.GradientPaintTransformer;
+import org.jfree.chart.ui.GradientPaintTransformer;
 import org.jfree.chart.ui.Layer;
 import org.jfree.chart.ui.LengthAdjustmentType;
 import org.jfree.chart.ui.RectangleAnchor;
@@ -200,6 +200,7 @@ import com.sun.javafx.geom.Shape;
 import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.paint.LinearGradient;
 import javafx.scene.paint.Paint;
 import javafx.scene.text.Font;
 
@@ -1364,17 +1365,16 @@ public abstract class AbstractXYItemRenderer extends AbstractRenderer
 			// g2.setComposite(AlphaComposite.getInstance(
 			// AlphaComposite.SRC_OVER, marker.getAlpha()));
 			Paint p = marker.getPaint();
-			// JAVAFX gradient
-			// if (p instanceof GradientPaint) {
-			// GradientPaint gp = (GradientPaint) p;
-			// GradientPaintTransformer t = im.getGradientPaintTransformer();
-			// if (t != null) {
-			// gp = t.transform(gp, rect);
-			// }
-			// g2.setPaint(gp);
-			// } else {
-			g2.setFill(p);
-			// }
+			if (p instanceof LinearGradient) {
+				LinearGradient gp = (LinearGradient) p;
+				GradientPaintTransformer t = im.getGradientPaintTransformer();
+				if (t != null) {
+					gp = t.transform(gp, rect);
+				}
+				g2.setFill(gp);
+			} else {
+				g2.setFill(p);
+			}
 			fillRectangle(g2, rect);
 
 			// now draw the outlines, if visible...
@@ -1582,17 +1582,16 @@ public abstract class AbstractXYItemRenderer extends AbstractRenderer
 			// g2.setComposite(AlphaComposite.getInstance(
 			// AlphaComposite.SRC_OVER, marker.getAlpha()));
 			Paint p = marker.getPaint();
-			// JAVAFX gradient
-			// if (p instanceof GradientPaint) {
-			// GradientPaint gp = (GradientPaint) p;
-			// GradientPaintTransformer t = im.getGradientPaintTransformer();
-			// if (t != null) {
-			// gp = t.transform(gp, rect);
-			// }
-			// g2.setPaint(gp);
-			// } else {
-			g2.setFill(p);
-			// }
+			if (p instanceof LinearGradient) {
+				LinearGradient gp = (LinearGradient) p;
+				GradientPaintTransformer t = im.getGradientPaintTransformer();
+				if (t != null) {
+					gp = t.transform(gp, rect);
+				}
+				g2.setFill(gp);
+			} else {
+				g2.setFill(p);
+			}
 			fillRectangle(g2, rect);
 
 			// now draw the outlines, if visible...

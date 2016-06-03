@@ -153,8 +153,8 @@ import org.jfree.data.xy.TableXYDataset;
 import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYDomainInfo;
 import org.jfree.data.xy.XYRangeInfo;
-// import org.jfree.data.xy.XYSeries;
-// import org.jfree.data.xy.XYSeriesCollection;
+import org.jfree.data.xy.XYSeries;
+import org.jfree.data.xy.XYSeriesCollection;
 import org.jfree.data.xy.XYZDataset;
 
 /**
@@ -500,65 +500,74 @@ public final class DatasetUtilities {
 
 	}
 
-	// JAVAFX
-	// /**
-	// * Creates an {@link XYDataset} by sampling the specified function over a
-	// * fixed range.
-	// *
-	// * @param f the function ({@code null} not permitted).
-	// * @param start the start value for the range.
-	// * @param end the end value for the range.
-	// * @param samples the number of sample points (must be &gt; 1).
-	// * @param seriesKey the key to give the resulting series
-	// * ({@code null} not permitted).
-	// *
-	// * @return A dataset.
-	// */
-	// public static XYDataset sampleFunction2D(Function2D f, double start,
-	// double end, int samples, Comparable seriesKey) {
-	//
-	// // defer argument checking
-	// XYSeries series = sampleFunction2DToSeries(f, start, end, samples,
-	// seriesKey);
-	// XYSeriesCollection collection = new XYSeriesCollection(series);
-	// return collection;
-	// }
-	//
-	// /**
-	// * Creates an {@link XYSeries} by sampling the specified function over a
-	// * fixed range.
-	// *
-	// * @param f the function ({@code null} not permitted).
-	// * @param start the start value for the range.
-	// * @param end the end value for the range.
-	// * @param samples the number of sample points (must be &gt; 1).
-	// * @param seriesKey the key to give the resulting series
-	// * ({@code null} not permitted).
-	// *
-	// * @return A series.
-	// *
-	// * @since 1.0.13
-	// */
-	// public static XYSeries sampleFunction2DToSeries(Function2D f,
-	// double start, double end, int samples, Comparable seriesKey) {
-	//
-	// ParamChecks.nullNotPermitted(f, "f");
-	// ParamChecks.nullNotPermitted(seriesKey, "seriesKey");
-	// if (start >= end) {
-	// throw new IllegalArgumentException("Requires 'start' < 'end'.");
-	// }
-	// if (samples < 2) {
-	// throw new IllegalArgumentException("Requires 'samples' > 1");
-	// }
-	//
-	// XYSeries series = new XYSeries(seriesKey);
-	// double step = (end - start) / (samples - 1);
-	// for (int i = 0; i < samples; i++) {
-	// double x = start + (step * i);
-	// series.add(x, f.getValue(x));
-	// }
-	// return series;
-	// }
+	/**
+	 * Creates an {@link XYDataset} by sampling the specified function over a
+	 * fixed range.
+	 *
+	 * @param f
+	 *            the function ({@code null} not permitted).
+	 * @param start
+	 *            the start value for the range.
+	 * @param end
+	 *            the end value for the range.
+	 * @param samples
+	 *            the number of sample points (must be &gt; 1).
+	 * @param seriesKey
+	 *            the key to give the resulting series ({@code null} not
+	 *            permitted).
+	 *
+	 * @return A dataset.
+	 */
+	public static XYDataset sampleFunction2D(Function2D f, double start,
+			double end, int samples, Comparable seriesKey) {
+
+		// defer argument checking
+		XYSeries series = sampleFunction2DToSeries(f, start, end, samples,
+				seriesKey);
+		XYSeriesCollection collection = new XYSeriesCollection(series);
+		return collection;
+	}
+
+	/**
+	 * Creates an {@link XYSeries} by sampling the specified function over a
+	 * fixed range.
+	 *
+	 * @param f
+	 *            the function ({@code null} not permitted).
+	 * @param start
+	 *            the start value for the range.
+	 * @param end
+	 *            the end value for the range.
+	 * @param samples
+	 *            the number of sample points (must be &gt; 1).
+	 * @param seriesKey
+	 *            the key to give the resulting series ({@code null} not
+	 *            permitted).
+	 *
+	 * @return A series.
+	 *
+	 * @since 1.0.13
+	 */
+	public static XYSeries sampleFunction2DToSeries(Function2D f,
+			double start, double end, int samples, Comparable seriesKey) {
+
+		ParamChecks.nullNotPermitted(f, "f");
+		ParamChecks.nullNotPermitted(seriesKey, "seriesKey");
+		if (start >= end) {
+			throw new IllegalArgumentException("Requires 'start' < 'end'.");
+		}
+		if (samples < 2) {
+			throw new IllegalArgumentException("Requires 'samples' > 1");
+		}
+
+		XYSeries series = new XYSeries(seriesKey);
+		double step = (end - start) / (samples - 1);
+		for (int i = 0; i < samples; i++) {
+			double x = start + (step * i);
+			series.add(x, f.getValue(x));
+		}
+		return series;
+	}
 
 	/**
 	 * Returns {@code true} if the dataset is empty (or {@code null}), and

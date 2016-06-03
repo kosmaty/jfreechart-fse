@@ -167,7 +167,7 @@ public class TextTitleTest {
 		assertEquals(t1, t2);
 	}
 
-	// JAVAFX serialization
+	// JAVAFX paint serialization
 	// /**
 	// * Serialize an instance, restore it, and check for equality.
 	// */

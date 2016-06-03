@@ -70,6 +70,8 @@ import java.text.CharacterIterator;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.jfree.chart.drawable.StrokeProperties;
+
 import javafx.geometry.Point2D;
 import javafx.scene.paint.Paint;
 import javafx.scene.text.Font;
@@ -268,81 +270,55 @@ public class SerialUtils {
 		}
 	}
 
-	// JAVAFX stroke, serialization
-	// /**
-	// * Reads a {@code Stroke} object that has been serialised by the
-	// * {@link SerialUtils#writeStroke(Stroke, ObjectOutputStream)} method.
-	// *
-	// * @param stream
-	// * the input stream ({@code null} not permitted).
-	// *
-	// * @return The stroke object (possibly {@code null}).
-	// *
-	// * @throws IOException
-	// * if there is an I/O problem.
-	// * @throws ClassNotFoundException
-	// * if there is a problem loading a class.
-	// */
-	// public static Stroke readStroke(final ObjectInputStream stream)
-	// throws IOException, ClassNotFoundException {
-	// ParamChecks.nullNotPermitted(stream, "stream");
-	// Stroke result = null;
-	// boolean isNull = stream.readBoolean();
-	// if (!isNull) {
-	// Class c = (Class) stream.readObject();
-	// if (c.equals(BasicStroke.class)) {
-	// float width = stream.readFloat();
-	// int cap = stream.readInt();
-	// int join = stream.readInt();
-	// float miterLimit = stream.readFloat();
-	// float[] dash = (float[]) stream.readObject();
-	// float dashPhase = stream.readFloat();
-	// result = new BasicStroke(width, cap, join, miterLimit, dash,
-	// dashPhase);
-	// } else {
-	// result = (Stroke) stream.readObject();
-	// }
-	// }
-	// return result;
-	// }
-	//
-	// /**
-	// * Serialises a {@code Stroke} object. This code handles the
-	// * {@code BasicStroke} class which is the only {@code Stroke}
-	// implementation
-	// * provided by the JDK (and isn't directly {@code Serializable}).
-	// *
-	// * @param stroke
-	// * the stroke object ({@code null} permitted).
-	// * @param stream
-	// * the output stream ({@code null} not permitted).
-	// *
-	// * @throws IOException
-	// * if there is an I/O error.
-	// */
-	// public static void writeStroke(Stroke stroke, ObjectOutputStream stream)
-	// throws IOException {
-	//
-	// ParamChecks.nullNotPermitted(stream, "stream");
-	// if (stroke != null) {
-	// stream.writeBoolean(false);
-	// if (stroke instanceof BasicStroke) {
-	// final BasicStroke s = (BasicStroke) stroke;
-	// stream.writeObject(BasicStroke.class);
-	// stream.writeFloat(s.getLineWidth());
-	// stream.writeInt(s.getEndCap());
-	// stream.writeInt(s.getLineJoin());
-	// stream.writeFloat(s.getMiterLimit());
-	// stream.writeObject(s.getDashArray());
-	// stream.writeFloat(s.getDashPhase());
-	// } else {
-	// stream.writeObject(stroke.getClass());
-	// stream.writeObject(stroke);
-	// }
-	// } else {
-	// stream.writeBoolean(true);
-	// }
-	// }
+	/**
+	 * Reads a {@code Stroke} object that has been serialised by the
+	 * {@link SerialUtils#writeStroke(Stroke, ObjectOutputStream)} method.
+	 *
+	 * @param stream
+	 *            the input stream ({@code null} not permitted).
+	 *
+	 * @return The stroke object (possibly {@code null}).
+	 *
+	 * @throws IOException
+	 *             if there is an I/O problem.
+	 * @throws ClassNotFoundException
+	 *             if there is a problem loading a class.
+	 */
+	public static StrokeProperties readStroke(final ObjectInputStream stream)
+			throws IOException, ClassNotFoundException {
+		ParamChecks.nullNotPermitted(stream, "stream");
+		StrokeProperties result = null;
+		boolean isNull = stream.readBoolean();
+		if (!isNull) {
+			result = (StrokeProperties) stream.readObject();
+		}
+		return result;
+	}
+
+	/**
+	 * Serialises a {@code Stroke} object. This code handles the
+	 * {@code BasicStroke} class which is the only {@code Stroke} implementation
+	 * provided by the JDK (and isn't directly {@code Serializable}).
+	 *
+	 * @param stroke
+	 *            the stroke object ({@code null} permitted).
+	 * @param stream
+	 *            the output stream ({@code null} not permitted).
+	 *
+	 * @throws IOException
+	 *             if there is an I/O error.
+	 */
+	public static void writeStroke(StrokeProperties stroke, ObjectOutputStream stream)
+			throws IOException {
+
+		ParamChecks.nullNotPermitted(stream, "stream");
+		if (stroke != null) {
+			stream.writeBoolean(false);
+			stream.writeObject(stroke);
+		} else {
+			stream.writeBoolean(true);
+		}
+	}
 
 	// JAVAFX serialization
 	// /**

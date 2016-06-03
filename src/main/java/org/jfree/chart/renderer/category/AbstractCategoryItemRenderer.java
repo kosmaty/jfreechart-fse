@@ -140,7 +140,7 @@ import org.jfree.chart.LegendItem;
 import org.jfree.chart.axis.CategoryAxis;
 import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.drawable.StrokeProperties;
-// import org.jfree.chart.ui.GradientPaintTransformer;
+import org.jfree.chart.ui.GradientPaintTransformer;
 import org.jfree.chart.ui.LengthAdjustmentType;
 import org.jfree.chart.ui.RectangleAnchor;
 import org.jfree.chart.ui.RectangleEdge;
@@ -181,6 +181,7 @@ import com.sun.javafx.geom.Shape;
 import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.paint.LinearGradient;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Line;
 import javafx.scene.text.Font;
@@ -1236,17 +1237,16 @@ public abstract class AbstractCategoryItemRenderer extends AbstractRenderer
 						high - low);
 			}
 			Paint p = marker.getPaint();
-			// JAVAFX gradient
-			// if (p instanceof GradientPaint) {
-			// GradientPaint gp = (GradientPaint) p;
-			// GradientPaintTransformer t = im.getGradientPaintTransformer();
-			// if (t != null) {
-			// gp = t.transform(gp, rect);
-			// }
-			// g2.setPaint(gp);
-			// } else {
-			g2.setFill(p);
-			// }
+			if (p instanceof LinearGradient) {
+				LinearGradient gp = (LinearGradient) p;
+				GradientPaintTransformer t = im.getGradientPaintTransformer();
+				if (t != null) {
+					gp = t.transform(gp, rect);
+				}
+				g2.setFill(gp);
+			} else {
+				g2.setFill(p);
+			}
 			fillRectangle(g2, rect);
 
 			// now draw the outlines, if visible...
@@ -1480,19 +1480,18 @@ public abstract class AbstractCategoryItemRenderer extends AbstractRenderer
 				that.defaultURLGenerator)) {
 			return false;
 		}
-		// JAVAFX
-		// if (!ObjectUtils.equal(this.legendItemLabelGenerator,
-		// that.legendItemLabelGenerator)) {
-		// return false;
-		// }
-		// if (!ObjectUtils.equal(this.legendItemToolTipGenerator,
-		// that.legendItemToolTipGenerator)) {
-		// return false;
-		// }
-		// if (!ObjectUtils.equal(this.legendItemURLGenerator,
-		// that.legendItemURLGenerator)) {
-		// return false;
-		// }
+		if (!ObjectUtils.equal(this.legendItemLabelGenerator,
+				that.legendItemLabelGenerator)) {
+			return false;
+		}
+		if (!ObjectUtils.equal(this.legendItemToolTipGenerator,
+				that.legendItemToolTipGenerator)) {
+			return false;
+		}
+		if (!ObjectUtils.equal(this.legendItemURLGenerator,
+				that.legendItemURLGenerator)) {
+			return false;
+		}
 		return super.equals(obj);
 	}
 
@@ -1633,69 +1632,68 @@ public abstract class AbstractCategoryItemRenderer extends AbstractRenderer
 	@Override
 	public Object clone() throws CloneNotSupportedException {
 		AbstractCategoryItemRenderer clone = (AbstractCategoryItemRenderer) super.clone();
-		// JAVAFX
-		// if (this.itemLabelGeneratorMap != null) {
-		// clone.itemLabelGeneratorMap = CloneUtils.cloneMapValues(
-		// this.itemLabelGeneratorMap);
-		// }
-		// if (this.defaultItemLabelGenerator != null) {
-		// if (this.defaultItemLabelGenerator instanceof PublicCloneable) {
-		// PublicCloneable pc = (PublicCloneable)
-		// this.defaultItemLabelGenerator;
-		// clone.defaultItemLabelGenerator = (CategoryItemLabelGenerator)
-		// pc.clone();
-		// }
-		// else {
-		// throw new CloneNotSupportedException(
-		// "ItemLabelGenerator not cloneable.");
-		// }
-		// }
-		//
-		// if (this.toolTipGeneratorMap != null) {
-		// clone.toolTipGeneratorMap = CloneUtils.cloneMapValues(
-		// this.toolTipGeneratorMap);
-		// }
-		//
-		// if (this.defaultToolTipGenerator != null) {
-		// if (this.defaultToolTipGenerator instanceof PublicCloneable) {
-		// PublicCloneable pc = (PublicCloneable) this.defaultToolTipGenerator;
-		// clone.defaultToolTipGenerator = (CategoryToolTipGenerator)
-		// pc.clone();
-		// }
-		// else {
-		// throw new CloneNotSupportedException(
-		// "Base tool tip generator not cloneable.");
-		// }
-		// }
-		//
-		// if (this.urlGeneratorMap != null) {
-		// clone.urlGeneratorMap = CloneUtils.cloneMapValues(
-		// this.urlGeneratorMap);
-		// }
-		//
-		// if (this.defaultURLGenerator != null) {
-		// if (this.defaultURLGenerator instanceof PublicCloneable) {
-		// PublicCloneable pc = (PublicCloneable) this.defaultURLGenerator;
-		// clone.defaultURLGenerator = (CategoryURLGenerator) pc.clone();
-		// }
-		// else {
-		// throw new CloneNotSupportedException(
-		// "Base item URL generator not cloneable.");
-		// }
-		// }
-		//
-		// if (this.legendItemLabelGenerator instanceof PublicCloneable) {
-		// clone.legendItemLabelGenerator =
-		// ObjectUtils.clone(this.legendItemLabelGenerator);
-		// }
-		// if (this.legendItemToolTipGenerator instanceof PublicCloneable) {
-		// clone.legendItemToolTipGenerator =
-		// ObjectUtils.clone(this.legendItemToolTipGenerator);
-		// }
-		// if (this.legendItemURLGenerator instanceof PublicCloneable) {
-		// clone.legendItemURLGenerator =
-		// ObjectUtils.clone(this.legendItemURLGenerator);
-		// }
+		if (this.itemLabelGeneratorMap != null) {
+			clone.itemLabelGeneratorMap = CloneUtils.cloneMapValues(
+					this.itemLabelGeneratorMap);
+		}
+		if (this.defaultItemLabelGenerator != null) {
+			if (this.defaultItemLabelGenerator instanceof PublicCloneable) {
+				PublicCloneable pc = (PublicCloneable)
+						this.defaultItemLabelGenerator;
+				clone.defaultItemLabelGenerator = (CategoryItemLabelGenerator)
+						pc.clone();
+			}
+			else {
+				throw new CloneNotSupportedException(
+						"ItemLabelGenerator not cloneable.");
+			}
+		}
+
+		if (this.toolTipGeneratorMap != null) {
+			clone.toolTipGeneratorMap = CloneUtils.cloneMapValues(
+					this.toolTipGeneratorMap);
+		}
+
+		if (this.defaultToolTipGenerator != null) {
+			if (this.defaultToolTipGenerator instanceof PublicCloneable) {
+				PublicCloneable pc = (PublicCloneable) this.defaultToolTipGenerator;
+				clone.defaultToolTipGenerator = (CategoryToolTipGenerator)
+						pc.clone();
+			}
+			else {
+				throw new CloneNotSupportedException(
+						"Base tool tip generator not cloneable.");
+			}
+		}
+
+		if (this.urlGeneratorMap != null) {
+			clone.urlGeneratorMap = CloneUtils.cloneMapValues(
+					this.urlGeneratorMap);
+		}
+
+		if (this.defaultURLGenerator != null) {
+			if (this.defaultURLGenerator instanceof PublicCloneable) {
+				PublicCloneable pc = (PublicCloneable) this.defaultURLGenerator;
+				clone.defaultURLGenerator = (CategoryURLGenerator) pc.clone();
+			}
+			else {
+				throw new CloneNotSupportedException(
+						"Base item URL generator not cloneable.");
+			}
+		}
+
+		if (this.legendItemLabelGenerator instanceof PublicCloneable) {
+			clone.legendItemLabelGenerator =
+					ObjectUtils.clone(this.legendItemLabelGenerator);
+		}
+		if (this.legendItemToolTipGenerator instanceof PublicCloneable) {
+			clone.legendItemToolTipGenerator =
+					ObjectUtils.clone(this.legendItemToolTipGenerator);
+		}
+		if (this.legendItemURLGenerator instanceof PublicCloneable) {
+			clone.legendItemURLGenerator =
+					ObjectUtils.clone(this.legendItemURLGenerator);
+		}
 		return clone;
 	}
 

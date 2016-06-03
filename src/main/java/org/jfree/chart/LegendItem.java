@@ -67,15 +67,6 @@ package org.jfree.chart;
 import static org.jfree.chart.util.ShapeUtils.asShape;
 import static org.jfree.geometry.GeometryUtils.emptyLine;
 
-// 
-// import java.awt.BasicStroke;
-// import java.awt.Color;
-// import java.awt.Font;
-// import java.awt.Paint;
-// import java.awt.Shape;
-// import java.awt.Stroke;
-// import java.awt.geom.Line2D;
-// import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -84,8 +75,8 @@ import java.text.AttributedString;
 import java.text.CharacterIterator;
 
 import org.jfree.chart.drawable.StrokeProperties;
-// import org.jfree.chart.ui.GradientPaintTransformer;
-// import org.jfree.chart.ui.StandardGradientPaintTransformer;
+import org.jfree.chart.ui.GradientPaintTransformer;
+import org.jfree.chart.ui.StandardGradientPaintTransformer;
 import org.jfree.chart.util.AttributedStringUtils;
 import org.jfree.chart.util.ObjectUtils;
 import org.jfree.chart.util.PaintUtils;
@@ -174,13 +165,12 @@ public class LegendItem implements Cloneable, Serializable {
 	/** The paint. */
 	private transient Paint fillPaint;
 
-	// JAVAFX gradient
-	// /**
-	// * A gradient paint transformer.
-	// *
-	// * @since 1.0.4
-	// */
-	// private GradientPaintTransformer fillPaintTransformer;
+	/**
+	 * A gradient paint transformer.
+	 *
+	 * @since 1.0.4
+	 */
+	private GradientPaintTransformer fillPaintTransformer;
 
 	/** A flag that controls whether or not the shape outline is visible. */
 	private boolean shapeOutlineVisible;
@@ -396,8 +386,7 @@ public class LegendItem implements Cloneable, Serializable {
 		this.shape = shape;
 		this.shapeFilled = shapeFilled;
 		this.fillPaint = fillPaint;
-		// JAVAFX gradient
-		// this.fillPaintTransformer = new StandardGradientPaintTransformer();
+		this.fillPaintTransformer = new StandardGradientPaintTransformer();
 		this.shapeOutlineVisible = shapeOutlineVisible;
 		this.outlinePaint = outlinePaint;
 		this.outlineStroke = outlineStroke;
@@ -558,8 +547,7 @@ public class LegendItem implements Cloneable, Serializable {
 		this.shape = shape;
 		this.shapeFilled = shapeFilled;
 		this.fillPaint = fillPaint;
-		// JAVAFX gradient
-		// this.fillPaintTransformer = new StandardGradientPaintTransformer();
+		this.fillPaintTransformer = new StandardGradientPaintTransformer();
 		this.shapeOutlineVisible = shapeOutlineVisible;
 		this.outlinePaint = outlinePaint;
 		this.outlineStroke = outlineStroke;
@@ -1071,38 +1059,37 @@ public class LegendItem implements Cloneable, Serializable {
 		this.line = line;
 	}
 
-	// JAVAFX gradient
-	//
-	// /**
-	// * Returns the transformer used when the fill paint is an instance of
-	// * <code>GradientPaint</code>.
-	// *
-	// * @return The transformer (never <code>null</code>).
-	// *
-	// * @since 1.0.4
-	// *
-	// * @see #setFillPaintTransformer(GradientPaintTransformer)
-	// */
-	// public GradientPaintTransformer getFillPaintTransformer() {
-	// return this.fillPaintTransformer;
-	// }
-	//
-	// /**
-	// * Sets the transformer used when the fill paint is an instance of
-	// * <code>GradientPaint</code>.
-	// *
-	// * @param transformer the transformer (<code>null</code> not permitted).
-	// *
-	// * @since 1.0.4
-	// *
-	// * @see #getFillPaintTransformer()
-	// */
-	// public void setFillPaintTransformer(GradientPaintTransformer transformer)
-	// {
-	// ParamChecks.nullNotPermitted(transformer, "transformer");
-	// this.fillPaintTransformer = transformer;
-	// }
-	//
+	/**
+	 * Returns the transformer used when the fill paint is an instance of
+	 * <code>GradientPaint</code>.
+	 *
+	 * @return The transformer (never <code>null</code>).
+	 *
+	 * @since 1.0.4
+	 *
+	 * @see #setFillPaintTransformer(GradientPaintTransformer)
+	 */
+	public GradientPaintTransformer getFillPaintTransformer() {
+		return this.fillPaintTransformer;
+	}
+
+	/**
+	 * Sets the transformer used when the fill paint is an instance of
+	 * <code>GradientPaint</code>.
+	 *
+	 * @param transformer
+	 *            the transformer (<code>null</code> not permitted).
+	 *
+	 * @since 1.0.4
+	 *
+	 * @see #getFillPaintTransformer()
+	 */
+	public void setFillPaintTransformer(GradientPaintTransformer transformer)
+	{
+		ParamChecks.nullNotPermitted(transformer, "transformer");
+		this.fillPaintTransformer = transformer;
+	}
+
 	/**
 	 * Tests this item for equality with an arbitrary object.
 	 *
@@ -1148,11 +1135,10 @@ public class LegendItem implements Cloneable, Serializable {
 		if (!PaintUtils.equal(this.fillPaint, that.fillPaint)) {
 			return false;
 		}
-		// JAVAFX gradient
-		// if (!ObjectUtils.equal(this.fillPaintTransformer,
-		// that.fillPaintTransformer)) {
-		// return false;
-		// }
+		if (!ObjectUtils.equal(this.fillPaintTransformer,
+				that.fillPaintTransformer)) {
+			return false;
+		}
 		if (this.shapeOutlineVisible != that.shapeOutlineVisible) {
 			return false;
 		}
@@ -1238,10 +1224,10 @@ public class LegendItem implements Cloneable, Serializable {
 		// JAVAFX serialization
 		// SerialUtils.writeShape(this.shape, stream);
 		SerialUtils.writePaint(this.fillPaint, stream);
-		// SerialUtils.writeStroke(this.outlineStroke, stream);
+		SerialUtils.writeStroke(this.outlineStroke, stream);
 		SerialUtils.writePaint(this.outlinePaint, stream);
 		// SerialUtils.writeShape(this.line, stream);
-		// SerialUtils.writeStroke(this.lineStroke, stream);
+		SerialUtils.writeStroke(this.lineStroke, stream);
 		SerialUtils.writePaint(this.linePaint, stream);
 		SerialUtils.writePaint(this.labelPaint, stream);
 	}
@@ -1264,10 +1250,10 @@ public class LegendItem implements Cloneable, Serializable {
 		// JAVAFX serialization
 		// this.shape = SerialUtils.readShape(stream);
 		this.fillPaint = SerialUtils.readPaint(stream);
-		// this.outlineStroke = SerialUtils.readStroke(stream);
+		this.outlineStroke = SerialUtils.readStroke(stream);
 		this.outlinePaint = SerialUtils.readPaint(stream);
 		// this.line = SerialUtils.readShape(stream);
-		// this.lineStroke = SerialUtils.readStroke(stream);
+		this.lineStroke = SerialUtils.readStroke(stream);
 		this.linePaint = SerialUtils.readPaint(stream);
 		this.labelPaint = SerialUtils.readPaint(stream);
 	}

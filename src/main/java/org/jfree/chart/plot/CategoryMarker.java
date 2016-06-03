@@ -44,14 +44,14 @@
 
 package org.jfree.chart.plot;
 
-// 
-// import java.awt.BasicStroke;
-// import java.awt.Color;
-// import java.awt.Paint;
-// import java.awt.Stroke;
 import java.io.Serializable;
-// 
+
 import org.jfree.chart.ui.LengthAdjustmentType;
+
+import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
+
+import org.jfree.chart.drawable.StrokeProperties;
 import org.jfree.chart.event.MarkerChangeEvent;
 
 // 
@@ -73,46 +73,54 @@ public class CategoryMarker extends Marker implements Cloneable, Serializable {
 	 */
 	private boolean drawAsLine = false;
 
-	// JAVAFX
-	//
-	// /**
-	// * Creates a new category marker for the specified category.
-	// *
-	// * @param key the category key.
-	// */
-	// public CategoryMarker(Comparable key) {
-	// this(key, Color.GRAY, new BasicStroke(1.0f));
-	// }
-	//
-	// /**
-	// * Creates a new category marker.
-	// *
-	// * @param key the key.
-	// * @param paint the paint (<code>null</code> not permitted).
-	// * @param stroke the stroke (<code>null</code> not permitted).
-	// */
-	// public CategoryMarker(Comparable key, Paint paint, Stroke stroke) {
-	// this(key, paint, stroke, paint, stroke, 1.0f);
-	// }
-	//
-	// /**
-	// * Creates a new category marker.
-	// *
-	// * @param key the key.
-	// * @param paint the paint (<code>null</code> not permitted).
-	// * @param stroke the stroke (<code>null</code> not permitted).
-	// * @param outlinePaint the outline paint (<code>null</code> permitted).
-	// * @param outlineStroke the outline stroke (<code>null</code> permitted).
-	// * @param alpha the alpha transparency.
-	// */
-	// public CategoryMarker(Comparable key, Paint paint, Stroke stroke,
-	// Paint outlinePaint, Stroke outlineStroke,
-	// float alpha) {
-	// super(paint, stroke, outlinePaint, outlineStroke, alpha);
-	// this.key = key;
-	// setLabelOffsetType(LengthAdjustmentType.EXPAND);
-	// }
-	//
+	/**
+	 * Creates a new category marker for the specified category.
+	 *
+	 * @param key
+	 *            the category key.
+	 */
+	public CategoryMarker(Comparable key) {
+		this(key, Color.GRAY, new StrokeProperties(1.0));
+	}
+
+	/**
+	 * Creates a new category marker.
+	 *
+	 * @param key
+	 *            the key.
+	 * @param paint
+	 *            the paint (<code>null</code> not permitted).
+	 * @param stroke
+	 *            the stroke (<code>null</code> not permitted).
+	 */
+	public CategoryMarker(Comparable key, Paint paint, StrokeProperties stroke) {
+		this(key, paint, stroke, paint, stroke, 1.0f);
+	}
+
+	/**
+	 * Creates a new category marker.
+	 *
+	 * @param key
+	 *            the key.
+	 * @param paint
+	 *            the paint (<code>null</code> not permitted).
+	 * @param stroke
+	 *            the stroke (<code>null</code> not permitted).
+	 * @param outlinePaint
+	 *            the outline paint (<code>null</code> permitted).
+	 * @param outlineStroke
+	 *            the outline stroke (<code>null</code> permitted).
+	 * @param alpha
+	 *            the alpha transparency.
+	 */
+	public CategoryMarker(Comparable key, Paint paint, StrokeProperties stroke,
+			Paint outlinePaint, StrokeProperties outlineStroke,
+			float alpha) {
+		super(paint, stroke, outlinePaint, outlineStroke, alpha);
+		this.key = key;
+		setLabelOffsetType(LengthAdjustmentType.EXPAND);
+	}
+
 	/**
 	 * Returns the key.
 	 *

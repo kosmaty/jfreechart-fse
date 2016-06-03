@@ -162,9 +162,10 @@ import org.jfree.chart.LegendItem;
 import org.jfree.chart.LegendItemSource;
 import org.jfree.chart.annotations.Annotation;
 import org.jfree.chart.axis.AxisLocation;
-// import org.jfree.chart.drawable.BorderPainter;
+import org.jfree.chart.drawable.BorderPainter;
 import org.jfree.chart.drawable.ColorPainter;
 import org.jfree.chart.drawable.Drawable;
+import org.jfree.chart.drawable.StrokeProperties;
 import org.jfree.chart.entity.EntityCollection;
 import org.jfree.chart.entity.PlotEntity;
 import org.jfree.chart.event.AnnotationChangeEvent;
@@ -191,8 +192,11 @@ import org.jfree.chart.util.PublicCloneable;
 import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
+import javafx.scene.shape.StrokeLineCap;
+import javafx.scene.shape.StrokeLineJoin;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
@@ -205,6 +209,9 @@ import org.jfree.data.general.LabelChangeListener;
 import org.jfree.data.general.SelectionChangeEvent;
 import org.jfree.data.general.SelectionChangeListener;
 import org.jfree.event.EventListenerList;
+
+import com.sun.javafx.geom.Ellipse2D;
+import com.sun.javafx.geom.Shape;
 
 import static org.jfree.chart.util.ShapeUtils.asShape;
 import static org.jfree.geometry.GeometryUtils.getCenterX;
@@ -234,11 +241,10 @@ public abstract class Plot implements
 	/** The default insets. */
 	public static final RectangleInsets DEFAULT_INSETS = new RectangleInsets(4.0, 8.0, 4.0, 8.0);
 
-	// JAVAFX
-	// /** The default outline stroke. */
-	// public static final Stroke DEFAULT_OUTLINE_STROKE = new BasicStroke(0.5f,
-	// BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
-	//
+	/** The default outline stroke. */
+	public static final StrokeProperties DEFAULT_OUTLINE_STROKE = new StrokeProperties(
+			0.5f, StrokeLineCap.ROUND, StrokeLineJoin.ROUND);
+
 	/** The default outline color. */
 	public static final Color DEFAULT_OUTLINE_COLOR = Color.GRAY;
 
@@ -254,14 +260,11 @@ public abstract class Plot implements
 	/** The minimum height at which the plot should be drawn. */
 	public static final int MINIMUM_HEIGHT_TO_DRAW = 10;
 
-	//
-	// /** A default box shape for legend items. */
-	// public static final Shape DEFAULT_LEGEND_ITEM_BOX
-	// = new Rectangle2D.Double(-4.0, -4.0, 8.0, 8.0);
-	//
-	// /** A default circle shape for legend items. */
-	// public static final Shape DEFAULT_LEGEND_ITEM_CIRCLE
-	// = new Ellipse2D.Double(-4.0, -4.0, 8.0, 8.0);
+	/** A default box shape for legend items. */
+	public static final Shape DEFAULT_LEGEND_ITEM_BOX = asShape(new Rectangle2D(-4.0, -4.0, 8.0, 8.0));
+
+	/** A default circle shape for legend items. */
+	public static final Shape DEFAULT_LEGEND_ITEM_CIRCLE = new Ellipse2D(-4.0f, -4.0f, 8.0f, 8.0f);
 
 	/** The parent plot (<code>null</code> if this is the root plot). */
 	private Plot parent;
@@ -286,8 +289,8 @@ public abstract class Plot implements
 	/** An optional painter used to fill the plot background. */
 	private Drawable backgroundPainter;
 	//
-	// /** An optional image for the plot background. */
-	// private transient Image backgroundImage; // not currently serialized
+	/** An optional image for the plot background. */
+	private transient Image backgroundImage; // not currently serialized
 
 	/** The alignment for the background image. */
 	private int backgroundImageAlignment = Align.FIT;
@@ -323,10 +326,8 @@ public abstract class Plot implements
 		this.insets = DEFAULT_INSETS;
 		this.backgroundPainter = new ColorPainter(Color.WHITE);
 		this.backgroundAlpha = DEFAULT_BACKGROUND_ALPHA;
-		// JAVAFX
-		// this.backgroundImage = null;
-		// this.borderPainter = new BorderPainter(Color.GRAY,
-		// DEFAULT_OUTLINE_STROKE);
+		this.backgroundImage = null;
+		this.borderPainter = new BorderPainter(Color.GRAY, DEFAULT_OUTLINE_STROKE);
 		this.foregroundAlpha = DEFAULT_FOREGROUND_ALPHA;
 
 		this.noDataMessage = null;
@@ -525,8 +526,6 @@ public abstract class Plot implements
 		return this.backgroundPainter;
 	}
 
-	// JAVAFX
-
 	/**
 	 * Sets the background painter and sends a change event to all registered
 	 * listeners.
@@ -658,32 +657,32 @@ public abstract class Plot implements
 		}
 	}
 
-	// JAVAFX image
-	// /**
-	// * Returns the background image that is used to fill the plot's background
-	// * area.
-	// *
-	// * @return The image (possibly <code>null</code>).
-	// *
-	// * @see #setBackgroundImage(Image)
-	// */
-	// public Image getBackgroundImage() {
-	// return this.backgroundImage;
-	// }
-	//
-	// /**
-	// * Sets the background image for the plot and sends a
-	// * {@link PlotChangeEvent} to all registered listeners.
-	// *
-	// * @param image the image (<code>null</code> permitted).
-	// *
-	// * @see #getBackgroundImage()
-	// */
-	// public void setBackgroundImage(Image image) {
-	// this.backgroundImage = image;
-	// fireChangeEvent();
-	// }
-	//
+	/**
+	 * Returns the background image that is used to fill the plot's background
+	 * area.
+	 *
+	 * @return The image (possibly <code>null</code>).
+	 *
+	 * @see #setBackgroundImage(Image)
+	 */
+	public Image getBackgroundImage() {
+		return this.backgroundImage;
+	}
+
+	/**
+	 * Sets the background image for the plot and sends a
+	 * {@link PlotChangeEvent} to all registered listeners.
+	 *
+	 * @param image
+	 *            the image (<code>null</code> permitted).
+	 *
+	 * @see #getBackgroundImage()
+	 */
+	public void setBackgroundImage(Image image) {
+		this.backgroundImage = image;
+		fireChangeEvent();
+	}
+
 	/**
 	 * Returns the background image alignment. Alignment constants are defined
 	 * in the <code>org.jfree.ui.Align</code> class in the JCommon class
@@ -945,24 +944,26 @@ public abstract class Plot implements
 	 * @see #getBackgroundImageAlpha()
 	 */
 	public void drawBackgroundImage(GraphicsContext g2, Rectangle2D area) {
-		// JAVAFX image
-		// if (this.backgroundImage == null) {
-		// return; // nothing to do
-		// }
-		// Composite savedComposite = g2.getComposite();
-		// g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER,
-		// this.backgroundImageAlpha));
-		// Rectangle2D dest = new Rectangle2D.Double(0.0, 0.0,
-		// this.backgroundImage.getWidth(null),
-		// this.backgroundImage.getHeight(null));
-		// Align.align(dest, area, this.backgroundImageAlignment);
+		if (this.backgroundImage == null) {
+			return; // nothing to do
+		}
+		g2.save();
+		g2.setGlobalAlpha(this.backgroundImageAlpha);
+
+		Rectangle2D dest = new Rectangle2D(0.0, 0.0,
+				this.backgroundImage.getWidth(),
+				this.backgroundImage.getHeight());
+		dest = Align.align2(dest, area, this.backgroundImageAlignment);
+		// JAVAFX clip
 		// Shape savedClip = g2.getClip();
 		// g2.clip(area);
-		// g2.drawImage(this.backgroundImage, (int) dest.getX(),
-		// (int) dest.getY(), (int) dest.getWidth() + 1,
-		// (int) dest.getHeight() + 1, null);
+		g2.drawImage(this.backgroundImage, (int) dest.getMinX(),
+				(int) dest.getMinY(), (int) dest.getWidth() + 1,
+				(int) dest.getHeight() + 1);
+		// JAVAFX clip
 		// g2.setClip(savedClip);
-		// g2.setComposite(savedComposite);
+
+		g2.restore();
 	}
 
 	//
@@ -1251,11 +1252,10 @@ public abstract class Plot implements
 				that.backgroundPainter)) {
 			return false;
 		}
-		// JAVAFX
-		// if (!ObjectUtils.equal(this.backgroundImage,
-		// that.backgroundImage)) {
-		// return false;
-		// }
+		if (!ObjectUtils.equal(this.backgroundImage,
+				that.backgroundImage)) {
+			return false;
+		}
 		if (this.backgroundImageAlignment != that.backgroundImageAlignment) {
 			return false;
 		}
@@ -1268,10 +1268,9 @@ public abstract class Plot implements
 		if (this.backgroundAlpha != that.backgroundAlpha) {
 			return false;
 		}
-		// JAVAFX
-		// if (!this.drawingSupplier.equals(that.drawingSupplier)) {
-		// return false;
-		// }
+		if (!this.drawingSupplier.equals(that.drawingSupplier)) {
+			return false;
+		}
 		if (this.notify != that.notify) {
 			return false;
 		}
@@ -1291,8 +1290,7 @@ public abstract class Plot implements
 		Plot clone = (Plot) super.clone();
 		// private Plot parent <-- don't clone the parent plot, but take care
 		// childs in combined plots instead
-		// JAVAFX
-		// clone.drawingSupplier = ObjectUtils.clone(this.drawingSupplier);
+		clone.drawingSupplier = ObjectUtils.clone(this.drawingSupplier);
 		clone.listenerList = new EventListenerList();
 		return clone;
 	}

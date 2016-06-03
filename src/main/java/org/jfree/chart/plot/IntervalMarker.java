@@ -46,13 +46,9 @@
 
 package org.jfree.chart.plot;
 
-// import java.awt.BasicStroke;
-// import java.awt.Color;
-// import java.awt.Paint;
-// import java.awt.Stroke;
 import java.io.Serializable;
 
-// import org.jfree.chart.ui.GradientPaintTransformer;
+import org.jfree.chart.ui.GradientPaintTransformer;
 import org.jfree.chart.ui.LengthAdjustmentType;
 import org.jfree.chart.util.ObjectUtils;
 
@@ -76,9 +72,8 @@ public class IntervalMarker extends Marker implements Cloneable, Serializable {
 	/** The end value. */
 	private double endValue;
 
-	// JAVAFX gradient
-	// /** The gradient paint transformer (optional). */
-	// private GradientPaintTransformer gradientPaintTransformer;
+	/** The gradient paint transformer (optional). */
+	private GradientPaintTransformer gradientPaintTransformer;
 
 	/**
 	 * Constructs an interval marker.
@@ -137,8 +132,7 @@ public class IntervalMarker extends Marker implements Cloneable, Serializable {
 		super(paint, stroke, outlinePaint, outlineStroke, alpha);
 		this.startValue = start;
 		this.endValue = end;
-		// JAVAFX gradient
-		// this.gradientPaintTransformer = null;
+		this.gradientPaintTransformer = null;
 		setLabelOffsetType(LengthAdjustmentType.CONTRACT);
 
 	}
@@ -189,29 +183,27 @@ public class IntervalMarker extends Marker implements Cloneable, Serializable {
 		notifyListeners(new MarkerChangeEvent(this));
 	}
 
-	// JAVAFX gradient
-	// /**
-	// * Returns the gradient paint transformer.
-	// *
-	// * @return The gradient paint transformer (possibly <code>null</code>).
-	// */
-	// public GradientPaintTransformer getGradientPaintTransformer() {
-	// return this.gradientPaintTransformer;
-	// }
-	//
-	// /**
-	// * Sets the gradient paint transformer and sends a {@link
-	// MarkerChangeEvent}
-	// * to all registered listeners.
-	// *
-	// * @param transformer
-	// * the transformer (<code>null</code> permitted).
-	// */
-	// public void setGradientPaintTransformer(
-	// GradientPaintTransformer transformer) {
-	// this.gradientPaintTransformer = transformer;
-	// notifyListeners(new MarkerChangeEvent(this));
-	// }
+	/**
+	 * Returns the gradient paint transformer.
+	 *
+	 * @return The gradient paint transformer (possibly <code>null</code>).
+	 */
+	public GradientPaintTransformer getGradientPaintTransformer() {
+		return this.gradientPaintTransformer;
+	}
+
+	/**
+	 * Sets the gradient paint transformer and sends a {@link MarkerChangeEvent}
+	 * to all registered listeners.
+	 *
+	 * @param transformer
+	 *            the transformer (<code>null</code> permitted).
+	 */
+	public void setGradientPaintTransformer(
+			GradientPaintTransformer transformer) {
+		this.gradientPaintTransformer = transformer;
+		notifyListeners(new MarkerChangeEvent(this));
+	}
 
 	/**
 	 * Tests the marker for equality with an arbitrary object.
@@ -239,11 +231,10 @@ public class IntervalMarker extends Marker implements Cloneable, Serializable {
 		if (this.endValue != that.endValue) {
 			return false;
 		}
-		// JAVAFX gradient
-		// if (!ObjectUtils.equal(this.gradientPaintTransformer,
-		// that.gradientPaintTransformer)) {
-		// return false;
-		// }
+		if (!ObjectUtils.equal(this.gradientPaintTransformer,
+				that.gradientPaintTransformer)) {
+			return false;
+		}
 		return true;
 	}
 

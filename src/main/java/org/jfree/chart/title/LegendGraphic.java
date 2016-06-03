@@ -57,13 +57,6 @@ import static org.jfree.chart.util.ShapeUtils.outlineShape;
 import static org.jfree.chart.util.ShapeUtils.setStrokeProperties;
 import static org.jfree.geometry.GeometryUtils.union;
 
-// import java.awt.GradientPaint;
-// import java.awt.Graphics2D;
-// import java.awt.Paint;
-// import java.awt.Shape;
-// import java.awt.Stroke;
-// import java.awt.geom.Point2D;
-// import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -72,10 +65,10 @@ import org.jfree.chart.block.Block;
 import org.jfree.chart.block.LengthConstraintType;
 import org.jfree.chart.block.RectangleConstraint;
 import org.jfree.chart.drawable.StrokeProperties;
-// import org.jfree.chart.ui.GradientPaintTransformer;
+import org.jfree.chart.ui.GradientPaintTransformer;
 import org.jfree.chart.ui.RectangleAnchor;
 import org.jfree.chart.ui.Size2D;
-// import org.jfree.chart.ui.StandardGradientPaintTransformer;
+import org.jfree.chart.ui.StandardGradientPaintTransformer;
 import org.jfree.chart.util.ObjectUtils;
 import org.jfree.chart.util.PaintUtils;
 import org.jfree.chart.util.ParamChecks;
@@ -88,6 +81,7 @@ import com.sun.javafx.geom.Shape;
 import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.paint.LinearGradient;
 import javafx.scene.paint.Paint;
 
 /**
@@ -128,14 +122,13 @@ public class LegendGraphic extends AbstractBlock implements Block,
 	/** The fill paint for the shape. */
 	private transient Paint fillPaint;
 
-	// JAVAFX gradient
-	// /**
-	// * The fill paint transformer (used if the fillPaint is an instance of
-	// * GradientPaint).
-	// *
-	// * @since 1.0.4
-	// */
-	// private GradientPaintTransformer fillPaintTransformer;
+	/**
+	 * The fill paint transformer (used if the fillPaint is an instance of
+	 * GradientPaint).
+	 *
+	 * @since 1.0.4
+	 */
+	private GradientPaintTransformer fillPaintTransformer;
 
 	/** A flag that controls whether or not the shape outline is visible. */
 	private boolean shapeOutlineVisible;
@@ -178,8 +171,7 @@ public class LegendGraphic extends AbstractBlock implements Block,
 		this.shapeLocation = RectangleAnchor.CENTER;
 		this.shapeFilled = true;
 		this.fillPaint = fillPaint;
-		// JAVAFX gradient
-		// this.fillPaintTransformer = new StandardGradientPaintTransformer();
+		this.fillPaintTransformer = new StandardGradientPaintTransformer();
 		setPadding(2.0, 2.0, 2.0, 2.0);
 	}
 
@@ -275,37 +267,36 @@ public class LegendGraphic extends AbstractBlock implements Block,
 		this.fillPaint = paint;
 	}
 
-	// JAVAFX gradient
-	// /**
-	// * Returns the transformer used when the fill paint is an instance of
-	// * <code>GradientPaint</code>.
-	// *
-	// * @return The transformer (never <code>null</code>).
-	// *
-	// * @since 1.0.4.
-	// *
-	// * @see #setFillPaintTransformer(GradientPaintTransformer)
-	// */
-	// public GradientPaintTransformer getFillPaintTransformer() {
-	// return this.fillPaintTransformer;
-	// }
-	//
-	// /**
-	// * Sets the transformer used when the fill paint is an instance of
-	// * <code>GradientPaint</code>.
-	// *
-	// * @param transformer
-	// * the transformer (<code>null</code> not permitted).
-	// *
-	// * @since 1.0.4
-	// *
-	// * @see #getFillPaintTransformer()
-	// */
-	// public void setFillPaintTransformer(GradientPaintTransformer transformer)
-	// {
-	// ParamChecks.nullNotPermitted(transformer, "transformer");
-	// this.fillPaintTransformer = transformer;
-	// }
+	/**
+	 * Returns the transformer used when the fill paint is an instance of
+	 * <code>GradientPaint</code>.
+	 *
+	 * @return The transformer (never <code>null</code>).
+	 *
+	 * @since 1.0.4.
+	 *
+	 * @see #setFillPaintTransformer(GradientPaintTransformer)
+	 */
+	public GradientPaintTransformer getFillPaintTransformer() {
+		return this.fillPaintTransformer;
+	}
+
+	/**
+	 * Sets the transformer used when the fill paint is an instance of
+	 * <code>GradientPaint</code>.
+	 *
+	 * @param transformer
+	 *            the transformer (<code>null</code> not permitted).
+	 *
+	 * @since 1.0.4
+	 *
+	 * @see #getFillPaintTransformer()
+	 */
+	public void setFillPaintTransformer(GradientPaintTransformer transformer)
+	{
+		ParamChecks.nullNotPermitted(transformer, "transformer");
+		this.fillPaintTransformer = transformer;
+	}
 
 	/**
 	 * Returns a flag that controls whether the shape outline is visible.
@@ -624,11 +615,10 @@ public class LegendGraphic extends AbstractBlock implements Block,
 					this.shapeAnchor, location.getX(), location.getY());
 			if (this.shapeFilled) {
 				Paint p = this.fillPaint;
-				// JAVAFX gradient
-				// if (p instanceof GradientPaint) {
-				// GradientPaint gp = (GradientPaint) this.fillPaint;
-				// p = this.fillPaintTransformer.transform(gp, s);
-				// }
+				if (p instanceof LinearGradient) {
+					LinearGradient gp = (LinearGradient) this.fillPaint;
+					p = this.fillPaintTransformer.transform(gp, s);
+				}
 				g2.setFill(p);
 				fillShape(g2, s);
 			}
@@ -686,11 +676,10 @@ public class LegendGraphic extends AbstractBlock implements Block,
 		if (!PaintUtils.equal(this.fillPaint, that.fillPaint)) {
 			return false;
 		}
-		// JAVAFX gradient
-		// if (!ObjectUtils.equal(this.fillPaintTransformer,
-		// that.fillPaintTransformer)) {
-		// return false;
-		// }
+		if (!ObjectUtils.equal(this.fillPaintTransformer,
+				that.fillPaintTransformer)) {
+			return false;
+		}
 		if (this.shapeOutlineVisible != that.shapeOutlineVisible) {
 			return false;
 		}
@@ -766,10 +755,10 @@ public class LegendGraphic extends AbstractBlock implements Block,
 		// SerialUtils.writeShape(this.shape, stream);
 		SerialUtils.writePaint(this.fillPaint, stream);
 		SerialUtils.writePaint(this.outlinePaint, stream);
-		// SerialUtils.writeStroke(this.outlineStroke, stream);
+		SerialUtils.writeStroke(this.outlineStroke, stream);
 		// SerialUtils.writeShape(this.line, stream);
 		SerialUtils.writePaint(this.linePaint, stream);
-		// SerialUtils.writeStroke(this.lineStroke, stream);
+		SerialUtils.writeStroke(this.lineStroke, stream);
 	}
 
 	/**
@@ -790,10 +779,10 @@ public class LegendGraphic extends AbstractBlock implements Block,
 		// this.shape = SerialUtils.readShape(stream);
 		this.fillPaint = SerialUtils.readPaint(stream);
 		this.outlinePaint = SerialUtils.readPaint(stream);
-		// this.outlineStroke = SerialUtils.readStroke(stream);
+		this.outlineStroke = SerialUtils.readStroke(stream);
 		// this.line = SerialUtils.readShape(stream);
 		this.linePaint = SerialUtils.readPaint(stream);
-		// this.lineStroke = SerialUtils.readStroke(stream);
+		this.lineStroke = SerialUtils.readStroke(stream);
 	}
 
 }

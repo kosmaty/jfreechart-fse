@@ -457,18 +457,17 @@ public class DefaultDrawingSupplier implements DrawingSupplier, Cloneable,
 			SerialUtils.writePaint(anOutlinePaintSequence, stream);
 		}
 
-		// JAVAFX stroke, serialization
-		// int strokeCount = this.strokeSequence.length;
-		// stream.writeInt(strokeCount);
-		// for (Stroke aStrokeSequence : this.strokeSequence) {
-		// SerialUtils.writeStroke(aStrokeSequence, stream);
-		// }
-		//
-		// int outlineStrokeCount = this.outlineStrokeSequence.length;
-		// stream.writeInt(outlineStrokeCount);
-		// for (Stroke anOutlineStrokeSequence : this.outlineStrokeSequence) {
-		// SerialUtils.writeStroke(anOutlineStrokeSequence, stream);
-		// }
+		int strokeCount = this.strokeSequence.length;
+		stream.writeInt(strokeCount);
+		for (StrokeProperties aStrokeSequence : this.strokeSequence) {
+			SerialUtils.writeStroke(aStrokeSequence, stream);
+		}
+
+		int outlineStrokeCount = this.outlineStrokeSequence.length;
+		stream.writeInt(outlineStrokeCount);
+		for (StrokeProperties anOutlineStrokeSequence : this.outlineStrokeSequence) {
+			SerialUtils.writeStroke(anOutlineStrokeSequence, stream);
+		}
 
 		int shapeCount = this.shapeSequence.length;
 		stream.writeInt(shapeCount);
@@ -506,18 +505,17 @@ public class DefaultDrawingSupplier implements DrawingSupplier, Cloneable,
 			this.outlinePaintSequence[i] = SerialUtils.readPaint(stream);
 		}
 
-		// JAVAFX stroke serialization
-		// int strokeCount = stream.readInt();
-		// this.strokeSequence = new Stroke[strokeCount];
-		// for (int i = 0; i < strokeCount; i++) {
-		// this.strokeSequence[i] = SerialUtils.readStroke(stream);
-		// }
-		//
-		// int outlineStrokeCount = stream.readInt();
-		// this.outlineStrokeSequence = new Stroke[outlineStrokeCount];
-		// for (int i = 0; i < outlineStrokeCount; i++) {
-		// this.outlineStrokeSequence[i] = SerialUtils.readStroke(stream);
-		// }
+		int strokeCount = stream.readInt();
+		this.strokeSequence = new StrokeProperties[strokeCount];
+		for (int i = 0; i < strokeCount; i++) {
+			this.strokeSequence[i] = SerialUtils.readStroke(stream);
+		}
+
+		int outlineStrokeCount = stream.readInt();
+		this.outlineStrokeSequence = new StrokeProperties[outlineStrokeCount];
+		for (int i = 0; i < outlineStrokeCount; i++) {
+			this.outlineStrokeSequence[i] = SerialUtils.readStroke(stream);
+		}
 
 		int shapeCount = stream.readInt();
 		this.shapeSequence = new Shape[shapeCount];

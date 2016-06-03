@@ -69,7 +69,7 @@ public class ColorPainter implements Drawable, Serializable {
 	 * currently installed Swing Look &amp; Feel.
 	 */
 	public ColorPainter() {
-		// JAVAFX
+		// JAVAFX ui manager
 		// this(UIManager.getColor("Panel.background"));
 		this(Color.WHITE);
 	}

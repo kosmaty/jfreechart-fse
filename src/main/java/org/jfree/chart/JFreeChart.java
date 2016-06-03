@@ -188,6 +188,7 @@ import org.jfree.chart.drawable.Drawable;
 import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
@@ -257,10 +258,8 @@ public class JFreeChart implements Drawable,
 	/** The default font for titles. */
 	public static final Font DEFAULT_SUBTITLE_FONT = Font.font("SansSerif", FontWeight.NORMAL, FontPosture.REGULAR, 12);
 
-	// JAVAFX
-	//
-	// /** The default background image. */
-	// public static final Image DEFAULT_BACKGROUND_IMAGE = null;
+	/** The default background image. */
+	public static final Image DEFAULT_BACKGROUND_IMAGE = null;
 
 	/** The default background image alignment. */
 	public static final int DEFAULT_BACKGROUND_IMAGE_ALIGNMENT = Align.FIT;
@@ -268,7 +267,7 @@ public class JFreeChart implements Drawable,
 	/** The default background image alpha. */
 	public static final float DEFAULT_BACKGROUND_IMAGE_ALPHA = 0.5f;
 
-	// JAVAFX
+	// JAVAFX rendering hints
 	//
 	// /**
 	// * The key for a rendering hint that can suppress the generation of a
@@ -317,9 +316,8 @@ public class JFreeChart implements Drawable,
 	 */
 	private Plot plot;
 
-	//
-	// /** An optional background image for the chart. */
-	// private transient Image backgroundImage; // todo: not serialized yet
+	/** An optional background image for the chart. */
+	private transient Image backgroundImage; // todo: not serialized yet
 
 	/** The alignment for the background image. */
 	private int backgroundImageAlignment = Align.FIT;
@@ -442,13 +440,12 @@ public class JFreeChart implements Drawable,
 			this.title.addChangeListener(this);
 		}
 
-		// JAVAFX
-		// this.backgroundImage = DEFAULT_BACKGROUND_IMAGE;
+		this.backgroundImage = DEFAULT_BACKGROUND_IMAGE;
 		this.backgroundImageAlignment = DEFAULT_BACKGROUND_IMAGE_ALIGNMENT;
 		this.backgroundImageAlpha = DEFAULT_BACKGROUND_IMAGE_ALPHA;
 	}
 
-	// JAVAFX
+	// JAVAFX rendering hints
 	//
 	// /**
 	// * Returns the collection of rendering hints for the chart.
@@ -917,43 +914,43 @@ public class JFreeChart implements Drawable,
 	// }
 	//
 
-	// JAVAFX image
-	// /**
-	// * Returns the background image for the chart, or <code>null</code> if
-	// * there is no image.
-	// *
-	// * @return The image (possibly <code>null</code>).
-	// *
-	// * @see #setBackgroundImage(Image)
-	// */
-	// public Image getBackgroundImage() {
-	// return this.backgroundImage;
-	// }
-	//
-	// /**
-	// * Sets the background image for the chart and sends a
-	// * {@link ChartChangeEvent} to all registered listeners.
-	// *
-	// * @param image the image (<code>null</code> permitted).
-	// *
-	// * @see #getBackgroundImage()
-	// */
-	// public void setBackgroundImage(Image image) {
-	//
-	// if (this.backgroundImage != null) {
-	// if (!this.backgroundImage.equals(image)) {
-	// this.backgroundImage = image;
-	// fireChartChanged();
-	// }
-	// }
-	// else {
-	// if (image != null) {
-	// this.backgroundImage = image;
-	// fireChartChanged();
-	// }
-	// }
-	//
-	// }
+	/**
+	 * Returns the background image for the chart, or <code>null</code> if there
+	 * is no image.
+	 *
+	 * @return The image (possibly <code>null</code>).
+	 *
+	 * @see #setBackgroundImage(Image)
+	 */
+	public Image getBackgroundImage() {
+		return this.backgroundImage;
+	}
+
+	/**
+	 * Sets the background image for the chart and sends a
+	 * {@link ChartChangeEvent} to all registered listeners.
+	 *
+	 * @param image
+	 *            the image (<code>null</code> permitted).
+	 *
+	 * @see #getBackgroundImage()
+	 */
+	public void setBackgroundImage(Image image) {
+
+		if (this.backgroundImage != null) {
+			if (!this.backgroundImage.equals(image)) {
+				this.backgroundImage = image;
+				fireChartChanged();
+			}
+		}
+		else {
+			if (image != null) {
+				this.backgroundImage = image;
+				fireChartChanged();
+			}
+		}
+
+	}
 
 	/**
 	 * Returns the background image alignment. Alignment constants are defined
@@ -1105,7 +1102,7 @@ public class JFreeChart implements Drawable,
 					this));
 		}
 
-		// JAVAFX
+		// JAVAFX clipping
 		// ensure no drawing occurs outside chart area...
 		// Shape savedClip = g2.getClip();
 		// g2.clip(chartArea);
@@ -1116,26 +1113,24 @@ public class JFreeChart implements Drawable,
 		if (this.backgroundPainter != null) {
 			this.backgroundPainter.draw(g2, chartArea);
 		}
-		// JAVAFX
-		// if (this.backgroundImage != null) {
-		// Composite originalComposite = g2.getComposite();
-		// g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER,
-		// this.backgroundImageAlpha));
-		// Rectangle2D dest = new Rectangle2D.Double(0.0, 0.0,
-		// this.backgroundImage.getWidth(null),
-		// this.backgroundImage.getHeight(null));
-		// Align.align(dest, chartArea, this.backgroundImageAlignment);
-		// g2.drawImage(this.backgroundImage, (int) dest.getX(),
-		// (int) dest.getY(), (int) dest.getWidth(),
-		// (int) dest.getHeight(), null);
-		// g2.setComposite(originalComposite);
-		// }
-		//
-		// if (this.borderPainter != null) {
-		// this.borderPainter.draw(g2, chartArea);
-		// }
-		//
-		// // draw the title and subtitles...
+		if (this.backgroundImage != null) {
+			g2.save();
+			g2.setGlobalAlpha(this.backgroundImageAlpha);
+			Rectangle2D dest = new Rectangle2D(0.0, 0.0,
+					this.backgroundImage.getWidth(),
+					this.backgroundImage.getHeight());
+			dest = Align.align2(dest, chartArea, this.backgroundImageAlignment);
+			g2.drawImage(this.backgroundImage, (int) dest.getMinX(),
+					(int) dest.getMinY(), (int) dest.getWidth(),
+					(int) dest.getHeight());
+			g2.restore();
+		}
+
+		if (this.borderPainter != null) {
+			this.borderPainter.draw(g2, chartArea);
+		}
+
+		// draw the title and subtitles...
 		Rectangle2D nonTitleArea = chartArea;
 		nonTitleArea = this.padding.trim2(nonTitleArea);
 
@@ -1603,7 +1598,7 @@ public class JFreeChart implements Drawable,
 			return false;
 		}
 		JFreeChart that = (JFreeChart) obj;
-		// JAVAFX
+		// JAVAFX rendering hints
 		// if (!this.renderingHints.equals(that.renderingHints)) {
 		// return false;
 		// }
@@ -1613,13 +1608,12 @@ public class JFreeChart implements Drawable,
 		if (!this.padding.equals(that.padding)) {
 			return false;
 		}
-		// JAVAFX
-		// if (!ObjectUtils.equal(this.title, that.title)) {
-		// return false;
-		// }
-		// if (!ObjectUtils.equal(this.subtitles, that.subtitles)) {
-		// return false;
-		// }
+		if (!ObjectUtils.equal(this.title, that.title)) {
+			return false;
+		}
+		if (!ObjectUtils.equal(this.subtitles, that.subtitles)) {
+			return false;
+		}
 		if (!ObjectUtils.equal(this.plot, that.plot)) {
 			return false;
 		}
@@ -1627,17 +1621,16 @@ public class JFreeChart implements Drawable,
 				that.backgroundPainter)) {
 			return false;
 		}
-		// JAVAFX
-		// if (!ObjectUtils.equal(this.backgroundImage,
-		// that.backgroundImage)) {
-		// return false;
-		// }
-		// if (this.backgroundImageAlignment != that.backgroundImageAlignment) {
-		// return false;
-		// }
-		// if (this.backgroundImageAlpha != that.backgroundImageAlpha) {
-		// return false;
-		// }
+		if (!ObjectUtils.equal(this.backgroundImage,
+				that.backgroundImage)) {
+			return false;
+		}
+		if (this.backgroundImageAlignment != that.backgroundImageAlignment) {
+			return false;
+		}
+		if (this.backgroundImageAlpha != that.backgroundImageAlpha) {
+			return false;
+		}
 		if (this.notify != that.notify) {
 			return false;
 		}
@@ -1661,21 +1654,21 @@ public class JFreeChart implements Drawable,
 		stream.defaultReadObject();
 		this.progressListeners = new EventListenerList();
 		this.changeListeners = new EventListenerList();
-		// JAVAFX serialization
+		// JAVAFX serialization, rendering hints
 		// this.renderingHints = new RenderingHints(
 		// RenderingHints.KEY_ANTIALIASING,
 		// RenderingHints.VALUE_ANTIALIAS_ON);
 		// this.renderingHints.put(RenderingHints.KEY_STROKE_CONTROL,
 		// RenderingHints.VALUE_STROKE_PURE);
 		//
-		// // register as a listener with sub-components...
-		// if (this.title != null) {
-		// this.title.addChangeListener(this);
-		// }
-		//
-		// for (int i = 0; i < getSubtitleCount(); i++) {
-		// getSubtitle(i).addChangeListener(this);
-		// }
+		// register as a listener with sub-components...
+		if (this.title != null) {
+			this.title.addChangeListener(this);
+		}
+
+		for (int i = 0; i < getSubtitleCount(); i++) {
+			getSubtitle(i).addChangeListener(this);
+		}
 		this.plot.addChangeListener(this);
 	}
 
@@ -1692,19 +1685,19 @@ public class JFreeChart implements Drawable,
 	public Object clone() throws CloneNotSupportedException {
 		JFreeChart chart = (JFreeChart) super.clone();
 
-		// JAVAFX
+		// JAVAFX rendering hints
 		// chart.renderingHints = (RenderingHints) this.renderingHints.clone();
-		// if (this.title != null) {
-		// chart.title = (TextTitle) this.title.clone();
-		// chart.title.addChangeListener(chart);
-		// }
-		//
-		// chart.subtitles = new ArrayList<Title>();
-		// for (int i = 0; i < getSubtitleCount(); i++) {
-		// Title subtitle = (Title) getSubtitle(i).clone();
-		// chart.subtitles.add(subtitle);
-		// subtitle.addChangeListener(chart);
-		// }
+		if (this.title != null) {
+			chart.title = (TextTitle) this.title.clone();
+			chart.title.addChangeListener(chart);
+		}
+
+		chart.subtitles = new ArrayList<Title>();
+		for (int i = 0; i < getSubtitleCount(); i++) {
+			Title subtitle = (Title) getSubtitle(i).clone();
+			chart.subtitles.add(subtitle);
+			subtitle.addChangeListener(chart);
+		}
 
 		if (this.plot != null) {
 			chart.plot = (Plot) this.plot.clone();

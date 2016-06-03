@@ -66,13 +66,13 @@ public class CrosshairOverlayFX extends CrosshairOverlay implements OverlayFX {
 
 	@Override
 	public void paintOverlay(GraphicsContext g2, ChartCanvas chartCanvas) {
-		// JAVAFX
+		// JAVAFX clip
 		// Shape savedClip = g2.getClip();
 		Rectangle2D dataArea = chartCanvas
 				.getRenderingInfo()
 				.getPlotInfo()
 				.getDataArea();
-		// JAVAFX
+		// JAVAFX clip
 		// g2.clip(dataArea);
 		JFreeChart chart = chartCanvas.getChart();
 		XYPlot plot = (XYPlot) chart.getPlot();
@@ -106,7 +106,7 @@ public class CrosshairOverlayFX extends CrosshairOverlay implements OverlayFX {
 				}
 			}
 		}
-		// JAVAFX
+		// JAVAFX clip
 		// g2.setClip(savedClip);
 	}
 

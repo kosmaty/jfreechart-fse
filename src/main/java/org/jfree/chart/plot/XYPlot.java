@@ -5878,20 +5878,19 @@ public class XYPlot extends Plot implements ValueAxisPlot, Pannable, Zoomable,
 	 */
 	private void writeObject(ObjectOutputStream stream) throws IOException {
 		stream.defaultWriteObject();
-		// JAVAFX stroke, serialization
-		// SerialUtils.writeStroke(this.domainGridlineStroke, stream);
+		SerialUtils.writeStroke(this.domainGridlineStroke, stream);
 		SerialUtils.writePaint(this.domainGridlinePaint, stream);
-		// SerialUtils.writeStroke(this.rangeGridlineStroke, stream);
+		SerialUtils.writeStroke(this.rangeGridlineStroke, stream);
 		SerialUtils.writePaint(this.rangeGridlinePaint, stream);
-		// SerialUtils.writeStroke(this.domainMinorGridlineStroke, stream);
+		SerialUtils.writeStroke(this.domainMinorGridlineStroke, stream);
 		SerialUtils.writePaint(this.domainMinorGridlinePaint, stream);
-		// SerialUtils.writeStroke(this.rangeMinorGridlineStroke, stream);
+		SerialUtils.writeStroke(this.rangeMinorGridlineStroke, stream);
 		SerialUtils.writePaint(this.rangeMinorGridlinePaint, stream);
-		// SerialUtils.writeStroke(this.rangeZeroBaselineStroke, stream);
+		SerialUtils.writeStroke(this.rangeZeroBaselineStroke, stream);
 		SerialUtils.writePaint(this.rangeZeroBaselinePaint, stream);
-		// SerialUtils.writeStroke(this.domainCrosshairStroke, stream);
+		SerialUtils.writeStroke(this.domainCrosshairStroke, stream);
 		SerialUtils.writePaint(this.domainCrosshairPaint, stream);
-		// SerialUtils.writeStroke(this.rangeCrosshairStroke, stream);
+		SerialUtils.writeStroke(this.rangeCrosshairStroke, stream);
 		SerialUtils.writePaint(this.rangeCrosshairPaint, stream);
 		SerialUtils.writePaint(this.domainTickBandPaint, stream);
 		SerialUtils.writePaint(this.rangeTickBandPaint, stream);
@@ -5899,7 +5898,7 @@ public class XYPlot extends Plot implements ValueAxisPlot, Pannable, Zoomable,
 		for (int i = 0; i < 4; i++) {
 			SerialUtils.writePaint(this.quadrantPaint[i], stream);
 		}
-		// SerialUtils.writeStroke(this.domainZeroBaselineStroke, stream);
+		SerialUtils.writeStroke(this.domainZeroBaselineStroke, stream);
 		SerialUtils.writePaint(this.domainZeroBaselinePaint, stream);
 	}
 
@@ -5918,20 +5917,19 @@ public class XYPlot extends Plot implements ValueAxisPlot, Pannable, Zoomable,
 			throws IOException, ClassNotFoundException {
 
 		stream.defaultReadObject();
-		// JAVAFX stroke, serialization
-		// this.domainGridlineStroke = SerialUtils.readStroke(stream);
+		this.domainGridlineStroke = SerialUtils.readStroke(stream);
 		this.domainGridlinePaint = SerialUtils.readPaint(stream);
-		// this.rangeGridlineStroke = SerialUtils.readStroke(stream);
+		this.rangeGridlineStroke = SerialUtils.readStroke(stream);
 		this.rangeGridlinePaint = SerialUtils.readPaint(stream);
-		// this.domainMinorGridlineStroke = SerialUtils.readStroke(stream);
+		this.domainMinorGridlineStroke = SerialUtils.readStroke(stream);
 		this.domainMinorGridlinePaint = SerialUtils.readPaint(stream);
-		// this.rangeMinorGridlineStroke = SerialUtils.readStroke(stream);
+		this.rangeMinorGridlineStroke = SerialUtils.readStroke(stream);
 		this.rangeMinorGridlinePaint = SerialUtils.readPaint(stream);
-		// this.rangeZeroBaselineStroke = SerialUtils.readStroke(stream);
+		this.rangeZeroBaselineStroke = SerialUtils.readStroke(stream);
 		this.rangeZeroBaselinePaint = SerialUtils.readPaint(stream);
-		// this.domainCrosshairStroke = SerialUtils.readStroke(stream);
+		this.domainCrosshairStroke = SerialUtils.readStroke(stream);
 		this.domainCrosshairPaint = SerialUtils.readPaint(stream);
-		// this.rangeCrosshairStroke = SerialUtils.readStroke(stream);
+		this.rangeCrosshairStroke = SerialUtils.readStroke(stream);
 		this.rangeCrosshairPaint = SerialUtils.readPaint(stream);
 		this.domainTickBandPaint = SerialUtils.readPaint(stream);
 		this.rangeTickBandPaint = SerialUtils.readPaint(stream);
@@ -5941,7 +5939,7 @@ public class XYPlot extends Plot implements ValueAxisPlot, Pannable, Zoomable,
 			this.quadrantPaint[i] = SerialUtils.readPaint(stream);
 		}
 
-		// this.domainZeroBaselineStroke = SerialUtils.readStroke(stream);
+		this.domainZeroBaselineStroke = SerialUtils.readStroke(stream);
 		this.domainZeroBaselinePaint = SerialUtils.readPaint(stream);
 
 		// register the plot as a listener with its axes, datasets, and

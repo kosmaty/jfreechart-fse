@@ -700,10 +700,9 @@ public abstract class Marker implements Cloneable, Serializable {
 	private void writeObject(ObjectOutputStream stream) throws IOException {
 		stream.defaultWriteObject();
 		SerialUtils.writePaint(this.paint, stream);
-		// JAVAFX stroke, serialization
-		// SerialUtils.writeStroke(this.stroke, stream);
+		SerialUtils.writeStroke(this.stroke, stream);
 		SerialUtils.writePaint(this.outlinePaint, stream);
-		// SerialUtils.writeStroke(this.outlineStroke, stream);
+		SerialUtils.writeStroke(this.outlineStroke, stream);
 		SerialUtils.writePaint(this.labelPaint, stream);
 	}
 
@@ -722,10 +721,9 @@ public abstract class Marker implements Cloneable, Serializable {
 			throws IOException, ClassNotFoundException {
 		stream.defaultReadObject();
 		this.paint = SerialUtils.readPaint(stream);
-		// JAVAFX stroke, serialization
-		// this.stroke = SerialUtils.readStroke(stream);
+		this.stroke = SerialUtils.readStroke(stream);
 		this.outlinePaint = SerialUtils.readPaint(stream);
-		// this.outlineStroke = SerialUtils.readStroke(stream);
+		this.outlineStroke = SerialUtils.readStroke(stream);
 		this.labelPaint = SerialUtils.readPaint(stream);
 		this.listenerList = new EventListenerList();
 	}

@@ -742,12 +742,10 @@ public class Crosshair implements Cloneable, PublicCloneable, Serializable {
 	private void writeObject(ObjectOutputStream stream) throws IOException {
 		stream.defaultWriteObject();
 		SerialUtils.writePaint(this.paint, stream);
-		// JAVAFX serialization stroke
-		// SerialUtils.writeStroke(this.stroke, stream);
+		SerialUtils.writeStroke(this.stroke, stream);
 		SerialUtils.writePaint(this.labelPaint, stream);
 		SerialUtils.writePaint(this.labelBackgroundPaint, stream);
-		// JAVAFX serialization stroke
-		// SerialUtils.writeStroke(this.labelOutlineStroke, stream);
+		SerialUtils.writeStroke(this.labelOutlineStroke, stream);
 		SerialUtils.writePaint(this.labelOutlinePaint, stream);
 	}
 
@@ -766,12 +764,10 @@ public class Crosshair implements Cloneable, PublicCloneable, Serializable {
 			throws IOException, ClassNotFoundException {
 		stream.defaultReadObject();
 		this.paint = SerialUtils.readPaint(stream);
-		// JAVAFX serialization stroke
-		// this.stroke = SerialUtils.readStroke(stream);
+		this.stroke = SerialUtils.readStroke(stream);
 		this.labelPaint = SerialUtils.readPaint(stream);
 		this.labelBackgroundPaint = SerialUtils.readPaint(stream);
-		// JAVAFX serialization stroke
-		// this.labelOutlineStroke = SerialUtils.readStroke(stream);
+		this.labelOutlineStroke = SerialUtils.readStroke(stream);
 		this.labelOutlinePaint = SerialUtils.readPaint(stream);
 		this.pcs = new PropertyChangeSupport(this);
 	}
