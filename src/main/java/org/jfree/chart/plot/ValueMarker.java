@@ -45,6 +45,8 @@
 
 package org.jfree.chart.plot;
 
+import org.jfree.chart.drawable.StrokeProperties;
+
 // import java.awt.Paint;
 // import java.awt.Stroke;
 
@@ -72,42 +74,41 @@ public class ValueMarker extends Marker {
 		this.value = value;
 	}
 
-	// JAVAFX stroke
-	// /**
-	// * Creates a new marker.
-	// *
-	// * @param value
-	// * the value.
-	// * @param paint
-	// * the paint (<code>null</code> not permitted).
-	// * @param stroke
-	// * the stroke (<code>null</code> not permitted).
-	// */
-	// public ValueMarker(double value, Paint paint, Stroke stroke) {
-	// this(value, paint, stroke, paint, stroke, 1.0f);
-	// }
-	//
-	// /**
-	// * Creates a new value marker.
-	// *
-	// * @param value
-	// * the value.
-	// * @param paint
-	// * the paint (<code>null</code> not permitted).
-	// * @param stroke
-	// * the stroke (<code>null</code> not permitted).
-	// * @param outlinePaint
-	// * the outline paint (<code>null</code> permitted).
-	// * @param outlineStroke
-	// * the outline stroke (<code>null</code> permitted).
-	// * @param alpha
-	// * the alpha transparency (in the range 0.0f to 1.0f).
-	// */
-	// public ValueMarker(double value, Paint paint, Stroke stroke,
-	// Paint outlinePaint, Stroke outlineStroke, float alpha) {
-	// super(paint, stroke, outlinePaint, outlineStroke, alpha);
-	// this.value = value;
-	// }
+	/**
+	 * Creates a new marker.
+	 *
+	 * @param value
+	 *            the value.
+	 * @param paint
+	 *            the paint (<code>null</code> not permitted).
+	 * @param stroke
+	 *            the stroke (<code>null</code> not permitted).
+	 */
+	public ValueMarker(double value, Paint paint, StrokeProperties stroke) {
+		this(value, paint, stroke, paint, stroke, 1.0f);
+	}
+
+	/**
+	 * Creates a new value marker.
+	 *
+	 * @param value
+	 *            the value.
+	 * @param paint
+	 *            the paint (<code>null</code> not permitted).
+	 * @param stroke
+	 *            the stroke (<code>null</code> not permitted).
+	 * @param outlinePaint
+	 *            the outline paint (<code>null</code> permitted).
+	 * @param outlineStroke
+	 *            the outline stroke (<code>null</code> permitted).
+	 * @param alpha
+	 *            the alpha transparency (in the range 0.0f to 1.0f).
+	 */
+	public ValueMarker(double value, Paint paint, StrokeProperties stroke,
+			Paint outlinePaint, StrokeProperties outlineStroke, float alpha) {
+		super(paint, stroke, outlinePaint, outlineStroke, alpha);
+		this.value = value;
+	}
 
 	/**
 	 * Returns the value.

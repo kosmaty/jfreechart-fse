@@ -101,6 +101,7 @@
 package org.jfree.chart.axis;
 
 import static org.jfree.chart.util.ShapeUtils.asShape;
+import static org.jfree.chart.util.ShapeUtils.setStrokeProperties;
 import static org.jfree.geometry.GeometryUtils.emptyLine;
 import static org.jfree.geometry.GeometryUtils.newLine;
 import static org.jfree.geometry.GeometryUtils.strokeLine;
@@ -1295,8 +1296,8 @@ public class CategoryAxis extends Axis implements Cloneable, Serializable {
 		Line2D line = emptyLine();
 		List<Comparable> categories = plot.getCategoriesForAxis(this);
 		g2.setStroke(getTickMarkPaint());
-		// JAVAFX stroke
-		// g2.setStroke(getTickMarkStroke());
+		setStrokeProperties(g2, getTickMarkStroke());
+		// JAVAFX rendering hints
 		// Object saved =
 		// g2.getRenderingHint(RenderingHints.KEY_STROKE_CONTROL);
 		// g2.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL,
@@ -1341,7 +1342,7 @@ public class CategoryAxis extends Axis implements Cloneable, Serializable {
 			}
 			state.cursorRight(ol);
 		}
-		// JAVAFX
+		// JAVAFX rendering hints
 		// g2.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, saved);
 	}
 

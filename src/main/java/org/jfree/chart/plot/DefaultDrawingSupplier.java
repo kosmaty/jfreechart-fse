@@ -383,17 +383,16 @@ public class DefaultDrawingSupplier implements DrawingSupplier, Cloneable,
 		if (this.outlinePaintIndex != that.outlinePaintIndex) {
 			return false;
 		}
-		// JAVAFX stroke
-		// if (!Arrays.equals(this.strokeSequence, that.strokeSequence)) {
-		// return false;
-		// }
-		// if (this.strokeIndex != that.strokeIndex) {
-		// return false;
-		// }
-		// if (!Arrays.equals(this.outlineStrokeSequence,
-		// that.outlineStrokeSequence)) {
-		// return false;
-		// }
+		if (!Arrays.equals(this.strokeSequence, that.strokeSequence)) {
+			return false;
+		}
+		if (this.strokeIndex != that.strokeIndex) {
+			return false;
+		}
+		if (!Arrays.equals(this.outlineStrokeSequence,
+				that.outlineStrokeSequence)) {
+			return false;
+		}
 		if (this.outlineStrokeIndex != that.outlineStrokeIndex) {
 			return false;
 		}

@@ -1,5 +1,7 @@
 package org.jfree.chart.drawable;
 
+import java.util.Arrays;
+
 import javafx.scene.shape.StrokeLineCap;
 import javafx.scene.shape.StrokeLineJoin;
 
@@ -109,5 +111,45 @@ public class StrokeProperties {
 		return lineDashOffset;
 	}
 
-	// JAVAFX TODO equals, hashcode
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((lineCap == null) ? 0 : lineCap.hashCode());
+		long temp;
+		temp = Double.doubleToLongBits(lineDashOffset);
+		result = prime * result + (int) (temp ^ (temp >>> 32));
+		result = prime * result + Arrays.hashCode(lineDashes);
+		result = prime * result + ((lineJoin == null) ? 0 : lineJoin.hashCode());
+		temp = Double.doubleToLongBits(lineWidth);
+		result = prime * result + (int) (temp ^ (temp >>> 32));
+		temp = Double.doubleToLongBits(miterLimit);
+		result = prime * result + (int) (temp ^ (temp >>> 32));
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		StrokeProperties other = (StrokeProperties) obj;
+		if (lineCap != other.lineCap)
+			return false;
+		if (Double.doubleToLongBits(lineDashOffset) != Double.doubleToLongBits(other.lineDashOffset))
+			return false;
+		if (!Arrays.equals(lineDashes, other.lineDashes))
+			return false;
+		if (lineJoin != other.lineJoin)
+			return false;
+		if (Double.doubleToLongBits(lineWidth) != Double.doubleToLongBits(other.lineWidth))
+			return false;
+		if (Double.doubleToLongBits(miterLimit) != Double.doubleToLongBits(other.miterLimit))
+			return false;
+		return true;
+	}
+
 }

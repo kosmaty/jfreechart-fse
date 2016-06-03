@@ -114,6 +114,7 @@ package org.jfree.chart.axis;
 import static org.jfree.chart.util.ShapeUtils.fillShape;
 import static org.jfree.chart.util.ShapeUtils.newPolygon;
 import static org.jfree.chart.util.ShapeUtils.outlineShape;
+import static org.jfree.chart.util.ShapeUtils.setStrokeProperties;
 import static org.jfree.geometry.GeometryUtils.newLine;
 import static org.jfree.geometry.GeometryUtils.strokeLine;
 
@@ -537,8 +538,9 @@ public abstract class ValueAxis extends Axis
 					dataArea.getMaxY());
 		}
 		g2.setStroke(getAxisLinePaint());
-		// JAVAFX stroke
-		// g2.setStroke(getAxisLineStroke());
+		setStrokeProperties(g2, getAxisLineStroke());
+
+		// JAVAFX rendering hints
 		// Object saved =
 		// g2.getRenderingHint(RenderingHints.KEY_STROKE_CONTROL);
 		// g2.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL,
@@ -724,8 +726,7 @@ public abstract class ValueAxis extends Axis
 				float xx = (float) valueToJava2D(tick.getValue(), dataArea,
 						edge);
 				Line2D mark = null;
-				// JAVAFX stroke
-				// g2.setStroke(getTickMarkStroke());
+				setStrokeProperties(g2, getTickMarkStroke());
 				g2.setStroke(getTickMarkPaint());
 				if (edge == RectangleEdge.LEFT) {
 					mark = newLine(cursor - ol, xx, cursor + il, xx);
@@ -885,12 +886,11 @@ public abstract class ValueAxis extends Axis
 			for (Tick tick : ticks) {
 				Rectangle2D labelBounds = null;
 				if (tick instanceof LogTick) {
-					// JAVAFX log tick
-					// LogTick lt = (LogTick) tick;
-					// if (lt.getAttributedLabel() != null) {
-					// labelBounds = TextUtilities.getTextBounds(
-					// lt.getAttributedLabel(), g2);
-					// }
+					LogTick lt = (LogTick) tick;
+					if (lt.getAttributedLabel() != null) {
+						labelBounds = TextUtilities.getTextBounds(
+								lt.getAttributedLabel(), g2);
+					}
 				} else if (tick.getText() != null) {
 					labelBounds = TextUtilities.getTextBounds(
 							tick.getText(), g2, fm);
@@ -935,12 +935,11 @@ public abstract class ValueAxis extends Axis
 			for (ValueTick tick : ticks) {
 				Rectangle2D labelBounds = null;
 				if (tick instanceof LogTick) {
-					// JAVAFX log tick
-					// LogTick lt = (LogTick) tick;
-					// if (lt.getAttributedLabel() != null) {
-					// labelBounds = TextUtilities.getTextBounds(
-					// lt.getAttributedLabel(), g2);
-					// }
+					LogTick lt = (LogTick) tick;
+					if (lt.getAttributedLabel() != null) {
+						labelBounds = TextUtilities.getTextBounds(
+								lt.getAttributedLabel(), g2);
+					}
 				} else if (tick.getText() != null) {
 					labelBounds = TextUtilities.getTextBounds(tick.getText(),
 							g2, fm);

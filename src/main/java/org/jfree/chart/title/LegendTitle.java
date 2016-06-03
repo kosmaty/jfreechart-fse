@@ -505,19 +505,17 @@ public class LegendTitle extends Title
 		BlockContainer result;
 		LegendGraphic lg = new LegendGraphic(item.getShape(),
 				item.getFillPaint());
-		// JAVAFX
+		// JAVAFX gradient
 		// lg.setFillPaintTransformer(item.getFillPaintTransformer());
 		lg.setShapeFilled(item.isShapeFilled());
 		lg.setLine(item.getLine());
-		// JAVAFX stroke
-		// lg.setLineStroke(item.getLineStroke());
+		lg.setLineStroke(item.getLineStroke());
 		lg.setLinePaint(item.getLinePaint());
 		lg.setLineVisible(item.isLineVisible());
 		lg.setShapeVisible(item.isShapeVisible());
 		lg.setShapeOutlineVisible(item.isShapeOutlineVisible());
 		lg.setOutlinePaint(item.getOutlinePaint());
-		// JAVAFX stroke
-		// lg.setOutlineStroke(item.getOutlineStroke());
+		lg.setOutlineStroke(item.getOutlineStroke());
 		lg.setPadding(this.legendItemGraphicPadding);
 
 		LegendItemBlockContainer legendItem = new LegendItemBlockContainer(

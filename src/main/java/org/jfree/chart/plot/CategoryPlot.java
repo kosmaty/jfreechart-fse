@@ -247,7 +247,7 @@ import org.jfree.chart.ui.RectangleEdge;
 import org.jfree.chart.ui.RectangleInsets;
 import org.jfree.chart.util.CloneUtils;
 import org.jfree.chart.util.ObjectUtils;
-// import org.jfree.chart.util.PaintUtils;
+import org.jfree.chart.util.PaintUtils;
 import org.jfree.chart.util.ParamChecks;
 import org.jfree.chart.util.PublicCloneable;
 
@@ -567,7 +567,7 @@ public class CategoryPlot extends Plot implements
 	 */
 	private boolean rangePannable;
 
-	// JAVAFX
+	// JAVAFX shadow generator
 	// /**
 	// * The shadow generator for the plot (<code>null</code> permitted).
 	// *
@@ -684,7 +684,7 @@ public class CategoryPlot extends Plot implements
 		this.annotations = new java.util.ArrayList<CategoryAnnotation>();
 
 		this.rangePannable = false;
-		// JAVAFX
+		// JAVAFX shadow generator
 		// this.shadowGenerator = null;
 	}
 
@@ -3486,7 +3486,7 @@ public class CategoryPlot extends Plot implements
 		fireChangeEvent();
 	}
 
-	// JAVAFX
+	// JAVAFX shadow generator
 	// /**
 	// * Returns the shadow generator for the plot, if any.
 	// *
@@ -3771,7 +3771,7 @@ public class CategoryPlot extends Plot implements
 			drawZeroRangeBaseline(g2, dataArea);
 		}
 
-		// JAVAFX
+		// JAVAFX shadow generator
 		// Graphics2D savedG2 = g2;
 		// BufferedImage dataImage = null;
 		// boolean suppressShadow = Boolean.TRUE.equals(g2.getRenderingHint(
@@ -3798,7 +3798,7 @@ public class CategoryPlot extends Plot implements
 		boolean foundData = false;
 
 		// set up the alpha-transparency...
-		// JAVAFX
+		// JAVAFX composite
 		// Composite originalComposite = g2.getComposite();
 		// g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER,
 		// getForegroundAlpha()));
@@ -3822,7 +3822,7 @@ public class CategoryPlot extends Plot implements
 		// draw the annotations (if any)...
 		drawAnnotations(g2, dataArea);
 
-		// JAVAFX
+		// JAVAFX shadow generator
 		// if (this.shadowGenerator != null && !suppressShadow) {
 		// BufferedImage shadowImage = this.shadowGenerator.createDropShadow(
 		// dataImage);
@@ -3873,10 +3873,9 @@ public class CategoryPlot extends Plot implements
 		if (isRangeCrosshairVisible()) {
 			double y = getRangeCrosshairValue();
 			Paint paint = getRangeCrosshairPaint();
-			// JAVAFX stroke
-			// Stroke stroke = getRangeCrosshairStroke();
-			// drawRangeCrosshair(g2, dataArea, getOrientation(), y, yAxis,
-			// stroke, paint);
+			StrokeProperties stroke = getRangeCrosshairStroke();
+			drawRangeCrosshair(g2, dataArea, getOrientation(), y, yAxis,
+					stroke, paint);
 		}
 
 		// draw the border around the chart
@@ -3993,7 +3992,6 @@ public class CategoryPlot extends Plot implements
 				dataArea.getHeight());
 		for (Axis axis : axisCollection.getAxesAtTop()) {
 			if (axis != null) {
-				// JAVAFX axis
 				AxisState axisState = axis.draw(g2, cursor, plotArea,
 						dataArea,
 						RectangleEdge.TOP, plotState);
@@ -4190,22 +4188,19 @@ public class CategoryPlot extends Plot implements
 			return;
 		}
 
-		// JAVAFX stroke
-		// Stroke gridStroke = null;
+		StrokeProperties gridStroke = null;
 		Paint gridPaint = null;
 		boolean paintLine;
 		for (ValueTick tick : ticks) {
 			paintLine = false;
 			if ((tick.getTickType() == TickType.MINOR)
 					&& isRangeMinorGridlinesVisible()) {
-				// JAVAFX stroke
-				// gridStroke = getRangeMinorGridlineStroke();
+				gridStroke = getRangeMinorGridlineStroke();
 				gridPaint = getRangeMinorGridlinePaint();
 				paintLine = true;
 			} else if ((tick.getTickType() == TickType.MAJOR)
 					&& isRangeGridlinesVisible()) {
-				// JAVAFX stroke
-				// gridStroke = getRangeGridlineStroke();
+				gridStroke = getRangeGridlineStroke();
 				gridPaint = getRangeGridlinePaint();
 				paintLine = true;
 			}
@@ -4214,18 +4209,17 @@ public class CategoryPlot extends Plot implements
 				// the method we want isn't in the CategoryItemRenderer
 				// interface...
 
-				// JAVAFX stroke
-				// if (r instanceof AbstractCategoryItemRenderer) {
-				// AbstractCategoryItemRenderer aci =
-				// (AbstractCategoryItemRenderer) r;
-				// aci.drawRangeGridline(g2, this, axis, dataArea,
-				// tick.getValue(), gridPaint, gridStroke);
-				// } else {
-				// we'll have to use the method in the interface, but
-				// this doesn't have the paint and stroke settings...
-				r.drawRangeGridline(g2, this, axis, dataArea,
-						tick.getValue());
-				// }
+				if (r instanceof AbstractCategoryItemRenderer) {
+					AbstractCategoryItemRenderer aci =
+							(AbstractCategoryItemRenderer) r;
+					aci.drawRangeGridline(g2, this, axis, dataArea,
+							tick.getValue(), gridPaint, gridStroke);
+				} else {
+					// we'll have to use the method in the interface, but
+					// this doesn't have the paint and stroke settings...
+					r.drawRangeGridline(g2, this, axis, dataArea,
+							tick.getValue());
+				}
 			}
 		}
 	}
@@ -5121,27 +5115,25 @@ public class CategoryPlot extends Plot implements
 		if (this.domainGridlinePosition != that.domainGridlinePosition) {
 			return false;
 		}
-		// JAVAFX
-		// if (!ObjectUtils.equal(this.domainGridlineStroke,
-		// that.domainGridlineStroke)) {
-		// return false;
-		// }
-		// if (!PaintUtils.equal(this.domainGridlinePaint,
-		// that.domainGridlinePaint)) {
-		// return false;
-		// }
+		if (!ObjectUtils.equal(this.domainGridlineStroke,
+				that.domainGridlineStroke)) {
+			return false;
+		}
+		if (!PaintUtils.equal(this.domainGridlinePaint,
+				that.domainGridlinePaint)) {
+			return false;
+		}
 		if (this.rangeGridlinesVisible != that.rangeGridlinesVisible) {
 			return false;
 		}
-		// JAVAFX
-		// if (!ObjectUtils.equal(this.rangeGridlineStroke,
-		// that.rangeGridlineStroke)) {
-		// return false;
-		// }
-		// if (!PaintUtils.equal(this.rangeGridlinePaint,
-		// that.rangeGridlinePaint)) {
-		// return false;
-		// }
+		if (!ObjectUtils.equal(this.rangeGridlineStroke,
+				that.rangeGridlineStroke)) {
+			return false;
+		}
+		if (!PaintUtils.equal(this.rangeGridlinePaint,
+				that.rangeGridlinePaint)) {
+			return false;
+		}
 		if (this.anchorValue != that.anchorValue) {
 			return false;
 		}
@@ -5151,15 +5143,14 @@ public class CategoryPlot extends Plot implements
 		if (this.rangeCrosshairValue != that.rangeCrosshairValue) {
 			return false;
 		}
-		// JAVAFX
-		// if (!ObjectUtils.equal(this.rangeCrosshairStroke,
-		// that.rangeCrosshairStroke)) {
-		// return false;
-		// }
-		// if (!PaintUtils.equal(this.rangeCrosshairPaint,
-		// that.rangeCrosshairPaint)) {
-		// return false;
-		// }
+		if (!ObjectUtils.equal(this.rangeCrosshairStroke,
+				that.rangeCrosshairStroke)) {
+			return false;
+		}
+		if (!PaintUtils.equal(this.rangeCrosshairPaint,
+				that.rangeCrosshairPaint)) {
+			return false;
+		}
 		if (this.rangeCrosshairLockedOnData
 				!= that.rangeCrosshairLockedOnData) {
 			return false;
@@ -5212,40 +5203,38 @@ public class CategoryPlot extends Plot implements
 				that.domainCrosshairRowKey)) {
 			return false;
 		}
-		// JAVAFX
-		// if (!PaintUtils.equal(this.domainCrosshairPaint,
-		// that.domainCrosshairPaint)) {
-		// return false;
-		// }
-		// if (!ObjectUtils.equal(this.domainCrosshairStroke,
-		// that.domainCrosshairStroke)) {
-		// return false;
-		// }
+		if (!PaintUtils.equal(this.domainCrosshairPaint,
+				that.domainCrosshairPaint)) {
+			return false;
+		}
+		if (!ObjectUtils.equal(this.domainCrosshairStroke,
+				that.domainCrosshairStroke)) {
+			return false;
+		}
 		if (this.rangeMinorGridlinesVisible
 				!= that.rangeMinorGridlinesVisible) {
 			return false;
 		}
-		// JAVAFX
-		// if (!PaintUtils.equal(this.rangeMinorGridlinePaint,
-		// that.rangeMinorGridlinePaint)) {
-		// return false;
-		// }
-		// if (!ObjectUtils.equal(this.rangeMinorGridlineStroke,
-		// that.rangeMinorGridlineStroke)) {
-		// return false;
-		// }
+		if (!PaintUtils.equal(this.rangeMinorGridlinePaint,
+				that.rangeMinorGridlinePaint)) {
+			return false;
+		}
+		if (!ObjectUtils.equal(this.rangeMinorGridlineStroke,
+				that.rangeMinorGridlineStroke)) {
+			return false;
+		}
 		if (this.rangeZeroBaselineVisible != that.rangeZeroBaselineVisible) {
 			return false;
 		}
-		// JAVAFX
-		// if (!PaintUtils.equal(this.rangeZeroBaselinePaint,
-		// that.rangeZeroBaselinePaint)) {
-		// return false;
-		// }
-		// if (!ObjectUtils.equal(this.rangeZeroBaselineStroke,
-		// that.rangeZeroBaselineStroke)) {
-		// return false;
-		// }
+		if (!PaintUtils.equal(this.rangeZeroBaselinePaint,
+				that.rangeZeroBaselinePaint)) {
+			return false;
+		}
+		if (!ObjectUtils.equal(this.rangeZeroBaselineStroke,
+				that.rangeZeroBaselineStroke)) {
+			return false;
+		}
+		// JAVAFX shadow generator
 		// if (!ObjectUtils.equal(this.shadowGenerator,
 		// that.shadowGenerator)) {
 		// return false;

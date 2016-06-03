@@ -54,6 +54,7 @@ package org.jfree.chart.title;
 import static org.jfree.chart.util.ShapeUtils.asRectangle2D;
 import static org.jfree.chart.util.ShapeUtils.fillShape;
 import static org.jfree.chart.util.ShapeUtils.outlineShape;
+import static org.jfree.chart.util.ShapeUtils.setStrokeProperties;
 import static org.jfree.geometry.GeometryUtils.union;
 
 // import java.awt.GradientPaint;
@@ -70,6 +71,7 @@ import org.jfree.chart.block.AbstractBlock;
 import org.jfree.chart.block.Block;
 import org.jfree.chart.block.LengthConstraintType;
 import org.jfree.chart.block.RectangleConstraint;
+import org.jfree.chart.drawable.StrokeProperties;
 // import org.jfree.chart.ui.GradientPaintTransformer;
 import org.jfree.chart.ui.RectangleAnchor;
 import org.jfree.chart.ui.Size2D;
@@ -126,7 +128,7 @@ public class LegendGraphic extends AbstractBlock implements Block,
 	/** The fill paint for the shape. */
 	private transient Paint fillPaint;
 
-	// JAVAFX
+	// JAVAFX gradient
 	// /**
 	// * The fill paint transformer (used if the fillPaint is an instance of
 	// * GradientPaint).
@@ -141,9 +143,8 @@ public class LegendGraphic extends AbstractBlock implements Block,
 	/** The outline paint for the shape. */
 	private transient Paint outlinePaint;
 
-	// JAVAFX stroke
-	// /** The outline stroke for the shape. */
-	// private transient Stroke outlineStroke;
+	/** The outline stroke for the shape. */
+	private transient StrokeProperties outlineStroke;
 
 	/**
 	 * A flag that controls whether or not the line is visible - see also
@@ -154,9 +155,8 @@ public class LegendGraphic extends AbstractBlock implements Block,
 	/** The line. */
 	private transient Shape line;
 
-	// JAVAFX stroke
-	// /** The line stroke. */
-	// private transient Stroke lineStroke;
+	/** The line stroke. */
+	private transient StrokeProperties lineStroke;
 
 	/** The line paint. */
 	private transient Paint linePaint;
@@ -178,7 +178,7 @@ public class LegendGraphic extends AbstractBlock implements Block,
 		this.shapeLocation = RectangleAnchor.CENTER;
 		this.shapeFilled = true;
 		this.fillPaint = fillPaint;
-		// JAVAFX
+		// JAVAFX gradient
 		// this.fillPaintTransformer = new StandardGradientPaintTransformer();
 		setPadding(2.0, 2.0, 2.0, 2.0);
 	}
@@ -275,7 +275,7 @@ public class LegendGraphic extends AbstractBlock implements Block,
 		this.fillPaint = paint;
 	}
 
-	// JAVAFX
+	// JAVAFX gradient
 	// /**
 	// * Returns the transformer used when the fill paint is an instance of
 	// * <code>GradientPaint</code>.
@@ -353,29 +353,28 @@ public class LegendGraphic extends AbstractBlock implements Block,
 		this.outlinePaint = paint;
 	}
 
-	// JAVAFX stroke
-	// /**
-	// * Returns the outline stroke.
-	// *
-	// * @return The stroke.
-	// *
-	// * @see #setOutlineStroke(Stroke)
-	// */
-	// public Stroke getOutlineStroke() {
-	// return this.outlineStroke;
-	// }
-	//
-	// /**
-	// * Sets the outline stroke.
-	// *
-	// * @param stroke
-	// * the stroke.
-	// *
-	// * @see #getOutlineStroke()
-	// */
-	// public void setOutlineStroke(Stroke stroke) {
-	// this.outlineStroke = stroke;
-	// }
+	/**
+	 * Returns the outline stroke.
+	 *
+	 * @return The stroke.
+	 *
+	 * @see #setOutlineStroke(Stroke)
+	 */
+	public StrokeProperties getOutlineStroke() {
+		return this.outlineStroke;
+	}
+
+	/**
+	 * Sets the outline stroke.
+	 *
+	 * @param stroke
+	 *            the stroke.
+	 *
+	 * @see #getOutlineStroke()
+	 */
+	public void setOutlineStroke(StrokeProperties stroke) {
+		this.outlineStroke = stroke;
+	}
 
 	/**
 	 * Returns the shape anchor.
@@ -497,29 +496,28 @@ public class LegendGraphic extends AbstractBlock implements Block,
 		this.linePaint = paint;
 	}
 
-	// JAVAFX stroke
-	// /**
-	// * Returns the line stroke.
-	// *
-	// * @return The stroke.
-	// *
-	// * @see #setLineStroke(Stroke)
-	// */
-	// public Stroke getLineStroke() {
-	// return this.lineStroke;
-	// }
-	//
-	// /**
-	// * Sets the line stroke.
-	// *
-	// * @param stroke
-	// * the stroke.
-	// *
-	// * @see #getLineStroke()
-	// */
-	// public void setLineStroke(Stroke stroke) {
-	// this.lineStroke = stroke;
-	// }
+	/**
+	 * Returns the line stroke.
+	 *
+	 * @return The stroke.
+	 *
+	 * @see #setLineStroke(Stroke)
+	 */
+	public StrokeProperties getLineStroke() {
+		return this.lineStroke;
+	}
+
+	/**
+	 * Sets the line stroke.
+	 *
+	 * @param stroke
+	 *            the stroke.
+	 *
+	 * @see #getLineStroke()
+	 */
+	public void setLineStroke(StrokeProperties stroke) {
+		this.lineStroke = stroke;
+	}
 
 	/**
 	 * Arranges the contents of the block, within the given constraints, and
@@ -614,8 +612,7 @@ public class LegendGraphic extends AbstractBlock implements Block,
 			Shape aLine = ShapeUtils.createTranslatedShape(getLine(),
 					this.shapeAnchor, location.getX(), location.getY());
 			g2.setStroke(this.linePaint);
-			// JAVAFX stroke
-			// g2.setStroke(this.lineStroke);
+			setStrokeProperties(g2, this.lineStroke);
 			outlineShape(g2, aLine);
 		}
 
@@ -637,8 +634,7 @@ public class LegendGraphic extends AbstractBlock implements Block,
 			}
 			if (this.shapeOutlineVisible) {
 				g2.setStroke(this.outlinePaint);
-				// JAVAFX stroke
-				// g2.setStroke(this.outlineStroke);
+				setStrokeProperties(g2, this.outlineStroke);
 				outlineShape(g2, s);
 			}
 		}
@@ -690,7 +686,7 @@ public class LegendGraphic extends AbstractBlock implements Block,
 		if (!PaintUtils.equal(this.fillPaint, that.fillPaint)) {
 			return false;
 		}
-		// JAVAFX
+		// JAVAFX gradient
 		// if (!ObjectUtils.equal(this.fillPaintTransformer,
 		// that.fillPaintTransformer)) {
 		// return false;
@@ -701,10 +697,9 @@ public class LegendGraphic extends AbstractBlock implements Block,
 		if (!PaintUtils.equal(this.outlinePaint, that.outlinePaint)) {
 			return false;
 		}
-		// JAVAFX stroke
-		// if (!ObjectUtils.equal(this.outlineStroke, that.outlineStroke)) {
-		// return false;
-		// }
+		if (!ObjectUtils.equal(this.outlineStroke, that.outlineStroke)) {
+			return false;
+		}
 		if (this.shapeAnchor != that.shapeAnchor) {
 			return false;
 		}
@@ -720,10 +715,9 @@ public class LegendGraphic extends AbstractBlock implements Block,
 		if (!PaintUtils.equal(this.linePaint, that.linePaint)) {
 			return false;
 		}
-		// JAVAFX stroke
-		// if (!ObjectUtils.equal(this.lineStroke, that.lineStroke)) {
-		// return false;
-		// }
+		if (!ObjectUtils.equal(this.lineStroke, that.lineStroke)) {
+			return false;
+		}
 		return super.equals(obj);
 	}
 
@@ -751,7 +745,7 @@ public class LegendGraphic extends AbstractBlock implements Block,
 	@Override
 	public Object clone() throws CloneNotSupportedException {
 		LegendGraphic clone = (LegendGraphic) super.clone();
-		// JAVAFX stroke
+		// JAVAFX shape
 		// clone.shape = ShapeUtils.clone(this.shape);
 		// clone.line = ShapeUtils.clone(this.line);
 		return clone;

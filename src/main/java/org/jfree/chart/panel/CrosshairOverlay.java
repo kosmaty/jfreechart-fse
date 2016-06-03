@@ -43,6 +43,7 @@
 
 package org.jfree.chart.panel;
 
+import static org.jfree.chart.util.ShapeUtils.setStrokeProperties;
 import static org.jfree.geometry.GeometryUtils.newLine;
 import static org.jfree.geometry.GeometryUtils.strokeLine;
 
@@ -237,7 +238,7 @@ public class CrosshairOverlay extends AbstractOverlay implements Overlay,
 		fireOverlayChanged();
 	}
 
-	// JAVAFX
+	// JAVAFX ChartPanel
 	// /**
 	// * Paints the crosshairs in the layer.
 	// *
@@ -299,13 +300,9 @@ public class CrosshairOverlay extends AbstractOverlay implements Overlay,
 
 		if (y >= dataArea.getMinY() && y <= dataArea.getMaxY()) {
 			Line2D line = newLine(dataArea.getMinX(), y, dataArea.getMaxX(), y);
-			Paint savedStrokePaint = g2.getStroke();
-			Paint savedFillPaint = g2.getFill();
-			// JAVAFX stroke
-			// Stroke savedStroke = g2.getStroke();
+			g2.save();
 			g2.setStroke(crosshair.getPaint());
-			// JAVAFX stroke
-			// g2.setStroke(crosshair.getStroke());
+			setStrokeProperties(g2, crosshair.getStroke());
 			strokeLine(g2, line);
 			if (crosshair.isLabelVisible()) {
 				String label = crosshair.getLabelGenerator().generateLabel(
@@ -331,15 +328,11 @@ public class CrosshairOverlay extends AbstractOverlay implements Overlay,
 				g2.setFill(crosshair.getLabelBackgroundPaint());
 				ShapeUtils.fillShape(g2, hotspot);
 				g2.setStroke(crosshair.getLabelOutlinePaint());
-				// JAVAFX stroke
-				// g2.setStroke(crosshair.getLabelOutlineStroke());
+				setStrokeProperties(g2, crosshair.getLabelOutlineStroke());
 				ShapeUtils.outlineShape(g2, hotspot);
 				TextUtilities.drawAlignedString(label, g2, xx, yy, alignPt);
 			}
-			g2.setStroke(savedStrokePaint);
-			g2.setFill(savedFillPaint);
-			// JAVAFX stroke
-			// g2.setStroke(savedStroke);
+			g2.restore();
 		}
 	}
 
@@ -360,13 +353,10 @@ public class CrosshairOverlay extends AbstractOverlay implements Overlay,
 
 		if (x >= dataArea.getMinX() && x <= dataArea.getMaxX()) {
 			Line2D line = newLine(x, dataArea.getMinY(), x, dataArea.getMaxY());
-			Paint savedFillPaint = g2.getFill();
-			Paint savedStrokePaint = g2.getStroke();
-			// JAVAFX stroke
-			// Stroke savedStroke = g2.getStroke();
+			g2.save();
+
 			g2.setStroke(crosshair.getPaint());
-			// JAVAFX stroke
-			// g2.setStroke(crosshair.getStroke());
+			setStrokeProperties(g2, crosshair.getStroke());
 			strokeLine(g2, line);
 			if (crosshair.isLabelVisible()) {
 				String label = crosshair.getLabelGenerator().generateLabel(
@@ -390,15 +380,12 @@ public class CrosshairOverlay extends AbstractOverlay implements Overlay,
 				g2.setFill(crosshair.getLabelBackgroundPaint());
 				ShapeUtils.fillShape(g2, hotspot);
 				g2.setStroke(crosshair.getLabelOutlinePaint());
-				// JAVAFX stroke
-				// g2.setStroke(crosshair.getLabelOutlineStroke());
+				setStrokeProperties(g2, crosshair.getLabelOutlineStroke());
 				ShapeUtils.outlineShape(g2, hotspot);
 				TextUtilities.drawAlignedString(label, g2, xx, yy, alignPt);
 			}
-			g2.setFill(savedFillPaint);
-			g2.setStroke(savedStrokePaint);
-			// JAVAFX stroke
-			// g2.setStroke(savedStroke);
+
+			g2.restore();
 		}
 	}
 

@@ -90,6 +90,7 @@ package org.jfree.chart.axis;
 
 import static org.jfree.chart.util.ShapeUtils.asRectangle2D;
 import static org.jfree.chart.util.ShapeUtils.asShape;
+import static org.jfree.chart.util.ShapeUtils.setStrokeProperties;
 import static org.jfree.geometry.GeometryUtils.getCenterX;
 import static org.jfree.geometry.GeometryUtils.getCenterY;
 import static org.jfree.geometry.GeometryUtils.newLine;
@@ -110,6 +111,7 @@ import org.jfree.chart.ui.RectangleInsets;
 import org.jfree.chart.ui.TextAnchor;
 import org.jfree.chart.util.ObjectUtils;
 import org.jfree.chart.util.PaintUtils;
+import org.jfree.chart.drawable.StrokeProperties;
 import org.jfree.chart.entity.AxisEntity;
 import org.jfree.chart.entity.EntityCollection;
 import org.jfree.chart.event.AxisChangeEvent;
@@ -160,11 +162,8 @@ public abstract class Axis implements Cloneable, Serializable {
 	/** The default axis line paint. */
 	public static final Paint DEFAULT_AXIS_LINE_PAINT = Color.GRAY;
 
-	// JAVAFX stroke
-	//
-	// /** The default axis line stroke. */
-	// public static final Stroke DEFAULT_AXIS_LINE_STROKE = new
-	// BasicStroke(1.0f);
+	/** The default axis line stroke. */
+	public static final StrokeProperties DEFAULT_AXIS_LINE_STROKE = new StrokeProperties(1.0);
 
 	/** The default tick labels visibility. */
 	public static final boolean DEFAULT_TICK_LABELS_VISIBLE = true;
@@ -182,10 +181,8 @@ public abstract class Axis implements Cloneable, Serializable {
 	/** The default tick marks visible. */
 	public static final boolean DEFAULT_TICK_MARKS_VISIBLE = true;
 
-	// JAVAFX stroke
-	//
-	// /** The default tick stroke. */
-	// public static final Stroke DEFAULT_TICK_MARK_STROKE = new BasicStroke(1);
+	/** The default tick stroke. */
+	public static final StrokeProperties DEFAULT_TICK_MARK_STROKE = new StrokeProperties(1);
 
 	/** The default tick paint. */
 	public static final Paint DEFAULT_TICK_MARK_PAINT = Color.GRAY;
@@ -219,10 +216,9 @@ public abstract class Axis implements Cloneable, Serializable {
 
 	/** A flag that controls whether or not the axis line is visible. */
 	private boolean axisLineVisible;
-	// JAVAFX stroke
-	//
-	// /** The stroke used for the axis line. */
-	// private transient Stroke axisLineStroke;
+
+	/** The stroke used for the axis line. */
+	private transient StrokeProperties axisLineStroke;
 
 	/** The paint used for the axis line. */
 	private transient Paint axisLinePaint;
@@ -280,9 +276,8 @@ public abstract class Axis implements Cloneable, Serializable {
 	 */
 	private float minorTickMarkOutsideLength;
 
-	// JAVAFX stroke
-	// /** The stroke used to draw tick marks. */
-	// private transient Stroke tickMarkStroke;
+	/** The stroke used to draw tick marks. */
+	private transient StrokeProperties tickMarkStroke;
 
 	/** The paint used to draw tick marks. */
 	private transient Paint tickMarkPaint;
@@ -322,8 +317,7 @@ public abstract class Axis implements Cloneable, Serializable {
 
 		this.axisLineVisible = true;
 		this.axisLinePaint = DEFAULT_AXIS_LINE_PAINT;
-		// JAVAFX stroke
-		// this.axisLineStroke = DEFAULT_AXIS_LINE_STROKE;
+		this.axisLineStroke = DEFAULT_AXIS_LINE_STROKE;
 
 		this.tickLabelsVisible = DEFAULT_TICK_LABELS_VISIBLE;
 		this.tickLabelFont = DEFAULT_TICK_LABEL_FONT;
@@ -331,8 +325,7 @@ public abstract class Axis implements Cloneable, Serializable {
 		this.tickLabelInsets = DEFAULT_TICK_LABEL_INSETS;
 
 		this.tickMarksVisible = DEFAULT_TICK_MARKS_VISIBLE;
-		// JAVAFX stroke
-		// this.tickMarkStroke = DEFAULT_TICK_MARK_STROKE;
+		this.tickMarkStroke = DEFAULT_TICK_MARK_STROKE;
 		this.tickMarkPaint = DEFAULT_TICK_MARK_PAINT;
 		this.tickMarkInsideLength = DEFAULT_TICK_MARK_INSIDE_LENGTH;
 		this.tickMarkOutsideLength = DEFAULT_TICK_MARK_OUTSIDE_LENGTH;
@@ -658,32 +651,32 @@ public abstract class Axis implements Cloneable, Serializable {
 		fireChangeEvent();
 	}
 
-	// JAVAFX stroke
-	// /**
-	// * Returns the stroke used to draw the axis line.
-	// *
-	// * @return The stroke (never {@code null}).
-	// *
-	// * @see #setAxisLineStroke(Stroke)
-	// */
-	// public Stroke getAxisLineStroke() {
-	// return this.axisLineStroke;
-	// }
-	//
-	// /**
-	// * Sets the stroke used to draw the axis line and sends an
-	// * {@link AxisChangeEvent} to all registered listeners.
-	// *
-	// * @param stroke the stroke ({@code null} not permitted).
-	// *
-	// * @see #getAxisLineStroke()
-	// */
-	// public void setAxisLineStroke(Stroke stroke) {
-	// ParamChecks.nullNotPermitted(stroke, "stroke");
-	// this.axisLineStroke = stroke;
-	// fireChangeEvent();
-	// }
-	//
+	/**
+	 * Returns the stroke used to draw the axis line.
+	 *
+	 * @return The stroke (never {@code null}).
+	 *
+	 * @see #setAxisLineStroke(Stroke)
+	 */
+	public StrokeProperties getAxisLineStroke() {
+		return this.axisLineStroke;
+	}
+
+	/**
+	 * Sets the stroke used to draw the axis line and sends an
+	 * {@link AxisChangeEvent} to all registered listeners.
+	 *
+	 * @param stroke
+	 *            the stroke ({@code null} not permitted).
+	 *
+	 * @see #getAxisLineStroke()
+	 */
+	public void setAxisLineStroke(StrokeProperties stroke) {
+		ParamChecks.nullNotPermitted(stroke, "stroke");
+		this.axisLineStroke = stroke;
+		fireChangeEvent();
+	}
+
 	/**
 	 * Returns a flag indicating whether or not the tick labels are visible.
 	 *
@@ -911,34 +904,33 @@ public abstract class Axis implements Cloneable, Serializable {
 		fireChangeEvent();
 	}
 
-	// JAVAFX stroke
-	//
-	// /**
-	// * Returns the stroke used to draw tick marks.
-	// *
-	// * @return The stroke (never {@code null}).
-	// *
-	// * @see #setTickMarkStroke(Stroke)
-	// */
-	// public Stroke getTickMarkStroke() {
-	// return this.tickMarkStroke;
-	// }
-	//
-	// /**
-	// * Sets the stroke used to draw tick marks and sends
-	// * an {@link AxisChangeEvent} to all registered listeners.
-	// *
-	// * @param stroke the stroke ({@code null} not permitted).
-	// *
-	// * @see #getTickMarkStroke()
-	// */
-	// public void setTickMarkStroke(Stroke stroke) {
-	// ParamChecks.nullNotPermitted(stroke, "stroke");
-	// if (!this.tickMarkStroke.equals(stroke)) {
-	// this.tickMarkStroke = stroke;
-	// fireChangeEvent();
-	// }
-	// }
+	/**
+	 * Returns the stroke used to draw tick marks.
+	 *
+	 * @return The stroke (never {@code null}).
+	 *
+	 * @see #setTickMarkStroke(Stroke)
+	 */
+	public StrokeProperties getTickMarkStroke() {
+		return this.tickMarkStroke;
+	}
+
+	/**
+	 * Sets the stroke used to draw tick marks and sends an
+	 * {@link AxisChangeEvent} to all registered listeners.
+	 *
+	 * @param stroke
+	 *            the stroke ({@code null} not permitted).
+	 *
+	 * @see #getTickMarkStroke()
+	 */
+	public void setTickMarkStroke(StrokeProperties stroke) {
+		ParamChecks.nullNotPermitted(stroke, "stroke");
+		if (!this.tickMarkStroke.equals(stroke)) {
+			this.tickMarkStroke = stroke;
+			fireChangeEvent();
+		}
+	}
 
 	/**
 	 * Returns the paint used to draw tick marks (if they are showing).
@@ -1426,8 +1418,7 @@ public abstract class Axis implements Cloneable, Serializable {
 			axisLine = newLine(cursor, y, cursor, dataArea.getMaxY());
 		}
 		g2.setStroke(this.axisLinePaint);
-		// JAVAFX stroke
-		// g2.setStroke(this.axisLineStroke);
+		setStrokeProperties(g2, this.axisLineStroke);
 		// JAVAFX rendering hints
 		// Object saved =
 		// g2.getRenderingHint(RenderingHints.KEY_STROKE_CONTROL);
@@ -1496,10 +1487,9 @@ public abstract class Axis implements Cloneable, Serializable {
 		if (this.axisLineVisible != that.axisLineVisible) {
 			return false;
 		}
-		// JAVAFX stroke
-		// if (!ObjectUtils.equal(this.axisLineStroke, that.axisLineStroke)) {
-		// return false;
-		// }
+		if (!ObjectUtils.equal(this.axisLineStroke, that.axisLineStroke)) {
+			return false;
+		}
 		if (!PaintUtils.equal(this.axisLinePaint, that.axisLinePaint)) {
 			return false;
 		}
@@ -1529,10 +1519,9 @@ public abstract class Axis implements Cloneable, Serializable {
 		if (!PaintUtils.equal(this.tickMarkPaint, that.tickMarkPaint)) {
 			return false;
 		}
-		// JAVAFX stroke
-		// if (!ObjectUtils.equal(this.tickMarkStroke, that.tickMarkStroke)) {
-		// return false;
-		// }
+		if (!ObjectUtils.equal(this.tickMarkStroke, that.tickMarkStroke)) {
+			return false;
+		}
 		if (this.minorTickMarksVisible != that.minorTickMarksVisible) {
 			return false;
 		}

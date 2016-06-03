@@ -93,7 +93,7 @@ public class PaintUtils {
 			return false;
 		}
 
-		// JAVAFX paint
+		// JAVAFX gradient paint
 		// // handle GradientPaint as a special case...
 		// if (p1 instanceof GradientPaint && p2 instanceof GradientPaint) {
 		// GradientPaint gp1 = (GradientPaint) p1;
