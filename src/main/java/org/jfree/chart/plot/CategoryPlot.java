@@ -250,10 +250,12 @@ import org.jfree.chart.util.ObjectUtils;
 import org.jfree.chart.util.PaintUtils;
 import org.jfree.chart.util.ParamChecks;
 import org.jfree.chart.util.PublicCloneable;
+import org.jfree.chart.util.RenderingUtils;
 
 import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.StrokeLineCap;
@@ -264,7 +266,7 @@ import javafx.scene.text.FontWeight;
 
 import org.jfree.chart.util.ResourceBundleWrapper;
 import org.jfree.chart.util.SerialUtils;
-// import org.jfree.chart.util.ShadowGenerator;
+import org.jfree.chart.util.ShadowGenerator;
 import org.jfree.chart.util.ShapeUtils;
 import org.jfree.chart.util.SortOrder;
 import org.jfree.data.Range;
@@ -272,8 +274,6 @@ import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.general.DatasetChangeEvent;
 import org.jfree.data.general.DatasetUtilities;
 import org.jfree.geometry.Line2D;
-
-// 
 
 /**
  * A general plotting class that uses data from a {@link CategoryDataset} and
@@ -567,13 +567,12 @@ public class CategoryPlot extends Plot implements
 	 */
 	private boolean rangePannable;
 
-	// JAVAFX shadow generator
-	// /**
-	// * The shadow generator for the plot (<code>null</code> permitted).
-	// *
-	// * @since 1.0.14
-	// */
-	// private ShadowGenerator shadowGenerator;
+	/**
+	 * The shadow generator for the plot (<code>null</code> permitted).
+	 *
+	 * @since 1.0.14
+	 */
+	private ShadowGenerator shadowGenerator;
 
 	/**
 	 * Default constructor.
@@ -684,8 +683,7 @@ public class CategoryPlot extends Plot implements
 		this.annotations = new java.util.ArrayList<CategoryAnnotation>();
 
 		this.rangePannable = false;
-		// JAVAFX shadow generator
-		// this.shadowGenerator = null;
+		this.shadowGenerator = null;
 	}
 
 	/**
@@ -3486,30 +3484,30 @@ public class CategoryPlot extends Plot implements
 		fireChangeEvent();
 	}
 
-	// JAVAFX shadow generator
-	// /**
-	// * Returns the shadow generator for the plot, if any.
-	// *
-	// * @return The shadow generator (possibly <code>null</code>).
-	// *
-	// * @since 1.0.14
-	// */
-	// public ShadowGenerator getShadowGenerator() {
-	// return this.shadowGenerator;
-	// }
-	//
-	// /**
-	// * Sets the shadow generator for the plot and sends a
-	// * {@link PlotChangeEvent} to all registered listeners.
-	// *
-	// * @param generator the generator (<code>null</code> permitted).
-	// *
-	// * @since 1.0.14
-	// */
-	// public void setShadowGenerator(ShadowGenerator generator) {
-	// this.shadowGenerator = generator;
-	// fireChangeEvent();
-	// }
+	/**
+	 * Returns the shadow generator for the plot, if any.
+	 *
+	 * @return The shadow generator (possibly <code>null</code>).
+	 *
+	 * @since 1.0.14
+	 */
+	public ShadowGenerator getShadowGenerator() {
+		return this.shadowGenerator;
+	}
+
+	/**
+	 * Sets the shadow generator for the plot and sends a
+	 * {@link PlotChangeEvent} to all registered listeners.
+	 *
+	 * @param generator
+	 *            the generator (<code>null</code> permitted).
+	 *
+	 * @since 1.0.14
+	 */
+	public void setShadowGenerator(ShadowGenerator generator) {
+		this.shadowGenerator = generator;
+		fireChangeEvent();
+	}
 
 	/**
 	 * Calculates the space required for the domain axis/axes.
@@ -3771,18 +3769,20 @@ public class CategoryPlot extends Plot implements
 			drawZeroRangeBaseline(g2, dataArea);
 		}
 
-		// JAVAFX shadow generator
-		// Graphics2D savedG2 = g2;
-		// BufferedImage dataImage = null;
-		// boolean suppressShadow = Boolean.TRUE.equals(g2.getRenderingHint(
+		GraphicsContext savedG2 = g2;
+
+		boolean suppressShadow = false;
+		// JAVAFX rendering hints
+		// suppressShadow = Boolean.TRUE.equals(g2.getRenderingHint(
 		// JFreeChart.KEY_SUPPRESS_SHADOW_GENERATION));
-		// if (this.shadowGenerator != null && !suppressShadow) {
-		// dataImage = new BufferedImage((int) dataArea.getWidth(),
-		// (int) dataArea.getHeight(), BufferedImage.TYPE_INT_ARGB);
-		// g2 = dataImage.createGraphics();
-		// g2.translate(-dataArea.getX(), -dataArea.getY());
-		// g2.setRenderingHints(savedG2.getRenderingHints());
-		// }
+		if (this.shadowGenerator != null && !suppressShadow) {
+			// dataImage = new BufferedImage((int) dataArea.getWidth(),
+			// (int) dataArea.getHeight(), BufferedImage.TYPE_INT_ARGB);
+			g2 = RenderingUtils.createGraphiscContext(dataArea.getWidth(), dataArea.getHeight());
+			g2.translate(-dataArea.getMinX(), -dataArea.getMinY());
+			// JAVAFX rendering hints
+			// g2.setRenderingHints(savedG2.getRenderingHints());
+		}
 
 		// draw the markers...
 		for (CategoryItemRenderer renderer : this.renderers.values()) {
@@ -3820,18 +3820,21 @@ public class CategoryPlot extends Plot implements
 		// draw the annotations (if any)...
 		drawAnnotations(g2, dataArea);
 
-		// JAVAFX shadow generator
-		// if (this.shadowGenerator != null && !suppressShadow) {
-		// BufferedImage shadowImage = this.shadowGenerator.createDropShadow(
-		// dataImage);
-		// g2 = savedG2;
-		// g2.drawImage(shadowImage, (int) dataArea.getX()
-		// + this.shadowGenerator.calculateOffsetX(),
-		// (int) dataArea.getY()
-		// + this.shadowGenerator.calculateOffsetY(), null);
-		// g2.drawImage(dataImage, (int) dataArea.getX(),
-		// (int) dataArea.getY(), null);
-		// }
+		if (this.shadowGenerator != null && !suppressShadow) {
+
+			Image dataImage = RenderingUtils.toImage(g2);
+			Image shadowImage = this.shadowGenerator.createDropShadow(
+					dataImage);
+			g2 = savedG2;
+			g2.drawImage(shadowImage, dataArea.getMinX()
+					+ this.shadowGenerator.calculateOffsetX(),
+					dataArea.getMinY()
+							+ this.shadowGenerator.calculateOffsetY());
+			g2.drawImage(dataImage, dataArea.getMinX(),
+					dataArea.getMinY());
+		}
+
+		// JAVAFX clip
 		// g2.setClip(savedClip);
 
 		g2.restore();
@@ -5233,11 +5236,10 @@ public class CategoryPlot extends Plot implements
 				that.rangeZeroBaselineStroke)) {
 			return false;
 		}
-		// JAVAFX shadow generator
-		// if (!ObjectUtils.equal(this.shadowGenerator,
-		// that.shadowGenerator)) {
-		// return false;
-		// }
+		if (!ObjectUtils.equal(this.shadowGenerator,
+				that.shadowGenerator)) {
+			return false;
+		}
 		return super.equals(obj);
 	}
 

@@ -292,6 +292,7 @@ import org.jfree.chart.ui.RectangleInsets;
 import org.jfree.chart.util.ObjectUtils;
 import org.jfree.chart.util.PaintUtils;
 import org.jfree.chart.util.PublicCloneable;
+import org.jfree.chart.util.RenderingUtils;
 import org.jfree.chart.event.AnnotationChangeEvent;
 import org.jfree.chart.event.ChartChangeEventType;
 import org.jfree.chart.event.PlotChangeEvent;
@@ -305,7 +306,7 @@ import org.jfree.chart.util.CloneUtils;
 import org.jfree.chart.util.ParamChecks;
 import org.jfree.chart.util.ResourceBundleWrapper;
 import org.jfree.chart.util.SerialUtils;
-//import org.jfree.chart.util.ShadowGenerator;
+import org.jfree.chart.util.ShadowGenerator;
 import org.jfree.data.Range;
 import org.jfree.data.general.DatasetChangeEvent;
 import org.jfree.data.general.DatasetUtilities;
@@ -315,6 +316,7 @@ import org.jfree.geometry.Line2D;
 import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.StrokeLineCap;
@@ -613,13 +615,12 @@ public class XYPlot extends Plot implements ValueAxisPlot, Pannable, Zoomable,
 	 */
 	private boolean rangePannable;
 
-	// JAVAFX shadow generator
-	// /**
-	// * The shadow generator (<code>null</code> permitted).
-	// *
-	// * @since 1.0.14
-	// */
-	// private ShadowGenerator shadowGenerator;
+	/**
+	 * The shadow generator (<code>null</code> permitted).
+	 *
+	 * @since 1.0.14
+	 */
+	private ShadowGenerator shadowGenerator;
 
 	/**
 	 * Creates a new <code>XYPlot</code> instance with no dataset, no axes and
@@ -738,8 +739,7 @@ public class XYPlot extends Plot implements ValueAxisPlot, Pannable, Zoomable,
 		this.rangeCrosshairValue = 0.0;
 		this.rangeCrosshairStroke = DEFAULT_CROSSHAIR_STROKE;
 		this.rangeCrosshairPaint = DEFAULT_CROSSHAIR_PAINT;
-		// JAVAFX shadow generator
-		// this.shadowGenerator = null;
+		this.shadowGenerator = null;
 	}
 
 	/**
@@ -3094,31 +3094,30 @@ public class XYPlot extends Plot implements ValueAxisPlot, Pannable, Zoomable,
 		fireChangeEvent();
 	}
 
-	// JAVAFX shadow generator
-	// /**
-	// * Returns the shadow generator for the plot, if any.
-	// *
-	// * @return The shadow generator (possibly <code>null</code>).
-	// *
-	// * @since 1.0.14
-	// */
-	// public ShadowGenerator getShadowGenerator() {
-	// return this.shadowGenerator;
-	// }
-	//
-	// /**
-	// * Sets the shadow generator for the plot and sends a
-	// * {@link PlotChangeEvent} to all registered listeners.
-	// *
-	// * @param generator
-	// * the generator (<code>null</code> permitted).
-	// *
-	// * @since 1.0.14
-	// */
-	// public void setShadowGenerator(ShadowGenerator generator) {
-	// this.shadowGenerator = generator;
-	// fireChangeEvent();
-	// }
+	/**
+	 * Returns the shadow generator for the plot, if any.
+	 *
+	 * @return The shadow generator (possibly <code>null</code>).
+	 *
+	 * @since 1.0.14
+	 */
+	public ShadowGenerator getShadowGenerator() {
+		return this.shadowGenerator;
+	}
+
+	/**
+	 * Sets the shadow generator for the plot and sends a
+	 * {@link PlotChangeEvent} to all registered listeners.
+	 *
+	 * @param generator
+	 *            the generator (<code>null</code> permitted).
+	 *
+	 * @since 1.0.14
+	 */
+	public void setShadowGenerator(ShadowGenerator generator) {
+		this.shadowGenerator = generator;
+		fireChangeEvent();
+	}
 
 	/**
 	 * Calculates the space required for all the axes in the plot.
@@ -3388,18 +3387,17 @@ public class XYPlot extends Plot implements ValueAxisPlot, Pannable, Zoomable,
 			drawZeroRangeBaseline(g2, dataArea);
 		}
 
-		// JAVAFX shadow generator
-		// Graphics2D savedG2 = g2;
-		// BufferedImage dataImage = null;
-		// boolean suppressShadow = Boolean.TRUE.equals(g2.getRenderingHint(
+		GraphicsContext savedG2 = g2;
+		boolean suppressShadow = false;
+		// JAVAFX rendering hints
+		// suppressShadow = Boolean.TRUE.equals(g2.getRenderingHint(
 		// JFreeChart.KEY_SUPPRESS_SHADOW_GENERATION));
-		// if (this.shadowGenerator != null && !suppressShadow) {
-		// dataImage = new BufferedImage((int) dataArea.getWidth(),
-		// (int) dataArea.getHeight(), BufferedImage.TYPE_INT_ARGB);
-		// g2 = dataImage.createGraphics();
-		// g2.translate(-dataArea.getX(), -dataArea.getY());
-		// g2.setRenderingHints(savedG2.getRenderingHints());
-		// }
+		if (this.shadowGenerator != null && !suppressShadow) {
+			g2 = RenderingUtils.createGraphiscContext(dataArea.getWidth(), dataArea.getHeight());
+			g2.translate(-dataArea.getMinX(), -dataArea.getMinY());
+			// JAVAFX rendering hints
+			// g2.setRenderingHints(savedG2.getRenderingHints());
+		}
 
 		// draw the markers that are associated with a specific dataset...
 		for (XYDataset dataset : this.datasets.values()) {
@@ -3501,18 +3499,17 @@ public class XYPlot extends Plot implements ValueAxisPlot, Pannable, Zoomable,
 		}
 
 		drawAnnotations(g2, dataArea, info);
-		// JAVAFX shadow generator
-		// if (this.shadowGenerator != null && !suppressShadow) {
-		// BufferedImage shadowImage =
-		// this.shadowGenerator.createDropShadow(dataImage);
-		// g2 = savedG2;
-		// g2.drawImage(shadowImage, (int) dataArea.getX()
-		// + this.shadowGenerator.calculateOffsetX(),
-		// (int) dataArea.getY()
-		// + this.shadowGenerator.calculateOffsetY(), null);
-		// g2.drawImage(dataImage, (int) dataArea.getX(),
-		// (int) dataArea.getY(), null);
-		// }
+		if (this.shadowGenerator != null && !suppressShadow) {
+			Image dataImage = RenderingUtils.toImage(g2);
+			Image shadowImage =
+					this.shadowGenerator.createDropShadow(dataImage);
+			g2 = savedG2;
+			g2.drawImage(shadowImage,
+					dataArea.getMinX() + this.shadowGenerator.calculateOffsetX(),
+					dataArea.getMinY() + this.shadowGenerator.calculateOffsetY());
+			g2.drawImage(dataImage, dataArea.getMinX(), dataArea.getMinY());
+		}
+		// JAVAFX clip
 		// g2.setClip(originalClip);
 
 		g2.restore();
@@ -5781,11 +5778,10 @@ public class XYPlot extends Plot implements ValueAxisPlot, Pannable, Zoomable,
 				return false;
 			}
 		}
-		// JAVAFX shadow generator
-		// if (!ObjectUtils.equal(this.shadowGenerator,
-		// that.shadowGenerator)) {
-		// return false;
-		// }
+		if (!ObjectUtils.equal(this.shadowGenerator,
+				that.shadowGenerator)) {
+			return false;
+		}
 		return super.equals(obj);
 	}
 

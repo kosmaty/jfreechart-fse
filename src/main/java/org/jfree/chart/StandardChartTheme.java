@@ -106,11 +106,11 @@ import org.jfree.chart.title.LegendTitle;
 // import org.jfree.chart.title.PaintScaleLegend;
 import org.jfree.chart.title.TextTitle;
 import org.jfree.chart.title.Title;
-// import org.jfree.chart.util.DefaultShadowGenerator;
+import org.jfree.chart.util.DefaultShadowGenerator;
 import org.jfree.chart.util.ObjectUtils;
 import org.jfree.chart.util.ParamChecks;
 import org.jfree.chart.util.SerialUtils;
-// import org.jfree.chart.util.ShadowGenerator;
+import org.jfree.chart.util.ShadowGenerator;
 
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
@@ -265,7 +265,7 @@ public class StandardChartTheme implements ChartTheme, Cloneable,
 	/** The error indicator paint for the {@link StatisticalBarRenderer}. */
 	private transient Paint errorIndicatorPaint;
 
-	//
+	// JAVAFX
 	// /** The grid band paint for a {@link SymbolAxis}. */
 	// private transient Paint gridBandPaint =
 	// SymbolAxis.DEFAULT_GRID_BAND_PAINT;
@@ -273,14 +273,14 @@ public class StandardChartTheme implements ChartTheme, Cloneable,
 	// /** The grid band alternate paint for a {@link SymbolAxis}. */
 	// private transient Paint gridBandAlternatePaint
 	// = SymbolAxis.DEFAULT_GRID_BAND_ALTERNATE_PAINT;
-	//
-	// /**
-	// * The shadow generator (can be null).
-	// *
-	// * @since 1.0.14
-	// */
-	// private ShadowGenerator shadowGenerator;
-	//
+
+	/**
+	 * The shadow generator (can be null).
+	 *
+	 * @since 1.0.14
+	 */
+	private ShadowGenerator shadowGenerator;
+
 	/**
 	 * Creates and returns the default 'JFree' chart theme.
 	 *
@@ -398,7 +398,7 @@ public class StandardChartTheme implements ChartTheme, Cloneable,
 		this.itemLabelPaint = Color.BLACK;
 		this.thermometerPaint = Color.WHITE;
 		this.errorIndicatorPaint = Color.BLACK;
-		// this.shadowGenerator = shadow ? new DefaultShadowGenerator() : null;
+		this.shadowGenerator = shadow ? new DefaultShadowGenerator() : null;
 	}
 
 	/**
@@ -1413,8 +1413,7 @@ public class StandardChartTheme implements ChartTheme, Cloneable,
 		plot.setRangeGridlinePaint(this.rangeGridlinePaint);
 		plot.setDomainCrosshairPaint(this.crosshairPaint);
 		plot.setRangeCrosshairPaint(this.crosshairPaint);
-		// JAVAFX shadow generator
-		// plot.setShadowGenerator(this.shadowGenerator);
+		plot.setShadowGenerator(this.shadowGenerator);
 
 		// process all domain axes
 		int domainAxisCount = plot.getDomainAxisCount();
