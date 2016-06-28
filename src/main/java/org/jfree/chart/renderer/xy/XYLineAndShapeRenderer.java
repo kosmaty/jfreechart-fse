@@ -1246,10 +1246,9 @@ public class XYLineAndShapeRenderer extends AbstractXYItemRenderer
 	public Object clone() throws CloneNotSupportedException {
 		XYLineAndShapeRenderer clone = (XYLineAndShapeRenderer) super.clone();
 		clone.seriesLinesVisible = (BooleanList) this.seriesLinesVisible.clone();
-		// JAVAFX cloning shape
-		// if (this.legendLine != null) {
-		// clone.legendLine = ShapeUtils.clone(this.legendLine);
-		// }
+		if (this.legendLine != null) {
+			clone.legendLine = ShapeUtils.clone(this.legendLine);
+		}
 		clone.seriesShapesVisible = (BooleanList) this.seriesShapesVisible.clone();
 		clone.seriesShapesFilled = (BooleanList) this.seriesShapesFilled.clone();
 		return clone;
@@ -1328,8 +1327,7 @@ public class XYLineAndShapeRenderer extends AbstractXYItemRenderer
 	private void readObject(ObjectInputStream stream)
 			throws IOException, ClassNotFoundException {
 		stream.defaultReadObject();
-		// JAVAFX serialization
-		// this.legendLine = SerialUtils.readShape(stream);
+		this.legendLine = SerialUtils.readShape(stream);
 	}
 
 	/**
@@ -1343,8 +1341,7 @@ public class XYLineAndShapeRenderer extends AbstractXYItemRenderer
 	 */
 	private void writeObject(ObjectOutputStream stream) throws IOException {
 		stream.defaultWriteObject();
-		// JAVAFX serialization
-		// SerialUtils.writeShape(this.legendLine, stream);
+		SerialUtils.writeShape(this.legendLine, stream);
 	}
 
 }

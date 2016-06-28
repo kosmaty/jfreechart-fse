@@ -1654,7 +1654,7 @@ public class JFreeChart implements Drawable,
 		stream.defaultReadObject();
 		this.progressListeners = new EventListenerList();
 		this.changeListeners = new EventListenerList();
-		// JAVAFX serialization, rendering hints
+		// JAVAFX rendering hints
 		// this.renderingHints = new RenderingHints(
 		// RenderingHints.KEY_ANTIALIASING,
 		// RenderingHints.VALUE_ANTIALIAS_ON);

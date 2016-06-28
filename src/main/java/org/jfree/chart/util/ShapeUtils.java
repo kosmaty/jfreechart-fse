@@ -66,6 +66,11 @@ import com.sun.javafx.geom.transform.AffineBase;
 import com.sun.javafx.geom.transform.BaseTransform;
 
 import java.awt.RenderingHints;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.Arrays;
 
 import org.jfree.chart.drawable.StrokeProperties;
@@ -97,33 +102,35 @@ public class ShapeUtils {
 	private ShapeUtils() {
 	}
 
-	//
-	// /**
-	// * Returns a clone of the specified shape, or {@code null}. At the
-	// * current time, this method supports cloning for instances of
-	// * {@code Line2D}, {@code RectangularShape}, {@code Area}
-	// * and {@code GeneralPath}.
-	// * <p>
-	// * {@code RectangularShape} includes {@code Arc2D},
-	// * {@code Ellipse2D}, {@code Rectangle2D}, {@code RoundRectangle2D}.
-	// *
-	// * @param shape the shape to clone ({@code null} permitted,
-	// * returns {@code null}).
-	// *
-	// * @return A clone or {@code null}.
-	// */
-	// public static Shape clone(Shape shape) {
-	// if (shape instanceof Cloneable) {
-	// try {
-	// return ObjectUtils.clone(shape);
-	// }
-	// catch (CloneNotSupportedException cnse) {
-	// //this shouldn't be thrown if object is cloneable
-	// }
-	// }
-	// return null;
-	// }
-	//
+	/**
+	 * Returns a clone of the specified shape, or {@code null}. At the current
+	 * time, this method supports cloning for instances of {@code Line2D},
+	 * {@code RectangularShape}, {@code Area} and {@code GeneralPath}.
+	 * <p>
+	 * {@code RectangularShape} includes {@code Arc2D}, {@code Ellipse2D},
+	 * {@code Rectangle2D}, {@code RoundRectangle2D}.
+	 *
+	 * @param shape
+	 *            the shape to clone ({@code null} permitted, returns
+	 *            {@code null}).
+	 *
+	 * @return A clone or {@code null}.
+	 */
+	public static Shape clone(Shape shape) {
+		try {
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			ObjectOutputStream out = new ObjectOutputStream(baos);
+			SerialUtils.writeShape(shape, out);
+			out.flush();
+
+			ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
+			ObjectInputStream in = new ObjectInputStream(bais);
+			return SerialUtils.readShape(in);
+		} catch (ClassNotFoundException | IOException e) {
+			throw new IllegalStateException("could not clone shape of class " + shape.getClass().getName(), e);
+		}
+	}
+
 	/**
 	 * Tests two shapes for equality. If both shapes are {@code null}, this
 	 * method will return {@code true}.

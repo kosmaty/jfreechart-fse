@@ -1796,11 +1796,10 @@ public abstract class ValueAxis extends Axis
 	 */
 	private void writeObject(ObjectOutputStream stream) throws IOException {
 		stream.defaultWriteObject();
-		// JAVAFX serialization
-		// SerialUtils.writeShape(this.upArrow, stream);
-		// SerialUtils.writeShape(this.downArrow, stream);
-		// SerialUtils.writeShape(this.leftArrow, stream);
-		// SerialUtils.writeShape(this.rightArrow, stream);
+		SerialUtils.writeShape(this.upArrow, stream);
+		SerialUtils.writeShape(this.downArrow, stream);
+		SerialUtils.writeShape(this.leftArrow, stream);
+		SerialUtils.writeShape(this.rightArrow, stream);
 	}
 
 	/**
@@ -1818,11 +1817,10 @@ public abstract class ValueAxis extends Axis
 			throws IOException, ClassNotFoundException {
 
 		stream.defaultReadObject();
-		// JAVAFX serialization
-		// this.upArrow = SerialUtils.readShape(stream);
-		// this.downArrow = SerialUtils.readShape(stream);
-		// this.leftArrow = SerialUtils.readShape(stream);
-		// this.rightArrow = SerialUtils.readShape(stream);
+		this.upArrow = SerialUtils.readShape(stream);
+		this.downArrow = SerialUtils.readShape(stream);
+		this.leftArrow = SerialUtils.readShape(stream);
+		this.rightArrow = SerialUtils.readShape(stream);
 	}
 
 }

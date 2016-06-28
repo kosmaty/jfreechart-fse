@@ -471,9 +471,8 @@ public class DefaultDrawingSupplier implements DrawingSupplier, Cloneable,
 
 		int shapeCount = this.shapeSequence.length;
 		stream.writeInt(shapeCount);
-		for (Shape aShapeSequence : this.shapeSequence) {
-			// JAVAFX serialization
-			// SerialUtils.writeShape(aShapeSequence, stream);
+		for (Shape aShape : this.shapeSequence) {
+			SerialUtils.writeShape(aShape, stream);
 		}
 
 	}
@@ -520,8 +519,7 @@ public class DefaultDrawingSupplier implements DrawingSupplier, Cloneable,
 		int shapeCount = stream.readInt();
 		this.shapeSequence = new Shape[shapeCount];
 		for (int i = 0; i < shapeCount; i++) {
-			// JAVAFX serialization
-			// this.shapeSequence[i] = SerialUtils.readShape(stream);
+			this.shapeSequence[i] = SerialUtils.readShape(stream);
 		}
 
 	}

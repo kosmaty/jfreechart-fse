@@ -734,9 +734,8 @@ public class LegendGraphic extends AbstractBlock implements Block,
 	@Override
 	public Object clone() throws CloneNotSupportedException {
 		LegendGraphic clone = (LegendGraphic) super.clone();
-		// JAVAFX shape
-		// clone.shape = ShapeUtils.clone(this.shape);
-		// clone.line = ShapeUtils.clone(this.line);
+		clone.shape = ShapeUtils.clone(this.shape);
+		clone.line = ShapeUtils.clone(this.line);
 		return clone;
 	}
 
@@ -751,12 +750,11 @@ public class LegendGraphic extends AbstractBlock implements Block,
 	 */
 	private void writeObject(ObjectOutputStream stream) throws IOException {
 		stream.defaultWriteObject();
-		// JAVAFX serialization
-		// SerialUtils.writeShape(this.shape, stream);
+		SerialUtils.writeShape(this.shape, stream);
 		SerialUtils.writePaint(this.fillPaint, stream);
 		SerialUtils.writePaint(this.outlinePaint, stream);
 		SerialUtils.writeStroke(this.outlineStroke, stream);
-		// SerialUtils.writeShape(this.line, stream);
+		SerialUtils.writeShape(this.line, stream);
 		SerialUtils.writePaint(this.linePaint, stream);
 		SerialUtils.writeStroke(this.lineStroke, stream);
 	}
@@ -775,12 +773,11 @@ public class LegendGraphic extends AbstractBlock implements Block,
 	private void readObject(ObjectInputStream stream)
 			throws IOException, ClassNotFoundException {
 		stream.defaultReadObject();
-		// JAVAFX serialization
-		// this.shape = SerialUtils.readShape(stream);
+		this.shape = SerialUtils.readShape(stream);
 		this.fillPaint = SerialUtils.readPaint(stream);
 		this.outlinePaint = SerialUtils.readPaint(stream);
 		this.outlineStroke = SerialUtils.readStroke(stream);
-		// this.line = SerialUtils.readShape(stream);
+		this.line = SerialUtils.readShape(stream);
 		this.linePaint = SerialUtils.readPaint(stream);
 		this.lineStroke = SerialUtils.readStroke(stream);
 	}

@@ -248,8 +248,7 @@ public class ChartRenderingInfo implements Cloneable, Serializable {
 	 */
 	private void writeObject(ObjectOutputStream stream) throws IOException {
 		stream.defaultWriteObject();
-		// JAVAFX shape serialization
-		// SerialUtils.writeShape(this.chartArea, stream);
+		SerialUtils.writeRectangle(this.chartArea, stream);
 	}
 
 	/**
@@ -266,8 +265,7 @@ public class ChartRenderingInfo implements Cloneable, Serializable {
 	private void readObject(ObjectInputStream stream)
 			throws IOException, ClassNotFoundException {
 		stream.defaultReadObject();
-		// JAVAFX shape serialization
-		// this.chartArea = (Rectangle2D) SerialUtils.readShape(stream);
+		this.chartArea = SerialUtils.readRectangle(stream);
 	}
 
 }

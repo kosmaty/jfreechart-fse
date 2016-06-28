@@ -69,7 +69,7 @@ import javafx.scene.paint.Color;
  */
 public class BorderPainter implements Drawable, Serializable {
 
-	private Color color;
+	private transient Color color;
 
 	private transient StrokeProperties stroke;
 
@@ -235,6 +235,7 @@ public class BorderPainter implements Drawable, Serializable {
 	private void writeObject(ObjectOutputStream stream) throws IOException {
 		stream.defaultWriteObject();
 		SerialUtils.writeStroke(this.stroke, stream);
+		SerialUtils.writePaint(this.color, stream);
 	}
 
 	/**
@@ -252,5 +253,6 @@ public class BorderPainter implements Drawable, Serializable {
 			throws IOException, ClassNotFoundException {
 		stream.defaultReadObject();
 		this.stroke = SerialUtils.readStroke(stream);
+		this.color = (Color) SerialUtils.readPaint(stream);
 	}
 }

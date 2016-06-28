@@ -95,15 +95,6 @@
 
 package org.jfree.chart.renderer;
 
-// 
-// import java.awt.BasicStroke;
-// import java.awt.Color;
-// import java.awt.Font;
-// import java.awt.Paint;
-// import java.awt.Shape;
-// import java.awt.Stroke;
-// import java.awt.geom.Point2D;
-// import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -331,10 +322,10 @@ public abstract class AbstractRenderer implements Cloneable, Serializable {
 	private Boolean defaultItemLabelsVisible;
 
 	/** The item label font list (one font per series). */
-	private Map<Integer, Font> itemLabelFontMap;
+	private transient Map<Integer, Font> itemLabelFontMap;
 
 	/** The base item label font. */
-	private Font defaultItemLabelFont;
+	private transient Font defaultItemLabelFont;
 
 	/** The item label paint list (one paint per series). */
 	private transient Map<Integer, Paint> itemLabelPaintMap;
@@ -397,14 +388,14 @@ public abstract class AbstractRenderer implements Cloneable, Serializable {
 	 *
 	 * @since 1.0.11
 	 */
-	private Map<Integer, Font> legendTextFontMap;
+	private transient Map<Integer, Font> legendTextFontMap;
 
 	/**
 	 * The base legend font.
 	 *
 	 * @since 1.0.11
 	 */
-	private Font defaultLegendTextFont;
+	private transient Font defaultLegendTextFont;
 
 	/**
 	 * The per series legend text paint settings.
@@ -3245,13 +3236,12 @@ public abstract class AbstractRenderer implements Cloneable, Serializable {
 				that.defaultOutlineStroke)) {
 			return false;
 		}
-		// JAVAFX shape
-		// if (!ObjectUtils.equal(this.shapeList, that.shapeList)) {
-		// return false;
-		// }
-		// if (!ShapeUtils.equal(this.defaultShape, that.defaultShape)) {
-		// return false;
-		// }
+		if (!ObjectUtils.equal(this.shapeList, that.shapeList)) {
+			return false;
+		}
+		if (!ShapeUtils.equal(this.defaultShape, that.defaultShape)) {
+			return false;
+		}
 		if (!ObjectUtils.equal(this.itemLabelsVisibleList,
 				that.itemLabelsVisibleList)) {
 			return false;
@@ -3305,15 +3295,14 @@ public abstract class AbstractRenderer implements Cloneable, Serializable {
 		if (this.defaultCreateEntities != that.defaultCreateEntities) {
 			return false;
 		}
-		// JAVAFX shape
-		// if (!ObjectUtils.equal(this.legendShapeList,
-		// that.legendShapeList)) {
-		// return false;
-		// }
-		// if (!ShapeUtils.equal(this.defaultLegendShape,
-		// that.defaultLegendShape)) {
-		// return false;
-		// }
+		if (!ObjectUtils.equal(this.legendShapeList,
+				that.legendShapeList)) {
+			return false;
+		}
+		if (!ShapeUtils.equal(this.defaultLegendShape,
+				that.defaultLegendShape)) {
+			return false;
+		}
 		if (!ObjectUtils.equal(this.legendTextFontMap,
 				that.legendTextFontMap)) {
 			return false;
@@ -3416,13 +3405,12 @@ public abstract class AbstractRenderer implements Cloneable, Serializable {
 		}
 		// 'baseOutlineStroke' : immutable, no need to clone reference
 
-		// JAVAFX shape
-		// if (this.shapeList != null) {
-		// clone.shapeList = (ShapeList) this.shapeList.clone();
-		// }
-		// if (this.defaultShape != null) {
-		// clone.defaultShape = ShapeUtils.clone(this.defaultShape);
-		// }
+		if (this.shapeList != null) {
+			clone.shapeList = (ShapeList) this.shapeList.clone();
+		}
+		if (this.defaultShape != null) {
+			clone.defaultShape = ShapeUtils.clone(this.defaultShape);
+		}
 
 		// 'itemLabelsVisible' : immutable, no need to clone reference
 		if (this.itemLabelsVisibleList != null) {
@@ -3456,10 +3444,9 @@ public abstract class AbstractRenderer implements Cloneable, Serializable {
 		if (this.createEntitiesList != null) {
 			clone.createEntitiesList = (BooleanList) this.createEntitiesList.clone();
 		}
-		// JAVAFX shape
-		// if (this.legendShapeList != null) {
-		// clone.legendShapeList = (ShapeList) this.legendShapeList.clone();
-		// }
+		if (this.legendShapeList != null) {
+			clone.legendShapeList = (ShapeList) this.legendShapeList.clone();
+		}
 		if (this.legendTextFontMap != null) {
 			clone.legendTextFontMap = new HashMap<Integer, Font>(this.legendTextFontMap);
 		}
@@ -3491,12 +3478,14 @@ public abstract class AbstractRenderer implements Cloneable, Serializable {
 		SerialUtils.writePaintMap(this.outlinePaintMap, stream);
 		SerialUtils.writeStroke(this.defaultStroke, stream);
 		SerialUtils.writeStroke(this.defaultOutlineStroke, stream);
-		// JAVAFX shape
-		// SerialUtils.writeShape(this.defaultShape, stream);
+		SerialUtils.writeShape(this.defaultShape, stream);
+		SerialUtils.writeFontMap(this.itemLabelFontMap, stream);
+		SerialUtils.writeFont(this.defaultItemLabelFont, stream);
 		SerialUtils.writePaint(this.defaultItemLabelPaint, stream);
 		SerialUtils.writePaintMap(this.itemLabelPaintMap, stream);
-		// JAVAFX shape
-		// SerialUtils.writeShape(this.defaultLegendShape, stream);
+		SerialUtils.writeShape(this.defaultLegendShape, stream);
+		SerialUtils.writeFontMap(this.legendTextFontMap, stream);
+		SerialUtils.writeFont(this.defaultLegendTextFont, stream);
 		SerialUtils.writePaint(this.defaultLegendTextPaint, stream);
 		SerialUtils.writePaintMap(this.legendTextPaintMap, stream);
 	}
@@ -3523,12 +3512,14 @@ public abstract class AbstractRenderer implements Cloneable, Serializable {
 		this.outlinePaintMap = SerialUtils.readPaintMap(stream);
 		this.defaultStroke = SerialUtils.readStroke(stream);
 		this.defaultOutlineStroke = SerialUtils.readStroke(stream);
-		// JAVAFX shape
-		// this.defaultShape = SerialUtils.readShape(stream);
+		this.defaultShape = SerialUtils.readShape(stream);
+		this.itemLabelFontMap = SerialUtils.readFontMap(stream, Integer.class);
+		this.defaultItemLabelFont = SerialUtils.readFont(stream);
 		this.defaultItemLabelPaint = SerialUtils.readPaint(stream);
 		this.itemLabelPaintMap = SerialUtils.readPaintMap(stream);
-		// JAVAFX shape
-		// this.defaultLegendShape = SerialUtils.readShape(stream);
+		this.defaultLegendShape = SerialUtils.readShape(stream);
+		this.legendTextFontMap = SerialUtils.readFontMap(stream, Integer.class);
+		this.defaultLegendTextFont = SerialUtils.readFont(stream);
 		this.defaultLegendTextPaint = SerialUtils.readPaint(stream);
 		this.legendTextPaintMap = SerialUtils.readPaintMap(stream);
 

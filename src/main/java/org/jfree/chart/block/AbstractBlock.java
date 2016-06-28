@@ -641,8 +641,7 @@ public class AbstractBlock implements Cloneable, Serializable {
 	 */
 	private void writeObject(ObjectOutputStream stream) throws IOException {
 		stream.defaultWriteObject();
-		// JAVAFX serialization
-		// SerialUtils.writeShape(this.bounds, stream);
+		SerialUtils.writeRectangle(this.bounds, stream);
 	}
 
 	/**
@@ -659,8 +658,7 @@ public class AbstractBlock implements Cloneable, Serializable {
 	private void readObject(ObjectInputStream stream)
 			throws IOException, ClassNotFoundException {
 		stream.defaultReadObject();
-		// JAVAFX serialization
-		// this.bounds = (Rectangle2D) SerialUtils.readShape(stream);
+		this.bounds = SerialUtils.readRectangle(stream);
 	}
 
 }

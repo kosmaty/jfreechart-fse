@@ -5342,78 +5342,83 @@ public class CategoryPlot extends Plot implements
 		}
 		return clone;
 	}
-	//
-	// /**
-	// * Provides serialization support.
-	// *
-	// * @param stream the output stream.
-	// *
-	// * @throws IOException if there is an I/O error.
-	// */
-	// private void writeObject(ObjectOutputStream stream) throws IOException {
-	// stream.defaultWriteObject();
-	// SerialUtils.writeStroke(this.domainGridlineStroke, stream);
-	// SerialUtils.writePaint(this.domainGridlinePaint, stream);
-	// SerialUtils.writeStroke(this.rangeGridlineStroke, stream);
-	// SerialUtils.writePaint(this.rangeGridlinePaint, stream);
-	// SerialUtils.writeStroke(this.rangeCrosshairStroke, stream);
-	// SerialUtils.writePaint(this.rangeCrosshairPaint, stream);
-	// SerialUtils.writeStroke(this.domainCrosshairStroke, stream);
-	// SerialUtils.writePaint(this.domainCrosshairPaint, stream);
-	// SerialUtils.writeStroke(this.rangeMinorGridlineStroke, stream);
-	// SerialUtils.writePaint(this.rangeMinorGridlinePaint, stream);
-	// SerialUtils.writeStroke(this.rangeZeroBaselineStroke, stream);
-	// SerialUtils.writePaint(this.rangeZeroBaselinePaint, stream);
-	// }
-	//
-	// /**
-	// * Provides serialization support.
-	// *
-	// * @param stream the input stream.
-	// *
-	// * @throws IOException if there is an I/O error.
-	// * @throws ClassNotFoundException if there is a classpath problem.
-	// */
-	// private void readObject(ObjectInputStream stream)
-	// throws IOException, ClassNotFoundException {
-	//
-	// stream.defaultReadObject();
-	// this.domainGridlineStroke = SerialUtils.readStroke(stream);
-	// this.domainGridlinePaint = SerialUtils.readPaint(stream);
-	// this.rangeGridlineStroke = SerialUtils.readStroke(stream);
-	// this.rangeGridlinePaint = SerialUtils.readPaint(stream);
-	// this.rangeCrosshairStroke = SerialUtils.readStroke(stream);
-	// this.rangeCrosshairPaint = SerialUtils.readPaint(stream);
-	// this.domainCrosshairStroke = SerialUtils.readStroke(stream);
-	// this.domainCrosshairPaint = SerialUtils.readPaint(stream);
-	// this.rangeMinorGridlineStroke = SerialUtils.readStroke(stream);
-	// this.rangeMinorGridlinePaint = SerialUtils.readPaint(stream);
-	// this.rangeZeroBaselineStroke = SerialUtils.readStroke(stream);
-	// this.rangeZeroBaselinePaint = SerialUtils.readPaint(stream);
-	//
-	// for (CategoryAxis xAxis: this.domainAxes.values()) {
-	// if (xAxis != null) {
-	// xAxis.setPlot(this);
-	// xAxis.addChangeListener(this);
-	// }
-	// }
-	// for (ValueAxis yAxis: this.rangeAxes.values()) {
-	// if (yAxis != null) {
-	// yAxis.setPlot(this);
-	// yAxis.addChangeListener(this);
-	// }
-	// }
-	// for (CategoryDataset dataset: this.datasets.values()) {
-	// if (dataset != null) {
-	// dataset.addChangeListener(this);
-	// }
-	// }
-	// for (CategoryItemRenderer renderer: this.renderers.values()) {
-	// if (renderer != null) {
-	// renderer.addChangeListener(this);
-	// }
-	// }
-	//
-	// }
-	//
+
+	/**
+	 * Provides serialization support.
+	 *
+	 * @param stream
+	 *            the output stream.
+	 *
+	 * @throws IOException
+	 *             if there is an I/O error.
+	 */
+	private void writeObject(ObjectOutputStream stream) throws IOException {
+		stream.defaultWriteObject();
+		SerialUtils.writeStroke(this.domainGridlineStroke, stream);
+		SerialUtils.writePaint(this.domainGridlinePaint, stream);
+		SerialUtils.writeStroke(this.rangeGridlineStroke, stream);
+		SerialUtils.writePaint(this.rangeGridlinePaint, stream);
+		SerialUtils.writeStroke(this.rangeCrosshairStroke, stream);
+		SerialUtils.writePaint(this.rangeCrosshairPaint, stream);
+		SerialUtils.writeStroke(this.domainCrosshairStroke, stream);
+		SerialUtils.writePaint(this.domainCrosshairPaint, stream);
+		SerialUtils.writeStroke(this.rangeMinorGridlineStroke, stream);
+		SerialUtils.writePaint(this.rangeMinorGridlinePaint, stream);
+		SerialUtils.writeStroke(this.rangeZeroBaselineStroke, stream);
+		SerialUtils.writePaint(this.rangeZeroBaselinePaint, stream);
+	}
+
+	/**
+	 * Provides serialization support.
+	 *
+	 * @param stream
+	 *            the input stream.
+	 *
+	 * @throws IOException
+	 *             if there is an I/O error.
+	 * @throws ClassNotFoundException
+	 *             if there is a classpath problem.
+	 */
+	private void readObject(ObjectInputStream stream)
+			throws IOException, ClassNotFoundException {
+
+		stream.defaultReadObject();
+		this.domainGridlineStroke = SerialUtils.readStroke(stream);
+		this.domainGridlinePaint = SerialUtils.readPaint(stream);
+		this.rangeGridlineStroke = SerialUtils.readStroke(stream);
+		this.rangeGridlinePaint = SerialUtils.readPaint(stream);
+		this.rangeCrosshairStroke = SerialUtils.readStroke(stream);
+		this.rangeCrosshairPaint = SerialUtils.readPaint(stream);
+		this.domainCrosshairStroke = SerialUtils.readStroke(stream);
+		this.domainCrosshairPaint = SerialUtils.readPaint(stream);
+		this.rangeMinorGridlineStroke = SerialUtils.readStroke(stream);
+		this.rangeMinorGridlinePaint = SerialUtils.readPaint(stream);
+		this.rangeZeroBaselineStroke = SerialUtils.readStroke(stream);
+		this.rangeZeroBaselinePaint = SerialUtils.readPaint(stream);
+
+		for (CategoryAxis xAxis : this.domainAxes.values()) {
+			if (xAxis != null) {
+				xAxis.setPlot(this);
+				xAxis.addChangeListener(this);
+			}
+		}
+		for (ValueAxis yAxis : this.rangeAxes.values()) {
+			if (yAxis != null) {
+				yAxis.setPlot(this);
+				yAxis.addChangeListener(this);
+			}
+		}
+		for (CategoryDataset dataset : this.datasets.values()) {
+			if (dataset != null) {
+				dataset.addChangeListener(this);
+			}
+		}
+		for (CategoryItemRenderer renderer : this.renderers.values()) {
+			if (renderer != null) {
+				renderer.addChangeListener(this);
+			}
+		}
+
+	}
+
 }

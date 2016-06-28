@@ -1197,15 +1197,13 @@ public class LegendItem implements Cloneable, Serializable {
 			PublicCloneable pc = (PublicCloneable) this.seriesKey;
 			clone.seriesKey = (Comparable) pc.clone();
 		}
-		// JAVAFX clone
-		// // FIXME: Clone the attributed string if it is not null
-		// clone.shape = ShapeUtils.clone(this.shape);
-		// if (this.fillPaintTransformer instanceof PublicCloneable) {
-		// PublicCloneable pc = (PublicCloneable) this.fillPaintTransformer;
-		// clone.fillPaintTransformer = (GradientPaintTransformer) pc.clone();
-		//
-		// }
-		// clone.line = ShapeUtils.clone(this.line);
+		// FIXME: Clone the attributed string if it is not null
+		clone.shape = ShapeUtils.clone(this.shape);
+		if (this.fillPaintTransformer instanceof PublicCloneable) {
+			PublicCloneable pc = (PublicCloneable) this.fillPaintTransformer;
+			clone.fillPaintTransformer = (GradientPaintTransformer) pc.clone();
+		}
+		clone.line = ShapeUtils.clone(this.line);
 		return clone;
 	}
 
@@ -1221,12 +1219,11 @@ public class LegendItem implements Cloneable, Serializable {
 	private void writeObject(ObjectOutputStream stream) throws IOException {
 		stream.defaultWriteObject();
 		SerialUtils.writeAttributedString(this.attributedLabel, stream);
-		// JAVAFX serialization
-		// SerialUtils.writeShape(this.shape, stream);
+		SerialUtils.writeShape(this.shape, stream);
 		SerialUtils.writePaint(this.fillPaint, stream);
 		SerialUtils.writeStroke(this.outlineStroke, stream);
 		SerialUtils.writePaint(this.outlinePaint, stream);
-		// SerialUtils.writeShape(this.line, stream);
+		SerialUtils.writeShape(this.line, stream);
 		SerialUtils.writeStroke(this.lineStroke, stream);
 		SerialUtils.writePaint(this.linePaint, stream);
 		SerialUtils.writePaint(this.labelPaint, stream);
@@ -1247,12 +1244,11 @@ public class LegendItem implements Cloneable, Serializable {
 			throws IOException, ClassNotFoundException {
 		stream.defaultReadObject();
 		this.attributedLabel = SerialUtils.readAttributedString(stream);
-		// JAVAFX serialization
-		// this.shape = SerialUtils.readShape(stream);
+		this.shape = SerialUtils.readShape(stream);
 		this.fillPaint = SerialUtils.readPaint(stream);
 		this.outlineStroke = SerialUtils.readStroke(stream);
 		this.outlinePaint = SerialUtils.readPaint(stream);
-		// this.line = SerialUtils.readShape(stream);
+		this.line = SerialUtils.readShape(stream);
 		this.lineStroke = SerialUtils.readStroke(stream);
 		this.linePaint = SerialUtils.readPaint(stream);
 		this.labelPaint = SerialUtils.readPaint(stream);

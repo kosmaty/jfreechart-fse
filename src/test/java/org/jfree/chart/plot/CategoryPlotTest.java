@@ -62,14 +62,9 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 // 
 import org.junit.Test;
-// import java.awt.BasicStroke;
-// import java.awt.Color;
-// import java.awt.GradientPaint;
-// import java.awt.Graphics2D;
-// import java.awt.Stroke;
-// import java.awt.geom.Line2D;
-// import java.awt.geom.Rectangle2D;
-// import java.awt.image.BufferedImage;
+
+import javafx.scene.paint.Color;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -77,7 +72,7 @@ import java.util.List;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.LegendItem;
-// import org.jfree.chart.TestUtils;
+import org.jfree.chart.TestUtils;
 // import org.jfree.chart.annotations.CategoryLineAnnotation;
 // import org.jfree.chart.annotations.CategoryTextAnnotation;
 import org.jfree.chart.axis.AxisLocation;
@@ -85,6 +80,7 @@ import org.jfree.chart.axis.AxisSpace;
 import org.jfree.chart.axis.CategoryAnchor;
 import org.jfree.chart.axis.CategoryAxis;
 import org.jfree.chart.axis.NumberAxis;
+import org.jfree.chart.drawable.StrokeProperties;
 import org.jfree.chart.event.MarkerChangeListener;
 // import org.jfree.chart.renderer.category.AreaRenderer;
 // import org.jfree.chart.renderer.category.BarRenderer;
@@ -93,7 +89,7 @@ import org.jfree.chart.renderer.category.CategoryItemRenderer;
 import org.jfree.chart.renderer.category.LineAndShapeRenderer;
 import org.jfree.chart.ui.Layer;
 import org.jfree.chart.ui.RectangleInsets;
-// import org.jfree.chart.util.DefaultShadowGenerator;
+import org.jfree.chart.util.DefaultShadowGenerator;
 import org.jfree.chart.util.SortOrder;
 import org.jfree.data.Range;
 import org.jfree.data.category.CategoryDataset;
@@ -264,14 +260,14 @@ public class CategoryPlotTest {
 		plot2.setDomainGridlinePosition(CategoryAnchor.END);
 		assertEquals(plot1, plot2);
 
+		// domainGridlineStroke
+		StrokeProperties stroke = new StrokeProperties(2.0f);
+		plot1.setDomainGridlineStroke(stroke);
+		assertFalse(plot1.equals(plot2));
+		plot2.setDomainGridlineStroke(stroke);
+		assertEquals(plot1, plot2);
+
 		// JAVAFX
-		// // domainGridlineStroke
-		// Stroke stroke = new BasicStroke(2.0f);
-		// plot1.setDomainGridlineStroke(stroke);
-		// assertFalse(plot1.equals(plot2));
-		// plot2.setDomainGridlineStroke(stroke);
-		// assertEquals(plot1, plot2);
-		//
 		// // domainGridlinePaint
 		// plot1.setDomainGridlinePaint(new GradientPaint(1.0f, 2.0f,
 		// Color.BLUE,
@@ -288,13 +284,13 @@ public class CategoryPlotTest {
 		plot2.setRangeGridlinesVisible(false);
 		assertEquals(plot1, plot2);
 
+		// rangeGridlineStroke
+		plot1.setRangeGridlineStroke(stroke);
+		assertFalse(plot1.equals(plot2));
+		plot2.setRangeGridlineStroke(stroke);
+		assertEquals(plot1, plot2);
+
 		// JAVAFX
-		// // rangeGridlineStroke
-		// plot1.setRangeGridlineStroke(stroke);
-		// assertFalse(plot1.equals(plot2));
-		// plot2.setRangeGridlineStroke(stroke);
-		// assertEquals(plot1, plot2);
-		//
 		// // rangeGridlinePaint
 		// plot1.setRangeGridlinePaint(new GradientPaint(1.0f, 2.0f,
 		// Color.green,
@@ -323,13 +319,13 @@ public class CategoryPlotTest {
 		plot2.setRangeCrosshairValue(100.0);
 		assertEquals(plot1, plot2);
 
+		// rangeCrosshairStroke
+		plot1.setRangeCrosshairStroke(stroke);
+		assertFalse(plot1.equals(plot2));
+		plot2.setRangeCrosshairStroke(stroke);
+		assertEquals(plot1, plot2);
+
 		// JAVAFX
-		// // rangeCrosshairStroke
-		// plot1.setRangeCrosshairStroke(stroke);
-		// assertFalse(plot1.equals(plot2));
-		// plot2.setRangeCrosshairStroke(stroke);
-		// assertEquals(plot1, plot2);
-		//
 		// // rangeCrosshairPaint
 		// plot1.setRangeCrosshairPaint(new GradientPaint(1.0f, 2.0f,
 		// Color.WHITE,
@@ -346,42 +342,42 @@ public class CategoryPlotTest {
 		plot2.setRangeCrosshairLockedOnData(false);
 		assertEquals(plot1, plot2);
 
+		// foreground domain markers
+		plot1.addDomainMarker(new CategoryMarker("C1"), Layer.FOREGROUND);
+		assertFalse(plot1.equals(plot2));
+		plot2.addDomainMarker(new CategoryMarker("C1"), Layer.FOREGROUND);
+		assertEquals(plot1, plot2);
+
+		// background domain markers
+		plot1.addDomainMarker(new CategoryMarker("C2"), Layer.BACKGROUND);
+		assertFalse(plot1.equals(plot2));
+		plot2.addDomainMarker(new CategoryMarker("C2"), Layer.BACKGROUND);
+		assertEquals(plot1, plot2);
+
+		// range markers - no longer separate fields but test anyway...
+		plot1.addRangeMarker(new ValueMarker(4.0), Layer.FOREGROUND);
+		assertFalse(plot1.equals(plot2));
+		plot2.addRangeMarker(new ValueMarker(4.0), Layer.FOREGROUND);
+		assertEquals(plot1, plot2);
+
+		plot1.addRangeMarker(new ValueMarker(5.0), Layer.BACKGROUND);
+		assertFalse(plot1.equals(plot2));
+		plot2.addRangeMarker(new ValueMarker(5.0), Layer.BACKGROUND);
+		assertEquals(plot1, plot2);
+
+		// foreground range markers...
+		plot1.addRangeMarker(1, new ValueMarker(4.0), Layer.FOREGROUND);
+		assertFalse(plot1.equals(plot2));
+		plot2.addRangeMarker(1, new ValueMarker(4.0), Layer.FOREGROUND);
+		assertEquals(plot1, plot2);
+
+		// background range markers...
+		plot1.addRangeMarker(1, new ValueMarker(5.0), Layer.BACKGROUND);
+		assertFalse(plot1.equals(plot2));
+		plot2.addRangeMarker(1, new ValueMarker(5.0), Layer.BACKGROUND);
+		assertEquals(plot1, plot2);
+
 		// JAVAFX
-		// // foreground domain markers
-		// plot1.addDomainMarker(new CategoryMarker("C1"), Layer.FOREGROUND);
-		// assertFalse(plot1.equals(plot2));
-		// plot2.addDomainMarker(new CategoryMarker("C1"), Layer.FOREGROUND);
-		// assertEquals(plot1, plot2);
-		//
-		// // background domain markers
-		// plot1.addDomainMarker(new CategoryMarker("C2"), Layer.BACKGROUND);
-		// assertFalse(plot1.equals(plot2));
-		// plot2.addDomainMarker(new CategoryMarker("C2"), Layer.BACKGROUND);
-		// assertEquals(plot1, plot2);
-		//
-		// // range markers - no longer separate fields but test anyway...
-		// plot1.addRangeMarker(new ValueMarker(4.0), Layer.FOREGROUND);
-		// assertFalse(plot1.equals(plot2));
-		// plot2.addRangeMarker(new ValueMarker(4.0), Layer.FOREGROUND);
-		// assertEquals(plot1, plot2);
-		//
-		// plot1.addRangeMarker(new ValueMarker(5.0), Layer.BACKGROUND);
-		// assertFalse(plot1.equals(plot2));
-		// plot2.addRangeMarker(new ValueMarker(5.0), Layer.BACKGROUND);
-		// assertEquals(plot1, plot2);
-		//
-		// // foreground range markers...
-		// plot1.addRangeMarker(1, new ValueMarker(4.0), Layer.FOREGROUND);
-		// assertFalse(plot1.equals(plot2));
-		// plot2.addRangeMarker(1, new ValueMarker(4.0), Layer.FOREGROUND);
-		// assertEquals(plot1, plot2);
-		//
-		// // background range markers...
-		// plot1.addRangeMarker(1, new ValueMarker(5.0), Layer.BACKGROUND);
-		// assertFalse(plot1.equals(plot2));
-		// plot2.addRangeMarker(1, new ValueMarker(5.0), Layer.BACKGROUND);
-		// assertEquals(plot1, plot2);
-		//
 		// // annotations
 		// plot1.addAnnotation(new CategoryTextAnnotation("Text", "Category",
 		// 43.0));
@@ -448,12 +444,12 @@ public class CategoryPlotTest {
 		// Color.RED,
 		// 3.0f, 4.0f, Color.BLUE));
 		// assertEquals(plot1, plot2);
-		//
-		// // domainCrosshairStroke
-		// plot1.setDomainCrosshairStroke(new BasicStroke(1.23f));
-		// assertFalse(plot1.equals(plot2));
-		// plot2.setDomainCrosshairStroke(new BasicStroke(1.23f));
-		// assertEquals(plot1, plot2);
+
+		// domainCrosshairStroke
+		plot1.setDomainCrosshairStroke(new StrokeProperties(1.23f));
+		assertFalse(plot1.equals(plot2));
+		plot2.setDomainCrosshairStroke(new StrokeProperties(1.23f));
+		assertEquals(plot1, plot2);
 
 		plot1.setRangeMinorGridlinesVisible(true);
 		assertFalse(plot1.equals(plot2));
@@ -468,11 +464,11 @@ public class CategoryPlotTest {
 		// Color.RED,
 		// 3.0f, 4.0f, Color.BLUE));
 		// assertEquals(plot1, plot2);
-		//
-		// plot1.setRangeMinorGridlineStroke(new BasicStroke(1.23f));
-		// assertFalse(plot1.equals(plot2));
-		// plot2.setRangeMinorGridlineStroke(new BasicStroke(1.23f));
-		// assertEquals(plot1, plot2);
+
+		plot1.setRangeMinorGridlineStroke(new StrokeProperties(1.23f));
+		assertFalse(plot1.equals(plot2));
+		plot2.setRangeMinorGridlineStroke(new StrokeProperties(1.23f));
+		assertEquals(plot1, plot2);
 
 		plot1.setRangeZeroBaselineVisible(!plot1.isRangeZeroBaselineVisible());
 		assertFalse(plot1.equals(plot2));
@@ -487,24 +483,24 @@ public class CategoryPlotTest {
 		// Color.RED,
 		// 3.0f, 4.0f, Color.BLUE));
 		// assertEquals(plot1, plot2);
-		//
-		// plot1.setRangeZeroBaselineStroke(new BasicStroke(1.23f));
-		// assertFalse(plot1.equals(plot2));
-		// plot2.setRangeZeroBaselineStroke(new BasicStroke(1.23f));
-		// assertEquals(plot1, plot2);
-		//
-		// // shadowGenerator
-		// plot1.setShadowGenerator(new DefaultShadowGenerator(5, Color.gray,
-		// 0.6f, 4, -Math.PI / 4));
-		// assertFalse(plot1.equals(plot2));
-		// plot2.setShadowGenerator(new DefaultShadowGenerator(5, Color.gray,
-		// 0.6f, 4, -Math.PI / 4));
-		// assertEquals(plot1, plot2);
-		//
-		// plot1.setShadowGenerator(null);
-		// assertFalse(plot1.equals(plot2));
-		// plot2.setShadowGenerator(null);
-		// assertEquals(plot1, plot2);
+
+		plot1.setRangeZeroBaselineStroke(new StrokeProperties(1.23f));
+		assertFalse(plot1.equals(plot2));
+		plot2.setRangeZeroBaselineStroke(new StrokeProperties(1.23f));
+		assertEquals(plot1, plot2);
+
+		// shadowGenerator
+		plot1.setShadowGenerator(new DefaultShadowGenerator(5, Color.GRAY,
+				0.6f, 4, -Math.PI / 4));
+		assertFalse(plot1.equals(plot2));
+		plot2.setShadowGenerator(new DefaultShadowGenerator(5, Color.GRAY,
+				0.6f, 4, -Math.PI / 4));
+		assertEquals(plot1, plot2);
+
+		plot1.setShadowGenerator(null);
+		assertFalse(plot1.equals(plot2));
+		plot2.setShadowGenerator(null);
+		assertEquals(plot1, plot2);
 	}
 
 	/**
@@ -729,6 +725,25 @@ public class CategoryPlotTest {
 	// CategoryPlot p2 = (CategoryPlot) TestUtils.serialised(p1);
 	// assertTrue(p1.equals(p2));
 	// }
+
+	/**
+	 * Serialize an instance, restore it, and check for equality.
+	 * 
+	 * @throws IOException
+	 * @throws ClassNotFoundException
+	 */
+	@Test
+	public void testSerialization1() {
+		DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+		CategoryAxis domainAxis = new CategoryAxis("Domain");
+		NumberAxis rangeAxis = new NumberAxis("Range");
+		LineAndShapeRenderer renderer = new LineAndShapeRenderer();
+		CategoryPlot p1 = new CategoryPlot(dataset, domainAxis, rangeAxis,
+				renderer);
+		p1.setOrientation(PlotOrientation.HORIZONTAL);
+		CategoryPlot p2 = (CategoryPlot) TestUtils.serialised(p1);
+		assertTrue(p1.equals(p2));
+	}
 	//
 	// /**
 	// * Serialize an instance, restore it, and check for equality.

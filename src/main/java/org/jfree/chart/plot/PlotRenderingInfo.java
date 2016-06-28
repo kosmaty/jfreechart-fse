@@ -279,9 +279,8 @@ public class PlotRenderingInfo implements Cloneable, Serializable {
 	 */
 	private void writeObject(ObjectOutputStream stream) throws IOException {
 		stream.defaultWriteObject();
-		// JAVAFX serialization
-		// SerialUtils.writeShape(this.dataArea, stream);
-		// SerialUtils.writeShape(this.plotArea, stream);
+		SerialUtils.writeRectangle(this.dataArea, stream);
+		SerialUtils.writeRectangle(this.plotArea, stream);
 	}
 
 	/**
@@ -298,9 +297,8 @@ public class PlotRenderingInfo implements Cloneable, Serializable {
 	private void readObject(ObjectInputStream stream)
 			throws IOException, ClassNotFoundException {
 		stream.defaultReadObject();
-		// JAVAFX serialization
-		// this.dataArea = (Rectangle2D) SerialUtils.readShape(stream);
-		// this.plotArea = (Rectangle2D) SerialUtils.readShape(stream);
+		this.dataArea = SerialUtils.readRectangle(stream);
+		this.plotArea = SerialUtils.readRectangle(stream);
 	}
 
 }

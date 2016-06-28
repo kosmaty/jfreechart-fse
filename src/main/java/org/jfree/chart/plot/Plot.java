@@ -134,20 +134,6 @@
 
 package org.jfree.chart.plot;
 
-// 
-// import java.awt.AlphaComposite;
-// import java.awt.BasicStroke;
-// import java.awt.Color;
-// import java.awt.Composite;
-// import java.awt.Font;
-// import java.awt.Graphics2D;
-// import java.awt.Image;
-// import java.awt.Paint;
-// import java.awt.Shape;
-// import java.awt.Stroke;
-// import java.awt.geom.Ellipse2D;
-// import java.awt.geom.Point2D;
-// import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -155,8 +141,6 @@ import java.io.Serializable;
 
 import java.util.ArrayList;
 import java.util.List;
-// 
-// 
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.LegendItem;
 import org.jfree.chart.LegendItemSource;
@@ -273,7 +257,7 @@ public abstract class Plot implements
 	private String noDataMessage;
 
 	/** The font used to display the 'no data' message. */
-	private Font noDataMessageFont;
+	private transient Font noDataMessageFont;
 
 	/** The paint used to draw the 'no data' message. */
 	private transient Paint noDataMessagePaint;
@@ -1306,6 +1290,7 @@ public abstract class Plot implements
 	 */
 	private void writeObject(ObjectOutputStream stream) throws IOException {
 		stream.defaultWriteObject();
+		SerialUtils.writeFont(this.noDataMessageFont, stream);
 		SerialUtils.writePaint(this.noDataMessagePaint, stream);
 	}
 
@@ -1323,6 +1308,7 @@ public abstract class Plot implements
 	private void readObject(ObjectInputStream stream)
 			throws IOException, ClassNotFoundException {
 		stream.defaultReadObject();
+		this.noDataMessageFont = SerialUtils.readFont(stream);
 		this.noDataMessagePaint = SerialUtils.readPaint(stream);
 		this.listenerList = new EventListenerList();
 	}

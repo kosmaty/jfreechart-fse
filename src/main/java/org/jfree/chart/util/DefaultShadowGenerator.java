@@ -98,7 +98,19 @@ public class DefaultShadowGenerator implements ShadowGenerator, Serializable {
 	 * @param angle
 	 *            the shadow offset angle (in radians).
 	 */
-	public DefaultShadowGenerator(int size, Color color, float opacity,
+	public DefaultShadowGenerator(int size, javafx.scene.paint.Color color, float opacity,
+			int distance, double angle) {
+		if (color == null) {
+			throw new IllegalArgumentException("Null 'color' argument.");
+		}
+		this.shadowSize = size;
+		this.shadowColor = toAwtColor(color);
+		this.shadowOpacity = opacity;
+		this.distance = distance;
+		this.angle = angle;
+	}
+
+	private DefaultShadowGenerator(int size, Color color, float opacity,
 			int distance, double angle) {
 		if (color == null) {
 			throw new IllegalArgumentException("Null 'color' argument.");
@@ -108,6 +120,16 @@ public class DefaultShadowGenerator implements ShadowGenerator, Serializable {
 		this.shadowOpacity = opacity;
 		this.distance = distance;
 		this.angle = angle;
+	}
+
+	private Color toAwtColor(javafx.scene.paint.Color fxColor) {
+		Color awtColor = new Color(
+				(int) (fxColor.getRed() * 255),
+				(int) (fxColor.getGreen() * 255),
+				(int) (fxColor.getBlue() * 255),
+				(int) (fxColor.getOpacity() * 255)
+				);
+		return awtColor;
 	}
 
 	/**

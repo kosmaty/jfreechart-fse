@@ -200,7 +200,7 @@ public abstract class Axis implements Cloneable, Serializable {
 	private transient AttributedString label;
 
 	/** The font for displaying the axis label. */
-	private Font labelFont;
+	private transient Font labelFont;
 
 	/** The paint for drawing the axis label. */
 	private transient Paint labelPaint;
@@ -230,7 +230,7 @@ public abstract class Axis implements Cloneable, Serializable {
 	private boolean tickLabelsVisible;
 
 	/** The font used to display the tick labels. */
-	private Font tickLabelFont;
+	private transient Font tickLabelFont;
 
 	/** The color used to display the tick labels. */
 	private transient Paint tickLabelPaint;
@@ -1565,12 +1565,13 @@ public abstract class Axis implements Cloneable, Serializable {
 	private void writeObject(ObjectOutputStream stream) throws IOException {
 		stream.defaultWriteObject();
 		SerialUtils.writeAttributedString(this.label, stream);
+		SerialUtils.writeFont(this.labelFont, stream);
 		SerialUtils.writePaint(this.labelPaint, stream);
+		SerialUtils.writeFont(this.tickLabelFont, stream);
 		SerialUtils.writePaint(this.tickLabelPaint, stream);
-		// JAVAFX serialization
-		// SerialUtils.writeStroke(this.axisLineStroke, stream);
+		SerialUtils.writeStroke(this.axisLineStroke, stream);
 		SerialUtils.writePaint(this.axisLinePaint, stream);
-		// SerialUtils.writeStroke(this.tickMarkStroke, stream);
+		SerialUtils.writeStroke(this.tickMarkStroke, stream);
 		SerialUtils.writePaint(this.tickMarkPaint, stream);
 	}
 
@@ -1589,12 +1590,13 @@ public abstract class Axis implements Cloneable, Serializable {
 			throws IOException, ClassNotFoundException {
 		stream.defaultReadObject();
 		this.label = SerialUtils.readAttributedString(stream);
+		this.labelFont = SerialUtils.readFont(stream);
 		this.labelPaint = SerialUtils.readPaint(stream);
+		this.tickLabelFont = SerialUtils.readFont(stream);
 		this.tickLabelPaint = SerialUtils.readPaint(stream);
-		// JAVAFX serialization
-		// this.axisLineStroke = SerialUtils.readStroke(stream);
+		this.axisLineStroke = SerialUtils.readStroke(stream);
 		this.axisLinePaint = SerialUtils.readPaint(stream);
-		// this.tickMarkStroke = SerialUtils.readStroke(stream);
+		this.tickMarkStroke = SerialUtils.readStroke(stream);
 		this.tickMarkPaint = SerialUtils.readPaint(stream);
 		this.listenerList = new EventListenerList();
 	}

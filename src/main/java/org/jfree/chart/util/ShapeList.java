@@ -153,9 +153,7 @@ public class ShapeList extends AbstractObjectList<Shape> {
 			final Shape shape = getShape(i);
 			if (shape != null) {
 				stream.writeInt(i);
-				// JAVAFX shape serialization
-				// SerialUtils.writeShape(shape, stream);
-				new IllegalStateException("JAVAFX serialization").printStackTrace();
+				SerialUtils.writeShape(shape, stream);
 			}
 			else {
 				stream.writeInt(-1);
@@ -182,9 +180,7 @@ public class ShapeList extends AbstractObjectList<Shape> {
 		for (int i = 0; i < count; i++) {
 			final int index = stream.readInt();
 			if (index != -1) {
-				// JAVAFX shape serialization
-				// setShape(index, SerialUtils.readShape(stream));
-				new IllegalStateException("JAVAFX serialization").printStackTrace();
+				setShape(index, SerialUtils.readShape(stream));
 			}
 		}
 

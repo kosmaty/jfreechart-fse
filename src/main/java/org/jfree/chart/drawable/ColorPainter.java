@@ -42,6 +42,9 @@ package org.jfree.chart.drawable;
 
 import static org.jfree.geometry.GeometryUtils.fillRectangle;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 // import java.awt.Color;
 // import java.awt.Graphics2D;
 // import java.awt.geom.Rectangle2D;
@@ -50,6 +53,8 @@ import java.io.Serializable;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.util.ObjectUtils;
 import org.jfree.chart.util.ParamChecks;
+import org.jfree.chart.util.SerialUtils;
+import org.jfree.event.EventListenerList;
 
 import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.GraphicsContext;
@@ -62,7 +67,7 @@ import javafx.scene.paint.Color;
 public class ColorPainter implements Drawable, Serializable {
 
 	/** The fill color. */
-	private Color color;
+	private transient Color color;
 
 	/**
 	 * Creates a new instance using the background color for a panel under the
@@ -139,6 +144,37 @@ public class ColorPainter implements Drawable, Serializable {
 		int hash = 7;
 		hash = 97 * hash + ObjectUtils.hashCode(this.color);
 		return hash;
+	}
+
+	/**
+	 * Provides serialization support.
+	 *
+	 * @param stream
+	 *            the output stream.
+	 *
+	 * @throws IOException
+	 *             if there is an I/O error.
+	 */
+	private void writeObject(ObjectOutputStream stream) throws IOException {
+		stream.defaultWriteObject();
+		SerialUtils.writePaint(this.color, stream);
+	}
+
+	/**
+	 * Provides serialization support.
+	 *
+	 * @param stream
+	 *            the input stream.
+	 *
+	 * @throws IOException
+	 *             if there is an I/O error.
+	 * @throws ClassNotFoundException
+	 *             if there is a classpath problem.
+	 */
+	private void readObject(ObjectInputStream stream)
+			throws IOException, ClassNotFoundException {
+		stream.defaultReadObject();
+		this.color = (Color) SerialUtils.readPaint(stream);
 	}
 
 }

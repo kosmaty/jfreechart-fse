@@ -209,8 +209,7 @@ public class AxisEntity extends ChartEntity {
 	 */
 	private void writeObject(ObjectOutputStream stream) throws IOException {
 		stream.defaultWriteObject();
-		// JAVAFX serialization
-		// SerialUtils.writeShape(getArea(), stream);
+		SerialUtils.writeShape(getArea(), stream);
 	}
 
 	/**
@@ -227,8 +226,7 @@ public class AxisEntity extends ChartEntity {
 	private void readObject(ObjectInputStream stream)
 			throws IOException, ClassNotFoundException {
 		stream.defaultReadObject();
-		// JAVAFX serialization
-		// setArea(SerialUtils.readShape(stream));
+		setArea(SerialUtils.readShape(stream));
 	}
 
 }
