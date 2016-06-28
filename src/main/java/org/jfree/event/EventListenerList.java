@@ -1,5 +1,6 @@
 package org.jfree.event;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.EventListener;
 import java.util.HashMap;
@@ -22,9 +23,9 @@ public class EventListenerList {
 	public <T extends EventListener> T[] getListeners(Class<T> eventClass) {
 		if (listeners.containsKey(eventClass)) {
 			List<EventListener> listenersList = listeners.get(eventClass);
-			return (T[]) listenersList.toArray();
+			return (T[]) listenersList.toArray((T[]) Array.newInstance(eventClass, listenersList.size()));
 		}
-		return (T[]) new Object[] {};
+		return (T[]) new EventListener[] {};
 	}
 
 	public <T extends EventListener> void remove(Class<T> eventClass, T event) {

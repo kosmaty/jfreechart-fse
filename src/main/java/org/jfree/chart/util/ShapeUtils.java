@@ -88,6 +88,7 @@ import com.sun.javafx.geom.Path2D;
 import com.sun.javafx.geom.PathIterator;
 import com.sun.javafx.geom.RectBounds;
 import com.sun.javafx.geom.Rectangle;
+import com.sun.javafx.geom.RectangularShape;
 import com.sun.javafx.geom.RoundRectangle2D;
 import com.sun.javafx.geom.Shape;
 
@@ -602,7 +603,7 @@ public class ShapeUtils {
 		return rectangle.getWidth() == 0 || rectangle.getHeight() == 0;
 	}
 
-	public static Shape asShape(Rectangle2D rectangle) {
+	public static RectangularShape asShape(Rectangle2D rectangle) {
 		return new RoundRectangle2D(
 				(float) rectangle.getMinX(),
 				(float) rectangle.getMinY(),
